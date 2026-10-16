@@ -282,6 +282,61 @@ body {
   border: 2px solid rgba(212, 175, 55, 0.35);
 }
 
+/* 周天奇门阵盘专属边框与青铜石刻质感 */
+.reel-frame.qimen-array-frame {
+  border: 2px solid rgba(212, 175, 55, 0.55);
+  background: radial-gradient(circle at 50% 50%, #0d1522 0%, #06090e 100%);
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.95), 0 0 22px rgba(56, 189, 248, 0.2), 0 0 35px rgba(212, 175, 55, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 阵盘四角道门周易角标 */
+.array-corner-seal {
+  position: absolute;
+  font-size: 11px;
+  font-family: serif;
+  font-weight: bold;
+  color: rgba(212, 175, 55, 0.55);
+  pointer-events: none;
+  z-index: 5;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
+}
+.array-corner-seal.corner-tl { top: 6px; left: 8px; }
+.array-corner-seal.corner-tr { top: 6px; right: 8px; }
+.array-corner-seal.corner-bl { bottom: 6px; left: 8px; }
+.array-corner-seal.corner-br { bottom: 6px; right: 8px; }
+
+/* 太极奇门推演主按钮 */
+.btn-qimen-spin {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffd700 0%, #e6a100 50%, #b8860b 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.6) !important;
+}
+
+.spin-taiji-icon {
+  font-size: 20px;
+  color: #1a1202;
+  display: inline-block;
+  animation: spinTaijiSlow 8s linear infinite;
+}
+
+@keyframes spinTaijiSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-btn-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #1f1400;
+  letter-spacing: 1.5px;
+}
+
 #reel-canvas {
   width: 100%;
   height: auto;

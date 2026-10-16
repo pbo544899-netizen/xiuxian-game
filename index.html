@@ -46,7 +46,7 @@
               <span class="cheat-system-label">作弊系统</span>
               <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
             </button>
-            <button id="btn-paytable-rules" class="btn-paytable-rules" title="天机盘规则、赔率与概率秘卷">📜 秘卷图谱</button>
+            <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜 阵盘图谱</button>
             <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
               <span class="bubble-icon">✨</span>
               <span class="bubble-text" id="cave-bubble-text">灵机 +0</span>
@@ -54,11 +54,15 @@
           </div>
         </div>
 
-        <!-- 3x5 阵盘 Canvas 画布与滚轮内居中宣告层 -->
-        <div class="reel-frame">
+        <!-- 周天奇门阵盘 3x5 阵眼 Canvas 画布与阵中灵音宣告层 -->
+        <div class="reel-frame qimen-array-frame">
+          <div class="array-corner-seal corner-tl">☰ 乾</div>
+          <div class="array-corner-seal corner-tr">☲ 离</div>
+          <div class="array-corner-seal corner-bl">☵ 坎</div>
+          <div class="array-corner-seal corner-br">☷ 坤</div>
           <canvas id="reel-canvas"></canvas>
 
-          <!-- 滚轮内居中宣告文字层 (字号加倍 + 弹入呼吸动画) -->
+          <!-- 阵盘居中显圣宣告文字层 -->
           <div id="reel-announcement" class="reel-announcement">
             <div id="announcement-text" class="announcement-text"></div>
           </div>
@@ -109,26 +113,26 @@
         <div class="controls-panel">
           <div class="bet-info-bar">
             <div class="bet-info-col">
-              <span class="bet-label-sub">灵阵运转:</span>
-              <b id="pot-array-title">天机聚宝阵</b>
+              <span class="bet-label-sub">奇门运转:</span>
+              <b id="pot-array-title">周天奇门阵</b>
             </div>
-            <!-- 快速消耗档位调节器 (支持 - / 档位下拉浮层 / +) -->
+            <!-- 快速注灵档位调节器 (支持 - / 档位下拉浮层 / +) -->
             <div class="bet-selector-container">
-              <button id="btn-bet-minus" class="bet-step-btn" title="降低推演档位">-</button>
-              <button id="btn-bet-toggle" class="btn-bet-toggle" title="点击展开快速消耗档位">
-                <span class="bet-toggle-label">消耗:</span>
+              <button id="btn-bet-minus" class="bet-step-btn" title="降低注灵档位">-</button>
+              <button id="btn-bet-toggle" class="btn-bet-toggle" title="点击展开快速注灵档位">
+                <span class="bet-toggle-label">注灵:</span>
                 <b id="val-cost" class="bet-val-cost">25</b>
                 <span id="val-mult" class="bet-mult-badge">1x</span>
                 <span class="bet-caret">▾</span>
               </button>
-              <button id="btn-bet-plus" class="bet-step-btn" title="提高推演档位">+</button>
+              <button id="btn-bet-plus" class="bet-step-btn" title="提高注灵档位">+</button>
             </div>
           </div>
 
-          <!-- 快速消耗档位自适应下拉选择浮层 -->
+          <!-- 快速注灵档位自适应下拉选择浮层 -->
           <div id="bet-popover" class="bet-popover hidden">
             <div class="bet-popover-header">
-              <span>选择单次推演消耗 (机缘)</span>
+              <span>选择单次推演注灵 (机缘)</span>
               <span class="bet-popover-hint">(依当前机缘自适应开放)</span>
             </div>
             <div id="bet-tiers-list" class="bet-tiers-list">
@@ -137,7 +141,10 @@
           </div>
 
           <div class="action-buttons">
-            <button id="btn-spin" class="btn-spin">推演天机</button>
+            <button id="btn-spin" class="btn-spin btn-qimen-spin">
+              <span class="spin-taiji-icon">☯</span>
+              <span class="spin-btn-title">推演天机</span>
+            </button>
             <button id="btn-auto" class="btn-auto">自动推演</button>
             <button id="btn-meditate" class="btn-meditate hidden" title="灵机枯竭时打坐吐纳回复 30 机缘">🧘 打坐吐纳</button>
           </div>
@@ -444,7 +451,7 @@
     <nav class="bottom-nav">
       <div id="tab-slots" class="nav-item tab-locked">
         <img class="nav-icon-img icon-locked" src="assets/ui/tab_locked.png" alt="未解锁" />
-        <span class="nav-label">聚宝天机</span>
+        <span class="nav-label">奇门天机</span>
         <span class="nav-lock-tag">🔒</span>
       </div>
       <div id="tab-character" class="nav-item active">
@@ -1086,54 +1093,54 @@
       <div class="modal-card paytable-card">
         <button class="modal-close-x btn-close-paytable" id="btn-close-paytable" aria-label="关闭">&times;</button>
         <div class="paytable-header">
-          <div class="paytable-badge">📜 阵盘天机秘卷</div>
-          <h2 class="paytable-title">天机盘规制 · 赔率与概率</h2>
+          <div class="paytable-badge">📜 周天奇门秘卷</div>
+          <h2 class="paytable-title">奇门阵图 · 阵纹共鸣真解</h2>
           <p class="paytable-subtitle">参悟造化玄机 · 窥探阴阳万法</p>
         </div>
 
         <!-- 秘卷标签导航 -->
         <div class="paytable-tabs">
-          <button class="paytable-tab-btn active" data-tab="paytable">符号赔率</button>
-          <button class="paytable-tab-btn" data-tab="odds">概率公示</button>
-          <button class="paytable-tab-btn" data-tab="rules">修真指引</button>
+          <button class="paytable-tab-btn active" data-tab="paytable">阵纹共鸣谱</button>
+          <button class="paytable-tab-btn" data-tab="odds">天道概率</button>
+          <button class="paytable-tab-btn" data-tab="rules">推演法则</button>
         </div>
 
         <!-- 秘卷内容区 -->
         <div class="paytable-body">
-          <!-- 标签页 1: 符号赔率表 -->
+          <!-- 标签页 1: 阵纹共鸣谱 -->
           <div class="paytable-pane active" id="pane-paytable">
             <div class="paytable-note">
-              <span>💡 <b>连线规则:</b> 3×5 天机阵盘，25 条推演神线全开。相同符号自最左列（第1列）起向右连续出现 3、4、5 个即可成线结算法果。多线奖励累加合并。</span>
+              <span>💡 <b>共鸣法则:</b> 3×5 周天奇门阵盘，25 道灵脉阵纹全开。相同法印自最左列（第1阵眼）起向右连续出现 3、4、5 处即可贯通灵脉结算法果，多线共鸣累加合并。</span>
             </div>
 
             <!-- 特殊神物栏 -->
-            <div class="paytable-section-title">✨ 特殊神物与天地异象</div>
+            <div class="paytable-section-title">✨ 核心神印与天地异象</div>
             <div class="specials-grid">
               <div class="special-card">
                 <div class="special-icon wild">☯️</div>
                 <div class="special-info">
-                  <div class="special-name" style="color:#ffd700;">万应灵珠 (WILD)</div>
-                  <div class="special-desc">百搭万用神珠。出现在第 2、3、4、5 列，可替代除特殊符外的任意符号连线！</div>
+                  <div class="special-name" style="color:#ffd700;">混沌万应珠 (天地合鸣)</div>
+                  <div class="special-desc">百搭万用神珠。出现在第 2、3、4、5 阵眼，可替代除特殊符外的任意神印阵纹！</div>
                 </div>
               </div>
               <div class="special-card">
                 <div class="special-icon scatter">🐉</div>
                 <div class="special-info">
-                  <div class="special-name" style="color:#ff6b6b;">妖兽逆鳞 (SCATTER)</div>
-                  <div class="special-desc">任意位置出现 3 枚触发群兽突袭；4 枚引动大妖；5 枚引动关卡霸主·妖王！</div>
+                  <div class="special-name" style="color:#ff6b6b;">妖煞逆鳞 (妖气预警)</div>
+                  <div class="special-desc">任意阵眼出现 3 枚触发群兽突袭；4 枚引动大妖；5 枚引动关卡霸主·妖王！</div>
                 </div>
               </div>
               <div class="special-card">
                 <div class="special-icon bonus">🏛️</div>
                 <div class="special-info">
-                  <div class="special-name" style="color:#34e89e;">造化秘印 (BONUS)</div>
-                  <div class="special-desc">任意位置出现 5 枚以上，开启洞天造化秘境，收获海量天道机缘与极品灵丹！</div>
+                  <div class="special-name" style="color:#34e89e;">洞天道印 (大衍聚灵)</div>
+                  <div class="special-desc">任意阵眼出现 5 枚以上，开启洞天造化秘境，收获海量天道机缘与极品灵丹！</div>
                 </div>
               </div>
               <div class="special-card">
                 <div class="special-icon ticket">🎫</div>
                 <div class="special-info">
-                  <div class="special-name" style="color:#a855f7;">宗门法牒 (TICKET)</div>
+                  <div class="special-name" style="color:#a855f7;">宗门真传令 (拜谒仙门)</div>
                   <div class="special-desc">散修仙缘第 6 抽或斩妖大捷引动，各大正宗与商门巡察使携令递牒，拜入仙门！</div>
                 </div>
               </div>
@@ -1145,13 +1152,13 @@
               <table class="paytable-tbl">
                 <thead>
                   <tr>
-                    <th>符号</th>
-                    <th>名称</th>
-                    <th>类型</th>
-                    <th>3连</th>
-                    <th>4连</th>
-                    <th>5连</th>
-                    <th>附加法效</th>
+                    <th>神印</th>
+                    <th>仙宝品名</th>
+                    <th>品类</th>
+                    <th>三才</th>
+                    <th>四象</th>
+                    <th>五行</th>
+                    <th>法道灵效</th>
                   </tr>
                 </thead>
                 <tbody>

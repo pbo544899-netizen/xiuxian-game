@@ -1,8 +1,9 @@
 /**
- * CanvasRenderer - 聚宝天机阵主渲染引擎（幸运房东模式 + 心流延时消融 + 强力呼吸光效）
- * 1. 旋转与停轮阶段：所有滚轮依序停轮并完整展示符号，保留 Near-Miss（差一点中奖）紧张悬念；
- * 2. 结算消融阶段：当 5 列全部停止后，停顿观察 400ms，随后非中奖符号平滑淡出消融（若全无奖励则全盘消融留空）；
- * 3. 中奖发光阶段：中奖符号定格显现，方框呈现多重光晕金色强力呼吸律动（内透金光、外绽光芒、四角金印舒张）。
+ * CanvasRenderer - 周天奇门阵盘主渲染引擎（仙侠阵法推演 · 阵眼定穴 · 灵脉共鸣）
+ * 1. 彻底去赌博机化：放弃滚筒物理下坠与机械弹簧回弹，重塑为道家【奇门遁甲阵盘】；
+ * 2. 推演态：15 处天机符穴进入灵气激荡态，星宿神印在阵眼中以太极道光幻化轮转；
+ * 3. 定穴态：自左至右逐列【法印归元 · 阵眼定穴】，爆发灵气冲击波与法器扣合仙音；
+ * 4. 共鸣态：中奖连线升华为【天道灵脉贯通 · 阵纹天雷共鸣】，闪电星轨连携三才、四象、五行神道法则。
  */
 window.SlotsRPG = window.SlotsRPG || {};
 
@@ -18,26 +19,34 @@ class CanvasRenderer {
     this.colWidth = this.logicalWidth / 5;
     this.rowHeight = this.logicalHeight / 3;
 
-    // 滚轴状态 (5列)
+    // 阵列状态 (5 列，每列 3 个阵眼)
     this.reels = [];
     this._initReels();
 
-    // 中奖格子映射表: key = "r,c", value = { symbolId, color }
-    this.activeWinningCells = new Map();
+    // 共鸣/中奖映射与连线
+    this.activeWinningCells = new Map(); // key = "r,c", value = { symbolId, color }
+    this.winningLines = [];              // 保存当前中奖阵纹路径
 
     // 动画与消融状态机
     this.isSpinning = false;
     this.isDissolving = false;
-    this.nonWinningAlpha = 1.0; // 初始状态保持 1.0，展示初始随机奖励符号
+    this.nonWinningAlpha = 1.0;
     this.nearMissCols = [];
 
-    // 门派门票中奖符号专属高光展示特效 (Sect Ticket Showcase)
+    // 阵法粒子系统
+    this.arrayParticles = [];
+    this.imprintShockwaves = [];
+
+    // 门派法牒专属高光展示特效 (Sect Ticket Showcase)
     this.isSectTicketShowcase = false;
     this.sectTicketCells = [];
     this.sectTicketParticles = [];
 
     // 飘字列表
     this.floatingTexts = [];
+
+    // 阵盘自转水纹角度
+    this.taijiAngle = 0;
 
     this._setupCanvasResolution();
     this._startLoop();
@@ -52,14 +61,12 @@ class CanvasRenderer {
 
   _initReels() {
     this.reels = [];
-    // 初始展示的符号池 (包括玄铁剑、青云甲、紫金戒、修为丹、气血丹、各级真符与百搭灵珠)
     const initialPool = [
       'SYM_01', 'SYM_02', 'SYM_03', 'SYM_04', 'SYM_05',
       'SYM_06', 'SYM_07', 'SYM_08', 'SYM_11'
     ];
 
     for (let c = 0; c < 5; c++) {
-      // 随机选取 3 个符号填充该列
       const colSymbols = [
         initialPool[Math.floor(Math.random() * initialPool.length)],
         initialPool[Math.floor(Math.random() * initialPool.length)],
@@ -68,27 +75,28 @@ class CanvasRenderer {
 
       this.reels.push({
         colIndex: c,
-        offsetY: 0,
-        speed: 0,
-        state: 'idle', // 'idle', 'spinning', 'bounce'
-        bounceProgress: 0,
-        bufferSymbols: [],
-        symbols: colSymbols, // 初始随机符号矩阵
+        state: 'idle',           // 'idle', 'spinning', 'imprinting'
+        symbols: colSymbols,     // 当前展现的道符
+        bufferSymbols: [],       // 轮转缓冲
+        morphTimer: 0,           // 符印幻化计时器
+        morphIndex: 0,           // 当前幻化指针
+        imprintProgress: 1.0,    // 0~1 定穴冲击波进度
         isNearMiss: false
       });
     }
   }
 
   /**
-   * 开始旋转 (推演)
+   * 开始推演天机 (启动奇门大阵)
    */
   startSpin() {
     this.isSpinning = true;
     this.isDissolving = false;
-    this.nonWinningAlpha = 1.0; // 旋转开始恢复全量符号可见度
+    this.nonWinningAlpha = 1.0;
     this.activeWinningCells.clear();
+    this.winningLines = [];
     this.nearMissCols = [];
-    this.stopSectTicketShowcase(); // 彻底清理宗门法牒高光状态，重置特效
+    this.stopSectTicketShowcase();
 
     // 旋转安全看门狗：防止任何意外异常导致停轮卡死锁死
     if (this.spinWatchdog) {
@@ -97,11 +105,11 @@ class CanvasRenderer {
     }
     this.spinWatchdog = setTimeout(() => {
       if (this.isSpinning) {
-        console.warn('[CanvasRenderer] Spin watchdog triggered! Auto-recovering spin state.');
+        console.warn('[CanvasRenderer] 阵法推演守护触发，自动复位阵盘状态。');
         this.isSpinning = false;
         this.isDissolving = false;
         this.nearMissCols = [];
-        this.reels.forEach(r => { r.state = 'idle'; r.speed = 0; });
+        this.reels.forEach(r => { r.state = 'idle'; r.imprintProgress = 1.0; });
         window.SlotsRPG.EventBus.emit('SPIN_STOP', { grid: [], evaluation: { winningLines: [] }, nearMiss: {} });
       }
     }, 5500);
@@ -112,16 +120,27 @@ class CanvasRenderer {
 
     this.reels.forEach(reel => {
       reel.state = 'spinning';
-      reel.speed = 38;
-      reel.offsetY = 0;
+      reel.morphTimer = 0;
+      reel.morphIndex = Math.floor(Math.random() * unlockedKeys.length);
+      reel.imprintProgress = 1.0;
       reel.isNearMiss = false;
 
-      // 生成滚动过程中的流光符号缓冲 (严格匹配当前阶位解锁池)
+      // 生成激荡过程中的神印候选流
       reel.bufferSymbols = [];
       for (let k = 0; k < 12; k++) {
         const rndKey = unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
         reel.bufferSymbols.push(rndKey);
       }
+    });
+
+    // 阵盘中央爆发一圈引灵光波
+    this.imprintShockwaves.push({
+      x: this.logicalWidth / 2,
+      y: this.logicalHeight / 2,
+      radius: 20,
+      maxRadius: 360,
+      alpha: 0.8,
+      color: '#38bdf8'
     });
 
     window.SlotsRPG.EventBus.emit('SPIN_START');
@@ -131,93 +150,105 @@ class CanvasRenderer {
   }
 
   /**
-   * 停止旋转并载入中奖计算结果
+   * 停止推演并载入天机结算法果
    * @param {Object} spinData - SlotsEngine.spin 返回的对象
    */
   stopSpin(spinData, onComplete) {
     const { grid, evaluation, nearMiss } = spinData;
     const isNearMiss = !!(nearMiss && (nearMiss.isNearMissMonster || nearMiss.isNearMissBonus));
 
-    // 1. 预先解析所有中奖格子坐标 (Row, Col)
+    // 1. 预先解析所有共鸣阵眼坐标 (Row, Col)
     const winningMap = new Map();
+    this.winningLines = evaluation.winningLines || [];
 
-    // 收集常规连线中奖符号
-    evaluation.winningLines.forEach(line => {
-      line.coords.forEach((r, c) => {
-        winningMap.set(`${r},${c}`, {
-          symbolId: grid[r][c],
-          color: '#ffd700'
-        });
+    // 收集常规阵纹连线
+    this.winningLines.forEach(line => {
+      if (!line.coords) return;
+      line.coords.forEach((coordItem, idx) => {
+        const row = Array.isArray(coordItem) ? coordItem[0] : coordItem;
+        const col = Array.isArray(coordItem) ? coordItem[1] : idx;
+        if (grid && grid[row] && grid[row][col] !== undefined) {
+          winningMap.set(`${row},${col}`, {
+            symbolId: grid[row][col],
+            color: line.color || '#ffd700'
+          });
+        }
       });
     });
 
-    // 收集达到触发标准的妖兽 SCATTER (>= 3)
+    // 收集妖兽 SCATTER (>= 3)
     if (evaluation.hasTriggeredBattle) {
       evaluation.scatterCoords.forEach(({ r, c }) => {
         winningMap.set(`${r},${c}`, {
           symbolId: 'SYM_12',
-          color: '#e74c3c'
+          color: '#f43f5e'
         });
       });
     }
 
-    // 收集达到触发标准的秘境 BONUS (>= 5)
+    // 收集秘境 BONUS (>= 5)
     if (evaluation.hasTriggeredBonus) {
       evaluation.bonusCoords.forEach(({ r, c }) => {
         winningMap.set(`${r},${c}`, {
           symbolId: 'SYM_13',
-          color: '#2ecc71'
+          color: '#34d399'
         });
       });
     }
 
-    // 2. 逐列停轮逻辑：每列停下时，完整展示该列所有符号（保留看清 Near-Miss 机会！）
+    // 2. 逐列【法印归元 · 阵眼定穴】逻辑 (维持从左到右紧张期待感)
     this.reels.forEach((reel, c) => {
-      let delay = 340 + c * 220;
+      let delay = 320 + c * 210;
 
-      // 若处于 Near-Miss 且为第 2, 3, 4 列，开启减速期待金芒
+      // 若处于 Near-Miss 且为第 2, 3, 4 列，开启天道聚灵悬念减速
       if (isNearMiss && c >= 2) {
         reel.isNearMiss = true;
         this.nearMissCols.push(c);
         const extraNearMiss = (c - 1) * 750;
         delay += extraNearMiss;
 
-        // 播放期待减速张力音效
         if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
           window.SlotsRPG.SoundEffects.play('NEAR_MISS', extraNearMiss);
         }
       }
 
       setTimeout(() => {
-        if (reel.isNearMiss) {
-          reel.speed = 12; // 期待减速
-        }
-      }, delay - 350);
-
-      setTimeout(() => {
-        // 本列停稳：先完整装填该列真实结果 [row0, row1, row2]
+        // 本列定穴：装填真实推演结果并触发法印冲击波
         reel.symbols = [grid[0][c], grid[1][c], grid[2][c]];
-        reel.state = 'bounce';
-        reel.bounceProgress = 0;
+        reel.state = 'imprinting';
+        reel.imprintProgress = 0;
 
-        // 播放逐列停轮机簧音效 (五声音阶锁止)
+        // 3 处阵眼同时爆发定穴灵波
+        const colCenterX = (c + 0.5) * this.colWidth;
+        for (let r = 0; r < 3; r++) {
+          const rowCenterY = (r + 0.5) * this.rowHeight;
+          this.imprintShockwaves.push({
+            x: colCenterX,
+            y: rowCenterY,
+            radius: 10,
+            maxRadius: 55,
+            alpha: 0.9,
+            color: '#ffd700'
+          });
+        }
+
+        // 播放法印扣合仙音
         if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
           window.SlotsRPG.SoundEffects.play('REEL_STOP', c);
         }
 
-        // 当最后一列 (第 4 列) 停稳后，进入心流定格与延时消融阶段
+        // 最后一列定穴完毕：进入静观与灵脉共鸣阶段
         if (c === 4) {
-          // 【步骤 A】：全盘 15 个格子全部显现，定格静止 400ms，供玩家看清完整停轮结果与差一点中奖细节
           setTimeout(() => {
             this.activeWinningCells = winningMap;
-            this.isDissolving = true; // 开启消融动画
+            this.isDissolving = true;
 
-            // 播放普通连线中奖音效 (Phase 1)
+            // 播放阵纹共鸣大捷仙乐
             if (winningMap.size > 0 && window.SlotsRPG && window.SlotsRPG.SoundEffects) {
               window.SlotsRPG.SoundEffects.play('WIN_LINE');
             }
 
-            // 【步骤 B】：等待非中奖符号淡出完毕后，正式触发结算
+            // 等待灵脉展开后，完成流程回调
             setTimeout(() => {
               if (this.spinWatchdog) {
                 clearTimeout(this.spinWatchdog);
@@ -229,20 +260,19 @@ class CanvasRenderer {
               try {
                 if (onComplete) onComplete(spinData);
               } catch (err) {
-                console.error('[CanvasRenderer] Error during spin settlement callback:', err);
+                console.error('[CanvasRenderer] 结算回调异常:', err);
               } finally {
                 window.SlotsRPG.EventBus.emit('SPIN_STOP', spinData);
               }
-            }, 350);
-          }, 400);
+            }, 360);
+          }, 380);
         }
       }, delay);
     });
   }
 
   /**
-   * 启动门派门票中奖符号专属高光展示特效 (Phase 3)
-   * @param {Array<{r:number, c:number}>} coords - 中奖法牒/门票格子坐标
+   * 启动宗门真传法牒高光展示特效
    */
   startSectTicketShowcase(coords) {
     this.isSectTicketShowcase = true;
@@ -256,31 +286,28 @@ class CanvasRenderer {
     }
     this.sectTicketParticles = [];
 
-    // 为每个中奖法牒格子播撒柔和金色灵气粒子
+    // 为每个中奖法牒阵眼播撒金青色飞升灵气粒子
     this.sectTicketCells.forEach(({ r, c }) => {
       const colX = c * this.colWidth;
       const rowY = r * this.rowHeight;
       if (!Number.isFinite(colX) || !Number.isFinite(rowY)) return;
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 12; i++) {
         this.sectTicketParticles.push({
           r, c,
           baseX: colX + this.colWidth / 2,
           baseY: rowY + this.rowHeight - 12,
           x: colX + 16 + Math.random() * (this.colWidth - 32),
           y: rowY + 10 + Math.random() * (this.rowHeight - 20),
-          speedY: 0.5 + Math.random() * 0.8,
-          swaySpeed: 0.04 + Math.random() * 0.05,
+          speedY: 0.6 + Math.random() * 0.9,
+          swaySpeed: 0.04 + Math.random() * 0.06,
           angle: Math.random() * Math.PI * 2,
-          size: 1.8 + Math.random() * 2.2,
-          alpha: 0.3 + Math.random() * 0.7
+          size: 1.8 + Math.random() * 2.4,
+          alpha: 0.4 + Math.random() * 0.6
         });
       }
     });
   }
 
-  /**
-   * 关闭门派门票专属高光展示
-   */
   stopSectTicketShowcase() {
     this.isSectTicketShowcase = false;
     this.sectTicketCells = [];
@@ -288,7 +315,7 @@ class CanvasRenderer {
   }
 
   /**
-   * 动画渲染主循环 (附带异常容错守护，确保渲染线程绝不中断)
+   * 动画渲染主循环
    */
   _startLoop() {
     const loop = () => {
@@ -304,37 +331,42 @@ class CanvasRenderer {
   }
 
   _update() {
-    // 1. 更新每列转轮运动
+    this.taijiAngle += 0.008;
+
+    // 1. 更新各列阵眼状态 (灵气激荡与定穴冲击波)
     this.reels.forEach(reel => {
       if (reel.state === 'spinning') {
-        reel.offsetY += reel.speed;
-        if (reel.offsetY >= this.rowHeight) {
-          reel.offsetY %= this.rowHeight;
-          const top = reel.bufferSymbols.pop();
-          reel.bufferSymbols.unshift(top);
+        reel.morphTimer += 1;
+        // 每 3 帧快速轮转一次神印，产生星宿瞬息幻化效果
+        if (reel.morphTimer >= 3) {
+          reel.morphTimer = 0;
+          reel.morphIndex = (reel.morphIndex + 1) % reel.bufferSymbols.length;
         }
-      } else if (reel.state === 'bounce') {
-        reel.bounceProgress = (reel.bounceProgress || 0) + 0.1;
-        if (reel.bounceProgress >= 1) {
+      } else if (reel.state === 'imprinting') {
+        reel.imprintProgress += 0.08;
+        if (reel.imprintProgress >= 1.0) {
+          reel.imprintProgress = 1.0;
           reel.state = 'idle';
-          reel.offsetY = 0;
-        } else {
-          // 弹性回弹
-          const p = reel.bounceProgress;
-          const c1 = 1.70158;
-          const c3 = c1 + 1;
-          const eased = 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
-          reel.offsetY = (1 - eased) * 12;
         }
       }
     });
 
-    // 2. 更新非中奖符号消融渐隐
-    if (this.isDissolving && this.nonWinningAlpha > 0) {
-      this.nonWinningAlpha = Math.max(0, this.nonWinningAlpha - 0.05); // 约 300ms 优雅淡出
+    // 2. 更新非共鸣阵眼消融淡出
+    if (this.isDissolving && this.nonWinningAlpha > 0.25) {
+      this.nonWinningAlpha = Math.max(0.25, this.nonWinningAlpha - 0.045);
     }
 
-    // 3. 更新宗门法牒金色灵气粒子
+    // 3. 更新定穴灵波冲击环
+    for (let i = this.imprintShockwaves.length - 1; i >= 0; i--) {
+      const sw = this.imprintShockwaves[i];
+      sw.radius += (sw.maxRadius - sw.radius) * 0.18 + 1.2;
+      sw.alpha -= 0.045;
+      if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+        this.imprintShockwaves.splice(i, 1);
+      }
+    }
+
+    // 4. 更新宗门真传灵光粒子
     if (this.isSectTicketShowcase && this.sectTicketParticles.length > 0) {
       this.sectTicketParticles.forEach(p => {
         p.y -= p.speedY;
@@ -350,7 +382,7 @@ class CanvasRenderer {
       });
     }
 
-    // 4. 更新飘字
+    // 5. 更新飘字
     for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
       const ft = this.floatingTexts[i];
       ft.y -= 1.2;
@@ -363,94 +395,80 @@ class CanvasRenderer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.logicalWidth, this.logicalHeight);
 
-    // 1. 阵盘底板背景
-    ctx.fillStyle = '#0a0d14';
-    ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
-
-    // 2. 计算大幅度强力呼吸发光系数 (0.15 ~ 1.05 宽幅脉动)
     const now = Date.now();
-    const breathPulse = 0.5 + 0.5 * Math.sin(now / 220); // 周期约 1.3 秒的沉浸呼吸
+    const breathPulse = 0.5 + 0.5 * Math.sin(now / 220);
 
-    this.reels.forEach((reel, c) => {
+    // 1. 渲染古玉青铜【周天奇门阵盘】底座与八卦天象
+    this._renderArrayPlateBackground(ctx, breathPulse);
+
+    const gm = window.SlotsRPG.GameManager;
+    const potLevel = gm ? gm.level : 1;
+    const worldTier = gm ? (gm.currentWorldTier || 1) : 1;
+
+    // 2. 渲染 15 处天机符穴 (阵眼) 与承载神物
+    for (let c = 0; c < 5; c++) {
+      const reel = this.reels[c];
       const colX = c * this.colWidth;
 
-      // 绘制 Near-Miss 减速期待高亮光圈
+      // Near-Miss 天象预警灵柱
       if (reel.isNearMiss && reel.state === 'spinning') {
-        ctx.save();
-        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 + 0.6 * breathPulse})`;
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#ffd700';
-        ctx.shadowBlur = 20;
-        ctx.strokeRect(colX + 3, 3, this.colWidth - 6, this.logicalHeight - 6);
-        ctx.restore();
+        this._drawNearMissCelestialTension(ctx, colX, breathPulse);
       }
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(colX, 0, this.colWidth, this.logicalHeight);
-      ctx.clip();
+      for (let r = 0; r < 3; r++) {
+        const rowY = r * this.rowHeight;
+        const cellKey = `${r},${c}`;
+        const isWinning = this.activeWinningCells.has(cellKey);
 
-      if (reel.state === 'spinning') {
-        // 【旋转过程中】：呈现天地灵气飞流与流光符号
-        ctx.globalAlpha = 0.75;
-        const buffer = reel.bufferSymbols;
-        const gm = window.SlotsRPG.GameManager;
-        const potLevel = gm ? gm.level : 1;
-        const worldTier = gm ? (gm.currentWorldTier || 1) : 1;
-        for (let i = -1; i < 4; i++) {
-          const symIndex = (i + 12) % buffer.length;
-          const symId = buffer[symIndex];
-          const y = i * this.rowHeight + reel.offsetY;
-          this.symbolPainter.drawSymbol(ctx, symId, colX, y, this.colWidth, this.rowHeight, false, potLevel, worldTier);
+        // 绘制青铜灵玉凹槽阵眼
+        this._drawArrayBasin(
+          ctx, colX, rowY, this.colWidth, this.rowHeight,
+          isWinning, reel.state === 'spinning', breathPulse,
+          reel.state === 'imprinting', reel.imprintProgress
+        );
+
+        // 获取当前阵眼展示的法宝/神印
+        let symId = null;
+        let isSpinActive = false;
+
+        if (reel.state === 'spinning') {
+          isSpinActive = true;
+          const idx = (reel.morphIndex + r * 3) % reel.bufferSymbols.length;
+          symId = reel.bufferSymbols[idx];
+        } else {
+          symId = reel.symbols[r];
         }
-      } else {
-        const gm = window.SlotsRPG.GameManager;
-        const potLevel = gm ? gm.level : 1;
-        const worldTier = gm ? (gm.currentWorldTier || 1) : 1;
-        // 【停轮或结算展示状态】：
-        for (let r = 0; r < 3; r++) {
-          const y = r * this.rowHeight + reel.offsetY;
-          const cellKey = `${r},${c}`;
-          const isWinning = this.activeWinningCells.has(cellKey);
-          const symId = reel.symbols[r];
 
-          // 首先绘制阵盘空槽底纹
-          this._drawEmptySlot(ctx, colX, y, this.colWidth, this.rowHeight);
-
-          if (symId) {
-            if (isWinning) {
-              // 【中奖符号】：始终保持 100% 鲜亮不透明
-              ctx.save();
-              ctx.globalAlpha = 1.0;
-              this.symbolPainter.drawSymbol(ctx, symId, colX, y, this.colWidth, this.rowHeight, true, potLevel, worldTier);
-              ctx.restore();
-
-              // 【强力呼吸方框光效】：全方位光芒扩散
-              this._drawWinningCellStrongGlow(ctx, colX, y, this.colWidth, this.rowHeight, breathPulse);
-            } else if (this.nonWinningAlpha > 0) {
-              // 【非中奖符号】：停轮初期完整显示，确认无奖后平滑消融至 0
-              ctx.save();
-              ctx.globalAlpha = this.nonWinningAlpha;
-              this.symbolPainter.drawSymbol(ctx, symId, colX, y, this.colWidth, this.rowHeight, false, potLevel, worldTier);
-              ctx.restore();
-            }
+        if (symId) {
+          ctx.save();
+          if (isWinning) {
+            ctx.globalAlpha = 1.0;
+            this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, true, potLevel, worldTier);
+            // 阵眼共鸣神圣光环
+            this._drawWinningBasinResonance(ctx, colX, rowY, this.colWidth, this.rowHeight, breathPulse);
+          } else if (isSpinActive) {
+            // 激荡推演中：伴随微弱仙光灵气虚影
+            ctx.globalAlpha = 0.85;
+            this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, false, potLevel, worldTier);
+          } else {
+            // 定穴停驻：非共鸣阵眼优雅隐入玉石石纹
+            ctx.globalAlpha = this.nonWinningAlpha;
+            this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, false, potLevel, worldTier);
           }
+          ctx.restore();
         }
       }
-      ctx.restore();
+    }
 
-      // 列分割暗线
-      if (c > 0) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(colX, 0);
-        ctx.lineTo(colX, this.logicalHeight);
-        ctx.stroke();
-      }
-    });
+    // 3. 渲染定穴冲击灵波
+    this._renderShockwaves(ctx);
 
-    // 3. 门派门票中奖符号专属高光道印与金色灵气飞升粒子 (Phase 3)
+    // 4. 渲染【天道灵脉阵纹 (Winning Veins)】连携闪电与星轨
+    if (this.winningLines && this.winningLines.length > 0 && this.isDissolving) {
+      this._drawCelestialVeinPaylines(ctx, breathPulse);
+    }
+
+    // 5. 门派门票专属高光祥瑞霞光
     if (this.isSectTicketShowcase && this.sectTicketCells.length > 0) {
       this.sectTicketCells.forEach(({ r, c }) => {
         const colX = c * this.colWidth;
@@ -458,7 +476,6 @@ class CanvasRenderer {
         this._drawSectTicketWinningAura(ctx, colX, rowY, this.colWidth, this.rowHeight, breathPulse);
       });
 
-      // 渲染柔和升腾的灵气粒子
       this.sectTicketParticles.forEach(p => {
         ctx.save();
         ctx.fillStyle = `rgba(255, 215, 0, ${Math.max(0, p.alpha)})`;
@@ -472,7 +489,7 @@ class CanvasRenderer {
       });
     }
 
-    // 4. 飘字渲染
+    // 6. 飘字渲染
     this.floatingTexts.forEach(ft => {
       ctx.save();
       ctx.globalAlpha = Math.max(0, ft.alpha);
@@ -487,71 +504,164 @@ class CanvasRenderer {
   }
 
   /**
-   * 绘制极简空槽
+   * 绘制古玉青铜【周天奇门阵盘】底座与八卦星野纹理
    */
-  _drawEmptySlot(ctx, x, y, w, h) {
-    const pad = 6;
+  _renderArrayPlateBackground(ctx, breathPulse) {
+    const w = this.logicalWidth;
+    const h = this.logicalHeight;
+
+    // 1. 深邃虚空太初石纹渐变
+    const bgGrad = ctx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, w * 0.65);
+    bgGrad.addColorStop(0, '#101a26');
+    bgGrad.addColorStop(0.5, '#0a1017');
+    bgGrad.addColorStop(1, '#05070a');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. 阵盘中心旋转太极阴阳气旋暗纹
     ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate(this.taijiAngle);
+    ctx.globalAlpha = 0.05 + 0.03 * breathPulse;
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+
+    // 太极双鱼轮廓
     ctx.beginPath();
-    this.symbolPainter._drawRoundedRect(ctx, x + pad, y + pad, w - pad * 2, h - pad * 2, 8);
-    ctx.fillStyle = 'rgba(14, 18, 28, 0.55)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
+    ctx.arc(0, 0, 160, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 凹槽核心阵眼微光
-    ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
     ctx.beginPath();
-    ctx.arc(x + w / 2, y + h / 2, 2.5, 0, Math.PI * 2);
+    ctx.arc(0, -80, 80, -Math.PI / 2, Math.PI / 2);
+    ctx.arc(0, 80, 80, Math.PI / 2, -Math.PI / 2, true);
+    ctx.stroke();
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath();
+    ctx.arc(0, -80, 14, 0, Math.PI * 2);
+    ctx.arc(0, 80, 14, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+
+    // 3. 四角周易卦象金色雕文 (乾坤坎离)
+    ctx.save();
+    ctx.font = '13px serif';
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.22)';
+    ctx.shadowColor = '#d4af37';
+    ctx.shadowBlur = 4;
+    ctx.fillText('☰ 乾', 12, 20);
+    ctx.fillText('☷ 坤', w - 38, h - 12);
+    ctx.fillText('☵ 坎', 12, h - 12);
+    ctx.fillText('☲ 离', w - 38, 20);
+    ctx.restore();
+
+    // 4. 阵眼行列分界细刻道痕 (玄青石缝)
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
+    ctx.lineWidth = 1;
+    for (let c = 1; c < 5; c++) {
+      const cx = c * this.colWidth;
+      ctx.beginPath();
+      ctx.moveTo(cx, 8);
+      ctx.lineTo(cx, h - 8);
+      ctx.stroke();
+    }
+    for (let r = 1; r < 3; r++) {
+      const ry = r * this.rowHeight;
+      ctx.beginPath();
+      ctx.moveTo(8, ry);
+      ctx.lineTo(w - 8, ry);
+      ctx.stroke();
+    }
+  }
+
+  /**
+   * 绘制 1 处独立凹槽阵眼 (Carved Jade Array Basin)
+   */
+  _drawArrayBasin(ctx, x, y, w, h, isWinning, isSpinning, pulse, isImprinting, imprintProgress) {
+    const pad = 5;
+    const basinW = w - pad * 2;
+    const basinH = h - pad * 2;
+    const bx = x + pad;
+    const by = y + pad;
+    const radius = 9;
+
+    ctx.save();
+
+    // 1. 凹槽深色玉石内陷底色
+    ctx.beginPath();
+    this.symbolPainter._drawRoundedRect(ctx, bx, by, basinW, basinH, radius);
+    ctx.fillStyle = isWinning ? 'rgba(20, 26, 38, 0.95)' : 'rgba(9, 13, 20, 0.88)';
+    ctx.fill();
+
+    // 2. 阵眼外框青铜玉质双层边缘
+    if (isSpinning) {
+      // 激荡推演中：阵眼泛起青天灵气流转光晕
+      ctx.strokeStyle = `rgba(56, 189, 248, ${0.35 + 0.25 * pulse})`;
+      ctx.lineWidth = 1.6;
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 10 * pulse;
+    } else {
+      ctx.strokeStyle = isWinning
+        ? `rgba(255, 215, 0, ${0.75 + 0.25 * pulse})`
+        : 'rgba(212, 175, 55, 0.18)';
+      ctx.lineWidth = isWinning ? 2.2 : 1.2;
+      ctx.shadowColor = isWinning ? '#ffd700' : 'transparent';
+      ctx.shadowBlur = isWinning ? 14 * pulse : 0;
+    }
+    ctx.stroke();
+
+    // 3. 阵眼四角青铜嵌玉灵钉 (Corner Rivets)
+    ctx.fillStyle = isWinning ? '#ffd700' : 'rgba(212, 175, 55, 0.35)';
+    const rivetSize = 2.5;
+    ctx.fillRect(bx + 4, by + 4, rivetSize, rivetSize);
+    ctx.fillRect(bx + basinW - 6, by + 4, rivetSize, rivetSize);
+    ctx.fillRect(bx + 4, by + basinH - 6, rivetSize, rivetSize);
+    ctx.fillRect(bx + basinW - 6, by + basinH - 6, rivetSize, rivetSize);
+
+    // 4. 定穴瞬间：中心爆闪一道法印烙印符纹
+    if (isImprinting && imprintProgress < 0.9) {
+      const flashAlpha = Math.max(0, (1 - imprintProgress) * 0.7);
+      ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+      ctx.beginPath();
+      this.symbolPainter._drawRoundedRect(ctx, bx, by, basinW, basinH, radius);
+      ctx.fill();
+    }
+
     ctx.restore();
   }
 
   /**
-   * 绘制中奖符号的【超明显强力呼吸发光方框】
-   * 包含：1. 内部金光灵气脉动；2. 外圈超强金色光晕 Bloom (10~30px)；3. 双层边框；4. 四角金印舒张扩张
+   * 绘制中奖阵眼的道韵共鸣灵环
    */
-  _drawWinningCellStrongGlow(ctx, x, y, w, h, pulse) {
-    const pad = 5;
-    const radius = 8;
+  _drawWinningBasinResonance(ctx, x, y, w, h, pulse) {
+    const pad = 4;
+    const radius = 10;
     ctx.save();
 
-    // 1. 内部金光灵气轻度填充脉动
+    // 内部温养金霞
     ctx.beginPath();
     this.symbolPainter._drawRoundedRect(ctx, x + pad, y + pad, w - pad * 2, h - pad * 2, radius);
-    ctx.fillStyle = `rgba(255, 215, 0, ${0.06 + 0.16 * pulse})`;
+    ctx.fillStyle = `rgba(255, 215, 0, ${0.08 + 0.14 * pulse})`;
     ctx.fill();
 
-    // 2. 外圈强力金色 Bloom 辉光 (模糊扩散 10px ~ 32px)
+    // 外圈双层炽烈阵雷辉光
     ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 10 + 22 * pulse;
-    ctx.strokeStyle = `rgba(255, 220, 80, ${0.65 + 0.35 * pulse})`;
-    ctx.lineWidth = 3 + 1.8 * pulse; // 边框粗细随呼吸在 3px ~ 4.8px 之间律动
+    ctx.shadowBlur = 12 + 18 * pulse;
+    ctx.strokeStyle = `rgba(255, 220, 80, ${0.7 + 0.3 * pulse})`;
+    ctx.lineWidth = 3 + 1.5 * pulse;
     ctx.stroke();
 
-    // 3. 内部纯白金色高光边
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = `rgba(255, 255, 255, ${0.35 + 0.45 * pulse})`;
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // 4. 四角灵印金色锚点舒张扩散
-    const cornerLen = 8 + 4 * pulse; // 角标长度在 8px ~ 12px 动态呼吸
+    // 四角舒张阵纹角标
+    const cornerLen = 9 + 4 * pulse;
     ctx.fillStyle = '#ffd700';
-    ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 10 * pulse;
+    ctx.shadowBlur = 8 * pulse;
 
-    // 左上角
     ctx.fillRect(x + pad - 1, y + pad - 1, cornerLen, 3);
     ctx.fillRect(x + pad - 1, y + pad - 1, 3, cornerLen);
-    // 右上角
     ctx.fillRect(x + w - pad - cornerLen + 1, y + pad - 1, cornerLen, 3);
     ctx.fillRect(x + w - pad - 2, y + pad - 1, 3, cornerLen);
-    // 左下角
     ctx.fillRect(x + pad - 1, y + h - pad - 2, cornerLen, 3);
     ctx.fillRect(x + pad - 1, y + h - pad - cornerLen + 1, 3, cornerLen);
-    // 右下角
     ctx.fillRect(x + w - pad - cornerLen + 1, y + h - pad - 2, cornerLen, 3);
     ctx.fillRect(x + w - pad - 2, y + h - pad - cornerLen + 1, 3, cornerLen);
 
@@ -559,8 +669,135 @@ class CanvasRenderer {
   }
 
   /**
-   * 绘制宗门门票/法牒专属的【高阶仙门真传灵光法印】
-   * 柔和、优雅、仙道流云、丝毫不突兀，但具备极高辨识度与庄严感
+   * 绘制【天道灵脉阵纹 (Winning Veins)】：雷火星轨连携
+   */
+  _drawCelestialVeinPaylines(ctx, pulse) {
+    if (!Array.isArray(this.winningLines) || this.winningLines.length === 0) return;
+
+    const now = Date.now();
+    ctx.save();
+
+    this.winningLines.forEach((line, lineIdx) => {
+      if (!line.coords || line.coords.length < 3) return;
+
+      // 规范化坐标为 [[row, col], [row, col], ...]
+      const normCoords = line.coords.map((item, idx) => {
+        if (Array.isArray(item)) return [item[0], item[1]];
+        return [item, idx];
+      });
+      const count = normCoords.length;
+      const color = line.color || '#ffd700';
+
+      // 1. 绘制底层宽幅灵脉辉光带
+      ctx.beginPath();
+      normCoords.forEach(([r, c], idx) => {
+        const px = (c + 0.5) * this.colWidth;
+        const py = (r + 0.5) * this.rowHeight;
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.strokeStyle = `rgba(255, 215, 0, ${0.25 + 0.2 * pulse})`;
+      ctx.lineWidth = 14 + 4 * pulse;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = '#ffd700';
+      ctx.shadowBlur = 22;
+      ctx.stroke();
+
+      // 2. 绘制中层雷光电弧核心
+      ctx.beginPath();
+      normCoords.forEach(([r, c], idx) => {
+        const px = (c + 0.5) * this.colWidth;
+        const py = (r + 0.5) * this.rowHeight;
+        // 细微闪电抖动
+        const jitterY = (idx > 0 && idx < count - 1) ? Math.sin(now / 45 + idx * 2) * 2.5 : 0;
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py + jitterY);
+      });
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.85 + 0.15 * pulse})`;
+      ctx.lineWidth = 3.6;
+      ctx.stroke();
+
+      // 3. 在各连接阵眼节点绘制聚灵光核
+      normCoords.forEach(([r, c]) => {
+        const px = (c + 0.5) * this.colWidth;
+        const py = (r + 0.5) * this.rowHeight;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(px, py, 4.5 + 2 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 4. 在首个阵眼上方漂浮共鸣尊号 (三才归元 / 四象同辉 / 五行合一)
+      if (lineIdx === 0 && normCoords.length > 0) {
+        const firstR = normCoords[0][0];
+        const firstC = normCoords[0][1];
+        const tagX = (firstC + 0.5) * this.colWidth;
+        const tagY = (firstR + 0.5) * this.rowHeight - 38;
+
+        let comboTitle = '✨ 阵纹共鸣';
+        if (count === 3) comboTitle = '⚡ 三才归元';
+        else if (count === 4) comboTitle = '🌟 四象同辉';
+        else if (count >= 5) comboTitle = '👑 五行合一 · 天道显圣';
+
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillStyle = '#ffd700';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 8;
+        ctx.fillText(comboTitle, tagX, tagY);
+      }
+    });
+
+    ctx.restore();
+  }
+
+  /**
+   * 绘制 Near-Miss 天象预警悬念灵柱
+   */
+  _drawNearMissCelestialTension(ctx, colX, breathPulse) {
+    ctx.save();
+    // 从天穹垂落的八卦阵雷灵柱
+    const grad = ctx.createLinearGradient(colX, 0, colX, this.logicalHeight);
+    grad.addColorStop(0, `rgba(255, 215, 0, ${0.5 + 0.4 * breathPulse})`);
+    grad.addColorStop(0.5, `rgba(168, 85, 247, ${0.25 + 0.25 * breathPulse})`);
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(colX + 3, 0, this.colWidth - 6, this.logicalHeight);
+
+    ctx.strokeStyle = `rgba(255, 215, 0, ${0.6 + 0.4 * breathPulse})`;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#ffd700';
+    ctx.shadowBlur = 18;
+    ctx.strokeRect(colX + 3, 3, this.colWidth - 6, this.logicalHeight - 6);
+
+    ctx.restore();
+  }
+
+  /**
+   * 绘制定穴冲击波
+   */
+  _renderShockwaves(ctx) {
+    if (this.imprintShockwaves.length === 0) return;
+    ctx.save();
+    this.imprintShockwaves.forEach(sw => {
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = Math.max(0, sw.alpha);
+      ctx.lineWidth = 2.2;
+      ctx.shadowColor = sw.color;
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  /**
+   * 绘制宗门真传法牒专属高光道印与金色飞升霞光
    */
   _drawSectTicketWinningAura(ctx, x, y, w, h, pulse) {
     if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return;
@@ -568,12 +805,11 @@ class CanvasRenderer {
     const radius = 10;
     ctx.save();
 
-    // 1. 内部仙门祥瑞霞光 (柔和金绿过渡光晕)
     const centerX = x + w / 2;
     const centerY = y + h / 2;
     const rad = ctx.createRadialGradient(centerX, centerY, 8, centerX, centerY, w * 0.65);
-    rad.addColorStop(0, `rgba(255, 215, 0, ${0.16 + 0.12 * pulse})`);
-    rad.addColorStop(0.55, `rgba(52, 232, 158, ${0.08 + 0.08 * pulse})`);
+    rad.addColorStop(0, `rgba(255, 215, 0, ${0.2 + 0.15 * pulse})`);
+    rad.addColorStop(0.55, `rgba(52, 232, 158, ${0.1 + 0.1 * pulse})`);
     rad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
     ctx.beginPath();
@@ -581,36 +817,13 @@ class CanvasRenderer {
     ctx.fillStyle = rad;
     ctx.fill();
 
-    // 2. 双层金色流光道门阵框
     ctx.shadowColor = '#ffd700';
     ctx.shadowBlur = 16 + 12 * pulse;
     ctx.strokeStyle = `rgba(255, 215, 0, ${0.8 + 0.2 * pulse})`;
     ctx.lineWidth = 3.2 + 1.2 * pulse;
     ctx.stroke();
 
-    // 3. 纯净内线白金色微光
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = `rgba(255, 255, 255, ${0.45 + 0.35 * pulse})`;
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
-
-    // 4. 四角仙云金印雕饰
-    const cornerSize = 10 + 3 * pulse;
-    ctx.fillStyle = '#ffd700';
-    ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 10 * pulse;
-
-    // 左上、右上、左下、右下云纹角标
-    ctx.fillRect(x + pad, y + pad, cornerSize, 3);
-    ctx.fillRect(x + pad, y + pad, 3, cornerSize);
-    ctx.fillRect(x + w - pad - cornerSize, y + pad, cornerSize, 3);
-    ctx.fillRect(x + w - pad - 3, y + pad, 3, cornerSize);
-    ctx.fillRect(x + pad, y + h - pad - 3, cornerSize, 3);
-    ctx.fillRect(x + pad, y + h - pad - cornerSize, 3, cornerSize);
-    ctx.fillRect(x + w - pad - cornerSize, y + h - pad - 3, cornerSize, 3);
-    ctx.fillRect(x + w - pad - 3, y + h - pad - cornerSize, 3, cornerSize);
-
-    // 5. 顶部仙门法牒徽章浮标
+    // 顶部仙门法牒徽章浮标
     const badgeW = 76;
     const badgeH = 18;
     const badgeX = x + (w - badgeW) / 2;

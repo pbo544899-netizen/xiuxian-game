@@ -1949,8 +1949,9 @@ window.addEventListener('DOMContentLoaded', () => {
       } else {
         // 【时机2】有奖励时：播放奖励文字动画
         if (evaluation.winningLines.length > 0) {
-          const lineNames = evaluation.winningLines.map(l => `${l.matchCount}连${l.symbolName}`).join('、');
-          elAnnouncementText.innerText = `造化显现!\n${lineNames} +${evaluation.totalPayout} 机缘`;
+          const comboTitle = (cnt) => cnt >= 5 ? '五行合一' : (cnt === 4 ? '四象同辉' : '三才归元');
+          const lineNames = evaluation.winningLines.map(l => `${comboTitle(l.matchCount || 3)}·${l.symbolName}`).join('、');
+          elAnnouncementText.innerText = `阵纹共鸣!\n${lineNames} +${evaluation.totalPayout} 机缘`;
         } else if (evaluation.hasTriggeredBattle) {
           const cfg = evaluation.battleConfig;
           if (cfg && cfg.tier === 'boss') {
