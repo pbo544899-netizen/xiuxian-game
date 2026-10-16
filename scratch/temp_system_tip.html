@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>修仙作弊器：造化聚宝盆</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- 常驻顶栏 -->
+    <header class="top-hud">
+      <div class="hud-item">
+        <span class="hud-label">机缘:</span>
+        <span id="val-energy" class="hud-val">0</span>
+      </div>
+      <div class="hud-item">
+        <span id="val-realm" class="hud-badge">凡人境 · 未入道</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">天机盘:</span>
+        <span id="val-level" class="hud-val" style="color: #94a3b8;">未激活</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">战力:</span>
+        <span id="val-power" class="hud-val" style="color: #ffaa00;">45</span>
+      </div>
+      <button id="btn-sound-toggle" class="btn-sound-toggle" title="音效与道韵仙乐开关">🔊</button>
+    </header>
+
+    <!-- 主视口内容区 -->
+    <main class="main-viewport">
+      <!-- 视图1: 造化聚宝盆主视口 -->
+      <section id="view-slots" class="view-panel active">
+        <!-- PRD 10.4 & 9.3 节: 仙道功德状态与转盘灵气浮泡 -->
+        <div class="slots-top-bar">
+          <div class="merit-ticket-bar" id="merit-ticket-bar">
+            <span class="merit-tag">今日功德: <b id="merit-progress-text" style="color:#ffd700;">0/5</b></span>
+            <span class="ticket-tag">🎫 瞬发符: <b id="ticket-count-text" style="color:#34e89e;">1</b> 张</span>
+          </div>
+          <div class="slots-top-actions">
+            <button id="btn-paytable-rules" class="btn-paytable-rules" title="天机盘规则、赔率与概率秘卷">📜 秘卷图谱</button>
+            <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
+              <span class="bubble-icon">✨</span>
+              <span class="bubble-text" id="cave-bubble-text">灵机 +0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3x5 阵盘 Canvas 画布与滚轮内居中宣告层 -->
+        <div class="reel-frame">
+          <canvas id="reel-canvas"></canvas>
+
+          <!-- 滚轮内居中宣告文字层 (字号加倍 + 弹入呼吸动画) -->
+          <div id="reel-announcement" class="reel-announcement">
+            <div id="announcement-text" class="announcement-text"></div>
+          </div>
+        </div>
+
+        <!-- 聚宝盆天机蕴灵升级进度条 (新增) -->
+        <div class="pot-exp-container" id="pot-exp-container">
+          <div class="pot-exp-header">
+            <span class="pot-tier-title" id="pot-tier-title">1 阶·凡木天机盆</span>
+            <span class="pot-exp-text" id="pot-exp-text">蕴灵: 0 / 500 (0%)</span>
+          </div>
+          <div class="pot-exp-bar-track">
+            <div class="pot-exp-bar-fill" id="pot-exp-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- 序章首推专属引导横幅 (凡人未入门派阶段在此处展示神兵必出提示) -->
+        <div id="prologue-spin-guide" class="prologue-spin-guide">
+          <span class="guide-hand">👉</span>
+          <span class="guide-text">点击<b>【推演天机】</b>初测仙缘，首抽必爆强力法宝神兵！</span>
+          <span class="guide-badge">神兵必出</span>
+        </div>
+
+        <!-- 宗门斩妖试炼横幅 (主动挑战 1~12 关 + 守关大妖王，入宗门后开放并取代神兵必出横幅) -->
+        <div class="sect-trial-banner hidden" id="sect-trial-banner">
+          <div class="trial-left-info">
+            <div class="trial-badge-row">
+              <span class="trial-stage-badge" id="trial-stage-badge">试炼 第 1/12 关</span>
+              <span class="trial-diff-tag" id="trial-diff-tag">普通</span>
+              <span class="trial-reward-tag" id="trial-reward-tag">🎁 奖 200 机缘</span>
+            </div>
+            <div class="trial-target-name" id="trial-target-name">荒村鸡犬 · 恶犬精</div>
+            <div class="trial-power-info">
+              <span class="trial-power-label">推荐战力:</span>
+              <b id="trial-rec-power" class="trial-rec-power">35</b>
+              <span id="trial-power-status" class="trial-power-status safe">可斩杀</span>
+            </div>
+          </div>
+          <div class="trial-right-action">
+            <button id="btn-active-trial-challenge" class="btn-active-trial" title="主动出鞘迎击妖兽试炼">
+              <span class="trial-sword-icon">⚔️</span>
+              <span class="trial-btn-text" id="trial-btn-text">拔剑斩妖</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 核心控制区 -->
+        <div class="controls-panel">
+          <div class="bet-info-bar">
+            <div class="bet-info-col">
+              <span class="bet-label-sub">灵阵运转:</span>
+              <b id="pot-array-title">天机聚宝阵</b>
+            </div>
+            <!-- 快速消耗档位调节器 (支持 - / 档位下拉浮层 / +) -->
+            <div class="bet-selector-container">
+              <button id="btn-bet-minus" class="bet-step-btn" title="降低推演档位">-</button>
+              <button id="btn-bet-toggle" class="btn-bet-toggle" title="点击展开快速消耗档位">
+                <span class="bet-toggle-label">消耗:</span>
+                <b id="val-cost" class="bet-val-cost">25</b>
+                <span id="val-mult" class="bet-mult-badge">1x</span>
+                <span class="bet-caret">▾</span>
+              </button>
+              <button id="btn-bet-plus" class="bet-step-btn" title="提高推演档位">+</button>
+            </div>
+          </div>
+
+          <!-- 快速消耗档位自适应下拉选择浮层 -->
+          <div id="bet-popover" class="bet-popover hidden">
+            <div class="bet-popover-header">
+              <span>选择单次推演消耗 (机缘)</span>
+              <span class="bet-popover-hint">(依当前机缘自适应开放)</span>
+            </div>
+            <div id="bet-tiers-list" class="bet-tiers-list">
+              <!-- 动态装填 25 50 100 200 ... -->
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="btn-spin" class="btn-spin">推演天机</button>
+            <button id="btn-auto" class="btn-auto">自动推演</button>
+            <button id="btn-meditate" class="btn-meditate hidden" title="灵机枯竭时打坐吐纳回复 30 机缘">🧘 打坐吐纳</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 视图2: 角色修真与乾坤袋背包 -->
+      <section id="view-character" class="view-panel">
+        <!-- 一体化修真道相卡片 (极致节省空间：顶端融合顶栏信息、右侧三维战斗属性柱、下方细长修为进度条) -->
+        <div class="char-hero-profile-unified">
+          <!-- 融入顶部信息：机缘、聚宝盆阶位、总战力 -->
+          <div class="char-hero-hud-bar">
+            <div class="char-hud-item energy">
+              <span class="char-hud-icon">✨</span>
+              <span class="char-hud-label">机缘:</span>
+              <b id="char-hero-energy" class="char-hud-val energy">0</b>
+            </div>
+            <div class="char-hud-item pot">
+              <span class="char-hud-icon">🏺</span>
+              <span class="char-hud-label">聚宝盆:</span>
+              <b id="char-hero-level" class="char-hud-val pot">1 阶</b>
+            </div>
+            <div class="char-hud-item power">
+              <span class="char-hud-icon">⚡</span>
+              <span class="char-hud-label">战力:</span>
+              <b id="hero-profile-power" class="char-hud-val power">45</b>
+            </div>
+            <button id="btn-sound-toggle-char" class="btn-sound-toggle" title="音效与道韵仙乐开关">🔊</button>
+          </div>
+
+          <div class="hero-main-row">
+            <!-- 左侧：修真者立绘 -->
+            <div class="hero-avatar-box">
+              <img id="character-main-avatar" src="assets/character/hero_mortal.png" class="hero-avatar-svg" alt="修真者立绘" />
+            </div>
+
+            <!-- 中间：境界与状态 -->
+            <div class="hero-middle-box">
+              <div class="hero-status-title">
+                <span id="hero-profile-realm" class="hero-realm-tag">凡人境 · 未入道</span>
+                <span id="char-hero-sect" class="hero-title-sub">凡人未入道</span>
+              </div>
+            </div>
+
+            <!-- 飞升入口按钮 (靠右空白区域，上面显示 n/5 进度) -->
+            <button id="btn-open-stele" class="btn-ascend-entry hidden" title="白日飞升 · 太上升仙天碑">
+              <span id="stele-progress-badge" class="ascend-progress-pill">0/5</span>
+              <span class="ascend-btn-text">飞升</span>
+            </button>
+
+            <!-- 最右侧：三维核心战斗属性柱 (气血、攻击、防御) -->
+            <div class="hero-stats-right">
+              <div class="stat-col-item hp">
+                <span class="stat-col-label">气血</span>
+                <b id="stat-hp" class="stat-col-val hp-val">100</b>
+              </div>
+              <div class="stat-col-item atk">
+                <span class="stat-col-label">攻击</span>
+                <b id="stat-atk" class="stat-col-val atk-val">11</b>
+              </div>
+              <div class="stat-col-item def">
+                <span class="stat-col-label">防御</span>
+                <b id="stat-def" class="stat-col-val def-val">2</b>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部细长修为进度能量条 (紧凑展示在属性正下方) -->
+          <div class="char-exp-bar-row">
+            <div class="char-exp-info-row">
+              <span class="exp-title"><span class="exp-icon">☯</span> 修为进度</span>
+              <span id="char-exp-text" class="exp-val">0 / 100 (0%)</span>
+            </div>
+            <div class="exp-bar-compact-track">
+              <div id="char-exp-fill" class="exp-bar-compact-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 关卡守关妖王战力雷达标尺 (500抽成长参照系，入宗门后开放) -->
+        <div class="boss-radar-panel hidden" id="boss-radar-panel">
+          <div class="boss-radar-header">
+            <div class="boss-radar-target">
+              <span class="boss-radar-icon">🐍</span>
+              <span class="boss-radar-label">守关妖王:</span>
+              <b id="boss-radar-name" class="boss-radar-name">赤炼蟒</b>
+              <span id="boss-radar-req-power" class="boss-radar-req-badge">推荐战力 517</span>
+            </div>
+            <div id="boss-radar-status" class="boss-radar-status danger">险阻重重 (-472)</div>
+          </div>
+          <div class="boss-radar-track">
+            <div id="boss-radar-fill" class="boss-radar-fill" style="width: 8%;"></div>
+          </div>
+          <div class="boss-radar-footer">
+            <div class="boss-radar-footer-row">
+              <span id="boss-radar-progress-text">战力达成度: 8% (45 / 517)</span>
+              <button id="btn-boss-radar-challenge" class="btn-boss-radar-challenge" title="主动出鞘挑战妖兽试炼或守关妖王">⚔️ 拔剑挑战</button>
+            </div>
+            <span class="boss-radar-hint" id="boss-radar-hint">💡 打造6槽全紫法宝触发道基圆满，即可斩灭妖王晋升下一门派！</span>
+          </div>
+        </div>
+
+        <!-- 6大装备槽位区 (法宝佩戴：紧邻角色信息正下方！) -->
+        <div class="equip-section">
+          <div class="equip-section-header">
+            <span class="equip-section-title">法宝佩戴 (点击可查看或卸下)</span>
+            <button id="btn-quick-equip" class="btn-quick-equip disabled" disabled title="乾坤袋中暂无可替换的更优法宝">
+              <span class="quick-equip-icon">⚡</span>一键装备
+            </button>
+          </div>
+          <div class="equip-slots-grid">
+            <!-- 槽位1: 武器 (默认佩戴凡铁·锈蚀柴刀) -->
+            <div class="equip-slot occupied" data-slot="weapon" style="border-color: #94a3b8; box-shadow: 0 0 10px #94a3b840;">
+              <span class="slot-quality-badge" style="background:#94a3b8">凡铁</span>
+              <img class="slot-equip-icon" src="assets/symbols/SYM_06.png" alt="锈蚀柴刀" />
+              <div class="slot-equip-name" style="color:#94a3b8">锈蚀柴刀</div>
+            </div>
+            <!-- 槽位2: 衣服 -->
+            <div class="equip-slot" data-slot="armor">
+              <div class="slot-placeholder">
+                <span class="slot-tag">衣服</span>
+                <span class="slot-state">空</span>
+              </div>
+            </div>
+            <!-- 槽位3: 戒指 -->
+            <div class="equip-slot" data-slot="ring">
+              <div class="slot-placeholder">
+                <span class="slot-tag">戒指</span>
+                <span class="slot-state">空</span>
+              </div>
+            </div>
+            <!-- 槽位4: 帽子 -->
+            <div class="equip-slot" data-slot="hat">
+              <div class="slot-placeholder">
+                <span class="slot-tag">帽子</span>
+                <span class="slot-state">空</span>
+              </div>
+            </div>
+            <!-- 槽位5: 鞋子 -->
+            <div class="equip-slot" data-slot="boots">
+              <div class="slot-placeholder">
+                <span class="slot-tag">鞋子</span>
+                <span class="slot-state">空</span>
+              </div>
+            </div>
+            <!-- 槽位6: 腰带 -->
+            <div class="equip-slot" data-slot="belt">
+              <div class="slot-placeholder">
+                <span class="slot-tag">腰带</span>
+                <span class="slot-state">空</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 序章专属引导卡片 (仅凡人阶段可见) -->
+        <div id="prologue-section" class="prologue-section hidden">
+          <div class="prologue-card">
+            <div class="prologue-icon" id="prologue-icon">🐗</div>
+            <div class="prologue-info">
+              <div class="prologue-title" id="prologue-title">后山采药 · 惊现恶兽</div>
+              <div class="prologue-desc" id="prologue-desc">采药途中忽闻腥风扑鼻，一头凶暴黑鬣猪挡住去路！手无寸铁，唯有一柄防身柴刀...</div>
+            </div>
+            <button id="btn-prologue-battle" class="btn-prologue-battle pulse-anim">拔刀斩凶 (初战)</button>
+          </div>
+        </div>
+
+        <!-- 乾坤袋背包区 -->
+        <div class="bag-section">
+          <div class="bag-header">
+            <span id="bag-cap-text" class="bag-title">乾坤袋 (0/24)</span>
+            <label class="auto-salvage-label">
+              <input type="checkbox" id="chk-auto-salvage" />
+              <span>自动分解凡铁/凡器</span>
+            </label>
+            <button id="btn-bag-sort-header" class="btn-bag-header-sort" title="一键整理乾坤袋">
+              <span>📦 整理</span>
+            </button>
+          </div>
+
+          <!-- 4x6 乾坤袋网格容器 -->
+          <div id="bag-grid" class="bag-grid">
+            <!-- 由 JS 动态渲染 24 格 -->
+          </div>
+
+          <!-- 浮动式一键升阶/合成按钮 (仅在有可合成装备时动态展现，带呼吸动态光效) -->
+          <div id="floating-merge-wrap" class="floating-merge-wrap hidden">
+            <button id="btn-floating-merge" class="btn-floating-merge" title="点击一键融合升阶所有可合成法宝">
+              <span class="action-icon">✨</span>
+              <span class="btn-floating-merge-text">可合成更高阶灵装 · 一键升阶</span>
+            </button>
+          </div>
+
+          <!-- 隐藏的向下兼容按钮容器 (保障旧脚本引用不报错) -->
+          <div class="legacy-bag-actions hidden" style="display:none !important;">
+            <button id="btn-bag-merge" class="hidden"></button>
+            <button id="btn-bag-salvage" class="hidden"></button>
+            <button id="btn-bag-sort" class="hidden"></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 视图 3: 洞天灵脉挂机放置 -->
+      <section id="view-cave" class="view-panel">
+        <!-- 灵脉总览卡片 -->
+        <div class="cave-overview-card">
+          <div class="cave-card-header">
+            <div class="cave-title-wrap">
+              <span class="cave-title-icon">🏔️</span>
+              <span class="cave-title-text">洞天福地 · 灵脉仙府</span>
+            </div>
+            <span id="cave-status-tag" class="cave-status-tag">灵机运化中</span>
+          </div>
+          <p class="cave-desc-text">
+            离线亦有乾坤运转，灵脉不歇！每分钟自动吸纳天地灵机凝聚机缘与仙丹。
+          </p>
+        </div>
+
+        <!-- 中央核心: 仙灵神鼎与当前蓄积 -->
+        <div class="cave-cauldron-section">
+          <div class="cauldron-aura-ring">
+            <div class="cauldron-glow"></div>
+            <div class="cauldron-smoke">☯</div>
+            <div class="cauldron-icon">🏺</div>
+          </div>
+
+          <div class="cauldron-storage-card">
+            <div class="storage-item">
+              <span class="storage-label">蕴聚机缘</span>
+              <div class="storage-val-wrap">
+                <span id="cave-accumulated-energy" class="storage-val energy">0</span>
+                <span id="cave-max-energy" class="storage-max">/ 360</span>
+              </div>
+            </div>
+            <div class="storage-divider"></div>
+            <div class="storage-item">
+              <span class="storage-label">温养金丹</span>
+              <div class="storage-val-wrap">
+                <span id="cave-accumulated-pills" class="storage-val pill">0</span>
+                <span class="storage-max">颗 (修为丹)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 一键引灵按钮 -->
+          <button id="btn-cave-collect" class="btn-cave-collect">
+            <span class="collect-icon">✨</span>
+            <span class="collect-text">一键引灵 (纳宝入体)</span>
+          </button>
+        </div>
+
+        <!-- 洞天两大建造设施 -->
+        <div class="cave-facilities-grid">
+          <!-- 设施 1: 九品聚灵阵 -->
+          <div class="facility-card">
+            <div class="facility-header">
+              <span class="facility-icon">🌀</span>
+              <div class="facility-meta">
+                <div class="facility-name" id="spirit-array-name">一阶·凡木聚灵阵</div>
+                <div class="facility-rate" id="spirit-array-rate">产出: 3 机缘/分钟 (上限 360)</div>
+              </div>
+            </div>
+            <div class="facility-action">
+              <button id="btn-upgrade-array" class="btn-facility-upgrade">
+                升阶阵法 (<span id="spirit-array-cost">300</span>机缘)
+              </button>
+            </div>
+          </div>
+
+          <!-- 设施 2: 造化百草园 -->
+          <div class="facility-card">
+            <div class="facility-header">
+              <span class="facility-icon">🌱</span>
+              <div class="facility-meta">
+                <div class="facility-name">一阶·造化百草园</div>
+                <div class="facility-rate">温养速度: 30 分钟 / 颗九转金丹</div>
+              </div>
+            </div>
+            <div class="facility-action">
+              <span class="facility-auto-tag">灵草温养中</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部洞天秘境探寻 (每日限 1 次) -->
+        <div class="cave-footer-actions">
+          <button id="btn-cave-secret-realm" class="btn-cave-secret-realm ready" title="每日探寻洞天秘境，赢取大额机缘与极品神丹法宝">
+            <div class="cave-realm-glow-bg"></div>
+            <div class="cave-realm-btn-content">
+              <span class="cave-realm-btn-icon">🌌</span>
+              <div class="cave-realm-btn-texts">
+                <span class="cave-realm-btn-title">洞天秘境 · 仙光跑灯盘</span>
+                <span id="cave-realm-daily-badge" class="cave-realm-btn-sub">✨ 仙气凝聚 · 今日可探寻 (1/1)</span>
+              </div>
+              <span class="cave-realm-btn-action">探寻 ➔</span>
+            </div>
+          </button>
+          <button id="btn-test-holdspin" class="hidden" style="display:none !important;"></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <nav class="bottom-nav">
+      <div id="tab-slots" class="nav-item tab-locked">
+        <img class="nav-icon-img icon-locked" src="assets/ui/tab_locked.png" alt="未解锁" />
+        <span class="nav-label">聚宝天机</span>
+        <span class="nav-lock-tag">🔒</span>
+      </div>
+      <div id="tab-character" class="nav-item active">
+        <img class="nav-icon-img" src="assets/ui/tab_character.png" alt="角色修真" />
+        <span class="nav-label">角色修真</span>
+        <span id="tab-badge-character" class="nav-badge hidden">0</span>
+      </div>
+      <div id="tab-cave" class="nav-item tab-locked">
+        <img class="nav-icon-img icon-locked" src="assets/ui/tab_locked.png" alt="未解锁" />
+        <span class="nav-label">洞天灵脉</span>
+        <span class="nav-lock-tag">🔒</span>
+        <span id="tab-badge-cave" class="nav-badge hidden">!</span>
+      </div>
+    </nav>
+
+    <!-- 弹窗1: 装备/法宝通鉴详情卡片 -->
+    <div id="modal-item-detail" class="modal-overlay hidden">
+      <div class="modal-card modal-item-card">
+        <button id="btn-item-close-x" class="modal-close-x" aria-label="关闭详情">&times;</button>
+        <div class="item-card-header">
+          <div id="modal-item-icon-frame" class="item-icon-frame">
+            <img id="modal-item-icon" src="" alt="法宝" />
+          </div>
+          <div class="item-meta">
+            <h3 id="modal-item-name" class="item-title">凡铁·玄铁剑</h3>
+            <div class="item-tags">
+              <span id="modal-item-quality" class="item-quality-tag">凡铁 (Q1)</span>
+              <span id="modal-item-part" class="item-part-tag">武器</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-stats-box">
+          <div class="stats-box-title" id="modal-stats-box-title">法宝属性加成</div>
+          <div id="modal-item-stats" class="stats-box-list">
+            <!-- 动态生成 -->
+          </div>
+          <div id="modal-item-compare" class="item-compare-tip">
+            <!-- 对比信息 -->
+          </div>
+        </div>
+
+        <div class="modal-actions modal-item-actions" id="modal-item-actions">
+          <button id="btn-item-primary" class="btn-primary">穿戴</button>
+          <button id="btn-item-salvage" class="btn-secondary">分解 (+5机缘)</button>
+          <button id="btn-item-close" class="btn-secondary">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗2: 境界突破大喜报弹窗 -->
+    <div id="modal-level-up" class="modal-overlay hidden">
+      <div class="modal-card modal-breakthrough-card">
+        <div class="breakthrough-glow">☯</div>
+        <h2 class="breakthrough-title">境界突破！</h2>
+
+        <!-- 境界跃迁横幅 -->
+        <div class="breakthrough-realm-badge">
+          <span id="levelup-realm-old" class="realm-old">练气一层</span>
+          <span class="realm-arrow">➔</span>
+          <span id="levelup-realm-new" class="realm-new">练气二层</span>
+        </div>
+
+        <!-- 综合战力跃升卡片 -->
+        <div class="breakthrough-power-card">
+          <div class="power-card-title">综合战力突破</div>
+          <div class="power-compare-wrap">
+            <span id="levelup-power-old" class="power-val old">75</span>
+            <span class="power-arrow">➔</span>
+            <span id="levelup-power-new" class="power-val new">82</span>
+            <span id="levelup-power-diff" class="power-diff-tag">+7 🔺</span>
+          </div>
+        </div>
+
+        <!-- 基础四维属性精进对比网格 -->
+        <div class="breakthrough-comparison-grid">
+          <div class="stat-compare-row">
+            <span class="stat-label">气血上限</span>
+            <div class="stat-values">
+              <span id="levelup-stat-hp-old" class="stat-old">100</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-hp-new" class="stat-new">112</span>
+              <span id="levelup-stat-hp-diff" class="stat-diff">(+12)</span>
+            </div>
+          </div>
+          <div class="stat-compare-row">
+            <span class="stat-label">基础攻击</span>
+            <div class="stat-values">
+              <span id="levelup-stat-atk-old" class="stat-old">20</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-atk-new" class="stat-new">22</span>
+              <span id="levelup-stat-atk-diff" class="stat-diff">(+2)</span>
+            </div>
+          </div>
+          <div class="stat-compare-row">
+            <span class="stat-label">基础防御</span>
+            <div class="stat-values">
+              <span id="levelup-stat-def-old" class="stat-old">10</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-def-new" class="stat-new">11</span>
+              <span id="levelup-stat-def-diff" class="stat-diff">(+1)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 功法潜质复利注解 -->
+        <div class="breakthrough-passive-tip">
+          ✨ 灵脉拓宽：气血复利 +12% · 攻防复利 +10%
+        </div>
+
+        <!-- 底部确认按钮容器 -->
+        <div class="breakthrough-actions">
+          <button id="btn-levelup-confirm" class="btn-breakthrough">凝心聚气</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗3: 乾坤袋爆仓报警引导弹窗 -->
+    <div id="modal-overflow-alert" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h3 class="modal-title" style="color: #ff416c;">乾坤袋已满！</h3>
+        <p class="modal-desc">
+          背包与造化暂存槽（6/6）皆已占满，无法收纳更多机缘宝物！<br />
+          推演已自动暂停，请立即使用【一键升阶】或【一键分解】腾出空格。
+        </p>
+        <div class="modal-actions">
+          <button id="btn-overflow-merge" class="btn-primary">一键升阶(融3合1)</button>
+          <button id="btn-overflow-salvage" class="btn-secondary">一键分解低阶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗4: 机缘枯竭救济弹窗 -->
+    <div id="modal-relief" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h3 class="modal-title">灵机已竭</h3>
+        <p class="modal-desc" id="relief-desc">
+          当前机缘不足以驱动阵盘！<br />
+          作弊器感应天地灵涌，可引渡游离灵气补充。<br />
+          （今日剩余神念灌顶: <b id="relief-count" style="color:#ffd700;">3</b> 次）
+        </p>
+        <div class="modal-actions">
+          <button id="btn-claim-relief" class="btn-primary">纳灵 (+50机缘)</button>
+          <button id="btn-meditate-relief" class="btn-primary hidden">🧘 打坐吐纳 (+30机缘)</button>
+          <button id="btn-close-relief" class="btn-secondary">稍后再来</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗4B: 游戏内仙道操作提示/结果弹窗 (彻底取缔外部系统 alert) -->
+    <div id="modal-action-notice" class="modal-overlay hidden">
+      <div class="modal-card action-notice-card">
+        <div class="action-notice-header">
+          <span id="action-notice-badge" class="action-notice-badge">✨ 仙道显化</span>
+          <h3 id="action-notice-title" class="action-notice-title">造化熔炉·3合1升阶成功</h3>
+        </div>
+        <div id="action-notice-content" class="action-notice-content">
+          <!-- 动态装填 -->
+        </div>
+        <div class="action-notice-footer">
+          <button id="btn-action-notice-confirm" class="btn-primary btn-notice-confirm">知 悉</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 战斗切入修仙过场动画 (VS 对决画卷) -->
+    <div id="modal-battle-transition" class="battle-transition-overlay hidden">
+      <div class="battle-trans-bg">
+        <div class="battle-trans-speed-lines"></div>
+        <div class="battle-trans-rays"></div>
+        <div class="battle-trans-vortex"></div>
+        <div class="battle-trans-taiji">☯</div>
+        <div class="battle-trans-shockwave"></div>
+        <div class="battle-trans-flash-slash"></div>
+      </div>
+      <div class="battle-trans-content">
+        <!-- 战事前瞻顶标 -->
+        <div class="battle-trans-header">
+          <span class="battle-trans-tag" id="trans-tag">⚠️ 狭路相逢 · 妖煞破空</span>
+          <h2 class="battle-trans-title" id="trans-title">诛 邪 试 剑</h2>
+        </div>
+
+        <!-- 双方对峙卡片 -->
+        <div class="battle-trans-versus">
+          <!-- 左侧：修真者 -->
+          <div class="trans-side trans-player" id="trans-player-card">
+            <div class="trans-avatar-box player-avatar-box">
+              <img id="trans-player-avatar" src="assets/character/hero_mortal.png" alt="修仙者" />
+              <div class="trans-halo"></div>
+            </div>
+            <div class="trans-info">
+              <div class="trans-name" id="trans-player-name">凡人 · 林凡</div>
+              <div class="trans-sub-pill">
+                <span class="trans-sub" id="trans-player-sub">战力: 45</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 中央：金光对决法印与裂空剑芒 -->
+          <div class="trans-center">
+            <div class="trans-clash-flare"></div>
+            <div class="trans-slash-line"></div>
+            <div class="trans-slash-line-cross"></div>
+            <div class="trans-vs-emblem">VS</div>
+            <div class="trans-sparkles">⚡</div>
+          </div>
+
+          <!-- 右侧：妖魔敌阵 -->
+          <div class="trans-side trans-monster" id="trans-monster-card">
+            <div class="trans-avatar-box monster-avatar-box">
+              <img id="trans-monster-avatar" src="assets/boss/boss_red_python_vivid.png" alt="妖兽" />
+              <div class="trans-evil-aura"></div>
+            </div>
+            <div class="trans-info">
+              <div class="trans-name" id="trans-monster-name">赤炼蟒</div>
+              <div class="trans-sub-pill">
+                <span class="trans-sub" id="trans-monster-sub">气血: 950</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部战意台词与跳过提示 -->
+        <div class="battle-trans-footer">
+          <div class="trans-quote" id="trans-quote">“孽畜休得猖狂，看吾三尺青锋！”</div>
+          <div class="trans-skip-hint">点击任意处立即交锋 ⚔️</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗5: 全屏沉浸式伏妖战场 -->
+    <div id="modal-battle-arena" class="modal-overlay hidden">
+      <div class="battle-arena-container">
+        <!-- 动态战场景观大图背景层与渐变融合层 -->
+        <div id="battle-bg-layer" class="battle-bg-layer"></div>
+        <div class="battle-bg-overlay"></div>
+
+        <!-- 顶部对决状态条 -->
+        <div class="battle-top-bar">
+          <span id="battle-round-badge" class="battle-round-badge">回合 1/20</span>
+          <span id="battle-wave-badge" class="battle-wave-badge hidden">第 1/3 波</span>
+          <span id="battle-boss-title" class="battle-boss-title">练气境妖王·赤炼蟒</span>
+          <button id="btn-battle-speed" class="btn-battle-speed">⚡ 快速</button>
+        </div>
+
+        <!-- 上方 Boss / 妖兽 区域 -->
+        <div class="battle-boss-section" id="battle-boss-section">
+          <div class="battle-unit-hud" id="battle-boss-hud">
+            <div class="battle-unit-name-row">
+              <span id="battle-boss-name" class="unit-name">赤炼蟒</span>
+              <span id="battle-boss-hp-text" class="unit-hp-text">2500 / 2500</span>
+            </div>
+            <div class="battle-hp-bar">
+              <div id="battle-boss-hp-fill" class="battle-hp-fill boss-hp" style="width: 100%;"></div>
+            </div>
+          </div>
+          <!-- 动态多怪阵列容器 (支持 1 个 Boss、1~2 个精英、或 3~5 个普通小怪并排同屏展示) -->
+          <div class="battle-monsters-container" id="battle-monsters-container"></div>
+          <div class="battle-boss-avatar-wrapper hidden" id="battle-boss-wrapper">
+            <img id="battle-boss-img" class="battle-boss-avatar" src="assets/boss/boss_red_python.png" alt="Boss" />
+            <div id="battle-boss-hit-effect" class="hit-slash-effect"></div>
+          </div>
+        </div>
+
+        <!-- 中间交锋流光与技能特效层 -->
+        <div id="battle-clash-zone" class="battle-clash-zone">
+          <div id="battle-sword-beam" class="sword-beam-anim"></div>
+          <div id="battle-claw-scratch" class="claw-scratch-fx"></div>
+          <div id="battle-skill-fx" class="skill-fx-layer"></div>
+          <div id="battle-floating-container" class="battle-floating-container"></div>
+        </div>
+
+        <!-- 下方 主角修真者区域 -->
+        <div class="battle-hero-section">
+          <div class="battle-hero-avatar-wrapper">
+            <img id="battle-hero-img" class="battle-hero-avatar" src="assets/character/hero_mortal.png" alt="主角" />
+            <div id="battle-hero-shield" class="hero-shield-effect"></div>
+          </div>
+          <div class="battle-unit-hud">
+            <div class="battle-unit-name-row">
+              <span id="battle-hero-name" class="unit-name">凌云修仙者</span>
+              <span id="battle-hero-hp-text" class="unit-hp-text">520 / 520</span>
+            </div>
+            <div class="battle-hp-bar">
+              <div id="battle-hero-hp-fill" class="battle-hp-fill hero-hp" style="width: 100%;"></div>
+            </div>
+            <div class="battle-hero-subinfo">
+              <span id="battle-hero-power">战力: 140</span>
+              <span id="battle-talisman-status" class="battle-prep-tag">破魔符: 就绪</span>
+              <span id="battle-pill-status" class="battle-prep-tag">气血丹: 就绪</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 战中道具使用与回合操作栏 (支持战斗中点击气血丹回血) -->
+        <div class="battle-action-bar">
+          <button id="btn-battle-use-pill" class="btn-battle-item">
+            <span class="battle-item-icon">💊</span>
+            <span class="battle-item-info">气血丹 (<span id="battle-pill-qty">0</span>)</span>
+            <span class="battle-item-hint">+40%血</span>
+          </button>
+          <button id="btn-battle-use-talisman" class="btn-battle-item">
+            <span class="battle-item-icon">📜</span>
+            <span class="battle-item-info">破魔符 (<span id="battle-talisman-qty">0</span>)</span>
+            <span class="battle-item-hint">天雷暴击</span>
+          </button>
+          <button id="btn-battle-attack" class="btn-battle-action">⚔️ 御剑攻击</button>
+          <button id="btn-battle-auto-toggle" class="btn-battle-toggle active">自动: 开启</button>
+        </div>
+
+        <!-- 底部战报日志小窗 -->
+        <div class="battle-log-bar">
+          <div id="battle-log-text" class="battle-log-text">⚠️ 妖气冲天！赤炼蟒盘踞虚空，大战一触即发！</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗6: 伏妖大捷结算金榜 -->
+    <div id="modal-battle-victory" class="modal-overlay hidden">
+      <div class="modal-card victory-card">
+        <div class="victory-banner">
+          <span class="victory-badge">⚡ 天道破障</span>
+          <h2 class="victory-title">伏 妖 大 捷</h2>
+          <p id="victory-subtitle" class="victory-subtitle">赤炼恶蟒诛灭，天道甘霖倾泻！</p>
+        </div>
+
+        <!-- 突破里程碑展示 -->
+        <div id="victory-breakthrough-box" class="victory-breakthrough-box hidden">
+          <div class="bt-title">✨【大境界突破·筑基之始】✨</div>
+          <div class="bt-desc">
+            境界晋升为 <b style="color:#ffd700;">筑基初期</b>！<br/>
+            聚宝盆进阶为 <b style="color:#ffd700;">2 阶紫金八卦天机盆</b>！<br/>
+            装备槽位 <b style="color:#34e89e;">帽子、鞋子、腰带</b> 全部解封！<br/>
+            乾坤袋背包免费扩容 <b style="color:#34e89e;">+4 格</b> (达到 28 格)！
+          </div>
+        </div>
+
+        <!-- 战利品展示 -->
+        <div class="victory-rewards-list">
+          <div class="reward-pill-badge">
+            <span>修为经验:</span><b id="victory-reward-exp" style="color:#f9d423;">+600</b>
+          </div>
+          <div class="reward-pill-badge">
+            <span>返还机缘:</span><b id="victory-reward-energy" style="color:#34e89e;">+600</b>
+          </div>
+        </div>
+        <div id="victory-items-grid" class="victory-items-grid">
+          <!-- 动态插入法宝与丹药图标 -->
+        </div>
+
+        <!-- 系统通关大捷灵动点评气泡 -->
+        <div class="modal-system-speech-box victory-system-box">
+          <div class="modal-system-avatar-wrap">
+            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="系统" />
+            <span class="modal-system-name">系统</span>
+          </div>
+          <div class="modal-system-bubble">
+            <p id="victory-system-comment" class="modal-system-comment">
+              【系统贺报】斩灭守关妖王！大机缘已至，速去查验战利品！
+            </p>
+            <div class="modal-system-pointer"></div>
+          </div>
+        </div>
+
+        <div class="victory-actions">
+          <button id="btn-victory-claim" class="btn-primary btn-victory">知悉并纳宝入囊</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗7: 伏妖惜败弹窗 -->
+    <div id="modal-battle-defeat" class="modal-overlay hidden">
+      <div class="modal-card defeat-card">
+        <h3 class="modal-title" style="color:#ff416c;">伏妖未捷</h3>
+        <!-- 战力检验削血进展反馈 (软性绑定下直观反映玩家每次换装变强的战力成长) -->
+        <div id="defeat-damage-progress" class="defeat-damage-progress hidden">
+          <div class="defeat-progress-header">
+            <span class="defeat-progress-label">⚔️ 试剑实战成果</span>
+            <span id="defeat-progress-pct" class="defeat-progress-val">已削减 45% 敌方气血</span>
+          </div>
+          <div class="defeat-progress-bar-track">
+            <div id="defeat-progress-bar-fill" class="defeat-progress-bar-fill" style="width: 45%;"></div>
+          </div>
+          <div id="defeat-progress-delta" class="defeat-progress-delta">较上次挑战: +15% 战力增幅显著！</div>
+        </div>
+
+        <!-- 系统战力复盘指导对白泡泡 -->
+        <div class="modal-system-speech-box defeat-system-box">
+          <div class="modal-system-avatar-wrap">
+            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="系统" />
+            <span class="modal-system-name">系统</span>
+          </div>
+          <div class="modal-system-bubble">
+            <p id="defeat-system-comment" class="modal-system-comment">
+              【系统复盘】胜败乃修仙常事！当前核心差距在【战力与防御】，建议多合几件高品装备再战！
+            </p>
+            <div class="modal-system-pointer"></div>
+          </div>
+        </div>
+
+        <p class="modal-desc hidden" id="defeat-modal-desc" style="display:none;">
+          妖兽威能凶险，当前战力稍显不足！建议前往【角色修真】使用【一键升阶】融合高阶法宝！
+        </p>
+        <div class="modal-actions">
+          <button id="btn-defeat-confirm" class="btn-secondary">凝神整备</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗8: 洞天秘境 · 八卦仙缘跑灯盘 (经典走马灯寻宝转盘) -->
+    <div id="modal-secret-realm-marquee" class="modal-overlay hidden">
+      <div class="marquee-modal-card">
+        <!-- 跑灯盘顶栏 -->
+        <div class="marquee-header">
+          <div class="marquee-title-box">
+            <span class="marquee-title-icon">🌌</span>
+            <div class="marquee-title-texts">
+              <h2 class="marquee-main-title">洞天秘境 · 八卦仙光跑灯</h2>
+              <span class="marquee-sub-title">引灵回旋 · 吉凶造化尽在天机</span>
+            </div>
+          </div>
+          <button id="btn-close-marquee" class="marquee-close-btn" title="离开秘境">✕</button>
+        </div>
+
+        <!-- 跑灯主盘：四周 12 格环形排列，中央太极引灵阵眼 -->
+        <div class="marquee-board-wrap">
+          <!-- 跑灯边框闪烁彩灯光点装饰 -->
+          <div class="marquee-bulb-ring" id="marquee-bulb-ring"></div>
+
+          <!-- 4x4 网格布局：四周 12 格环形，中央 2x2 为阵眼 -->
+          <div class="marquee-grid" id="marquee-grid">
+            <!-- 12 个奖励格子由 JS 渲染注入 -->
+
+            <!-- 中央核心阵眼 (位于网格正中 2x2 区域) -->
+            <div class="marquee-core-box" id="marquee-core-box">
+              <div class="marquee-taiji-halo">☯</div>
+              <div class="marquee-core-headline">太极浑天阵</div>
+              <div class="marquee-daily-badge" id="marquee-daily-badge">
+                今日可探寻: <b id="marquee-daily-count">1</b> / 1 次
+              </div>
+              <button id="btn-start-marquee" class="btn-start-marquee ready">
+                ✨ 启 动 引 灵 ✨
+              </button>
+              <div id="marquee-status-tip" class="marquee-status-tip">
+                点击启动引灵，仙光环绕八卦神位！
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部说明与功德提示 -->
+        <div class="marquee-footer-note">
+          <span>💡 秘境每日辰时复苏灵机 (限探寻 1 次)，可获丰厚机缘、真品丹药、破魔神符与专属法宝！</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 兼容隐藏旧容器 -->
+    <div id="modal-hold-and-spin" class="hidden" style="display:none !important;"></div>
+
+    <!-- 弹窗9: 秘境造化大结算法单 -->
+    <div id="modal-holdspin-settlement" class="modal-overlay hidden">
+      <div class="modal-card settlement-card">
+        <div class="settlement-banner">
+          <div id="settlement-grand-badge" class="grand-badge hidden">🏆 乾坤圆满 · 天道九重天 🏆</div>
+          <h2 class="settlement-title">秘 境 满 载</h2>
+          <p class="settlement-subtitle">引灵功成，八卦造化归一！</p>
+        </div>
+
+        <div class="settlement-stats-card">
+          <div class="settlement-stat-row">
+            <span id="settlement-locked-label">锁入秘印:</span>
+            <b id="settlement-locked-count" style="color:#ffd700;">12 / 15</b>
+          </div>
+          <div class="settlement-stat-row">
+            <span>所获机缘:</span>
+            <b id="settlement-total-energy" style="color:#34e89e; font-size:18px;">+1580</b>
+          </div>
+          <div id="settlement-extra-row" class="settlement-extra-items">
+            <!-- 丹药与极品装备展示 -->
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-holdspin-claim" class="btn-primary btn-victory">收纳造化机缘</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗10: 仙府归来离线收益大喜报 -->
+    <div id="modal-offline-reward" class="modal-overlay hidden">
+      <div class="modal-card offline-card">
+        <div class="offline-icon-wrap">🏮</div>
+        <h3 class="modal-title" style="color:#ffd700;">仙府云游归来</h3>
+        <p id="offline-desc-text" class="modal-desc">
+          道友暂歇云游期间，聚灵阵汲取天地之精，蓄满灵液！
+        </p>
+        <div class="offline-gains-box">
+          <div class="gain-pill">
+            <span>凝结机缘:</span>
+            <b id="offline-gain-energy" style="color:#34e89e;">+360</b>
+          </div>
+          <div class="gain-pill">
+            <span>温养丹药:</span>
+            <b id="offline-gain-pills" style="color:#ffd700;">+2 颗</b>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-claim-offline" class="btn-primary">一键收纳进账</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗11: 造化聚宝天机盘觉醒认主大喜报 -->
+    <div id="modal-awakening" class="modal-overlay hidden">
+      <div class="modal-card awakening-card">
+        <div class="awakening-halo-wrap">
+          <div class="awakening-ring-anim">☯</div>
+        </div>
+        <h2 class="awakening-title">造化天机 · 作弊器认主！</h2>
+        <div class="awakening-lore-box">
+          <p class="awakening-lore-line">“检测到宿主凡躯逆境斩凶，上古禁忌神物【造化聚宝天机盘】觉醒认主！”</p>
+          <p class="awakening-lore-sub">夺天地之造化，侵日月之玄机。凡人无灵根又如何？以天机盘推演万法，今日方知我是我！</p>
+        </div>
+        <div class="awakening-reward-box">
+          <div class="reward-pill">
+            <span>启动机缘:</span>
+            <b style="color:#34e89e; font-size:16px;">+100 点</b>
+          </div>
+          <div class="reward-pill">
+            <span>解锁特权:</span>
+            <b style="color:#ffd700;">天机转盘全面解禁</b>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-awakening-accept" class="btn-primary btn-gold pulse-anim">执掌神物 · 前往初测仙缘</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗12: 叩问仙门 · 宗门引荐弹窗 -->
+    <div id="modal-sect-induction" class="modal-overlay hidden">
+      <div class="modal-card sect-induction-card">
+        <div class="induction-header">
+          <div class="induction-badge">仙缘已至 · 叩问仙门</div>
+          <h2 class="induction-title">天机初测 · 仙门法牒</h2>
+          <p class="induction-subtitle" id="induction-subtitle">天机初转引动金气冲霄，五行正宗之首【万剑仙宗】递来真传引荐法牒，请道友执令入宗：</p>
+        </div>
+
+        <div id="induction-sects-container" class="induction-sects-container">
+          <!-- 动态装填 2 张宗门法牒 (如万剑仙宗 vs 万通商行) -->
+        </div>
+
+        <div class="induction-hint">
+          <span>💡 提示：宗门可在九转轮回飞升后重选，各大宗门均有专属心法与转盘异变！</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 六道大圆满 · 下一门派接引令门票发放弹窗 -->
+    <div id="modal-sect-ticket-awarded" class="modal-overlay hidden">
+      <div class="modal-card sect-ticket-modal-card">
+        <div class="sect-ticket-header">
+          <div class="sect-ticket-badge">🌟 六道圆满 · 宗门真传</div>
+          <h2 class="sect-ticket-title">获得宗门接引信物！</h2>
+          <p class="sect-ticket-subtitle">道友六槽纯阳神装大成，引动宗门天降祥瑞！特赐下一宗门真传接引信物：</p>
+        </div>
+
+        <div class="sect-ticket-token-display">
+          <div class="token-glow-ring"></div>
+          <div class="token-icon" id="ticket-modal-icon">🎫</div>
+          <div class="token-info">
+            <h3 id="ticket-modal-name" class="token-title">太乙丹霞宗令</h3>
+            <div id="ticket-modal-sect" class="token-sect-tag">太乙丹霞宗 · 真传法牒</div>
+            <p id="ticket-modal-desc" class="token-description">持此令牌可在本门毕业或飞升时直接拜入太乙丹霞宗，参悟炼丹与离火真诀！</p>
+          </div>
+        </div>
+
+        <div class="sect-ticket-perks">
+          <div class="ticket-perk-item">
+            <span class="perk-icon">✨</span>
+            <span class="perk-text"><b>六道神装共鸣：</b> 全属性额外提升 +15%！</span>
+          </div>
+          <div class="ticket-perk-item">
+            <span class="perk-icon">⛩️</span>
+            <span class="perk-text"><b>下一仙途就绪：</b> 已解锁前往下一宗门试炼通道！</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-claim-sect-ticket" class="btn-primary-action pulse-anim">执令谢恩</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 天机秘卷 (符号赔率、出目概率与修真法则) -->
+    <div id="modal-paytable-rules" class="modal-overlay hidden">
+      <div class="modal-card paytable-card">
+        <button class="modal-close-x btn-close-paytable" id="btn-close-paytable" aria-label="关闭">&times;</button>
+        <div class="paytable-header">
+          <div class="paytable-badge">📜 阵盘天机秘卷</div>
+          <h2 class="paytable-title">天机盘规制 · 赔率与概率</h2>
+          <p class="paytable-subtitle">参悟造化玄机 · 窥探阴阳万法</p>
+        </div>
+
+        <!-- 秘卷标签导航 -->
+        <div class="paytable-tabs">
+          <button class="paytable-tab-btn active" data-tab="paytable">符号赔率</button>
+          <button class="paytable-tab-btn" data-tab="odds">概率公示</button>
+          <button class="paytable-tab-btn" data-tab="rules">修真指引</button>
+        </div>
+
+        <!-- 秘卷内容区 -->
+        <div class="paytable-body">
+          <!-- 标签页 1: 符号赔率表 -->
+          <div class="paytable-pane active" id="pane-paytable">
+            <div class="paytable-note">
+              <span>💡 <b>连线规则:</b> 3×5 天机阵盘，25 条推演神线全开。相同符号自最左列（第1列）起向右连续出现 3、4、5 个即可成线结算法果。多线奖励累加合并。</span>
+            </div>
+
+            <!-- 特殊神物栏 -->
+            <div class="paytable-section-title">✨ 特殊神物与天地异象</div>
+            <div class="specials-grid">
+              <div class="special-card">
+                <div class="special-icon wild">☯️</div>
+                <div class="special-info">
+                  <div class="special-name" style="color:#ffd700;">万应灵珠 (WILD)</div>
+                  <div class="special-desc">百搭万用神珠。出现在第 2、3、4、5 列，可替代除特殊符外的任意符号连线！</div>
+                </div>
+              </div>
+              <div class="special-card">
+                <div class="special-icon scatter">🐉</div>
+                <div class="special-info">
+                  <div class="special-name" style="color:#ff6b6b;">妖兽逆鳞 (SCATTER)</div>
+                  <div class="special-desc">任意位置出现 3 枚触发群兽突袭；4 枚引动大妖；5 枚引动关卡霸主·妖王！</div>
+                </div>
+              </div>
+              <div class="special-card">
+                <div class="special-icon bonus">🏛️</div>
+                <div class="special-info">
+                  <div class="special-name" style="color:#34e89e;">造化秘印 (BONUS)</div>
+                  <div class="special-desc">任意位置出现 5 枚以上，开启洞天造化秘境，收获海量天道机缘与极品灵丹！</div>
+                </div>
+              </div>
+              <div class="special-card">
+                <div class="special-icon ticket">🎫</div>
+                <div class="special-info">
+                  <div class="special-name" style="color:#a855f7;">宗门法牒 (TICKET)</div>
+                  <div class="special-desc">散修仙缘第 6 抽或斩妖大捷引动，各大正宗与商门巡察使携令递牒，拜入仙门！</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 符箓仙篆与丹药 -->
+            <div class="paytable-section-title">📜 符箓仙篆与灵丹妙药</div>
+            <div class="symbols-table-wrap">
+              <table class="paytable-tbl">
+                <thead>
+                  <tr>
+                    <th>符号</th>
+                    <th>名称</th>
+                    <th>类型</th>
+                    <th>3连</th>
+                    <th>4连</th>
+                    <th>5连</th>
+                    <th>附加法效</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="sym-badge sym-rune-basic">📜</span></td>
+                    <td class="sym-name-col">聚灵符</td>
+                    <td>符箓</td>
+                    <td class="mult">×2</td>
+                    <td class="mult">×6</td>
+                    <td class="mult highlight">×20</td>
+                    <td class="extra-effect">返还机缘</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-rune-med">📜</span></td>
+                    <td class="sym-name-col">凝神符</td>
+                    <td>符箓</td>
+                    <td class="mult">×4</td>
+                    <td class="mult">×12</td>
+                    <td class="mult highlight">×40</td>
+                    <td class="extra-effect">返还较多机缘</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-rune-high">📜</span></td>
+                    <td class="sym-name-col">破魔符</td>
+                    <td>符箓</td>
+                    <td class="mult">×8</td>
+                    <td class="mult">×25</td>
+                    <td class="mult highlight">×80</td>
+                    <td class="extra-effect">返还大量机缘</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-pill-hp">💊</span></td>
+                    <td class="sym-name-col">气血丹</td>
+                    <td>丹药</td>
+                    <td class="mult">×2</td>
+                    <td class="mult">×6</td>
+                    <td class="mult highlight">×20</td>
+                    <td class="extra-effect" style="color:#ff6b6b;">战备气血储备</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-pill-exp">💊</span></td>
+                    <td class="sym-name-col">修为丹</td>
+                    <td>丹药</td>
+                    <td class="mult">×2</td>
+                    <td class="mult">×8</td>
+                    <td class="mult highlight">×30</td>
+                    <td class="extra-effect" style="color:#ffd700;">增加修为突破境界</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 法宝神装 -->
+            <div class="paytable-section-title">⚔️ 法宝装备 (连线必爆对应部位装备箱)</div>
+            <div class="symbols-table-wrap">
+              <table class="paytable-tbl">
+                <thead>
+                  <tr>
+                    <th>符号</th>
+                    <th>法宝</th>
+                    <th>部位</th>
+                    <th>3连</th>
+                    <th>4连</th>
+                    <th>5连</th>
+                    <th>附赠宝箱</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="sym-badge sym-weapon">🗡️</span></td>
+                    <td class="sym-name-col">玄铁剑</td>
+                    <td>武器</td>
+                    <td class="mult">×1</td>
+                    <td class="mult">×3</td>
+                    <td class="mult highlight">×10</td>
+                    <td class="extra-effect">必爆武器箱</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-armor">🛡️</span></td>
+                    <td class="sym-name-col">青云甲</td>
+                    <td>衣服</td>
+                    <td class="mult">×1</td>
+                    <td class="mult">×3</td>
+                    <td class="mult highlight">×10</td>
+                    <td class="extra-effect">必爆衣服箱</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-ring">💍</span></td>
+                    <td class="sym-name-col">紫金戒</td>
+                    <td>戒指</td>
+                    <td class="mult">×2</td>
+                    <td class="mult">×5</td>
+                    <td class="mult highlight">×15</td>
+                    <td class="extra-effect">必爆戒指箱</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-boots">👢</span></td>
+                    <td class="sym-name-col">混元履</td>
+                    <td>鞋子</td>
+                    <td class="mult">×1</td>
+                    <td class="mult">×3</td>
+                    <td class="mult highlight">×10</td>
+                    <td class="extra-effect">必爆鞋子箱</td>
+                  </tr>
+                  <tr>
+                    <td><span class="sym-badge sym-belt">🥋</span></td>
+                    <td class="sym-name-col">捆仙索</td>
+                    <td>腰带</td>
+                    <td class="mult">×1</td>
+                    <td class="mult">×3</td>
+                    <td class="mult highlight">×10</td>
+                    <td class="extra-effect">必爆腰带箱</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 标签页 2: 概率公示 -->
+          <div class="paytable-pane" id="pane-odds">
+            <div class="odds-section">
+              <h3 class="odds-title">一、天机盘基准符号出目权重池</h3>
+              <p class="odds-desc">天机盘各滚轮格子生成时，依据以下权重概率随机出目：</p>
+              <div class="weight-grid">
+                <div class="weight-card"><span class="w-name">基础聚灵符</span><b class="w-val">220 (26.2%)</b></div>
+                <div class="weight-card"><span class="w-name">中级凝神符</span><b class="w-val">160 (19.0%)</b></div>
+                <div class="weight-card"><span class="w-name">高级破魔符</span><b class="w-val">110 (13.1%)</b></div>
+                <div class="weight-card"><span class="w-name">灵丹妙药</span><b class="w-val">110 (13.1%)</b></div>
+                <div class="weight-card"><span class="w-name">法宝装备</span><b class="w-val">80 (9.5%)</b></div>
+                <div class="weight-card"><span class="w-name">万应灵珠 (百搭)</span><b class="w-val">35 (4.2%)</b></div>
+                <div class="weight-card"><span class="w-name">妖兽逆鳞</span><b class="w-val">35 (4.2%)</b></div>
+                <div class="weight-card"><span class="w-name">造化秘印 (秘境)</span><b class="w-val">20 (2.4%)</b></div>
+              </div>
+            </div>
+
+            <div class="odds-section">
+              <h3 class="odds-title">二、天机盘阶位装备品质掉落矩阵</h3>
+              <p class="odds-desc">随着天机盘蕴灵升级，爆出高阶法宝的概率大幅提升，高阶道盘彻底淘汰凡铁：</p>
+              <div class="matrix-table-wrap">
+                <table class="paytable-tbl matrix-tbl">
+                  <thead>
+                    <tr>
+                      <th>天机盘阶位</th>
+                      <th style="color:#94a3b8;">凡铁 (Q1)</th>
+                      <th style="color:#22c55e;">灵器 (Q2)</th>
+                      <th style="color:#3b82f6;">宝器 (Q3)</th>
+                      <th style="color:#a855f7;">仙器 (Q4)</th>
+                      <th style="color:#eab308;">神器 (Q5)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1 阶 · 凡木盘</td><td>85%</td><td>15%</td><td>-</td><td>-</td><td>-</td></tr>
+                    <tr><td>2 阶 · 玄铁盘</td><td>55%</td><td>40%</td><td>5%</td><td>-</td><td>-</td></tr>
+                    <tr><td>3 阶 · 灵玉盘</td><td>25%</td><td>55%</td><td>18%</td><td>2%</td><td>-</td></tr>
+                    <tr class="highlight-row"><td>4 阶 · 紫金盘</td><td style="color:#ef4444;">已淘汰</td><td>45%</td><td>40%</td><td>13%</td><td>2%</td></tr>
+                    <tr><td>5 阶 · 混沌盘</td><td style="color:#ef4444;">已淘汰</td><td>20%</td><td>50%</td><td>25%</td><td>5%</td></tr>
+                    <tr class="god-row"><td>6 阶 · 鸿蒙盘</td><td style="color:#ef4444;">已淘汰</td><td style="color:#ef4444;">已淘汰</td><td>35%</td><td>45%</td><td>20%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="odds-section">
+              <h3 class="odds-title">三、天道护佑与心流动态防黑保底</h3>
+              <div class="pity-list">
+                <div class="pity-item">
+                  <div class="pity-title">🛡️ 连败回血保底</div>
+                  <div class="pity-content">4 次连续未成线时，触发 1.8 倍软保底提升基础中奖权重；8 连败触发硬保底必中高额回血大奖！</div>
+                </div>
+                <div class="pity-item">
+                  <div class="pity-title">🐉 妖兽与秘境保底</div>
+                  <div class="pity-content">45 抽未遇怪必引动妖兽伏妖；180 抽未出秘境必开启洞天造化秘境！前 40 抽享受新手保护。</div>
+                </div>
+                <div class="pity-item">
+                  <div class="pity-title">🎫 下一宗门真传法令获取法则</div>
+                  <div class="pity-content">道基大圆满（筹齐当前门派全身 6 槽紫色法宝神装）并斩伏守关妖王，引动天地感应，必得下一宗门真传接引法令！若全身装备未集齐极品紫装，绝不提前发放门票。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 标签页 3: 修真法则 -->
+          <div class="paytable-pane" id="pane-rules">
+            <div class="rule-card">
+              <h4>1. 核心修真循环</h4>
+              <p>推演天机积累机缘 ➔ 吞服修为丹突破境界 ➔ 穿戴并合成 6 槽法宝提升总战力 ➔ 挑战守关妖王引动天地异象 ➔ 拜入更强宗门修习绝世心法 ➔ 白日飞升九转轮回！</p>
+            </div>
+            <div class="rule-card">
+              <h4>2. 法宝佩戴与一键合成</h4>
+              <p>角色拥有 6 处法宝槽位（武器、衣服、戒指、帽子、鞋子、腰带）。乾坤袋拥有 3 件同部位同品质装备时，可一键合成熔炼为下一阶极品法宝；点击“一键装备”即可自动换装为当前最高战力组合。</p>
+            </div>
+            <div class="rule-card">
+              <h4>3. 门派万道与传承心法</h4>
+              <p>各大宗门独具天地造化：<br/>
+              • <b>万剑宗</b>：极道剑诀，暴击伤害 +25%，起手万剑归宗；<br/>
+              • <b>太乙门</b>：生生不息，气血上限 +30%，战次回血翻倍；<br/>
+              • <b>御兽宗</b>：通灵万兽，开局召唤灵宠协同作战；<br/>
+              • <b>天机阁</b>：神算无遗，阵盘机缘产出与符箓收益提升 40%；<br/>
+              • <b>焚天谷</b>：南明离火，攻击附带烈焰灼烧真伤。</p>
+            </div>
+            <div class="rule-card">
+              <h4>4. 洞天灵脉与白日飞升</h4>
+              <p>拜入宗门后开启洞天灵脉，聚灵阵每时每刻为你凝聚天地灵机与气血丹药，支持离线累积！击败各界妖王圆满后，可开启白日飞升飞升灵界，转生永久继承先天道基与极品神装！</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 手机端底端易触达关闭按钮 -->
+        <div class="paytable-footer">
+          <button id="btn-paytable-confirm" class="btn-paytable-confirm-btn">参悟闭卷</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗13: 升仙天碑 · 五卷归一解谜大弹窗 -->
+    <div id="modal-ascension-stele" class="modal-overlay hidden">
+      <div class="modal-card stele-modal-card">
+        <div class="stele-header">
+          <div class="stele-badge-tag">太上升仙天碑 · 混元五行</div>
+          <h2 class="stele-title">白日飞升 · 天碑真卷</h2>
+          <p class="stele-subtitle">集齐上古五大正统门派之飞升残卷，即可引动天碑共鸣，叩开九天仙门白日飞升！</p>
+        </div>
+
+        <!-- 5 块凹槽拼图阵列 -->
+        <div class="stele-shards-container" id="stele-shards-container">
+          <!-- 动态渲染 5 块五行拼图卡片 (金木水火土) -->
+        </div>
+
+        <!-- 心法收益聊天泡泡容器 (点击已解锁五行图标唤起) -->
+        <div id="stele-bubble-box" class="stele-bubble-box hidden">
+          <div class="stele-bubble-tail" id="stele-bubble-tail"></div>
+          <div class="stele-bubble-content" id="stele-bubble-content"></div>
+        </div>
+
+        <!-- 天碑中央仙门封印状态 -->
+        <div class="stele-gate-box" id="stele-gate-box">
+          <div class="stele-gate-ring">☯</div>
+          <div class="stele-gate-info">
+            <span class="gate-label">天门状态:</span>
+            <b id="stele-gate-status" style="color:#f87171;">仙门紧闭 (0 / 5)</b>
+          </div>
+        </div>
+
+        <!-- 上古隐世暗阁 · 客卿仙印 -->
+        <div class="stele-hidden-vault">
+          <div class="stele-vault-header">
+            <span class="vault-title-tag">上古隐世暗阁 · 客卿仙印</span>
+            <span class="vault-count-badge" id="stele-vault-count">0 / 3</span>
+          </div>
+          <div class="stele-marks-container" id="stele-marks-container">
+            <!-- 动态渲染三大隐藏门派仙印 -->
+          </div>
+        </div>
+
+        <!-- 底部提示 (未解锁时引导) -->
+        <div class="stele-clue-hint" id="stele-clue-hint">
+          <span>💡 提示：拜入五大正统宗门通关大捷可点亮飞升真卷，解锁后点击图标查阅心法与法相神装。</span>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-ascend-heaven" class="btn-ascend-heaven disabled" disabled>白日飞升</button>
+          <button id="btn-stele-reincarnate" class="btn-stele-reincarnate hidden">🧘 踏入新宗 · 轮回转世</button>
+          <button id="btn-close-stele" class="btn-secondary">合上天碑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 宗门大能法相殿 (英灵殿) -->
+    <div id="modal-sect-pantheon" class="modal-overlay hidden">
+      <div class="modal-card pantheon-modal-card">
+        <div class="pantheon-header">
+          <div class="pantheon-element-badge" id="pantheon-element-badge">金</div>
+          <h2 class="pantheon-title" id="pantheon-title">【万剑仙宗 · 金系真传法相】</h2>
+          <p class="pantheon-subtitle" id="pantheon-subtitle">第 1 世功德圆满 · 飞升神格归位</p>
+        </div>
+
+        <div class="pantheon-stats-summary" id="pantheon-stats-summary">
+          <!-- 战力、三维属性 -->
+        </div>
+
+        <div class="pantheon-equips-title">🏛️ 当世全套毕业法宝神装</div>
+        <div class="pantheon-equips-grid" id="pantheon-equips-grid">
+          <!-- 动态渲染 5 件套装备 -->
+        </div>
+
+        <div class="pantheon-seal-stamp" id="pantheon-seal-stamp">
+          <div class="seal-stamp-border">
+            <span id="pantheon-seal-text">五行之金 · 已归位</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-close-pantheon" class="btn-primary">瞻仰完毕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗14: 宗门大捷与跨世转生结算弹窗 -->
+    <div id="modal-samsara-settlement" class="modal-overlay hidden">
+      <div class="modal-card samsara-settlement-card">
+        <div class="samsara-reincarnate-halo">☯</div>
+        <h2 class="samsara-title" id="samsara-title">九转轮回 · 金光转生</h2>
+        <p class="samsara-subtitle" id="samsara-subtitle">一世道途功德圆满，神魂不灭，携天地造化重入轮回！</p>
+
+        <div class="samsara-summary-grid">
+          <div class="samsara-summary-item">
+            <span class="sum-label">转生世数</span>
+            <b id="samsara-val-count" style="color:#ffd700;">第 2 世</b>
+          </div>
+          <div class="samsara-summary-item">
+            <span class="sum-label">斩获功德</span>
+            <b id="samsara-val-karma" style="color:#34e89e;">+85 点</b>
+          </div>
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">先天道基</span>
+            <span id="samsara-val-legacy" style="color:#38ef7d;">气血 +0 | 攻击 +0 | 防御 +0 (20%传承)</span>
+          </div>
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">宗门精魄</span>
+            <span id="samsara-val-spirit" style="color:#c084fc;">万剑仙宗精魄 (攻击+2%)</span>
+          </div>
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">神装传承</span>
+            <span id="samsara-val-heirlooms" style="color:#fbbf24;">未封存 (商行专享)</span>
+          </div>
+        </div>
+
+        <div class="samsara-hint">
+          <span>💡 提示：转生后永久保留天碑残卷进度、先天道基与神装，跳过新手引导直接推演仙缘！</span>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-samsara-confirm" class="btn-primary btn-gold pulse-anim">破入轮回 · 开启新世</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗14-B: 兵解转生预览确认弹窗 (方案 A: 作弊器引渡新宗门) -->
+    <div id="modal-samsara-confirm-preview" class="modal-overlay hidden">
+      <div class="modal-card samsara-settlement-card">
+        <div class="samsara-reincarnate-halo">⚡</div>
+        <h2 class="samsara-title" id="samsara-preview-title">兵解转世 · 踏入新宗</h2>
+        <p class="samsara-subtitle" id="samsara-preview-subtitle">天机作弊器破壁引渡，神魂无损跨门派重修！</p>
+        
+        <div class="samsara-summary-grid">
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">拜入新门</span>
+            <b id="samsara-preview-sect" style="color:#e0af68;">【万剑仙宗】真传弟子</b>
+          </div>
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">道基继承 (20%)</span>
+            <span id="samsara-preview-stats" style="color:#34e89e;">气血 +0 | 攻击 +0 | 防御 +0</span>
+          </div>
+          <div class="samsara-summary-item full-width">
+            <span class="sum-label">专属神装转化</span>
+            <span id="samsara-preview-equips" style="color:#7aa2f7;">现有穿戴装备保持品质转化为新门派神装</span>
+          </div>
+        </div>
+
+        <div class="samsara-hint">
+          <span>💡 提示：转生后免除凡人入门引导，直接以新宗门真传开修，继承先天道基与专属神装！</span>
+        </div>
+
+        <div class="modal-actions" style="display:flex; gap:12px; justify-content:center; margin-top:16px;">
+          <button id="btn-samsara-preview-cancel" class="btn-secondary">暂缓兵解</button>
+          <button id="btn-samsara-preview-ok" class="btn-primary btn-gold pulse-anim">确定兵解 · 踏入新宗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗15: 全屏白日飞升 · 天门大开渡劫过场 (PRD 11.2 & 11.5 节) -->
+    <div id="modal-ascension-cutscene" class="modal-overlay hidden">
+      <div class="ascension-cutscene-container">
+        <video id="ascension-video" class="ascension-video hidden" playsinline muted>
+          <source src="assets/video/cutscene_ascension.mp4" type="video/mp4" />
+        </video>
+
+        <div class="ascension-gate-fx" id="ascension-gate-fx">
+          <div class="thunder-sky"></div>
+          <div class="heavenly-gate-anim">
+            <div class="gate-arch-symbol">☯</div>
+            <div class="gate-light-pillar"></div>
+          </div>
+          <div class="ascension-slogan">
+            <h1 class="ascension-main-title pulse-anim">⚡ 九霄雷动 · 白日飞升 ⚡</h1>
+            <p class="ascension-sub-desc">太上混元仙典五卷归一 · 叩开天门跃迁至【灵界 · 飘渺仙域】！</p>
+            <div class="ascension-reward-badges">
+              <span class="asc-badge">👑 境界晋升: 化神境初期</span>
+              <span class="asc-badge">🏛️ 洞天进阶: 鸿蒙浮岛 · 星天仙阙</span>
+              <span class="asc-badge">💎 滚轮仙化: 极品仙晶与通天灵宝</span>
+              <span class="asc-badge">🎫 天赐福泽: 赠送 5 张天机瞬发符</span>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="btn-ascension-enter-realm" class="btn-primary btn-gold pulse-anim">踏入灵界 · 位列仙班</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗16: 原生仿真纯 IAA 激励视频播放器 (PRD 9.1 & 9.2 节) -->
+    <div id="modal-rewarded-ad" class="modal-overlay hidden">
+      <div class="modal-card rewarded-ad-card">
+        <div class="ad-player-header">
+          <span class="ad-tag">✨ 仙道机缘 · 天道法相</span>
+          <div class="ad-countdown-pill">
+            <span>倒计时: <b id="ad-countdown-seconds">8</b> 秒</span>
+          </div>
+        </div>
+
+        <div class="ad-player-body">
+          <div class="ad-cosmos-visual">
+            <div class="ad-cosmos-ring"></div>
+            <div class="ad-cosmos-core">☯</div>
+            <div class="ad-title" id="ad-reward-title">观摩天道演化</div>
+            <p class="ad-hint">心诚则灵，天道福泽即将降世...</p>
+          </div>
+          <div class="ad-progress-track">
+            <div class="ad-progress-fill" id="ad-progress-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="ad-player-footer">
+          <button id="btn-ad-use-ticket" class="btn-primary btn-ticket-instant">
+            🎫 消耗天机瞬发符秒领 (余 <span id="ad-ticket-qty">1</span> 张)
+          </button>
+          <button id="btn-ad-cancel" class="btn-secondary">放弃机缘</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗17: 妖王绝地复活 · 起死回生抉择弹窗 (PRD 9.2-1 节) -->
+    <div id="modal-revive-prompt" class="modal-overlay hidden">
+      <div class="modal-card revive-card">
+        <div class="revive-halo">⚡</div>
+        <h2 class="revive-title">道消身殒 · 绝地还魂</h2>
+        <p class="revive-subtitle">
+          挑战守关妖王残血暴毙，极为凶险！<br/>
+          可引渡天地无上玄机，<b>立即 100% 满血复活</b>并获<b>3秒无敌神盾</b>绝地反杀！
+        </p>
+
+        <div class="revive-stats-hint">
+          <span style="color:#ffd700;">今日剩余绝地复活: <b id="revive-remaining-count">3</b> 次</span>
+        </div>
+
+        <div class="modal-actions-vertical">
+          <button id="btn-revive-watch-ad" class="btn-primary btn-gold pulse-anim">
+            📺 引动造化神光 (观道起死回生)
+          </button>
+          <button id="btn-revive-use-ticket" class="btn-primary btn-ticket-instant">
+            🎫 消耗天机瞬发符秒复活
+          </button>
+          <button id="btn-revive-give-up" class="btn-secondary">
+            听天由命 (接受战败)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗18: 仙侠RPG沉浸式剧情对白舞台 (角色形象头顶聊天泡泡对白模式，告别呆板弹窗) -->
+    <div id="modal-story-dialog" class="modal-overlay story-dialog-overlay hidden">
+      <div class="story-overhead-theatre" id="story-overhead-theatre">
+        <!-- 装饰性天地八卦印 -->
+        <div class="story-halo-ring">☯</div>
+
+        <!-- 顶部灵动章节挂件 (仙侠画卷浮动标题 + 跳过按钮) -->
+        <div class="story-theatre-header story-overhead-header">
+          <div class="story-theatre-title-box">
+            <span class="story-theatre-badge">📜 仙途剧情</span>
+            <div class="story-theatre-titles">
+              <h3 id="story-dialog-title" class="story-theatre-title">序章 · 凡躯逆命</h3>
+              <span id="story-dialog-speaker" class="story-theatre-speaker-tag">【系统】 · 灵识显化</span>
+            </div>
+          </div>
+          <button id="btn-story-skip" class="story-skip-btn" title="跳过剧情">⏩ 跳过</button>
+        </div>
+
+        <!-- 剧情对白核心舞台：林凡与系统面对面，气泡直接浮现在各自角色形象头顶 -->
+        <div class="story-overhead-stage">
+          <!-- 左侧：宿主 (林凡) 形象与头顶聊天气泡 -->
+          <div id="story-actor-player" class="stage-actor actor-player overhead-actor-wrap">
+            <!-- 林凡头顶聊天泡泡 (尖角向下指向林凡头部) -->
+            <div id="player-speech-bubble" class="actor-overhead-bubble bubble-player">
+              <div class="bubble-speaker-header">
+                <span class="bubble-speaker-tag">🗡️ 林凡 (宿主)</span>
+              </div>
+              <div class="bubble-body-text" id="player-bubble-text">
+                凡人一介，真能逆天改命吗？
+              </div>
+              <div class="bubble-down-pointer pointer-player"></div>
+            </div>
+
+            <!-- 林凡角色立绘与名牌 -->
+            <div class="actor-portrait-frame">
+              <img id="actor-avatar-player-img" class="actor-portrait-img" src="assets/character/hero_mortal.png" alt="宿主林凡" />
+              <div class="actor-status-glow glow-player"></div>
+            </div>
+            <div class="actor-nameplate player-tag">
+              <span class="actor-icon">🗡️</span>
+              <span id="actor-player-name" class="actor-label">宿主 (林凡)</span>
+            </div>
+          </div>
+
+          <!-- 舞台中央：玄奥太极天地法则共鸣 -->
+          <div class="stage-resonance-fx">
+            <span class="resonance-sparkles">✨</span>
+            <span class="resonance-taiji">☯</span>
+          </div>
+
+          <!-- 右侧：系统 形象与头顶聊天气泡 -->
+          <div id="story-actor-cheat" class="stage-actor actor-cheat overhead-actor-wrap active-speaker">
+            <!-- 系统头顶聊天泡泡 (尖角向下指向系统头部) -->
+            <div id="system-speech-bubble" class="actor-overhead-bubble bubble-system active">
+              <div class="bubble-speaker-header">
+                <span class="bubble-speaker-tag">⚡ 系统 (天道阵灵)</span>
+              </div>
+              <div class="bubble-body-text" id="system-bubble-text">
+                叮！修仙作弊系统正式苏醒！本系统保你逆天改命！
+              </div>
+              <div class="bubble-down-pointer pointer-system"></div>
+            </div>
+
+            <!-- 系统角色立绘与名牌 -->
+            <div class="actor-portrait-frame system-portrait-frame">
+              <img id="actor-avatar-cheat-img" class="actor-portrait-img" src="assets/character/cheat_system_spirit.png" alt="系统" />
+              <div class="actor-status-glow glow-cheat"></div>
+            </div>
+            <div class="actor-nameplate cheat-tag">
+              <span class="actor-icon">⚡</span>
+              <span id="actor-cheat-name" class="actor-label">系统</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部剧情推进行动栏 (全屏任意点击皆可推进) -->
+        <div class="story-theatre-footer story-overhead-footer">
+          <div class="story-tap-prompt">
+            <span class="tap-hint-text">点击任意处推进对白</span>
+            <span class="tap-hint-arrow pulse-anim">▼</span>
+          </div>
+          <button id="btn-story-next" class="btn-primary btn-bubble-next pulse-anim">
+            <span id="btn-story-next-text">下一步</span> ➔
+          </button>
+        </div>
+
+        <!-- 隐藏兼容节点，确保原有测试和老脚本引用平稳运行 -->
+        <div style="display:none;" aria-hidden="true">
+          <div id="story-chat-stream"></div>
+          <img id="story-dialog-avatar" src="assets/character/cheat_system_spirit.png" alt="" />
+          <p id="story-dialog-text"></p>
+          <span id="chat-input-preview"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实时系统灵犀气泡提示 (战斗力不足、通关大捷、灵机告罄、装备合成提醒) -->
+    <div id="system-tip-toast" class="system-tip-toast hidden">
+      <div class="system-toast-avatar-box">
+        <div class="system-toast-halo">☯</div>
+        <img class="system-toast-avatar" src="assets/character/cheat_system_spirit.png" alt="系统" />
+      </div>
+      <div class="system-toast-bubble">
+        <div class="system-toast-header">
+          <span id="system-tip-toast-badge" class="system-toast-badge">⚡【系统提示】</span>
+          <button id="btn-system-toast-close" class="system-toast-close" title="忽略">✕</button>
+        </div>
+        <div id="system-tip-toast-text" class="system-toast-body">
+          战力预警：敌方灵压高于宿主战力，强行迎击凶险异常！
+        </div>
+        <div class="system-toast-pointer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心逻辑脚本 (纯前端零外部依赖，严格无跨域障碍) -->
+  <script src="src/core/EventBus.js"></script>
+  <script src="src/skills/SkillPipeline.js"></script>
+  <script src="src/rpg/SectConfig.js"></script>
+  <script src="src/skills/SectSkillRegistry.js"></script>
+  <script src="src/slots/GameBalanceConfig.js"></script>
+  <script src="src/slots/PaytableConfig.js"></script>
+  <script src="src/slots/PaylinesConfig.js"></script>
+  <script src="src/slots/FlowController.js"></script>
+  <script src="src/slots/SlotsEngine.js"></script>
+  <script src="src/render/AssetManager.js"></script>
+  <script src="src/render/SymbolPainter.js"></script>
+  <script src="src/render/CanvasRenderer.js"></script>
+  <script src="src/character/PlayerModel.js"></script>
+  <script src="src/inventory/ItemModel.js"></script>
+  <script src="src/inventory/InventoryManager.js"></script>
+  <script src="src/inventory/EquipSynthesizer.js"></script>
+  <script src="src/rpg/MonsterConfig.js"></script>
+  <script src="src/rpg/BossConfig.js"></script>
+  <script src="src/rpg/CombatEngine.js"></script>
+  <script src="src/bonus/HoldAndSpinEngine.js"></script>
+  <script src="src/cave/CaveManager.js"></script>
+  <script src="src/core/StorageService.js"></script>
+  <script src="src/core/AscensionManager.js"></script>
+  <script src="src/ads/AdService.js"></script>
+  <script src="src/render/DropAnimator.js"></script>
+  <script src="src/rpg/StoryConfig.js"></script>
+  <script src="src/rpg/StoryManager.js"></script>
+  <script src="src/rpg/BattleSoundEngine.js"></script>
+  <script src="src/rpg/BattleJuiceEngine.js"></script>
+  <script src="src/skills/SkillVisualConfig.js"></script>
+  <script src="src/skills/SkillStateMachine.js"></script>
+  <script src="src/core/GameManager.js"></script>
+  <script src="src/main.js"></script>
+
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          
+  if (window.SlotsRPG && window.SlotsRPG.StoryManager) {
+    window.SlotsRPG.StoryManager.showSystemTip('power_low', {
+      playerPower: 1280,
+      recPower: 1950
+    });
+  }
+
+        }, 600);
+      });
+    </script>
+  </body>
+</html>

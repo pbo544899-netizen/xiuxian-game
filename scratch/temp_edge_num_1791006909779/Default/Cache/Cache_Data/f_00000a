@@ -1,0 +1,652 @@
+/**
+ * MonsterConfig.js - 三阶修仙妖兽与遭遇模型
+ * 遵循网文修仙小说经典原型：
+ * 1. 普通妖兽 (3个符号触发3~5只车轮战，体型 120px，小巧敏捷)
+ * 2. 精英妖兽 (4个符号触发1~2只，体型 180px，魁梧骨铠带神通)
+ * 3. 关卡 Boss (5个符号/满蕴灵触发1只，体型 250px，巨型霸气盘踞半屏)
+ */
+window.SlotsRPG = window.SlotsRPG || {};
+
+window.SlotsRPG.MonsterConfig = {
+  // 怪物分阶形象与基准属性定义
+  MONSTERS: {
+    // 1. 普通妖兽库 (Normal)
+    normal: {
+      1: [
+        {
+          id: 'norm_fox_1',
+          name: '赤灵妖狐',
+          title: '一阶妖兽·赤灵妖狐',
+          tierName: '妖兽',
+          tier: 'normal',
+          size: 85,
+          avatar: 'assets/monsters/monster_fox.png',
+          avatarFilter: 'none',
+          hp: 55,
+          maxHp: 55,
+          atk: 7,
+          def: 2,
+          critRate: 0.02,
+          skillName: '狐火扑击',
+          skillDesc: '喷吐赤煞狐火向前扑击',
+          skillType: 'poison_flame',
+          dropExp: 45,
+          dropEnergy: 40
+        },
+        {
+          id: 'norm_toad_1',
+          name: '黑水巨蟾',
+          title: '一阶妖兽·黑水巨蟾',
+          tierName: '妖兽',
+          tier: 'normal',
+          size: 90,
+          avatar: 'assets/monsters/monster_toad.png',
+          avatarFilter: 'none',
+          hp: 65,
+          maxHp: 65,
+          atk: 6,
+          def: 3,
+          critRate: 0.02,
+          skillName: '阴涎重击',
+          skillDesc: '狂甩巨舌猛击主角',
+          skillType: 'poison_flame',
+          dropExp: 50,
+          dropEnergy: 45
+        },
+        {
+          id: 'norm_bat_1',
+          name: '噬血魔蝠',
+          title: '一阶妖兽·噬血魔蝠',
+          tierName: '妖兽',
+          tier: 'normal',
+          size: 80,
+          avatar: 'assets/monsters/monster_bat.png',
+          avatarFilter: 'none',
+          hp: 48,
+          maxHp: 48,
+          atk: 8,
+          def: 1,
+          critRate: 0.03,
+          skillName: '声煞碎石',
+          skillDesc: '尖锐声波振荡虚空',
+          skillType: 'claw_scratch',
+          dropExp: 40,
+          dropEnergy: 50
+        },
+        {
+          id: 'norm_spider_1',
+          name: '幽冥鬼蛛',
+          title: '一阶妖兽·幽冥鬼蛛',
+          tierName: '妖兽',
+          tier: 'normal',
+          size: 85,
+          avatar: 'assets/monsters/monster_spider.png',
+          avatarFilter: 'none',
+          hp: 58,
+          maxHp: 58,
+          atk: 8,
+          def: 2,
+          critRate: 0.03,
+          skillName: '鬼丝缠魄',
+          skillDesc: '喷吐粘稠鬼丝封锁气机',
+          skillType: 'poison_flame',
+          dropExp: 48,
+          dropEnergy: 45
+        },
+        {
+          id: 'norm_boar_1',
+          name: '狂暴獠猪',
+          title: '一阶妖兽·狂暴獠猪',
+          tierName: '妖兽',
+          tier: 'normal',
+          size: 90,
+          avatar: 'assets/monsters/monster_boar_vivid.png',
+          battleBg: 'assets/battle_bg/bg_misty_forest.jpg',
+          avatarFilter: 'none',
+          hp: 70,
+          maxHp: 70,
+          atk: 7,
+          def: 3,
+          critRate: 0.02,
+          skillName: '金刚怒撞',
+          skillDesc: '两颗狂暴獠牙突刺横扫',
+          skillType: 'arm_slash',
+          dropExp: 52,
+          dropEnergy: 48
+        }
+      ],
+      2: [
+        {
+          id: 'norm_scorpion_2',
+          name: '赤火巨蝎',
+          title: '二阶妖兽·赤火巨蝎',
+          tierName: '二阶妖兽',
+          tier: 'normal',
+          size: 95,
+          avatar: 'assets/monsters/monster_scorpion.png',
+          avatarFilter: 'none',
+          hp: 320,
+          maxHp: 320,
+          atk: 30,
+          def: 16,
+          critRate: 0.03,
+          skillName: '毒钩刺魄',
+          skillDesc: '毒尾倒钩迅猛穿刺',
+          skillType: 'poison_flame',
+          dropExp: 110,
+          dropEnergy: 100
+        },
+        {
+          id: 'norm_wolf_2',
+          name: '幽冥狂狼',
+          title: '二阶妖兽·幽冥狂狼',
+          tierName: '二阶妖兽',
+          tier: 'normal',
+          size: 90,
+          avatar: 'assets/monsters/monster_wolf.png',
+          avatarFilter: 'none',
+          hp: 280,
+          maxHp: 280,
+          atk: 34,
+          def: 12,
+          critRate: 0.04,
+          skillName: '冥影撕咬',
+          skillDesc: '身化暗影狂暴撕裂',
+          skillType: 'claw_scratch',
+          dropExp: 105,
+          dropEnergy: 110
+        },
+        {
+          id: 'norm_ape_2',
+          name: '赤火暴猿',
+          title: '二阶妖兽·赤火暴猿',
+          tierName: '二阶妖兽',
+          tier: 'normal',
+          size: 98,
+          avatar: 'assets/monsters/monster_ape.png',
+          avatarFilter: 'none',
+          hp: 360,
+          maxHp: 360,
+          atk: 36,
+          def: 18,
+          critRate: 0.05,
+          skillName: '裂石狂捶',
+          skillDesc: '火山岩双拳震碎大地',
+          skillType: 'arm_slash',
+          dropExp: 125,
+          dropEnergy: 115
+        }
+      ]
+    },
+
+    // 2. 精英妖兽库 (Elite)
+    elite: {
+      1: [
+        {
+          id: 'elite_leopard_1',
+          name: '三目雷豹',
+          title: '一阶精英·三目雷豹',
+          tierName: '精英大妖',
+          tier: 'elite',
+          size: 130,
+          avatar: 'assets/monsters/monster_leopard.png',
+          avatarFilter: 'none',
+          hp: 200,
+          maxHp: 200,
+          atk: 13,
+          def: 5,
+          critRate: 0.04,
+          skillName: '紫霄天雷',
+          skillDesc: '第三神目引动九天妖雷轰顶',
+          skillType: 'thunder_strike',
+          dropExp: 220,
+          dropEnergy: 200,
+          rewardEquip: { part: 'weapon', qualityCode: 'Q2' }
+        },
+        {
+          id: 'elite_rhino_1',
+          name: '金角巨兕',
+          title: '一阶精英·金角巨兕',
+          tierName: '精英大妖',
+          tier: 'elite',
+          size: 135,
+          avatar: 'assets/monsters/monster_rhino.png',
+          avatarFilter: 'none',
+          hp: 240,
+          maxHp: 240,
+          atk: 11,
+          def: 7,
+          critRate: 0.03,
+          skillName: '裂地冲撞',
+          skillDesc: '冲天巨角狂暴奔袭撞击',
+          skillType: 'fissure_claw',
+          dropExp: 240,
+          dropEnergy: 220,
+          rewardEquip: { part: 'armor', qualityCode: 'Q2' }
+        }
+      ],
+      2: [
+        {
+          id: 'elite_lion_2',
+          name: '紫晶翼狮',
+          title: '二阶精英·紫晶翼狮',
+          tier: 'elite',
+          size: 195,
+          avatar: 'assets/monsters/monster_lion.png',
+          avatarFilter: 'none',
+          hp: 2100,
+          maxHp: 2100,
+          atk: 88,
+          def: 45,
+          critRate: 0.12,
+          skillName: '紫晶狂啸',
+          skillDesc: '羽翼振动紫晶破空，金刚碎石',
+          skillType: 'fissure_claw',
+          dropExp: 550,
+          dropEnergy: 500,
+          rewardEquip: { part: 'boots', qualityCode: 'Q3' }
+        },
+        {
+          id: 'elite_snake_2',
+          name: '幽冥白骨巨蛇',
+          title: '二阶精英·白骨巨蛇',
+          tier: 'elite',
+          size: 190,
+          avatar: 'assets/monsters/monster_bone_snake.png',
+          avatarFilter: 'none',
+          hp: 1900,
+          maxHp: 1900,
+          atk: 95,
+          def: 38,
+          critRate: 0.10,
+          skillName: '九幽阴煞',
+          skillDesc: '骨刺暴起，阴风蚀骨',
+          skillType: 'thunder_strike',
+          dropExp: 520,
+          dropEnergy: 520,
+          rewardEquip: { part: 'belt', qualityCode: 'Q3' }
+        },
+        {
+          id: 'elite_hawk_2',
+          name: '九天雷鹏',
+          title: '二阶精英·九天雷鹏',
+          tier: 'elite',
+          size: 185,
+          avatar: 'assets/monsters/monster_hawk.png',
+          avatarFilter: 'none',
+          hp: 1850,
+          maxHp: 1850,
+          atk: 98,
+          def: 35,
+          critRate: 0.15,
+          skillName: '风雷天翼',
+          skillDesc: '双翼卷动九天罡风狂雷俯冲',
+          skillType: 'thunder_strike',
+          dropExp: 540,
+          dropEnergy: 510,
+          rewardEquip: { part: 'weapon', qualityCode: 'Q3' }
+        }
+      ]
+    },
+
+    // 3. 关卡 Boss 库 (Boss)
+    boss: {
+      1: {
+        id: 'boss_1',
+        name: '赤炼蟒',
+        realm: '练气境妖王',
+        title: '练气境妖王·赤炼蟒',
+        tier: 'boss',
+        potTier: 1,
+        level: 10,
+        size: 250,
+        avatar: 'assets/boss/boss_red_python.png',
+        avatarFilter: 'none',
+        hp: 1500,
+        maxHp: 1500,
+        atk: 52,
+        def: 24,
+        critRate: 0.08,
+        skillName: '九幽毒煞',
+        skillDesc: '喷吐赤炼毒焰，遮天蔽日烈火焚虚',
+        skillType: 'poison_flame',
+        skillMultiplier: 1.25,
+        rewards: {
+          exp: 600,
+          energy: 600,
+          rewardEquip: { part: 'weapon', qualityCode: 'Q3' },
+          rewardPill: { subType: 'exp', amount: 5 }
+        }
+      },
+      2: {
+        id: 'boss_2',
+        name: '铁甲金猊',
+        realm: '筑基期神兽',
+        title: '筑基期神兽·铁甲金猊',
+        tier: 'boss',
+        potTier: 2,
+        level: 20,
+        size: 255,
+        avatar: 'assets/boss/boss_golden_chimera.png',
+        avatarFilter: 'none',
+        hp: 3800,
+        maxHp: 3800,
+        atk: 140,
+        def: 68,
+        critRate: 0.10,
+        skillName: '裂地金罡',
+        skillDesc: '金刚巨爪裂地狂啸，三道金芒撕碎乾坤',
+        skillType: 'fissure_claw',
+        skillMultiplier: 1.35,
+        rewards: {
+          exp: 1800,
+          energy: 1500,
+          rewardEquip: { part: 'ring', qualityCode: 'Q4' },
+          rewardPill: { subType: 'exp', amount: 10 }
+        }
+      },
+      3: {
+        id: 'boss_3',
+        name: '九霄雷龙',
+        realm: '金丹期妖祖',
+        title: '金丹期妖祖·九霄雷龙',
+        tier: 'boss',
+        potTier: 3,
+        level: 30,
+        size: 270,
+        avatar: 'assets/boss/boss_thunder_dragon.png',
+        avatarFilter: 'none',
+        hp: 9500,
+        maxHp: 9500,
+        atk: 360,
+        def: 160,
+        critRate: 0.15,
+        skillName: '九天劫雷',
+        skillDesc: '真龙咆哮引动周天雷劫，万丈狂雷灭世',
+        skillType: 'thunder_strike',
+        skillMultiplier: 1.5,
+        rewards: {
+          exp: 5000,
+          energy: 4000,
+          rewardEquip: { part: 'weapon', qualityCode: 'Q5' },
+          rewardPill: { subType: 'exp', amount: 20 }
+        }
+      }
+    },
+
+    // 4. 宗门伴生护法灵兽
+    COMPANIONS: {
+      wolf: {
+        id: 'wolf_companion',
+        name: '青灵狼',
+        sectId: 'yushou',
+        title: '灵兽·青灵狼',
+        avatar: 'assets/monsters/wolf_companion.png',
+        desc: '御兽玄机门护法灵兽，出战协助扑咬补刀'
+      }
+    }
+  },
+
+  /**
+   * 根据推演出的怪物符号数量生成对应的遭遇战队列
+   * @param {number|Object} scatterCountOrConfig - 怪物符号数量 (3, 4, 5) 或 battleConfig 对象
+   * @param {number} potLevel - 天机盘等级 (1 或 2)
+   * @param {number} defeatStreak - 连败保护
+   * @param {Object} player - 玩家上下文 (用于智能短板装备补齐)
+   */
+  createEncounter(scatterCountOrConfig = 3, potLevel = 1, defeatStreak = 0, player = null) {
+    const levelKey = potLevel >= 2 ? 2 : 1;
+    let tier = 'normal';
+    let monsters = [];
+    let scatterCount = 3;
+    let exactCount = null;
+    let betMultiplier = 1;
+
+    if (typeof scatterCountOrConfig === 'object' && scatterCountOrConfig !== null) {
+      scatterCount = scatterCountOrConfig.scatterCount || 3;
+      exactCount = scatterCountOrConfig.count || null;
+      tier = scatterCountOrConfig.tier || (scatterCount >= 5 ? 'boss' : (scatterCount === 4 ? 'elite' : 'normal'));
+      if (scatterCountOrConfig.betMultiplier) {
+        betMultiplier = Math.max(1, Number(scatterCountOrConfig.betMultiplier) || 1);
+      }
+    } else {
+      scatterCount = Number(scatterCountOrConfig) || 3;
+      if (scatterCount >= 5) tier = 'boss';
+      else if (scatterCount === 4) tier = 'elite';
+      else tier = 'normal';
+    }
+
+    const targetPlayer = player || (scatterCountOrConfig && scatterCountOrConfig.player) || null;
+    const isMortal = targetPlayer && targetPlayer.isMortal;
+    const pLevel = targetPlayer ? (isMortal ? 0 : targetPlayer.level) : 1;
+
+    if (tier === 'boss') {
+      // 5 个符号：触发 1 个关卡大 Boss (优先通过 BossConfig 匹配宗门与世数首领)
+      let boss = null;
+      if (window.SlotsRPG && window.SlotsRPG.BossConfig) {
+        const sectId = scatterCountOrConfig && scatterCountOrConfig.sectId ? scatterCountOrConfig.sectId : null;
+        const samsara = scatterCountOrConfig && scatterCountOrConfig.samsaraCount ? scatterCountOrConfig.samsaraCount : potLevel;
+        boss = window.SlotsRPG.BossConfig.getBoss(potLevel, defeatStreak, sectId, samsara);
+      } else {
+        const rawBoss = this.MONSTERS.boss[levelKey] || this.MONSTERS.boss[1];
+        boss = JSON.parse(JSON.stringify(rawBoss));
+        if (defeatStreak >= 1) {
+          const weakFactor = Math.max(0.55, 1 - defeatStreak * 0.15);
+          boss.hp = Math.max(100, Math.round(boss.hp * weakFactor));
+          boss.maxHp = boss.hp;
+          boss.atk = Math.max(10, Math.round(boss.atk * weakFactor));
+          boss.isWeakened = true;
+        }
+      }
+      monsters = [boss];
+    } else if (tier === 'elite') {
+      // 4 个符号：触发 1 ~ 2 个精英怪物 (打乱池子确保怪兽互不相同)
+      const rawPool = this.MONSTERS.elite[levelKey] || this.MONSTERS.elite[1];
+      const shuffled = [...rawPool].sort(() => Math.random() - 0.5);
+      const count = exactCount || (isMortal || pLevel <= 3 ? 1 : (Math.floor(Math.random() * 2) + 1));
+      for (let i = 0; i < count; i++) {
+        const template = shuffled[i % shuffled.length];
+        const m = JSON.parse(JSON.stringify(template));
+        m.index = i + 1;
+        m.total = count;
+
+        // 精英怪新手期弹性缩放与连败降难 (DDA)
+        if (isMortal || pLevel <= 3) {
+          m.hp = Math.max(80, Math.round(m.hp * 0.65));
+          m.maxHp = m.hp;
+          m.atk = Math.max(6, Math.round(m.atk * 0.70));
+          m.def = Math.max(2, Math.round(m.def * 0.60));
+        }
+        if (defeatStreak >= 1) {
+          const weakFactor = Math.max(0.5, 1 - defeatStreak * 0.15);
+          m.hp = Math.max(40, Math.round(m.hp * weakFactor));
+          m.maxHp = m.hp;
+          m.atk = Math.max(4, Math.round(m.atk * weakFactor));
+          m.isWeakened = true;
+        }
+
+        monsters.push(m);
+      }
+    } else {
+      // 3 个符号：普通妖兽群攻 (根据玩家境界动态调整群怪数量与属性，杜绝初期围攻猝死)
+      const rawPool = this.MONSTERS.normal[levelKey] || this.MONSTERS.normal[1];
+      const shuffled = [...rawPool].sort(() => Math.random() - 0.5);
+      
+      let count = exactCount;
+      if (!count) {
+        if (isMortal) {
+          count = 1; // 凡人阶段严格单挑
+        } else if (pLevel <= 2) {
+          count = Math.random() < 0.75 ? 1 : 2; // 练气初阶 1~2 只
+        } else if (pLevel <= 4) {
+          count = Math.floor(Math.random() * 2) + 2; // 练气中阶 2~3 只
+        } else {
+          count = Math.floor(Math.random() * 3) + 3; // 练气高阶 3~5 只
+        }
+      }
+
+      for (let i = 0; i < count; i++) {
+        const template = shuffled[i % shuffled.length];
+        const m = JSON.parse(JSON.stringify(template));
+        m.index = i + 1;
+        m.total = count;
+
+        // 动态新手期与战力适配 (Player-Centric Adaptive Scaling)
+        if (isMortal) {
+          // 凡人阶段试剑幼兽：30气血、3攻击、0防御，新手手持柴刀/兵刃 2刀轻松斩灭
+          m.hp = 30;
+          m.maxHp = 30;
+          m.atk = 3;
+          m.def = 0;
+          m.name = `山间幼兽·${m.name}`;
+          m.title = `试剑幼兽·${m.name}`;
+        } else if (pLevel <= 2) {
+          // 练气初阶 (Lv 1 ~ 2): 怪物属性动态降调，确保新手胜率 98% ~ 100%
+          m.hp = Math.max(25, Math.round(m.hp * 0.55));
+          m.maxHp = m.hp;
+          m.atk = Math.max(3, Math.round(m.atk * 0.60));
+          m.def = Math.max(0, Math.round(m.def * 0.50));
+        } else if (pLevel <= 4) {
+          // 练气中阶 (Lv 3 ~ 4): 怪物属性平缓递增，胜率 90% ~ 95%
+          m.hp = Math.max(35, Math.round(m.hp * 0.75));
+          m.maxHp = m.hp;
+          m.atk = Math.max(4, Math.round(m.atk * 0.80));
+          m.def = Math.max(1, Math.round(m.def * 0.70));
+        }
+
+        // 全局连败动态降难补偿 (DDA: Dynamic Difficulty Adjustment)
+        if (defeatStreak >= 1) {
+          const weakFactor = Math.max(0.5, 1 - defeatStreak * 0.15);
+          m.hp = Math.max(15, Math.round(m.hp * weakFactor));
+          m.maxHp = m.hp;
+          m.atk = Math.max(2, Math.round(m.atk * weakFactor));
+          m.isWeakened = true;
+        }
+
+        monsters.push(m);
+      }
+    }
+
+    // 汇总掉落包 (按倍率放大奖励，传入玩家上下文定向补齐短板)
+    const aggregatedRewards = this._aggregateRewards(monsters, tier, potLevel, betMultiplier, targetPlayer);
+
+    // Boss 战同步将其内部 rewards 设为倍率放大后的对象
+    if (tier === 'boss' && monsters[0]) {
+      monsters[0].rewards = aggregatedRewards;
+    }
+
+    return {
+      tier,
+      scatterCount,
+      potLevel,
+      monsters,
+      totalCount: monsters.length,
+      betMultiplier,
+      rewards: aggregatedRewards
+    };
+  },
+
+  // 首杀追踪记录 (首杀必爆短板装备，非首杀 0% 掉整装，彻底断绝刷怪爆仓)
+  firstKills: {
+    normal: false,
+    elite: false,
+    boss: false
+  },
+
+  /**
+   * 智能短板槽位探测器：优先补齐未穿戴空槽位，其次补齐战力最低部位
+   */
+  _findShortestSlot(player) {
+    const allSlots = ['weapon', 'armor', 'ring', 'hat', 'boots', 'belt'];
+    if (!player || !player.equipment) {
+      return allSlots[Math.floor(Math.random() * allSlots.length)];
+    }
+    // 1. 优先寻找未穿戴空槽位
+    for (let slot of allSlots) {
+      if (!player.equipment[slot]) return slot;
+    }
+    // 2. 寻找战力最低的部位
+    let weakestSlot = allSlots[0];
+    let minPower = 999999;
+    for (let slot of allSlots) {
+      const eq = player.equipment[slot];
+      const p = eq ? (eq.power || 0) : 0;
+      if (p < minPower) {
+        minPower = p;
+        weakestSlot = slot;
+      }
+    }
+    return weakestSlot;
+  },
+
+  _aggregateRewards(monsters, tier, potLevel, betMultiplier = 1, player = null) {
+    let totalExp = 0;
+    let totalEnergy = 0;
+    const items = [];
+
+    if (tier === 'boss') {
+      const boss = monsters[0];
+      const baseRewards = boss ? (boss.rewards || {}) : {};
+      const multiplied = {
+        exp: Math.round((baseRewards.exp || 0) * betMultiplier),
+        energy: Math.round((baseRewards.energy || 0) * betMultiplier)
+      };
+      if (baseRewards.rewardEquip) {
+        multiplied.rewardEquip = JSON.parse(JSON.stringify(baseRewards.rewardEquip));
+      }
+      if (baseRewards.rewardPill) {
+        multiplied.rewardPill = {
+          subType: baseRewards.rewardPill.subType || 'exp',
+          amount: Math.round((baseRewards.rewardPill.amount || 1) * betMultiplier)
+        };
+      }
+      if (baseRewards.rewardRune) {
+        multiplied.rewardRune = {
+          symbolId: baseRewards.rewardRune.symbolId,
+          amount: Math.round((baseRewards.rewardRune.amount || 1) * betMultiplier)
+        };
+      }
+      if (baseRewards.artifactItem) {
+        multiplied.artifactItem = JSON.parse(JSON.stringify(baseRewards.artifactItem));
+      }
+      return multiplied;
+    }
+
+    monsters.forEach(m => {
+      totalExp += m.dropExp || 0;
+      totalEnergy += m.dropEnergy || 0;
+    });
+
+    totalExp = Math.round(totalExp * betMultiplier);
+    totalEnergy = Math.round(totalEnergy * betMultiplier);
+
+    // 丹药概率奖励 (随倍率放大)
+    const basePillAmount = tier === 'elite' ? Math.floor(Math.random() * 2) + 2 : 1;
+    const pillAmount = Math.round(basePillAmount * betMultiplier);
+    const rewardPill = { subType: 'hp', amount: pillAmount };
+
+    // 装备掉落规则：首杀必爆短板槽位装备；非首杀100%严禁掉落整装 (彻底防止爆仓死锁)
+    let rewardEquip = null;
+    const isFirst = !this.firstKills[tier];
+    if (isFirst) {
+      const targetPart = this._findShortestSlot(player);
+      if (tier === 'elite') {
+        const quality = (betMultiplier >= 4) ? 'Q3' : (potLevel >= 2 ? 'Q3' : 'Q2');
+        rewardEquip = { part: targetPart, qualityCode: quality };
+      } else if (tier === 'normal') {
+        const quality = (betMultiplier >= 4) ? 'Q2' : 'Q1';
+        rewardEquip = { part: targetPart, qualityCode: quality };
+      }
+      this.firstKills[tier] = true;
+    } else {
+      rewardEquip = null; // 非首杀 0% 掉落整装，只给丰厚经验与机缘！
+    }
+
+    return {
+      exp: totalExp,
+      energy: totalEnergy,
+      rewardEquip,
+      rewardPill
+    };
+  }
+};

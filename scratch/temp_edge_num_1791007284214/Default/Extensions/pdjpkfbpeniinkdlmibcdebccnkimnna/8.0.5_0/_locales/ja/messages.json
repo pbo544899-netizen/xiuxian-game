@@ -1,0 +1,744 @@
+{
+   "About_and_help": {
+      "description": "About and help",
+      "message": "についてと助けてください"
+   },
+   "AutoCopyDesc": {
+      "description": "Automatically copy after the recognition is successful",
+      "message": "認識が成功した後に自動的にコピーします"
+   },
+   "Batch_projects": {
+      "description": "Projects",
+      "message": "プロジェクト"
+   },
+   "CAPTCHA": {
+      "description": "Photo verification code",
+      "message": "写真検証コード"
+   },
+   "Category": {
+      "description": "category",
+      "message": "カテゴリー"
+   },
+   "Change_Password": {
+      "description": "Change Password",
+      "message": "パスワードを変更する"
+   },
+   "Click_blank_auto_close": {
+      "description": "Click on the blank area to close",
+      "message": "空白の領域をクリックして閉じます"
+   },
+   "Copy": {
+      "description": "copy",
+      "message": "コピー"
+   },
+   "Copy_failed": {
+      "description": "Copy failed",
+      "message": "コピーが失敗しました"
+   },
+   "Copy_successful": {
+      "description": "Copy successful",
+      "message": "成功しました"
+   },
+   "Could_not_establish_connection_Receiving_end_does_not_exist_": {
+      "description": "Unable to access the current page, please refresh the current page and try again.",
+      "message": "現在のページにアクセスできないので、現在のページを更新して再試してください。"
+   },
+   "Count": {
+      "description": "Count",
+      "message": "カウント"
+   },
+   "Create_Project": {
+      "description": "Create Project",
+      "message": "プロジェクト作成"
+   },
+   "Current_password": {
+      "description": "current password",
+      "message": "現在のパスワード"
+   },
+   "Currently_logged_in": {
+      "description": "Currently logged in:",
+      "message": "現在ログインしています："
+   },
+   "Data_Export": {
+      "description": "Data Export",
+      "message": "データエクスポート"
+   },
+   "Delete": {
+      "description": "delete",
+      "message": "消去"
+   },
+   "Detect_failed": {
+      "description": "Identify failure",
+      "message": "障害を特定します"
+   },
+   "Detect_text_in_image": {
+      "description": "Recognize characters in pictures",
+      "message": "写真のキャラクターを認識します"
+   },
+   "Detecting": {
+      "description": "Identify ...",
+      "message": "識別 ..."
+   },
+   "Download": {
+      "description": "Download",
+      "message": "ダウンロード"
+   },
+   "Drag_and_drop_file": {
+      "description": "Drag and drop file",
+      "message": "ファイルをドラッグアンドドロップします"
+   },
+   "Drag_and_drop_file_notice": {
+      "description": "Or click this upload the maximum 3M picture file, support PNG, JPG \u003Cbr> Support paste file",
+      "message": "または、これをクリックして、最大3Mの画像ファイルをアップロードし、PNGをサポートし、jpg \u003Cbr>ペーストファイルをサポートします"
+   },
+   "EmailAddress": {
+      "description": "email address",
+      "message": "電子メールアドレス"
+   },
+   "English": {
+      "description": "English",
+      "message": "英語"
+   },
+   "Existing_account": {
+      "description": "Existing account",
+      "message": "既存のアカウント"
+   },
+   "Export": {
+      "description": "Export",
+      "message": "書き出す"
+   },
+   "Export_File_Type": {
+      "description": "Export File Type",
+      "message": "ファイルタイプをエクスポート"
+   },
+   "Extended_settings": {
+      "description": "Extended settings",
+      "message": "拡張設定"
+   },
+   "Extension_context_invalidated_": {
+      "description": "Extension context invalidated, please try refreshing this page.",
+      "message": "拡張コンテキストが無効になりましたので、このページを更新してください。"
+   },
+   "FRE": {
+      "description": "French",
+      "message": "フランス語"
+   },
+   "Failed_to_load_the_image": {
+      "description": "Load the picture failed",
+      "message": "写真をロードしました。失敗しました"
+   },
+   "Fee_points": {
+      "description": "Fees (points)",
+      "message": "料金（ポイント）"
+   },
+   "Feedback_problems": {
+      "description": "Feedback",
+      "message": "フィードバック"
+   },
+   "File_Name": {
+      "description": "File Name",
+      "message": "ファイル名"
+   },
+   "File_Size": {
+      "description": "File Size",
+      "message": "ファイルサイズ"
+   },
+   "File_Type": {
+      "description": "File Type",
+      "message": "ファイルタイプ"
+   },
+   "Forget_password": {
+      "description": "forget password?",
+      "message": "パスワードを忘れますか？"
+   },
+   "GER": {
+      "description": "German",
+      "message": "ドイツ人"
+   },
+   "Get_verification_code": {
+      "description": "get verification code",
+      "message": "確認コードを取得します"
+   },
+   "Go_Recharge": {
+      "description": "Recharge",
+      "message": "充電"
+   },
+   "Go_login": {
+      "description": "Log in",
+      "message": "ログイン"
+   },
+   "Go_register": {
+      "description": "Register",
+      "message": "登録"
+   },
+   "IMayContactYou": {
+      "description": "I may contact you to understand the relevant situation",
+      "message": "関連する状況を理解するためにあなたに連絡するかもしれません"
+   },
+   "ITA": {
+      "description": "Italian",
+      "message": "イタリア語"
+   },
+   "JAP": {
+      "description": "Japanese",
+      "message": "日本"
+   },
+   "KOR": {
+      "description": "Korean language",
+      "message": "韓国語"
+   },
+   "Language": {
+      "description": "language",
+      "message": "言語"
+   },
+   "Log_Out": {
+      "description": "sign out",
+      "message": "サインアウト"
+   },
+   "Login_failed": {
+      "description": "Login failed",
+      "message": "ログインに失敗しました"
+   },
+   "Manage": {
+      "description": "Manage",
+      "message": "管理"
+   },
+   "Name": {
+      "description": "Name",
+      "message": "名前"
+   },
+   "Network_Error": {
+      "description": "Unable to connect to the network",
+      "message": "ネットワークに接続できません"
+   },
+   "New_password": {
+      "description": "new password",
+      "message": "新しいパスワード"
+   },
+   "No_account_yet": {
+      "description": "No account yet?",
+      "message": "アカウントはまだありませんか？"
+   },
+   "No_data": {
+      "description": "No data",
+      "message": "データなし"
+   },
+   "OCR_version_setting": {
+      "description": "OCR version settings",
+      "message": "OCRバージョン設定"
+   },
+   "Operations": {
+      "description": "Operations",
+      "message": "オペレーション"
+   },
+   "Optional": {
+      "description": "Optional",
+      "message": "オプション"
+   },
+   "OptionalBut": {
+      "description": "Options, but very important, please try to fill in",
+      "message": "オプションですが、非常に重要なことは、記入してみてください"
+   },
+   "OwnAccount": {
+      "description": "Own account",
+      "message": "独自のアカウント"
+   },
+   "POR": {
+      "description": "Portuguese",
+      "message": "ポルトガル語"
+   },
+   "Previous_step": {
+      "description": "Previous",
+      "message": "前"
+   },
+   "Price": {
+      "description": "Price",
+      "message": "価格"
+   },
+   "Prices": {
+      "description": "Prices",
+      "message": "価格"
+   },
+   "Project_Name": {
+      "description": "Project Name",
+      "message": "プロジェクト名"
+   },
+   "Project_detail": {
+      "description": "Project detail",
+      "message": "プロジェクト詳細"
+   },
+   "Project_model": {
+      "description": "Project mode",
+      "message": "プロジェクトモード"
+   },
+   "Projects_List": {
+      "description": "Projects",
+      "message": "プロジェクト"
+   },
+   "RUS": {
+      "description": "Russian",
+      "message": "ロシア"
+   },
+   "RequestFail": {
+      "description": "The request server failed",
+      "message": "リクエストサーバーに失敗しました"
+   },
+   "Request_api_error_The_API_is_not_subscribed": {
+      "description": "Without opening this service, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> Application \u003C/a>.",
+      "message": "このサービスを開くことなく、\u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\">アプリケーション\u003C/a>。"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "リセット"
+   },
+   "SPA": {
+      "description": "Spanish",
+      "message": "スペイン語"
+   },
+   "Scene": {
+      "description": "Scenes",
+      "message": "シーン"
+   },
+   "Screenshot_again": {
+      "description": "Screenshot again",
+      "message": "再びスクリーンショット"
+   },
+   "Search": {
+      "description": "search",
+      "message": "探す"
+   },
+   "Select_Files": {
+      "description": "Select Files",
+      "message": "ファイルを選択"
+   },
+   "Select_Or_Drag_Files": {
+      "description": "Please select files or drag and drop the files here",
+      "message": "ファイルを選択するか、ここにファイルをドラッグ＆ドロップしてください"
+   },
+   "Select_Project": {
+      "description": "Select Project",
+      "message": "アイテムの選択"
+   },
+   "Sending": {
+      "description": "sending...",
+      "message": "送信..."
+   },
+   "ShortcutsSetting": {
+      "description": "Shortcut key settings",
+      "message": "ショートカットキー設定"
+   },
+   "Sign_up": {
+      "description": "register",
+      "message": "登録"
+   },
+   "Sign_up_failed": {
+      "description": "registration failed",
+      "message": "登録に失敗しました"
+   },
+   "Start_Upload": {
+      "description": "Start Upload",
+      "message": "アップロード開始"
+   },
+   "Status": {
+      "description": "state",
+      "message": "州"
+   },
+   "Stop_Upload": {
+      "description": "Stop Upload",
+      "message": "アップロードを停止する"
+   },
+   "Submitted": {
+      "description": "Successful submission, thank you!",
+      "message": "提出が成功しました、ありがとう！"
+   },
+   "Success": {
+      "description": "success",
+      "message": "成功"
+   },
+   "Time": {
+      "description": "time",
+      "message": "時間"
+   },
+   "Title": {
+      "description": "Title",
+      "message": "タイトル"
+   },
+   "To": {
+      "description": "to",
+      "message": "に"
+   },
+   "To_switch_versions": {
+      "description": "Switch version",
+      "message": "スイッチバージョン"
+   },
+   "URL": {
+      "description": "Website",
+      "message": "Webサイト"
+   },
+   "Upload": {
+      "description": "Upload",
+      "message": "アップロード"
+   },
+   "Upload_Files": {
+      "description": "Upload Files",
+      "message": "ファイルをアップロード"
+   },
+   "Usage_times_today": {
+      "description": "Times today",
+      "message": "今日の時間"
+   },
+   "User_id": {
+      "description": "User ID",
+      "message": "ユーザーID"
+   },
+   "User_information": {
+      "description": "User Info",
+      "message": "ユーザー情報"
+   },
+   "Verification_Code": {
+      "description": "Verification code",
+      "message": "検証コード"
+   },
+   "View_Result": {
+      "description": "View Result",
+      "message": "結果の表示"
+   },
+   "View_details": {
+      "description": "View details",
+      "message": "詳細を見る"
+   },
+   "about": {
+      "description": "关于",
+      "message": "关于"
+   },
+   "access_extension_not_allowed": {
+      "description": "No permission to access the extension page! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the details? \u003C/a>",
+      "message": "拡張機能ページにアクセスする許可はありません！ \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\">詳細を確認するには？ \u003C/a>"
+   },
+   "access_local_file_not_allowed": {
+      "description": "Access to local documents without permissions! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the solution? \u003C/a>",
+      "message": "許可なしにローカルドキュメントへのアクセス！ \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\">ソリューションを確認するには？ \u003C/a>"
+   },
+   "accurate_basic": {
+      "description": "General (high-precision version)",
+      "message": "一般的な"
+   },
+   "app_description": {
+      "description": "OCR text recognition, picture text recognition, web screenshot text recognition. Copy and paste text from any image, video or PDF.",
+      "message": "OCRテキスト認識、画像テキスト認識、Webスクリーンショットテキスト認識。 画像、ビデオ、またはPDFからテキストをコピーして貼り付けます。"
+   },
+   "app_name": {
+      "description": "One-click reading image (OCR)",
+      "message": "ワンクリック読書画像（OCR）"
+   },
+   "auto_detect_lang": {
+      "description": "Automatically detect language",
+      "message": "自動検出言語"
+   },
+   "available_points": {
+      "description": "Available points",
+      "message": "利用可能なポイント"
+   },
+   "baiduProvider": {
+      "description": "Baidu OCR",
+      "message": "Baidu OCR"
+   },
+   "capture_selection": {
+      "description": "Capture selection for OCR",
+      "message": "OCRの選択をキャプチャします"
+   },
+   "capture_shortcuts": {
+      "description": "The shortcut key of start OCR",
+      "message": "Start OCRのショートカットキー"
+   },
+   "close": {
+      "description": "Close",
+      "message": "選ぶ"
+   },
+   "confirm_delete": {
+      "description": "Are you sure you want to delete it? This operation is irreversible",
+      "message": "本当に削除しますか？この操作は不可逆的です"
+   },
+   "confirm_switch_to_pro_version": {
+      "description": "This is an advanced version function. Do you want to switch to the advanced version now?",
+      "message": "これは高度なバージョン機能です。 今すぐ高度なバージョンに切り替えたいですか？"
+   },
+   "data_too_large": {
+      "description": "The identification failed, the picture is too big",
+      "message": "識別に失敗し、写真が大きすぎます"
+   },
+   "data_too_small": {
+      "description": "The identification failed, the picture is too small",
+      "message": "識別に失敗し、写真が小さすぎます"
+   },
+   "defaultProvider": {
+      "description": "Free version",
+      "message": "無料版"
+   },
+   "detect_records": {
+      "description": "Recognition record",
+      "message": "認識記録"
+   },
+   "email": {
+      "description": "Mail",
+      "message": "郵便"
+   },
+   "enable_contextMenus": {
+      "description": "Right -click menu",
+      "message": "右 - メニューをクリックします"
+   },
+   "english_chinese": {
+      "description": "Chinese -English mixed",
+      "message": "中国語 - 英語ミックス"
+   },
+   "errorPage": {
+      "description": "Web address with problems",
+      "message": "問題があるWebアドレス"
+   },
+   "error_17": {
+      "description": "Due to the large number of people, the free resources are used today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "多数の人のために、無料のリソースが今日使用されています。明日使用するか、ハイエンドバージョンに切り替えることを検討してください"
+   },
+   "error_18": {
+      "description": "Due to the large number of people using the number of people, please try it out or consider switching to the high -end version",
+      "message": "多くの人が多くの人を使用しているため、試してみるか、ハイエンドバージョンに切り替えることを検討してください"
+   },
+   "error_19": {
+      "description": "Because the total amount is used up, it is not used, you can consider switching to the high -end version",
+      "message": "合計金額は使用されているため、使用されていません。ハイエンドバージョンに切り替えることを検討できます。"
+   },
+   "error_216110": {
+      "description": "The free version is not available for the time being",
+      "message": "当面は無料版は利用できません"
+   },
+   "error_43001": {
+      "description": "You have been used up for free today, please use it after logging in",
+      "message": "あなたは今日無料で使い果たされました、ログイン後にそれを使用してください"
+   },
+   "error_43002": {
+      "description": "You have been used up for free today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "今日は無料で使い果たされています。明日使用するか、ハイエンドバージョンに切り替えることを検討してください"
+   },
+   "error_43003": {
+      "description": "What you currently use is a high -end version and needs to be used after logging in",
+      "message": "現在使用しているのはハイエンドバージョンであり、ログイン後に使用する必要があります"
+   },
+   "error_43004": {
+      "description": "Your current balance is insufficient, please recharge or switch to the free version",
+      "message": "現在の残高が不十分です。充電または無料版に切り替えてください"
+   },
+   "error_message": {
+      "description": "Error message",
+      "message": "エラーメッセージ"
+   },
+   "fail_in_send": {
+      "description": "Failed to send",
+      "message": "送信に失敗しました"
+   },
+   "failed": {
+      "description": "fail",
+      "message": "不合格"
+   },
+   "feedback": {
+      "description": "Feedback",
+      "message": "フィードバック"
+   },
+   "feedbackContent": {
+      "description": "Feedback content",
+      "message": "フィードバックコンテンツ"
+   },
+   "feedbackPlaceholder": {
+      "description": "If you find a bug or have any ideas, you can tell me",
+      "message": "バグを見つけたり、アイデアを持っている場合は、私に言うことができます"
+   },
+   "file_size_large": {
+      "description": "The identification failed, the picture file cannot be greater than 3M",
+      "message": "識別に失敗し、画像ファイルは3mを超えることはできません"
+   },
+   "file_type_error": {
+      "description": "File type errors, support JPG, PNG format pictures",
+      "message": "ファイルタイプエラー、JPG、PNG形式の写真をサポートする"
+   },
+   "general_basic": {
+      "description": "General text recognition",
+      "message": "一般テキスト認識"
+   },
+   "guest_ocr_limit": {
+      "description": "Unexpected user restrictions every day $_$ times",
+      "message": "毎日予期しないユーザーの制限$_$時間",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "handwriting": {
+      "description": "Handwritten text",
+      "message": "手書きのテキスト"
+   },
+   "has_new_version": {
+      "description": "There are new versions to update",
+      "message": "更新する新しいバージョンがあります"
+   },
+   "hide_image": {
+      "description": "Hidden pictures",
+      "message": "隠された写真"
+   },
+   "huaweiProvider": {
+      "description": "Huawei OCR",
+      "message": "Huawei OCR"
+   },
+   "image_size_large": {
+      "description": "The identification failed, the picture width or height cannot be greater than 4096px",
+      "message": "識別に失敗し、画像の幅または高さは4096pxを超えることはできません"
+   },
+   "image_size_small": {
+      "description": "The identification failed, the picture width or height cannot be less than 15px",
+      "message": "識別に失敗し、画像の幅または高さは15px未満にすることはできません"
+   },
+   "login_status_invalid": {
+      "description": "The login status is invalid, please log in again",
+      "message": "ログインステータスが無効です。もう一度ログインしてください"
+   },
+   "more": {
+      "description": "More",
+      "message": "もっと"
+   },
+   "next_step": {
+      "description": "Next step",
+      "message": "次のステップ"
+   },
+   "noModelDialog": {
+      "description": "The recognition result does not display the dialog box, only the notification is displayed",
+      "message": "認識結果はダイアログボックスを表示せず、通知のみが表示されます"
+   },
+   "no_words_found": {
+      "description": "No recognition of the text",
+      "message": "テキストの認識はありません"
+   },
+   "not_allowed": {
+      "description": "No permission to access the current page",
+      "message": "現在のページにアクセスする許可はありません"
+   },
+   "notification": {
+      "description": "Notice",
+      "message": "知らせ"
+   },
+   "numbers": {
+      "description": "numbers",
+      "message": "数字"
+   },
+   "ocrType": {
+      "description": "OCR type",
+      "message": "OCRタイプ"
+   },
+   "ocr_result": {
+      "description": "Identification results:",
+      "message": "識別結果："
+   },
+   "ocr_result_error": {
+      "description": "Image recognition results: Failure",
+      "message": "画像認識の結果：障害"
+   },
+   "ocr_result_success": {
+      "description": "Image recognition results: Success",
+      "message": "画像認識の結果：成功"
+   },
+   "parse_data_error": {
+      "description": "Parse data errors",
+      "message": "データエラーを解析します"
+   },
+   "password": {
+      "description": "password",
+      "message": "パスワード"
+   },
+   "password_again": {
+      "description": "password again",
+      "message": "もう一度パスワード"
+   },
+   "password_limit": {
+      "description": "At least 6 characters",
+      "message": "最低6文字"
+   },
+   "password_reset_login": {
+      "description": "Password Changed SuccessFully, Please Login Again",
+      "message": "パスワードが正常に変更されました。もう一度ログインしてください"
+   },
+   "passwords_twice_different": {
+      "description": "The passwords that are input twice are different",
+      "message": "入力されるパスワードは2回異なります"
+   },
+   "pleaseRefreshPage": {
+      "description": "Please refresh the page and try again",
+      "message": "ページを更新して、もう一度やり直してください"
+   },
+   "please_retry": {
+      "description": "Please try again",
+      "message": "もう一度やり直してください"
+   },
+   "proProvider": {
+      "description": "OCR Advanced version",
+      "message": "OCR Advancedバージョン"
+   },
+   "qrcode": {
+      "description": "QR code",
+      "message": "QRコード"
+   },
+   "reset_password": {
+      "description": "Reset Password",
+      "message": "パスワードを再設定する"
+   },
+   "show_image": {
+      "description": "display image",
+      "message": "画像を表示します"
+   },
+   "show_image_in_result": {
+      "description": "Display pictures in the interface of the results",
+      "message": "結果のインターフェースに写真を表示します"
+   },
+   "signin": {
+      "description": "Log in",
+      "message": "ログイン"
+   },
+   "submit": {
+      "description": "Submit",
+      "message": "提出する"
+   },
+   "success_and_copy": {
+      "description": "Recognition successful, copied to the clipboard",
+      "message": "認識が成功し、クリップボードにコピーされました"
+   },
+   "todayUsed": {
+      "description": "Has $_$ times today",
+      "message": "今日は$_$の時間があります",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "unknown_error": {
+      "description": "unknown error",
+      "message": "不明なエラー"
+   },
+   "upload_image_file": {
+      "description": "Upload picture file",
+      "message": "画像ファイルをアップロードします"
+   },
+   "upload_image_to": {
+      "description": "Upload picture recognition",
+      "message": "画像認識をアップロードします"
+   },
+   "useYourAccount": {
+      "description": "Use your own account number, no number of restrictions",
+      "message": "独自のアカウント番号を使用してください、制限の数はありません"
+   },
+   "use_third_party_account": {
+      "description": "or use one of these options",
+      "message": "または、これらのオプションのいずれかを使用します"
+   },
+   "webimage": {
+      "description": "Web image",
+      "message": "Web画像"
+   }
+}

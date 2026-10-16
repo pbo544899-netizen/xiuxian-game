@@ -1,0 +1,484 @@
+/**
+ * StoryConfig.js
+ * 《修仙作弊器：造化聚宝盆》剧情主线大纲与网文灵魂语料库
+ * 核心驱动：围绕“作弊器”展开，网文修仙爽感、金手指毒舌嘴炮、同门震惊、逆天改命
+ */
+
+(function (global) {
+  'use strict';
+
+  const StoryConfig = {
+    // =========================================================================
+    // 0. 剧情角色核心设定 (Characters & Roles)
+    // =========================================================================
+    ROLES: {
+      cheat: {
+        id: 'cheat',
+        name: '天道作弊器',
+        title: '天道法则漏洞 · 终极外挂阵灵',
+        avatar: 'assets/character/cheat_system_spirit.png',
+        tagIcon: '⚡',
+        side: 'right',
+        badgeClass: 'system-plate'
+      },
+      player: {
+        id: 'player',
+        name: '宿主 (林凡)',
+        title: '逆天改命者 · 天道宿主',
+        avatar: 'assets/character/hero_cultivator.png',
+        tagIcon: '🗡️',
+        side: 'left',
+        badgeClass: 'player-plate'
+      }
+    },
+
+    // =========================================================================
+    // 1. 主线剧情核心章节 (Main Narrative Chapters)
+    // =========================================================================
+    CHAPTERS: {
+      prologue_mortal_intro: {
+        id: 'prologue_mortal_intro',
+        title: '序章 · 凡人逆命',
+        speaker: '宿主 (林凡)',
+        speakerTitle: '一介凡夫 · 凡骨草芥',
+        speakerAvatar: 'assets/character/hero_cultivator.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“天地浩瀚，修仙者高居九天之上，视凡人如草芥蝼蚁。我叫林凡，青阳镇下一介凡夫，天生凡骨无灵根，仙门连看都懒得看我一眼...”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“家中米缸已见底，为了活命，今日唯有提着这把防身锈柴刀，只身来到后山碰碰运气，采些止血灵草换几文铜钱度日。”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“（忽然，腥风大作，林间枯叶狂卷，地面剧烈震颤！）”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“吼——！前方草丛被猛然撞碎，竟跳出一头獠牙半尺、双目血红的凶暴黑鬣猪！该死，退路被封，唯有握紧柴刀拼死一搏了！”'
+          }
+        ],
+        lines: [
+          '“天地浩瀚，凡人命如草芥。我叫林凡，一介凡夫，天生凡骨无灵根...”',
+          '“家中米缸见底，今日只得握着防身柴刀到后山采药糊口。”',
+          '“吼——！忽然恶风扑面，一头獠牙黑鬣猪挡住去路！手无寸铁，退无可退，只能拼了！”'
+        ]
+      },
+
+      prologue_intro: {
+        id: 'prologue_intro',
+        title: '序章 · 凡躯搏凶',
+        speaker: '宿主 (林凡)',
+        speakerTitle: '一介凡夫 · 殊死一战',
+        speakerAvatar: 'assets/character/hero_cultivator.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“这头恶猪皮糙肉厚，眼冒凶光！狭路相逢勇者胜，看我一柴刀剁了你的猪头！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“吼——！恶猪狂暴撞来，唯有一战！”'
+          }
+        ],
+        lines: [
+          '“狭路相逢勇者胜，看我一柴刀剁了你的猪头！”',
+          '“吼——！恶猪狂暴撞来，唯有一战！”'
+        ]
+      },
+
+      prologue_awaken: {
+        id: 'prologue_awaken',
+        title: '序章 · 神盘认主',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 终极外挂阵灵',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“（将指尖触碰背包中的青铜古盘，锋利的符文猛然刺破指腹，一滴凡人精血被古盘瞬间吞噬！）”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“哈哈哈哈！沉眠千万载，终于吸纳到精血了！天道有缺，终极外挂苏醒！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“卧槽？！谁在我脑子里说话？！刚才从猪肚子里剖出来的古盘怎么化作金光钻进我丹田了？！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“本座乃天道法则漏洞孕育的上古作弊器！什么天生凡骨无法修仙？在本作弊器面前皆是狗屁！今日便为你逆天改命！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“造化天机盘已融于你的神魂识海！先赠你 100 点启动灵机，速去推演天机，窃取天地道统气运！”'
+          }
+        ],
+        lines: [
+          '“（指尖精血渗入青铜残盘，万丈金光爆裂而起，古盘融入识海！）”',
+          '“哈哈哈哈！天道有缺，终极外挂苏醒！宿主林凡，今日便为你逆天改命！”',
+          '“天机造化盘已与你神魂绑定，赠你 100 点灵机，速去推演天地造化！”'
+        ]
+      },
+
+      prologue_first_spin: {
+        id: 'prologue_first_spin',
+        title: '序章 · 天机初转',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 终极外挂阵灵',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“这阵盘竟然自成阴阳八卦小天地，齿轮转动间灵气奔涌！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“那是自然！上古禁忌神物岂是凡品？速速拨动推演，本作弊器保你首抽必出防身神兵！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“好！待我推演一番，看看这天机盘能否助我逆天改命！”'
+          }
+        ],
+        lines: [
+          '“天机初测，造化显现！速速推演天机，本作弊器保你首抽必出法宝神兵！”',
+          '“以散修之躯汲取天地气运，踏入真正的大道仙途！”'
+        ]
+      },
+
+      pot_promoted_ticket: {
+        id: 'pot_promoted_ticket',
+        title: '主线 · 窃夺天机',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 终极外挂阵灵',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“桀桀桀！守关妖王已被斩灭，天道防火墙刚才被本座强行撕开了一道大窟窿！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“聚宝盆已晋升至更高阶位！不仅如此，本座刚才趁天道不备，从灵网深处顺手截获了一枚【{sectName}】的真传引荐法牒！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“【{sectName}】的真传令？还能换宗门？那我现在的这一身修为你和装备怎么办？”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“有本座护体，随时在角色面板激活【兵解转世】！保留 20% 先天道基，装备原地转化为新宗门专属神装，下山当祖师爷！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“带道基和神装无损转世？不愧是作弊器，这波羊毛必须薅！”'
+          }
+        ],
+        lines: [
+          '“桀桀桀！守关妖王已被斩灭，天道防火墙刚才被本座强行撕开了一道大窟窿！”',
+          '“聚宝盆已晋升至更高阶位！不仅如此，本座刚才趁天道不备，从灵网深处顺手截获了一枚【{sectName}】的真传引荐法牒！”',
+          '“宿主若想体验全新门派的心法与专属神装，可随时在角色面板激活【兵解转世】！本座护你神魂不灭，带20%道基与神装下山横着走！”'
+        ]
+      },
+
+      samsara_confirm: {
+        id: 'samsara_confirm',
+        title: '轮回 · 逆转神魂',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 终极外挂阵灵',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“肉身兵解了！神魂在逆转阴阳，这就是九转轮回转世？！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“欺天逆乱大阵已起！九转轮回，神魂永存！20% 先天道基属性已彻底熔炼入魂！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“一身神装已全部重铸为【{sectName}】专属镇派法宝！开局直接当老祖级天骄！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“重活一世，道基更强，看我这一世如何横扫天门！”'
+          }
+        ],
+        lines: [
+          '“欺天逆乱大阵已起！九转轮回，神魂永存！”',
+          '“宿主当前累积的 20% 先天道基属性已彻底熔炼入魂，一身神装也已被本座重铸为【{sectName}】专属镇派法宝！开局直接当老祖级天骄！”'
+        ]
+      },
+
+      ascension_ready: {
+        id: 'ascension_ready',
+        title: '终章 · 五卷归一',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 终极外挂阵灵',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“五大正统真卷全部点亮！升仙天碑在轰鸣，天空中九天仙门大开了！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“太上混元仙典五大残卷齐聚！区区九霄紫雷劫，在本座面前不过是放烟花！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“天门给本座破！宿主，随本座白日飞升，跃迁至【灵界·飘渺仙域】去祸害那些老仙尊！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“白日飞升！诸位老仙尊，我林凡带着作弊器来了！”'
+          }
+        ],
+        lines: [
+          '“上古太上混元仙典五大残卷齐聚！升仙天碑共鸣，九天仙门大开！”',
+          '“区区九霄紫雷劫，在本座面前不过是放烟花！天门给本座破！宿主，随本座白日飞升，跃迁至【灵界·飘渺仙域】去祸害那些老仙尊！”'
+        ]
+      },
+
+      ascension_complete: {
+        id: 'ascension_complete',
+        title: '飞升 · 位列仙班',
+        speaker: '天道作弊器',
+        speakerTitle: '天道法则漏洞 · 仙界外挂至尊',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“轰！穿透天门了！周身凡气退避，这就是化神巨擘的力量吗？！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“恭喜宿主晋升为【化神境】大能！洞天已蜕变为浮空星天仙阙，天机盘全面神格化！”'
+          },
+          {
+            sender: 'cheat',
+            name: '天道作弊器',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“通天灵宝与无尽仙晶已在滚轮中待命，仙界大世，随本座由你主宰！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“仙途无垠，有作弊器傍身，诸天万界我为主宰！”'
+          }
+        ],
+        lines: [
+          '“轰！天门已开，凡界退避！恭喜宿主一跃晋升为【化神境】无上巨擘！”',
+          '“洞天已蜕变为浮空星天仙阙，天机盘全面神格化！通天灵宝与无尽仙晶已在滚轮中待命，仙界大世，由你主宰！”'
+        ]
+      }
+    },
+
+    // =========================================================================
+    // 2. 拜入 8 大宗门时作弊器的专属定调嘴炮
+    // =========================================================================
+    SECT_JOIN_REACTIONS: {
+      wanjian: '【作弊器】：“剑修都是一帮兜里比脸还干净的穷鬼，不过杀伐极猛！看本座给你摇出满屏飞剑，一剑断万山！”',
+      taiyi: '【作弊器】：“选了太乙丹霞宗？很好，苟道长青，灵丹管够！哪怕空转本座也能从路边给你顺两颗灵丹回来补气血！”',
+      yushou: '【作弊器】：“御兽玄机门？开局自带一头通灵狼，群殴的感觉就是爽！关门，放狗...啊不，放狼！”',
+      tianji: '【作弊器】：“天机神阵门？同行是冤家，这帮摆阵的见了我都得喊祖师爷！八卦百搭满天飞，稳如老狗！”',
+      fen_tian: '【作弊器】：“九幽魔火，绝地狂赌！残血伤害翻倍？有本座在，你负责残血耍帅，本座负责帮你秒怪！”',
+      fentian: '【作弊器】：“九幽魔火，绝地狂赌！残血伤害翻倍？有本座在，你负责残血耍帅，本座负责帮你秒怪！”',
+      wantong: '【作弊器】：“万通多宝商行！有眼光，修仙就是修资源！把灵石赚够，神装直接打包带进下辈子，富可敌国！”',
+      qintian: '【作弊器】：“钦天观星监？天下大势尽在天枢罗盘，这把算无遗策，下辈子必定自选指定飞升真卷！”',
+      jiusi: '【作弊器】：“九死血魂魔宗！生死看淡不服就干，随时夺舍重开！速刷割草流，老夫聊发少年狂！”'
+    },
+
+    // =========================================================================
+    // 3. 境界突破专属对白与同门震惊
+    // =========================================================================
+    REALM_BREAKTHROUGHS: {
+      2: {
+        speaker: '天机作弊器',
+        quote: '“练气二层了？就这？天道那老头刚才气得胡子都抖了一下，以为你卡在凡胎呢，继续冲！”'
+      },
+      3: {
+        speaker: '同门师妹',
+        quote: '“天呐！师兄昨日才刚入宗门，今日竟已突破至练气三层，这般修炼速度，当真恐怖如斯！”'
+      },
+      5: {
+        speaker: '宗门外门长老',
+        quote: '“骨龄尚幼，气息却沉稳如山岳！老夫阅人无数，此子必有大帝之资！”'
+      },
+      7: {
+        speaker: '天机作弊器',
+        quote: '“练气后期！灵气经脉已经拓宽，本作弊器给你截获的灵丹药效直接翻倍吸收！”'
+      },
+      10: {
+        speaker: '万剑宗太上长老',
+        quote: '“练气圆满！紫气浩荡三十里，天生异象！速传法旨，封此子为我宗首席真传道子！”'
+      },
+      11: {
+        speaker: '天机作弊器',
+        quote: '“筑基之始，褪去凡躯铸就道胎！聚宝盆已进阶，咱们去祸害更高阶的妖兽与仙藏！”'
+      }
+    },
+
+    // =========================================================================
+    // 4. 网文灵魂动态弹幕语料库 (Dynamic Chatter Bank)
+    // 覆盖 11 大情境，实时由 StoryManager 驱动更新至主界面气泡与战报
+    // =========================================================================
+    CHATTER: {
+      // 1. 待机/挂机神念 (Idle)
+      idle: [
+        '【天机作弊器】：“天道老头刚才打了个盹，趁他没醒，赶快推演两把！”',
+        '【天机作弊器】：“检测到方圆百里灵气汇聚，本座掐指一算，今日有大造化降临！”',
+        '【天机作弊器】：“莫闲着，拨动天机盘，万一爆了极品法宝呢？”',
+        '【同门师弟】：“师兄终日在此推演阵盘，周身道韵流转，莫非是在参悟无上仙法？”',
+        '【天机作弊器】：“修仙不易，外挂傍身！有本座护体，诸邪不侵，大道可期。”'
+      ],
+
+      // 2. 普通中奖 (Spin Win)
+      spin_win: [
+        '【天机作弊器】：“顺走天道二两灵砂，美滋滋，积少成多！”',
+        '【天机作弊器】：“天机盘运转无误，灵机与修为尽收囊中。”',
+        '【同门师妹】：“哇！师兄指尖灵光一闪，又有仙家机缘入账了！”',
+        '【天机作弊器】：“小小中奖，不过是本座随手拨弄因果的小把戏。”',
+        '【天机作弊器】：“继续保持，天机蕴灵正在悄悄填满！”'
+      ],
+
+      // 3. 连线大奖 / Mega Win (Spin Big Win)
+      spin_big_win: [
+        '【万剑宗太上长老】：“紫光冲霄，道音轰鸣！此子悟性逆天，实乃我宗万载不遇之麒麟仙胚！”',
+        '【天机作弊器】：“基操勿六！刚才本座不过是黑了天道一下，海量机缘直接到手！”',
+        '【同门弟子】：“天呐！这等连线神迹，我在宗门藏经阁古籍里都未曾见过！”',
+        '【天机作弊器】：“发财了发财了！这一波赚得盆满钵满，聚宝盆都要溢出来了！”',
+        '【万通商行大掌柜】：“这般夺天地机缘之手笔，老夫经商三百年亦甘拜下风！”'
+      ],
+
+      // 4. 气运之子大满贯 / All Wild Mega Win (PRD 10.5 节高光)
+      spin_all_wild: [
+        '【天道作弊器报警】：“警告！强行夺取了天地万载气运，全盘八卦百搭！本轮机缘暴涨 10 倍！快收！”',
+        '【天道意志震怒】：“何方妖孽？！竟敢篡改因果律！此子气运为何直逼鸿蒙道祖？！”',
+        '【天机作弊器】：“哈哈哈！天道老儿急了！满屏至宝，全归宿主所有！”'
+      ],
+
+      // 5. 空转未中 (Spin Empty)
+      spin_empty: [
+        '【天机作弊器】：“咳...刚才天道纠察使路过，本座收了收神通，下把必中！”',
+        '【天机作弊器】：“空转是蓄力的开始，本座正在帮你积攒无上欧气。”',
+        '【天机作弊器】：“别慌，草木回灵，吸一口天地灵气平复一下心情。”',
+        '【同门师兄】：“道海浮沉，偶有波折实属寻常，师弟且稳住道心！”'
+      ],
+
+      // 6. 战斗暴击秒怪 (Battle Crit)
+      battle_crit: [
+        '【同门师妹】：“天呐！师兄这一剑平平无奇，为何竟恐怖如斯？！”',
+        '【天机作弊器】：“叫你别惹我宿主，下辈子投胎记得把眼睛擦亮！”',
+        '【敌方妖兽】：“嗷呜？！这凡人的一剑为何带着开天辟地的毁灭剑意？！”',
+        '【天机作弊器】：“弱点暴击！弱鸡妖兽，在本座的外挂面前不堪一击！”'
+      ],
+
+      // 7. 濒死残血 (Battle Danger)
+      battle_danger: [
+        '【天机作弊器急呼】：“喂喂！快嗝屁了！赶紧嚼一颗气血丹，本座可不想另寻新宿主！”',
+        '【天机作弊器】：“小心！妖王发狂了！稳住气血，等本座算它破绽！”',
+        '【同门师弟惊呼】：“师兄小心！这妖孽残血狂暴了，快用保命符箓！”'
+      ],
+
+      // 8. 灵机耗尽 (Energy Empty)
+      energy_empty: [
+        '【天机作弊器叹气】：“机缘断粮了！赶紧打坐吐纳，或者引渡天降造化灵泉！”',
+        '【天机作弊器】：“巧妇难为无米之炊，快去洞天收取累积的灵气，本作弊器还要大显身手呢！”',
+        '【天机作弊器】：“灵机枯竭，切莫慌乱，天道自有漏灵之时。”'
+      ],
+
+      // 9. 装备3合1合成极品神装 (Equip Merge)
+      equip_merge: [
+        '【天机作弊器得意】：“三块破铜烂铁融出绝世神装！天道炼器大宗师看了都得吐血三升！”',
+        '【宗门执事】：“宝光冲斗牛！师兄此宝莫非是上古仙家遗泽？太强悍了！”',
+        '【天机作弊器】：“换上这件行头，你的战力又飙升了一截，去后山横着走吧！”'
+      ],
+
+      // 10. 开启洞天秘境 Hold & Spin (Hold & Spin)
+      hold_spin: [
+        '【天机作弊器】：“八卦锁星，秘境大开！天道的小金库今天归我们掌管了，填满它！”',
+        '【天机作弊器】：“引灵入窍！只要转出新秘印就能无限续命，狠狠地薅！”',
+        '【同门弟子】：“好强烈的洞天共鸣！师兄竟然引动了上古锁盘秘境！”'
+      ],
+
+      // 11. 斩妖升阶窃取到门票 (Sect Ticket)
+      sect_ticket: [
+        '【天机作弊器】：“新宗门的引荐令已经截获！想不想兵解转世去他们家当一把祖师爷？”',
+        '【天机作弊器】：“手握他宗法牒，神魂逆转带走20%道基和神装，这才是真正的修仙大盗！”'
+      ]
+    }
+  };
+
+  // 暴露至全局命名空间
+  global.SlotsRPG = global.SlotsRPG || {};
+  global.SlotsRPG.StoryConfig = StoryConfig;
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = StoryConfig;
+  }
+})(typeof window !== 'undefined' ? window : global);

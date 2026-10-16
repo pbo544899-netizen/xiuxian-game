@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<div id="errors"></div>
+<script>
+window.onerror = function(msg, url, line, col, error) {
+  var errDiv = document.getElementById('errors');
+  errDiv.innerHTML += '<p style="color:red;font-size:20px;">[ERROR] ' + msg + ' at ' + url + ':' + line + ':' + col + '<br>' + (error && error.stack ? error.stack : '') + '</p>';
+};
+</script>
+<iframe id="game-frame" src="file:///E:/my games/slots_rpg/index.html" style="width:430px; height:932px; border:none;"></iframe>
+<script>
+var frame = document.getElementById('game-frame');
+frame.onload = function() {
+  try {
+    frame.contentWindow.onerror = window.onerror;
+  } catch(e) {
+    document.getElementById('errors').innerHTML += '<p>[IFRAME ERROR] ' + e + '</p>';
+  }
+};
+</script>
+</body>
+</html>

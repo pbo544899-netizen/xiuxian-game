@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>升级弹窗视觉测试</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- 常驻顶栏 -->
+    <header class="top-hud">
+      <div class="hud-item">
+        <span class="hud-label">机缘:</span>
+        <span class="hud-val">2950</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-badge">练气二层</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">战力:</span>
+        <span class="hud-val" style="color: #ffaa00;">140</span>
+      </div>
+    </header>
+
+    <!-- 弹窗2: 境界突破大喜报弹窗 (显式展示用于截图验证) -->
+    <div id="modal-level-up" class="modal-overlay">
+      <div class="modal-card modal-breakthrough-card">
+        <div class="breakthrough-glow">☯</div>
+        <h2 class="breakthrough-title">境界突破！</h2>
+
+        <!-- 境界跃迁横幅 -->
+        <div class="breakthrough-realm-badge">
+          <span id="levelup-realm-old" class="realm-old">练气一层</span>
+          <span class="realm-arrow">➔</span>
+          <span id="levelup-realm-new" class="realm-new">练气二层</span>
+        </div>
+
+        <!-- 综合战力跃升卡片 -->
+        <div class="breakthrough-power-card">
+          <div class="power-card-title">综合战力突破</div>
+          <div class="power-compare-wrap">
+            <span id="levelup-power-old" class="power-val old">133</span>
+            <span class="power-arrow">➔</span>
+            <span id="levelup-power-new" class="power-val new">140</span>
+            <span id="levelup-power-diff" class="power-diff-tag">+7 🔺</span>
+          </div>
+        </div>
+
+        <!-- 基础四维属性精进对比网格 -->
+        <div class="breakthrough-comparison-grid">
+          <div class="stat-compare-row">
+            <span class="stat-label">气血上限</span>
+            <div class="stat-values">
+              <span id="levelup-stat-hp-old" class="stat-old">100</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-hp-new" class="stat-new">112</span>
+              <span id="levelup-stat-hp-diff" class="stat-diff">(+12)</span>
+            </div>
+          </div>
+          <div class="stat-compare-row">
+            <span class="stat-label">基础攻击</span>
+            <div class="stat-values">
+              <span id="levelup-stat-atk-old" class="stat-old">20</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-atk-new" class="stat-new">22</span>
+              <span id="levelup-stat-atk-diff" class="stat-diff">(+2)</span>
+            </div>
+          </div>
+          <div class="stat-compare-row">
+            <span class="stat-label">基础防御</span>
+            <div class="stat-values">
+              <span id="levelup-stat-def-old" class="stat-old">10</span>
+              <span class="stat-arrow">➔</span>
+              <span id="levelup-stat-def-new" class="stat-new">11</span>
+              <span id="levelup-stat-def-diff" class="stat-diff">(+1)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 功法潜质复利注解 -->
+        <div class="breakthrough-passive-tip">
+          ✨ 灵脉拓宽：气血复利 +12% · 攻防复利 +10%
+        </div>
+
+        <!-- 底部确认按钮容器 -->
+        <div class="breakthrough-actions">
+          <button id="btn-levelup-confirm" class="btn-breakthrough">凝心聚气</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

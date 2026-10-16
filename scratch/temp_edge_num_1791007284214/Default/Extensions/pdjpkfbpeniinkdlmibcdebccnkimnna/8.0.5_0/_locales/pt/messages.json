@@ -1,0 +1,744 @@
+{
+   "About_and_help": {
+      "description": "About and help",
+      "message": "Sobre e ajuda"
+   },
+   "AutoCopyDesc": {
+      "description": "Automatically copy after the recognition is successful",
+      "message": "Copiar automaticamente após o reconhecimento for bem -sucedido"
+   },
+   "Batch_projects": {
+      "description": "Projects",
+      "message": "Projetos"
+   },
+   "CAPTCHA": {
+      "description": "Photo verification code",
+      "message": "Código de verificação de fotos"
+   },
+   "Category": {
+      "description": "category",
+      "message": "categoria"
+   },
+   "Change_Password": {
+      "description": "Change Password",
+      "message": "Mudar senha"
+   },
+   "Click_blank_auto_close": {
+      "description": "Click on the blank area to close",
+      "message": "Clique na área em branco para fechar"
+   },
+   "Copy": {
+      "description": "copy",
+      "message": "cópia de"
+   },
+   "Copy_failed": {
+      "description": "Copy failed",
+      "message": "Cópia falhou"
+   },
+   "Copy_successful": {
+      "description": "Copy successful",
+      "message": "Copie bem -sucedido"
+   },
+   "Could_not_establish_connection_Receiving_end_does_not_exist_": {
+      "description": "Unable to access the current page, please refresh the current page and try again.",
+      "message": "Não foi possível acessar a página atual, atualize a página atual e tente novamente."
+   },
+   "Count": {
+      "description": "Count",
+      "message": "Contagem"
+   },
+   "Create_Project": {
+      "description": "Create Project",
+      "message": "Criar Projecto"
+   },
+   "Current_password": {
+      "description": "current password",
+      "message": "Senha atual"
+   },
+   "Currently_logged_in": {
+      "description": "Currently logged in:",
+      "message": "Atualmente conectado:"
+   },
+   "Data_Export": {
+      "description": "Data Export",
+      "message": "Exportação de Dados"
+   },
+   "Delete": {
+      "description": "delete",
+      "message": "excluir"
+   },
+   "Detect_failed": {
+      "description": "Identify failure",
+      "message": "Identificar falha"
+   },
+   "Detect_text_in_image": {
+      "description": "Recognize characters in pictures",
+      "message": "Reconhecer personagens em fotos"
+   },
+   "Detecting": {
+      "description": "Identify ...",
+      "message": "Identificar ..."
+   },
+   "Download": {
+      "description": "Download",
+      "message": "Baixar"
+   },
+   "Drag_and_drop_file": {
+      "description": "Drag and drop file",
+      "message": "Arraste e solte o arquivo"
+   },
+   "Drag_and_drop_file_notice": {
+      "description": "Or click this upload the maximum 3M picture file, support PNG, JPG \u003Cbr> Support paste file",
+      "message": "Ou clique neste arquivo de imagem máximo 3M, suporta PNG, JPG \u003Cbr> Suporte File Paste File"
+   },
+   "EmailAddress": {
+      "description": "email address",
+      "message": "endereço de email"
+   },
+   "English": {
+      "description": "English",
+      "message": "Inglês"
+   },
+   "Existing_account": {
+      "description": "Existing account",
+      "message": "Conta existente"
+   },
+   "Export": {
+      "description": "Export",
+      "message": "Exportar"
+   },
+   "Export_File_Type": {
+      "description": "Export File Type",
+      "message": "Tipo de arquivo de exportação"
+   },
+   "Extended_settings": {
+      "description": "Extended settings",
+      "message": "Configurações estendidas"
+   },
+   "Extension_context_invalidated_": {
+      "description": "Extension context invalidated, please try refreshing this page.",
+      "message": "Contexto de extensão invalidado, tente atualizar esta página."
+   },
+   "FRE": {
+      "description": "French",
+      "message": "Francesa"
+   },
+   "Failed_to_load_the_image": {
+      "description": "Load the picture failed",
+      "message": "Carregar a imagem falhou"
+   },
+   "Fee_points": {
+      "description": "Fees (points)",
+      "message": "Taxas (pontos)"
+   },
+   "Feedback_problems": {
+      "description": "Feedback",
+      "message": "Comentários"
+   },
+   "File_Name": {
+      "description": "File Name",
+      "message": "Nome do Arquivo"
+   },
+   "File_Size": {
+      "description": "File Size",
+      "message": "Tamanho do Ficheiro"
+   },
+   "File_Type": {
+      "description": "File Type",
+      "message": "Tipo de arquivo"
+   },
+   "Forget_password": {
+      "description": "forget password?",
+      "message": "Esqueceu a senha?"
+   },
+   "GER": {
+      "description": "German",
+      "message": "Alemã"
+   },
+   "Get_verification_code": {
+      "description": "get verification code",
+      "message": "Obtenha código de verificação"
+   },
+   "Go_Recharge": {
+      "description": "Recharge",
+      "message": "Recarrega"
+   },
+   "Go_login": {
+      "description": "Log in",
+      "message": "Conecte-se"
+   },
+   "Go_register": {
+      "description": "Register",
+      "message": "Registro"
+   },
+   "IMayContactYou": {
+      "description": "I may contact you to understand the relevant situation",
+      "message": "Posso entrar em contato com você para entender a situação relevante"
+   },
+   "ITA": {
+      "description": "Italian",
+      "message": "Italiana"
+   },
+   "JAP": {
+      "description": "Japanese",
+      "message": "japonês"
+   },
+   "KOR": {
+      "description": "Korean language",
+      "message": "língua coreana"
+   },
+   "Language": {
+      "description": "language",
+      "message": "Língua"
+   },
+   "Log_Out": {
+      "description": "sign out",
+      "message": "sair"
+   },
+   "Login_failed": {
+      "description": "Login failed",
+      "message": "Falha na autenticação"
+   },
+   "Manage": {
+      "description": "Manage",
+      "message": "Gerir"
+   },
+   "Name": {
+      "description": "Name",
+      "message": "Nome"
+   },
+   "Network_Error": {
+      "description": "Unable to connect to the network",
+      "message": "Incapaz de se conectar à rede"
+   },
+   "New_password": {
+      "description": "new password",
+      "message": "Nova Senha"
+   },
+   "No_account_yet": {
+      "description": "No account yet?",
+      "message": "Ainda não há conta?"
+   },
+   "No_data": {
+      "description": "No data",
+      "message": "Sem dados"
+   },
+   "OCR_version_setting": {
+      "description": "OCR version settings",
+      "message": "Configurações da versão OCR"
+   },
+   "Operations": {
+      "description": "Operations",
+      "message": "Operações"
+   },
+   "Optional": {
+      "description": "Optional",
+      "message": "Opcional"
+   },
+   "OptionalBut": {
+      "description": "Options, but very important, please try to fill in",
+      "message": "Opções, mas muito importante, tente preencher"
+   },
+   "OwnAccount": {
+      "description": "Own account",
+      "message": "Conta própria"
+   },
+   "POR": {
+      "description": "Portuguese",
+      "message": "Português"
+   },
+   "Previous_step": {
+      "description": "Previous",
+      "message": "Anterior"
+   },
+   "Price": {
+      "description": "Price",
+      "message": "Preço"
+   },
+   "Prices": {
+      "description": "Prices",
+      "message": "Preços"
+   },
+   "Project_Name": {
+      "description": "Project Name",
+      "message": "Nome do Projecto"
+   },
+   "Project_detail": {
+      "description": "Project detail",
+      "message": "Detalhes do projeto"
+   },
+   "Project_model": {
+      "description": "Project mode",
+      "message": "Modo de projeto"
+   },
+   "Projects_List": {
+      "description": "Projects",
+      "message": "Projetos"
+   },
+   "RUS": {
+      "description": "Russian",
+      "message": "Russa"
+   },
+   "RequestFail": {
+      "description": "The request server failed",
+      "message": "O servidor de solicitação falhou"
+   },
+   "Request_api_error_The_API_is_not_subscribed": {
+      "description": "Without opening this service, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> Application \u003C/a>.",
+      "message": "Sem abrir este serviço, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> aplicação \u003C/a>."
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Redefinir"
+   },
+   "SPA": {
+      "description": "Spanish",
+      "message": "Espanhola"
+   },
+   "Scene": {
+      "description": "Scenes",
+      "message": "Cenas"
+   },
+   "Screenshot_again": {
+      "description": "Screenshot again",
+      "message": "Captura de tela novamente"
+   },
+   "Search": {
+      "description": "search",
+      "message": "procurar"
+   },
+   "Select_Files": {
+      "description": "Select Files",
+      "message": "Selecionar arquivos"
+   },
+   "Select_Or_Drag_Files": {
+      "description": "Please select files or drag and drop the files here",
+      "message": "Selecione arquivos ou arraste e solte os arquivos aqui"
+   },
+   "Select_Project": {
+      "description": "Select Project",
+      "message": "Selecionar Projeto"
+   },
+   "Sending": {
+      "description": "sending...",
+      "message": "enviando ..."
+   },
+   "ShortcutsSetting": {
+      "description": "Shortcut key settings",
+      "message": "Configurações de chave de atalho"
+   },
+   "Sign_up": {
+      "description": "register",
+      "message": "registro"
+   },
+   "Sign_up_failed": {
+      "description": "registration failed",
+      "message": "registração falhou"
+   },
+   "Start_Upload": {
+      "description": "Start Upload",
+      "message": "Iniciar o upload"
+   },
+   "Status": {
+      "description": "state",
+      "message": "Estado"
+   },
+   "Stop_Upload": {
+      "description": "Stop Upload",
+      "message": "Parar o upload"
+   },
+   "Submitted": {
+      "description": "Successful submission, thank you!",
+      "message": "Submissão bem -sucedida, obrigado!"
+   },
+   "Success": {
+      "description": "success",
+      "message": "sucesso"
+   },
+   "Time": {
+      "description": "time",
+      "message": "Tempo"
+   },
+   "Title": {
+      "description": "Title",
+      "message": "Título"
+   },
+   "To": {
+      "description": "to",
+      "message": "para"
+   },
+   "To_switch_versions": {
+      "description": "Switch version",
+      "message": "Versão do Switch"
+   },
+   "URL": {
+      "description": "Website",
+      "message": "Local na rede Internet"
+   },
+   "Upload": {
+      "description": "Upload",
+      "message": "Carregar"
+   },
+   "Upload_Files": {
+      "description": "Upload Files",
+      "message": "Carregar arquivos"
+   },
+   "Usage_times_today": {
+      "description": "Times today",
+      "message": "Tempos hoje"
+   },
+   "User_id": {
+      "description": "User ID",
+      "message": "ID do usuário"
+   },
+   "User_information": {
+      "description": "User Info",
+      "message": "informação de usuário"
+   },
+   "Verification_Code": {
+      "description": "Verification code",
+      "message": "Código de verificação"
+   },
+   "View_Result": {
+      "description": "View Result",
+      "message": "Ver Resultado"
+   },
+   "View_details": {
+      "description": "View details",
+      "message": "Ver detalhes"
+   },
+   "about": {
+      "description": "关于",
+      "message": "关于"
+   },
+   "access_extension_not_allowed": {
+      "description": "No permission to access the extension page! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the details? \u003C/a>",
+      "message": "Sem permissão para acessar a página de extensão! \u003Ca Target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> para verificar os detalhes? \u003C/a>"
+   },
+   "access_local_file_not_allowed": {
+      "description": "Access to local documents without permissions! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the solution? \u003C/a>",
+      "message": "Acesso a documentos locais sem permissões! \u003Ca Target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> para verificar a solução? \u003C/a>"
+   },
+   "accurate_basic": {
+      "description": "General (high-precision version)",
+      "message": "Geral (versão de alta precisão)"
+   },
+   "app_description": {
+      "description": "OCR text recognition, picture text recognition, web screenshot text recognition. Copy and paste text from any image, video or PDF.",
+      "message": "Reconhecimento de texto OCR, reconhecimento de texto de imagem, reconhecimento de texto na captura de tela da web. Copie e cole o texto de qualquer imagem, vídeo ou PDF."
+   },
+   "app_name": {
+      "description": "One-click reading image (OCR)",
+      "message": "Imagem de leitura com um clique (OCR)"
+   },
+   "auto_detect_lang": {
+      "description": "Automatically detect language",
+      "message": "Detectar automaticamente a linguagem"
+   },
+   "available_points": {
+      "description": "Available points",
+      "message": "Pontos disponíveis"
+   },
+   "baiduProvider": {
+      "description": "Baidu OCR",
+      "message": "Baidu OCR"
+   },
+   "capture_selection": {
+      "description": "Capture selection for OCR",
+      "message": "Capture Seleção para OCR"
+   },
+   "capture_shortcuts": {
+      "description": "The shortcut key of start OCR",
+      "message": "A chave de atalho do Start OCR"
+   },
+   "close": {
+      "description": "Close",
+      "message": "Perto"
+   },
+   "confirm_delete": {
+      "description": "Are you sure you want to delete it? This operation is irreversible",
+      "message": "Você tem certeza que deseja excluí-lo? Esta operação é irreversível."
+   },
+   "confirm_switch_to_pro_version": {
+      "description": "This is an advanced version function. Do you want to switch to the advanced version now?",
+      "message": "Esta é uma função de versão avançada. Você quer mudar para a versão avançada agora?"
+   },
+   "data_too_large": {
+      "description": "The identification failed, the picture is too big",
+      "message": "A identificação falhou, a imagem é muito grande"
+   },
+   "data_too_small": {
+      "description": "The identification failed, the picture is too small",
+      "message": "A identificação falhou, a imagem é muito pequena"
+   },
+   "defaultProvider": {
+      "description": "Free version",
+      "message": "Versão gratuita"
+   },
+   "detect_records": {
+      "description": "Recognition record",
+      "message": "Registro de reconhecimento"
+   },
+   "email": {
+      "description": "Mail",
+      "message": "Correspondência"
+   },
+   "enable_contextMenus": {
+      "description": "Right -click menu",
+      "message": "Menu -clique certo"
+   },
+   "english_chinese": {
+      "description": "Chinese -English mixed",
+      "message": "Chinês -inglês misto"
+   },
+   "errorPage": {
+      "description": "Web address with problems",
+      "message": "Endereço da web com problemas"
+   },
+   "error_17": {
+      "description": "Due to the large number of people, the free resources are used today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "Devido ao grande número de pessoas, os recursos gratuitos são usados hoje, use -o amanhã ou considere mudar para a versão alta -end"
+   },
+   "error_18": {
+      "description": "Due to the large number of people using the number of people, please try it out or consider switching to the high -end version",
+      "message": "Devido ao grande número de pessoas que usam o número de pessoas, experimente ou considere mudar para a versão alta -end"
+   },
+   "error_19": {
+      "description": "Because the total amount is used up, it is not used, you can consider switching to the high -end version",
+      "message": "Como o valor total é usado, ele não é usado, você pode considerar mudar para a versão alta -end"
+   },
+   "error_216110": {
+      "description": "The free version is not available for the time being",
+      "message": "A versão gratuita não está disponível por enquanto"
+   },
+   "error_43001": {
+      "description": "You have been used up for free today, please use it after logging in",
+      "message": "Você foi usado gratuitamente hoje, use -o depois de fazer login"
+   },
+   "error_43002": {
+      "description": "You have been used up for free today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "Você foi usado gratuitamente hoje, use -o amanhã ou considere mudar para a versão alta -end"
+   },
+   "error_43003": {
+      "description": "What you currently use is a high -end version and needs to be used after logging in",
+      "message": "O que você usa atualmente é uma versão alta e precisa ser usada após o login"
+   },
+   "error_43004": {
+      "description": "Your current balance is insufficient, please recharge or switch to the free version",
+      "message": "Seu saldo atual é insuficiente, recarregue ou mude para a versão gratuita"
+   },
+   "error_message": {
+      "description": "Error message",
+      "message": "Mensagem de erro"
+   },
+   "fail_in_send": {
+      "description": "Failed to send",
+      "message": "Falha ao enviar"
+   },
+   "failed": {
+      "description": "fail",
+      "message": "falhou"
+   },
+   "feedback": {
+      "description": "Feedback",
+      "message": "Comentários"
+   },
+   "feedbackContent": {
+      "description": "Feedback content",
+      "message": "Conteúdo de feedback"
+   },
+   "feedbackPlaceholder": {
+      "description": "If you find a bug or have any ideas, you can tell me",
+      "message": "Se você encontrar um bug ou tiver alguma idéia, você pode me dizer"
+   },
+   "file_size_large": {
+      "description": "The identification failed, the picture file cannot be greater than 3M",
+      "message": "A identificação falhou, o arquivo de imagem não pode ser maior que 3m"
+   },
+   "file_type_error": {
+      "description": "File type errors, support JPG, PNG format pictures",
+      "message": "Erros de tipo de arquivo, suporte a JPG, PNG Format Pictures"
+   },
+   "general_basic": {
+      "description": "General text recognition",
+      "message": "Reconhecimento geral do texto"
+   },
+   "guest_ocr_limit": {
+      "description": "Unexpected user restrictions every day $_$ times",
+      "message": "Restrições inesperadas do usuário todos os dias $_$ Times",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "handwriting": {
+      "description": "Handwritten text",
+      "message": "Texto manuscrito"
+   },
+   "has_new_version": {
+      "description": "There are new versions to update",
+      "message": "Existem novas versões para atualizar"
+   },
+   "hide_image": {
+      "description": "Hidden pictures",
+      "message": "Fotos ocultas"
+   },
+   "huaweiProvider": {
+      "description": "Huawei OCR",
+      "message": "Huawei OCR"
+   },
+   "image_size_large": {
+      "description": "The identification failed, the picture width or height cannot be greater than 4096px",
+      "message": "A identificação falhou, a largura ou a altura da imagem não pode ser maior que 4096px"
+   },
+   "image_size_small": {
+      "description": "The identification failed, the picture width or height cannot be less than 15px",
+      "message": "A identificação falhou, a largura ou a altura da imagem não pode ser menor que 15px"
+   },
+   "login_status_invalid": {
+      "description": "The login status is invalid, please log in again",
+      "message": "O status de login é inválido, faça login novamente"
+   },
+   "more": {
+      "description": "More",
+      "message": "Mais"
+   },
+   "next_step": {
+      "description": "Next step",
+      "message": "Próxima Etapa"
+   },
+   "noModelDialog": {
+      "description": "The recognition result does not display the dialog box, only the notification is displayed",
+      "message": "O resultado do reconhecimento não exibe a caixa de diálogo, apenas a notificação é exibida"
+   },
+   "no_words_found": {
+      "description": "No recognition of the text",
+      "message": "Sem reconhecimento do texto"
+   },
+   "not_allowed": {
+      "description": "No permission to access the current page",
+      "message": "Sem permissão para acessar a página atual"
+   },
+   "notification": {
+      "description": "Notice",
+      "message": "Perceber"
+   },
+   "numbers": {
+      "description": "numbers",
+      "message": "números"
+   },
+   "ocrType": {
+      "description": "OCR type",
+      "message": "Tipo OCR"
+   },
+   "ocr_result": {
+      "description": "Identification results:",
+      "message": "Resultados de identificação:"
+   },
+   "ocr_result_error": {
+      "description": "Image recognition results: Failure",
+      "message": "Resultados do reconhecimento de imagem: falha"
+   },
+   "ocr_result_success": {
+      "description": "Image recognition results: Success",
+      "message": "Resultados de reconhecimento de imagem: sucesso"
+   },
+   "parse_data_error": {
+      "description": "Parse data errors",
+      "message": "Analisar erros de dados"
+   },
+   "password": {
+      "description": "password",
+      "message": "senha"
+   },
+   "password_again": {
+      "description": "password again",
+      "message": "senha novamente"
+   },
+   "password_limit": {
+      "description": "At least 6 characters",
+      "message": "Pelo menos 6 caracteres"
+   },
+   "password_reset_login": {
+      "description": "Password Changed SuccessFully, Please Login Again",
+      "message": "Senha alterada com sucesso, faça o login novamente"
+   },
+   "passwords_twice_different": {
+      "description": "The passwords that are input twice are different",
+      "message": "As senhas que são inseridas duas vezes são diferentes"
+   },
+   "pleaseRefreshPage": {
+      "description": "Please refresh the page and try again",
+      "message": "Atualize a página e tente novamente"
+   },
+   "please_retry": {
+      "description": "Please try again",
+      "message": "Por favor, tente novamente"
+   },
+   "proProvider": {
+      "description": "OCR Advanced version",
+      "message": "Versão avançada do OCR"
+   },
+   "qrcode": {
+      "description": "QR code",
+      "message": "Código QR"
+   },
+   "reset_password": {
+      "description": "Reset Password",
+      "message": "Redefinir senha"
+   },
+   "show_image": {
+      "description": "display image",
+      "message": "Exibir imagem"
+   },
+   "show_image_in_result": {
+      "description": "Display pictures in the interface of the results",
+      "message": "Exibir imagens na interface dos resultados"
+   },
+   "signin": {
+      "description": "Log in",
+      "message": "Conecte-se"
+   },
+   "submit": {
+      "description": "Submit",
+      "message": "Enviar"
+   },
+   "success_and_copy": {
+      "description": "Recognition successful, copied to the clipboard",
+      "message": "Reconhecimento bem -sucedido, copiado para a área de transferência"
+   },
+   "todayUsed": {
+      "description": "Has $_$ times today",
+      "message": "Tem $_$ times hoje",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "unknown_error": {
+      "description": "unknown error",
+      "message": "erro desconhecido"
+   },
+   "upload_image_file": {
+      "description": "Upload picture file",
+      "message": "Faça o upload do arquivo de imagem"
+   },
+   "upload_image_to": {
+      "description": "Upload picture recognition",
+      "message": "Carregar reconhecimento de imagem"
+   },
+   "useYourAccount": {
+      "description": "Use your own account number, no number of restrictions",
+      "message": "Use o seu próprio número de conta, nenhum número de restrições"
+   },
+   "use_third_party_account": {
+      "description": "or use one of these options",
+      "message": "ou use uma dessas opções"
+   },
+   "webimage": {
+      "description": "Web image",
+      "message": "Imagem da web"
+   }
+}

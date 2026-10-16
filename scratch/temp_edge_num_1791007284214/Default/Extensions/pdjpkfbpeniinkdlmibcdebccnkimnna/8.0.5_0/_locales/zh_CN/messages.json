@@ -1,0 +1,744 @@
+{
+   "About_and_help": {
+      "description": "About and help",
+      "message": "关于和帮助"
+   },
+   "AutoCopyDesc": {
+      "description": "Automatically copy after the recognition is successful",
+      "message": "识别成功后自动复制"
+   },
+   "Batch_projects": {
+      "description": "Projects",
+      "message": "批量识别项目"
+   },
+   "CAPTCHA": {
+      "description": "Photo verification code",
+      "message": "图片验证码"
+   },
+   "Category": {
+      "description": "category",
+      "message": "类别"
+   },
+   "Change_Password": {
+      "description": "Change Password",
+      "message": "修改密码"
+   },
+   "Click_blank_auto_close": {
+      "description": "Click on the blank area to close",
+      "message": "点击空白区域关闭"
+   },
+   "Copy": {
+      "description": "copy",
+      "message": "复制"
+   },
+   "Copy_failed": {
+      "description": "Copy failed",
+      "message": "复制失败"
+   },
+   "Copy_successful": {
+      "description": "Copy successful",
+      "message": "复制成功"
+   },
+   "Could_not_establish_connection_Receiving_end_does_not_exist_": {
+      "description": "Unable to access the current page, please refresh the current page and try again.",
+      "message": "无法访问当前页面，请刷新当前页面再试。"
+   },
+   "Count": {
+      "description": "Count",
+      "message": "数量"
+   },
+   "Create_Project": {
+      "description": "Create Project",
+      "message": "创建项目"
+   },
+   "Current_password": {
+      "description": "current password",
+      "message": "现在的密码"
+   },
+   "Currently_logged_in": {
+      "description": "Currently logged in:",
+      "message": "当前已登录："
+   },
+   "Data_Export": {
+      "description": "Data Export",
+      "message": "数据导出"
+   },
+   "Delete": {
+      "description": "delete",
+      "message": "删除"
+   },
+   "Detect_failed": {
+      "description": "Identify failure",
+      "message": "识别失败"
+   },
+   "Detect_text_in_image": {
+      "description": "Recognize characters in pictures",
+      "message": "识别图片中文字"
+   },
+   "Detecting": {
+      "description": "Identify ...",
+      "message": "正在识别..."
+   },
+   "Download": {
+      "description": "Download",
+      "message": "下载"
+   },
+   "Drag_and_drop_file": {
+      "description": "Drag and drop file",
+      "message": "拖放文件"
+   },
+   "Drag_and_drop_file_notice": {
+      "description": "Or click this upload the maximum 3M picture file, support PNG, JPG \u003Cbr> Support paste file",
+      "message": "或者点此上传最大3M图片文件,支持png、jpg\u003Cbr>支持粘贴文件"
+   },
+   "EmailAddress": {
+      "description": "email address",
+      "message": "邮箱地址"
+   },
+   "English": {
+      "description": "English",
+      "message": "英文"
+   },
+   "Existing_account": {
+      "description": "Existing account",
+      "message": "已有账号"
+   },
+   "Export": {
+      "description": "Export",
+      "message": "导出"
+   },
+   "Export_File_Type": {
+      "description": "Export File Type",
+      "message": "导出文件类型"
+   },
+   "Extended_settings": {
+      "description": "Extended settings",
+      "message": "扩展设置"
+   },
+   "Extension_context_invalidated_": {
+      "description": "Extension context invalidated, please try refreshing this page.",
+      "message": "扩展上下文无效，请尝试刷新页面。"
+   },
+   "FRE": {
+      "description": "French",
+      "message": "法语"
+   },
+   "Failed_to_load_the_image": {
+      "description": "Load the picture failed",
+      "message": "加载图片失败"
+   },
+   "Fee_points": {
+      "description": "Fees (points)",
+      "message": "费用(点数)"
+   },
+   "Feedback_problems": {
+      "description": "Feedback",
+      "message": "反馈问题"
+   },
+   "File_Name": {
+      "description": "File Name",
+      "message": "文件名"
+   },
+   "File_Size": {
+      "description": "File Size",
+      "message": "文件大小"
+   },
+   "File_Type": {
+      "description": "File Type",
+      "message": "文件类型"
+   },
+   "Forget_password": {
+      "description": "forget password?",
+      "message": "忘记密码？"
+   },
+   "GER": {
+      "description": "German",
+      "message": "德语"
+   },
+   "Get_verification_code": {
+      "description": "get verification code",
+      "message": "获取验证码"
+   },
+   "Go_Recharge": {
+      "description": "Recharge",
+      "message": "去充值"
+   },
+   "Go_login": {
+      "description": "Log in",
+      "message": "去登录"
+   },
+   "Go_register": {
+      "description": "Register",
+      "message": "去注册"
+   },
+   "IMayContactYou": {
+      "description": "I may contact you to understand the relevant situation",
+      "message": "我可能会联系您了解相关情况"
+   },
+   "ITA": {
+      "description": "Italian",
+      "message": "意大利语"
+   },
+   "JAP": {
+      "description": "Japanese",
+      "message": "日语"
+   },
+   "KOR": {
+      "description": "Korean language",
+      "message": "韩语"
+   },
+   "Language": {
+      "description": "language",
+      "message": "语言"
+   },
+   "Log_Out": {
+      "description": "sign out",
+      "message": "退出登录"
+   },
+   "Login_failed": {
+      "description": "Login failed",
+      "message": "登录失败"
+   },
+   "Manage": {
+      "description": "Manage",
+      "message": "管理"
+   },
+   "Name": {
+      "description": "Name",
+      "message": "名称"
+   },
+   "Network_Error": {
+      "description": "Unable to connect to the network",
+      "message": "无法连接网络"
+   },
+   "New_password": {
+      "description": "new password",
+      "message": "新密码"
+   },
+   "No_account_yet": {
+      "description": "No account yet?",
+      "message": "还没有账号？"
+   },
+   "No_data": {
+      "description": "No data",
+      "message": "暂无数据"
+   },
+   "OCR_version_setting": {
+      "description": "OCR version settings",
+      "message": "OCR版本设置"
+   },
+   "Operations": {
+      "description": "Operations",
+      "message": "操作"
+   },
+   "Optional": {
+      "description": "Optional",
+      "message": "可选"
+   },
+   "OptionalBut": {
+      "description": "Options, but very important, please try to fill in",
+      "message": "可选，但是非常重要，请尽量填写"
+   },
+   "OwnAccount": {
+      "description": "Own account",
+      "message": "自有账号"
+   },
+   "POR": {
+      "description": "Portuguese",
+      "message": "葡萄牙语"
+   },
+   "Previous_step": {
+      "description": "Previous",
+      "message": "上一步"
+   },
+   "Price": {
+      "description": "Price",
+      "message": "价格"
+   },
+   "Prices": {
+      "description": "Prices",
+      "message": "价格"
+   },
+   "Project_Name": {
+      "description": "Project Name",
+      "message": "项目名称"
+   },
+   "Project_detail": {
+      "description": "Project detail",
+      "message": "项目明细"
+   },
+   "Project_model": {
+      "description": "Project mode",
+      "message": "项目模式"
+   },
+   "Projects_List": {
+      "description": "Projects",
+      "message": "项目列表"
+   },
+   "RUS": {
+      "description": "Russian",
+      "message": "俄语"
+   },
+   "RequestFail": {
+      "description": "The request server failed",
+      "message": "请求服务器失败"
+   },
+   "Request_api_error_The_API_is_not_subscribed": {
+      "description": "Without opening this service, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> Application \u003C/a>.",
+      "message": "没有开通此服务, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\">申请开通\u003C/a>。"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "重置"
+   },
+   "SPA": {
+      "description": "Spanish",
+      "message": "西班牙语"
+   },
+   "Scene": {
+      "description": "Scenes",
+      "message": "场景"
+   },
+   "Screenshot_again": {
+      "description": "Screenshot again",
+      "message": "再次截图"
+   },
+   "Search": {
+      "description": "search",
+      "message": "搜索"
+   },
+   "Select_Files": {
+      "description": "Select Files",
+      "message": "选择文件"
+   },
+   "Select_Or_Drag_Files": {
+      "description": "Please select files or drag and drop the files here",
+      "message": "请选择文件或者将文件拖放到此处"
+   },
+   "Select_Project": {
+      "description": "Select Project",
+      "message": "选择项目"
+   },
+   "Sending": {
+      "description": "sending...",
+      "message": "发送中..."
+   },
+   "ShortcutsSetting": {
+      "description": "Shortcut key settings",
+      "message": "快捷键设置"
+   },
+   "Sign_up": {
+      "description": "register",
+      "message": "注册"
+   },
+   "Sign_up_failed": {
+      "description": "registration failed",
+      "message": "注册失败"
+   },
+   "Start_Upload": {
+      "description": "Start Upload",
+      "message": "开始上传"
+   },
+   "Status": {
+      "description": "state",
+      "message": "状态"
+   },
+   "Stop_Upload": {
+      "description": "Stop Upload",
+      "message": "停止上传"
+   },
+   "Submitted": {
+      "description": "Successful submission, thank you!",
+      "message": "提交成功，谢谢！"
+   },
+   "Success": {
+      "description": "success",
+      "message": "成功"
+   },
+   "Time": {
+      "description": "time",
+      "message": "时间"
+   },
+   "Title": {
+      "description": "Title",
+      "message": "标题"
+   },
+   "To": {
+      "description": "to",
+      "message": "至"
+   },
+   "To_switch_versions": {
+      "description": "Switch version",
+      "message": "去切换版本"
+   },
+   "URL": {
+      "description": "Website",
+      "message": "网址"
+   },
+   "Upload": {
+      "description": "Upload",
+      "message": "上传"
+   },
+   "Upload_Files": {
+      "description": "Upload Files",
+      "message": "上传文件"
+   },
+   "Usage_times_today": {
+      "description": "Times today",
+      "message": "今日使用次数"
+   },
+   "User_id": {
+      "description": "User ID",
+      "message": "用户ID"
+   },
+   "User_information": {
+      "description": "User Info",
+      "message": "用户信息"
+   },
+   "Verification_Code": {
+      "description": "Verification code",
+      "message": "验证码"
+   },
+   "View_Result": {
+      "description": "View Result",
+      "message": "查看结果"
+   },
+   "View_details": {
+      "description": "View details",
+      "message": "查看详情"
+   },
+   "about": {
+      "description": "关于",
+      "message": "关于"
+   },
+   "access_extension_not_allowed": {
+      "description": "No permission to access the extension page! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the details? \u003C/a>",
+      "message": "无权限访问扩展页面！\u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-allowed.html\">去查看详细？\u003C/a>"
+   },
+   "access_local_file_not_allowed": {
+      "description": "Access to local documents without permissions! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the solution? \u003C/a>",
+      "message": "无权限访问本地文件！\u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-allowed.html\">去查看解决方法？\u003C/a>"
+   },
+   "accurate_basic": {
+      "description": "General (high-precision version)",
+      "message": "通用文字识别（高精度版）"
+   },
+   "app_description": {
+      "description": "OCR text recognition, picture text recognition, web screenshot text recognition. Copy and paste text from any image, video or PDF.",
+      "message": "OCR文字识别，图片文字识别，网页截图文字识别，从任何图像、视频或PDF复制、粘贴文本。"
+   },
+   "app_name": {
+      "description": "One-click reading image (OCR)",
+      "message": "一键读图(OCR)"
+   },
+   "auto_detect_lang": {
+      "description": "Automatically detect language",
+      "message": "自动检测语言"
+   },
+   "available_points": {
+      "description": "Available points",
+      "message": "可用点数"
+   },
+   "baiduProvider": {
+      "description": "Baidu OCR",
+      "message": "百度OCR"
+   },
+   "capture_selection": {
+      "description": "Capture selection for OCR",
+      "message": "截图识别文字"
+   },
+   "capture_shortcuts": {
+      "description": "The shortcut key of start OCR",
+      "message": "启动读图快捷键"
+   },
+   "close": {
+      "description": "Close",
+      "message": "关闭"
+   },
+   "confirm_delete": {
+      "description": "Are you sure you want to delete it? This operation is irreversible",
+      "message": "确定要删除吗？此操作不可恢复"
+   },
+   "confirm_switch_to_pro_version": {
+      "description": "This is an advanced version function. Do you want to switch to the advanced version now?",
+      "message": "此为高级版功能，是否立即切换到高级版？"
+   },
+   "data_too_large": {
+      "description": "The identification failed, the picture is too big",
+      "message": "识别失败,图片太大"
+   },
+   "data_too_small": {
+      "description": "The identification failed, the picture is too small",
+      "message": "识别失败,图片太小"
+   },
+   "defaultProvider": {
+      "description": "Free version",
+      "message": "免费版"
+   },
+   "detect_records": {
+      "description": "Recognition record",
+      "message": "识别记录"
+   },
+   "email": {
+      "description": "Mail",
+      "message": "邮箱"
+   },
+   "enable_contextMenus": {
+      "description": "Right -click menu",
+      "message": "开启右键菜单"
+   },
+   "english_chinese": {
+      "description": "Chinese -English mixed",
+      "message": "中英混合"
+   },
+   "errorPage": {
+      "description": "Web address with problems",
+      "message": "出现问题的网页地址"
+   },
+   "error_17": {
+      "description": "Due to the large number of people, the free resources are used today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "由于使用人数较多，今日免费资源使用完毕，请明天再使用，或者考虑切换到高级版"
+   },
+   "error_18": {
+      "description": "Due to the large number of people using the number of people, please try it out or consider switching to the high -end version",
+      "message": "由于使用人数较多发生拥堵，请重试或者考虑切换到高级版"
+   },
+   "error_19": {
+      "description": "Because the total amount is used up, it is not used, you can consider switching to the high -end version",
+      "message": "由于总额度用完导致可不用，您可以考虑切换到高级版"
+   },
+   "error_216110": {
+      "description": "The free version is not available for the time being",
+      "message": "免费版暂时不可用"
+   },
+   "error_43001": {
+      "description": "You have been used up for free today, please use it after logging in",
+      "message": "您今日免费额度已用完，请登录之后使用"
+   },
+   "error_43002": {
+      "description": "You have been used up for free today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "您今日免费额度已用完，请明天再使用，或者考虑切换到高级版"
+   },
+   "error_43003": {
+      "description": "What you currently use is a high -end version and needs to be used after logging in",
+      "message": "您当前使用的是高级版本，需要登录之后使用"
+   },
+   "error_43004": {
+      "description": "Your current balance is insufficient, please recharge or switch to the free version",
+      "message": "您当前余额不足，请充值或切换到免费版本"
+   },
+   "error_message": {
+      "description": "Error message",
+      "message": "错误信息"
+   },
+   "fail_in_send": {
+      "description": "Failed to send",
+      "message": "发送失败"
+   },
+   "failed": {
+      "description": "fail",
+      "message": "失败"
+   },
+   "feedback": {
+      "description": "Feedback",
+      "message": "建议/反馈"
+   },
+   "feedbackContent": {
+      "description": "Feedback content",
+      "message": "反馈内容"
+   },
+   "feedbackPlaceholder": {
+      "description": "If you find a bug or have any ideas, you can tell me",
+      "message": "发现bug或者有什么想法可以告诉我"
+   },
+   "file_size_large": {
+      "description": "The identification failed, the picture file cannot be greater than 3M",
+      "message": "识别失败,图片文件不能大于3M"
+   },
+   "file_type_error": {
+      "description": "File type errors, support JPG, PNG format pictures",
+      "message": "文件类型错误,支持jpg、png格式图片"
+   },
+   "general_basic": {
+      "description": "General text recognition",
+      "message": "通用文字识别"
+   },
+   "guest_ocr_limit": {
+      "description": "Unexpected user restrictions every day $_$ times",
+      "message": "未登录用户限制每天$_$次",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "handwriting": {
+      "description": "Handwritten text",
+      "message": "手写文字识别"
+   },
+   "has_new_version": {
+      "description": "There are new versions to update",
+      "message": "有新版本可以更新"
+   },
+   "hide_image": {
+      "description": "Hidden pictures",
+      "message": "隐藏图片"
+   },
+   "huaweiProvider": {
+      "description": "Huawei OCR",
+      "message": "华为OCR"
+   },
+   "image_size_large": {
+      "description": "The identification failed, the picture width or height cannot be greater than 4096px",
+      "message": "识别失败,图片宽或高不能大于4096px"
+   },
+   "image_size_small": {
+      "description": "The identification failed, the picture width or height cannot be less than 15px",
+      "message": "识别失败,图片宽或高不能小于15px"
+   },
+   "login_status_invalid": {
+      "description": "The login status is invalid, please log in again",
+      "message": "登录状态失效，请重新登录"
+   },
+   "more": {
+      "description": "More",
+      "message": "更多"
+   },
+   "next_step": {
+      "description": "Next step",
+      "message": "下一步"
+   },
+   "noModelDialog": {
+      "description": "The recognition result does not display the dialog box, only the notification is displayed",
+      "message": "识别结果不显示对话框，只显示通知"
+   },
+   "no_words_found": {
+      "description": "No recognition of the text",
+      "message": "没有识别到文字"
+   },
+   "not_allowed": {
+      "description": "No permission to access the current page",
+      "message": "当前页面无权限"
+   },
+   "notification": {
+      "description": "Notice",
+      "message": "通知"
+   },
+   "numbers": {
+      "description": "numbers",
+      "message": "数字"
+   },
+   "ocrType": {
+      "description": "OCR type",
+      "message": "OCR类型"
+   },
+   "ocr_result": {
+      "description": "Identification results:",
+      "message": "识别结果:"
+   },
+   "ocr_result_error": {
+      "description": "Image recognition results: Failure",
+      "message": "图片识别结果：失败"
+   },
+   "ocr_result_success": {
+      "description": "Image recognition results: Success",
+      "message": "图片识别结果：成功"
+   },
+   "parse_data_error": {
+      "description": "Parse data errors",
+      "message": "解析数据出错"
+   },
+   "password": {
+      "description": "password",
+      "message": "密码"
+   },
+   "password_again": {
+      "description": "password again",
+      "message": "再次输入密码"
+   },
+   "password_limit": {
+      "description": "At least 6 characters",
+      "message": "至少6位字符"
+   },
+   "password_reset_login": {
+      "description": "Password Changed SuccessFully, Please Login Again",
+      "message": "Password changed successfully, please login again"
+   },
+   "passwords_twice_different": {
+      "description": "The passwords that are input twice are different",
+      "message": "两次输入的密码不一样"
+   },
+   "pleaseRefreshPage": {
+      "description": "Please refresh the page and try again",
+      "message": "请刷新页面再试"
+   },
+   "please_retry": {
+      "description": "Please try again",
+      "message": "请重试"
+   },
+   "proProvider": {
+      "description": "OCR Advanced version",
+      "message": "OCR高级版"
+   },
+   "qrcode": {
+      "description": "QR code",
+      "message": "二维码"
+   },
+   "reset_password": {
+      "description": "Reset Password",
+      "message": "重置密码"
+   },
+   "show_image": {
+      "description": "display image",
+      "message": "显示图片"
+   },
+   "show_image_in_result": {
+      "description": "Display pictures in the interface of the results",
+      "message": "在显示结果的界面显示图片"
+   },
+   "signin": {
+      "description": "Log in",
+      "message": "登录"
+   },
+   "submit": {
+      "description": "Submit",
+      "message": "提交"
+   },
+   "success_and_copy": {
+      "description": "Recognition successful, copied to the clipboard",
+      "message": "识别成功，已复制到剪切板"
+   },
+   "todayUsed": {
+      "description": "Has $_$ times today",
+      "message": "今日已使用$_$次",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "unknown_error": {
+      "description": "unknown error",
+      "message": "未知错误"
+   },
+   "upload_image_file": {
+      "description": "Upload picture file",
+      "message": "上传图片文件"
+   },
+   "upload_image_to": {
+      "description": "Upload picture recognition",
+      "message": "上传图片识别"
+   },
+   "useYourAccount": {
+      "description": "Use your own account number, no number of restrictions",
+      "message": "使用自有账号，无次数限制"
+   },
+   "use_third_party_account": {
+      "description": "or use one of these options",
+      "message": "使用合作方账号登陆"
+   },
+   "webimage": {
+      "description": "Web image",
+      "message": "网络图片识别"
+   }
+}

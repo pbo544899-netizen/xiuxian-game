@@ -1,0 +1,26 @@
+2026-09-19 01:59:30.311: [INFO] CurrentProfilePath: E:\my games\slots_rpg\scratch\temp_edge_cdp_1789783170035\Default
+2026-09-19 01:59:30.311: [INFO] Profiles total count: 1
+2026-09-19 01:59:30.311: [INFO] Profile: name=用户配置 1 path=E:\my games\slots_rpg\scratch\temp_edge_cdp_1789783170035\Default lastActive=null
+2026-09-19 01:59:30.311: [INFO] LastUsedProfileDir: E:\my games\slots_rpg\scratch\temp_edge_cdp_1789783170035\Default
+2026-09-19 01:59:30.311: [INFO] VisibilityChanged: 0
+2026-09-19 01:59:30.318: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.319: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.319: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.319: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.320: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.320: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.321: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.321: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.322: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.322: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:30.330: [INFO] OnDoneLoading sync enabled: 0
+2026-09-19 01:59:30.330: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-09-19 01:59:30.330: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-09-19 01:59:30.330: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-09-19 01:59:30.333: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:31.330: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-09-19 01:59:31.332: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-09-19 01:59:31.333: [INFO] Primary account changed.
+2026-09-19 01:59:31.333: [INFO] OnPrimaryAccountChanged PrimaryAccountChangeEvent::Type::kSet
+2026-09-19 01:59:31.337: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-09-19 01:59:31.348: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3

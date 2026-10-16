@@ -1,0 +1,1 @@
+import{g as s}from"./extension-DJvoQjv1.js";import{c as a,m as o,t,p as n,o as e}from"./index-De31TDAk.js";const m={class:"u-p-t mb-4"},i={__name:"Info",setup:i=>(i,r)=>(e(),a("div",null,[o("h2",m,t(n(s)("User_information")),1)]))};export{i as default};

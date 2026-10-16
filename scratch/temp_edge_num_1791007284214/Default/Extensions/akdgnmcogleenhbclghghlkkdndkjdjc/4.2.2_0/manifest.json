@@ -1,0 +1,54 @@
+{
+   "action": {
+      "default_popup": "popup.html",
+      "default_title": "SEOquake"
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "browser_specific_settings": {
+      "gecko": {
+         "data_collection_permissions": {
+            "optional": [ "authenticationInfo" ],
+            "required": [ "websiteActivity" ]
+         },
+         "id": "seoquake@backlinko.com"
+      }
+   },
+   "content_scripts": [ {
+      "js": [ "content-scripts/content.js", "content-scripts/seobar.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   }, {
+      "js": [ "content-scripts/oauth-callback.js" ],
+      "matches": [ "https://oauth.semrush.com/oauth2/success*" ],
+      "run_at": "document_start"
+   }, {
+      "include_globs": [ "*://google.*/*", "*://www.google.*/*" ],
+      "js": [ "content-scripts/serp.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_idle"
+   } ],
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+   },
+   "description": "Run SEO audits, check technical issues, analyze links and keyword density, and see Semrush metrics as you browse and search.",
+   "host_permissions": [ "\u003Call_urls>" ],
+   "icons": {
+      "128": "icons/128.png",
+      "16": "icons/16.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+GCVH9I+SmB50BbdpoxYcU2ZMrPK6w8HjEIvAlVGDxdqlv3zlXh3W7qV134ET++tReBzolNLy+PtOh1+nytKC6FujZseop/8TAXy6+bTSMSnd5R7bMaDpYiWbSsBRL4+sdl2oQ2fmteqLsZJFmKMX/i1BNZlhbD4v4GiUFIWmXwIDAQAB",
+   "manifest_version": 3,
+   "name": "SEOquake: On-Page SEO Checker",
+   "options_page": "settings.html",
+   "permissions": [ "storage", "tabs", "webRequest" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "4.2.2",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "content-scripts/seobar.css" ],
+      "use_dynamic_url": true
+   } ]
+}

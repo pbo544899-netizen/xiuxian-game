@@ -1,0 +1,24 @@
+{
+   "background": {
+      "scripts": [ "js/background.js" ]
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "js/content.js" ],
+      "matches": [ "*://*.figma.com/*" ],
+      "run_at": "document_end"
+   } ],
+   "description": "中文 Figma 插件，设计师人工翻译校验。",
+   "homepage_url": "https://figma.cool",
+   "icons": {
+      "128": "img/icon-128.png",
+      "16": "img/icon-16.png",
+      "48": "img/icon-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn7MzBj8BjaOyVwrw5XzvAUOBO0miEx+TC1e7G5OlJN567O+8uNReKJuLIcgvvV1YxHq07uvVUHjLB5EWLLR7DHEv2NT659FNkCz9rgCvJdpG12GkpvI3sHRfP7JAiufELhYoV/wKHrOpb9Jb1Yq1Y6r9G3S3zWwNbymEcK8hJAGoYOC6mAgrpLayWREmleJPLUMzAne/CdAlFPjtLDSMjZMfSIyjtLEbGUYha7KoK+rg499h8+NNL1lTKl2LzWNdN6yyoaGSaOKyVqfWwbqg5NAnkXgs5q6ud0oefZUCEmT+DisDxZ1K6uhEfrSAhWgl6680iH5rU1Mw8muJ8DkNtwIDAQAB",
+   "manifest_version": 2,
+   "name": "FigmaCN",
+   "short_name": "FigmaCN",
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "1.105"
+}

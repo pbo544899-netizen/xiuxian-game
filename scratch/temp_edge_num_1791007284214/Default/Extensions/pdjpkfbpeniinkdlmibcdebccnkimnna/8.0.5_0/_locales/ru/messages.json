@@ -1,0 +1,744 @@
+{
+   "About_and_help": {
+      "description": "About and help",
+      "message": "О и помоги"
+   },
+   "AutoCopyDesc": {
+      "description": "Automatically copy after the recognition is successful",
+      "message": "Автоматически копировать после успеха признания"
+   },
+   "Batch_projects": {
+      "description": "Projects",
+      "message": "Проекты"
+   },
+   "CAPTCHA": {
+      "description": "Photo verification code",
+      "message": "Код проверки фото"
+   },
+   "Category": {
+      "description": "category",
+      "message": "категория"
+   },
+   "Change_Password": {
+      "description": "Change Password",
+      "message": "Сменить пароль"
+   },
+   "Click_blank_auto_close": {
+      "description": "Click on the blank area to close",
+      "message": "Нажмите на пустую область, чтобы закрыть"
+   },
+   "Copy": {
+      "description": "copy",
+      "message": "копия"
+   },
+   "Copy_failed": {
+      "description": "Copy failed",
+      "message": "Копия не удалась"
+   },
+   "Copy_successful": {
+      "description": "Copy successful",
+      "message": "Копировать успешно"
+   },
+   "Could_not_establish_connection_Receiving_end_does_not_exist_": {
+      "description": "Unable to access the current page, please refresh the current page and try again.",
+      "message": "Не удалось получить доступ к текущей странице, пожалуйста, обновьте текущую страницу и попробуйте снова."
+   },
+   "Count": {
+      "description": "Count",
+      "message": "Считать"
+   },
+   "Create_Project": {
+      "description": "Create Project",
+      "message": "Создание проекта"
+   },
+   "Current_password": {
+      "description": "current password",
+      "message": "Текущий пароль"
+   },
+   "Currently_logged_in": {
+      "description": "Currently logged in:",
+      "message": "В настоящее время зарегистрировано:"
+   },
+   "Data_Export": {
+      "description": "Data Export",
+      "message": "Экспорт данных"
+   },
+   "Delete": {
+      "description": "delete",
+      "message": "Удалить"
+   },
+   "Detect_failed": {
+      "description": "Identify failure",
+      "message": "Определите неудачу"
+   },
+   "Detect_text_in_image": {
+      "description": "Recognize characters in pictures",
+      "message": "Распознавать персонажей на картинках"
+   },
+   "Detecting": {
+      "description": "Identify ...",
+      "message": "Идентифицировать ..."
+   },
+   "Download": {
+      "description": "Download",
+      "message": "Скачать"
+   },
+   "Drag_and_drop_file": {
+      "description": "Drag and drop file",
+      "message": "Перетаскивать файл"
+   },
+   "Drag_and_drop_file_notice": {
+      "description": "Or click this upload the maximum 3M picture file, support PNG, JPG \u003Cbr> Support paste file",
+      "message": "Или нажмите на это, загрузите максимальный файл изображения 3M, поддерживайте PNG, JPG \u003Cbr> Файл вставки поддержки"
+   },
+   "EmailAddress": {
+      "description": "email address",
+      "message": "Адрес электронной почты"
+   },
+   "English": {
+      "description": "English",
+      "message": "Английский"
+   },
+   "Existing_account": {
+      "description": "Existing account",
+      "message": "Существующий аккаунт"
+   },
+   "Export": {
+      "description": "Export",
+      "message": "Экспорт"
+   },
+   "Export_File_Type": {
+      "description": "Export File Type",
+      "message": "Экспорт типа файла"
+   },
+   "Extended_settings": {
+      "description": "Extended settings",
+      "message": "Расширенные настройки"
+   },
+   "Extension_context_invalidated_": {
+      "description": "Extension context invalidated, please try refreshing this page.",
+      "message": "Контекст расширения недействителен, пожалуйста, попробуйте обновить эту страницу."
+   },
+   "FRE": {
+      "description": "French",
+      "message": "Французский"
+   },
+   "Failed_to_load_the_image": {
+      "description": "Load the picture failed",
+      "message": "Загрузить картинку не удалось"
+   },
+   "Fee_points": {
+      "description": "Fees (points)",
+      "message": "Сборы (баллы)"
+   },
+   "Feedback_problems": {
+      "description": "Feedback",
+      "message": "Обратная связь"
+   },
+   "File_Name": {
+      "description": "File Name",
+      "message": "Имя файла"
+   },
+   "File_Size": {
+      "description": "File Size",
+      "message": "Размер файла"
+   },
+   "File_Type": {
+      "description": "File Type",
+      "message": "Тип файла"
+   },
+   "Forget_password": {
+      "description": "forget password?",
+      "message": "забыть пароль?"
+   },
+   "GER": {
+      "description": "German",
+      "message": "Немецкий"
+   },
+   "Get_verification_code": {
+      "description": "get verification code",
+      "message": "Получить код проверки"
+   },
+   "Go_Recharge": {
+      "description": "Recharge",
+      "message": "Перезарядка"
+   },
+   "Go_login": {
+      "description": "Log in",
+      "message": "Авторизоваться"
+   },
+   "Go_register": {
+      "description": "Register",
+      "message": "регистр"
+   },
+   "IMayContactYou": {
+      "description": "I may contact you to understand the relevant situation",
+      "message": "Я могу связаться с вами, чтобы понять соответствующую ситуацию"
+   },
+   "ITA": {
+      "description": "Italian",
+      "message": "Итальянский"
+   },
+   "JAP": {
+      "description": "Japanese",
+      "message": "Японский"
+   },
+   "KOR": {
+      "description": "Korean language",
+      "message": "корейский язык"
+   },
+   "Language": {
+      "description": "language",
+      "message": "язык"
+   },
+   "Log_Out": {
+      "description": "sign out",
+      "message": "выход"
+   },
+   "Login_failed": {
+      "description": "Login failed",
+      "message": "Авторизация не удалась"
+   },
+   "Manage": {
+      "description": "Manage",
+      "message": "Управление"
+   },
+   "Name": {
+      "description": "Name",
+      "message": "Имя"
+   },
+   "Network_Error": {
+      "description": "Unable to connect to the network",
+      "message": "Невозможно подключиться к сети"
+   },
+   "New_password": {
+      "description": "new password",
+      "message": "Новый пароль"
+   },
+   "No_account_yet": {
+      "description": "No account yet?",
+      "message": "Уже нет аккаунта?"
+   },
+   "No_data": {
+      "description": "No data",
+      "message": "Нет данных"
+   },
+   "OCR_version_setting": {
+      "description": "OCR version settings",
+      "message": "Настройки версии OCR"
+   },
+   "Operations": {
+      "description": "Operations",
+      "message": "Операции"
+   },
+   "Optional": {
+      "description": "Optional",
+      "message": "Необязательный"
+   },
+   "OptionalBut": {
+      "description": "Options, but very important, please try to fill in",
+      "message": "Варианты, но очень важны, попробуйте заполнить"
+   },
+   "OwnAccount": {
+      "description": "Own account",
+      "message": "Собственный счет"
+   },
+   "POR": {
+      "description": "Portuguese",
+      "message": "португальский"
+   },
+   "Previous_step": {
+      "description": "Previous",
+      "message": "Предыдущий"
+   },
+   "Price": {
+      "description": "Price",
+      "message": "Цена"
+   },
+   "Prices": {
+      "description": "Prices",
+      "message": "Цены"
+   },
+   "Project_Name": {
+      "description": "Project Name",
+      "message": "Название проекта"
+   },
+   "Project_detail": {
+      "description": "Project detail",
+      "message": "Детали проекта"
+   },
+   "Project_model": {
+      "description": "Project mode",
+      "message": "Проектный режим"
+   },
+   "Projects_List": {
+      "description": "Projects",
+      "message": "Проекты"
+   },
+   "RUS": {
+      "description": "Russian",
+      "message": "Русский"
+   },
+   "RequestFail": {
+      "description": "The request server failed",
+      "message": "Сервер запросов не удался"
+   },
+   "Request_api_error_The_API_is_not_subscribed": {
+      "description": "Without opening this service, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> Application \u003C/a>.",
+      "message": "Не открывая эту услугу, \u003Ca href=\"https://support.huaweicloud.com/api-ocr/ocr_03_0043.html\" target=\"_blank\"> применение \u003C/a>."
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Перезагрузить"
+   },
+   "SPA": {
+      "description": "Spanish",
+      "message": "испанский"
+   },
+   "Scene": {
+      "description": "Scenes",
+      "message": "Сцены"
+   },
+   "Screenshot_again": {
+      "description": "Screenshot again",
+      "message": "Скриншот снова"
+   },
+   "Search": {
+      "description": "search",
+      "message": "поиск"
+   },
+   "Select_Files": {
+      "description": "Select Files",
+      "message": "Выбрать файлы"
+   },
+   "Select_Or_Drag_Files": {
+      "description": "Please select files or drag and drop the files here",
+      "message": "Пожалуйста, выберите файлы или перетащите файлы здесь"
+   },
+   "Select_Project": {
+      "description": "Select Project",
+      "message": "Выбрать проект"
+   },
+   "Sending": {
+      "description": "sending...",
+      "message": "отправка ..."
+   },
+   "ShortcutsSetting": {
+      "description": "Shortcut key settings",
+      "message": "Настройки клавиши ярлыков"
+   },
+   "Sign_up": {
+      "description": "register",
+      "message": "регистр"
+   },
+   "Sign_up_failed": {
+      "description": "registration failed",
+      "message": "Регистрация не удалась"
+   },
+   "Start_Upload": {
+      "description": "Start Upload",
+      "message": "Начать загрузку"
+   },
+   "Status": {
+      "description": "state",
+      "message": "штат"
+   },
+   "Stop_Upload": {
+      "description": "Stop Upload",
+      "message": "Остановить загрузку"
+   },
+   "Submitted": {
+      "description": "Successful submission, thank you!",
+      "message": "Успешное представление, спасибо!"
+   },
+   "Success": {
+      "description": "success",
+      "message": "успех"
+   },
+   "Time": {
+      "description": "time",
+      "message": "время"
+   },
+   "Title": {
+      "description": "Title",
+      "message": "Заголовок"
+   },
+   "To": {
+      "description": "to",
+      "message": "к"
+   },
+   "To_switch_versions": {
+      "description": "Switch version",
+      "message": "Переключить версию"
+   },
+   "URL": {
+      "description": "Website",
+      "message": "Интернет сайт"
+   },
+   "Upload": {
+      "description": "Upload",
+      "message": "Загрузить"
+   },
+   "Upload_Files": {
+      "description": "Upload Files",
+      "message": "Загрузить файлы"
+   },
+   "Usage_times_today": {
+      "description": "Times today",
+      "message": "Времена сегодня"
+   },
+   "User_id": {
+      "description": "User ID",
+      "message": "Логин пользователя"
+   },
+   "User_information": {
+      "description": "User Info",
+      "message": "Информация пользователя"
+   },
+   "Verification_Code": {
+      "description": "Verification code",
+      "message": "Проверочный код"
+   },
+   "View_Result": {
+      "description": "View Result",
+      "message": "Посмотреть результат"
+   },
+   "View_details": {
+      "description": "View details",
+      "message": "Посмотреть детали"
+   },
+   "about": {
+      "description": "关于",
+      "message": "关于"
+   },
+   "access_extension_not_allowed": {
+      "description": "No permission to access the extension page! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the details? \u003C/a>",
+      "message": "Нет разрешения на доступ к странице расширения! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> Чтобы проверить детали? \u003C/a>"
+   },
+   "access_local_file_not_allowed": {
+      "description": "Access to local documents without permissions! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> to check the solution? \u003C/a>",
+      "message": "Доступ к местным документам без разрешений! \u003Ca target=\"_blank\" href=\"https://www.oren.net.cn/post/chrome-extension-not-hatml\"> Чтобы проверить решение? \u003C/a>"
+   },
+   "accurate_basic": {
+      "description": "General (high-precision version)",
+      "message": "универсальный (версия с высокой точностью)"
+   },
+   "app_description": {
+      "description": "OCR text recognition, picture text recognition, web screenshot text recognition. Copy and paste text from any image, video or PDF.",
+      "message": "Распознавание текста OCR, распознавание текста изображения, распознавание текста веб -экрана. Скопируйте и вставьте текст из любого изображения, видео или PDF."
+   },
+   "app_name": {
+      "description": "One-click reading image (OCR)",
+      "message": "Один клик для чтения изображение (OCR)"
+   },
+   "auto_detect_lang": {
+      "description": "Automatically detect language",
+      "message": "язык автоматического контроля"
+   },
+   "available_points": {
+      "description": "Available points",
+      "message": "Доступные очки"
+   },
+   "baiduProvider": {
+      "description": "Baidu OCR",
+      "message": "Baidu ocr"
+   },
+   "capture_selection": {
+      "description": "Capture selection for OCR",
+      "message": "Захватить выбор для OCR"
+   },
+   "capture_shortcuts": {
+      "description": "The shortcut key of start OCR",
+      "message": "Ключ ярлыка старта OCR"
+   },
+   "close": {
+      "description": "Close",
+      "message": "Закрывать"
+   },
+   "confirm_delete": {
+      "description": "Are you sure you want to delete it? This operation is irreversible",
+      "message": "Вы уверены, что хотите его удалить? Эта операция необратима."
+   },
+   "confirm_switch_to_pro_version": {
+      "description": "This is an advanced version function. Do you want to switch to the advanced version now?",
+      "message": "Это функция расширенной версии. Вы хотите переключиться на расширенную версию сейчас?"
+   },
+   "data_too_large": {
+      "description": "The identification failed, the picture is too big",
+      "message": "Идентификация не удалась, картина слишком большая"
+   },
+   "data_too_small": {
+      "description": "The identification failed, the picture is too small",
+      "message": "Идентификация не удалась, картина слишком мала"
+   },
+   "defaultProvider": {
+      "description": "Free version",
+      "message": "Бесплатная версия"
+   },
+   "detect_records": {
+      "description": "Recognition record",
+      "message": "Запись о признании"
+   },
+   "email": {
+      "description": "Mail",
+      "message": "Почта"
+   },
+   "enable_contextMenus": {
+      "description": "Right -click menu",
+      "message": "ПРАВО -Клика меню"
+   },
+   "english_chinese": {
+      "description": "Chinese -English mixed",
+      "message": "Китайский -английский смешанный"
+   },
+   "errorPage": {
+      "description": "Web address with problems",
+      "message": "Веб -адрес с проблемами"
+   },
+   "error_17": {
+      "description": "Due to the large number of people, the free resources are used today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "Из -за большого количества людей бесплатные ресурсы используются сегодня, используйте его завтра или рассмотрите возможность переключения на версию с высоким уровнем."
+   },
+   "error_18": {
+      "description": "Due to the large number of people using the number of people, please try it out or consider switching to the high -end version",
+      "message": "Из -за большого количества людей, использующих количество людей, попробуйте или рассмотрите возможность переключения на версию высокого уровня"
+   },
+   "error_19": {
+      "description": "Because the total amount is used up, it is not used, you can consider switching to the high -end version",
+      "message": "Поскольку общая сумма используется, оно не используется, вы можете рассмотреть возможность переключения на версию с высоким уровнем."
+   },
+   "error_216110": {
+      "description": "The free version is not available for the time being",
+      "message": "Бесплатная версия не доступна на данный момент"
+   },
+   "error_43001": {
+      "description": "You have been used up for free today, please use it after logging in",
+      "message": "Вы были использованы сегодня бесплатно, пожалуйста, используйте его после входа в систему"
+   },
+   "error_43002": {
+      "description": "You have been used up for free today, please use it tomorrow, or consider switching to the high -end version",
+      "message": "Вы были использованы сегодня бесплатно, используйте его завтра или рассмотрите возможность переключения на версию High -End"
+   },
+   "error_43003": {
+      "description": "What you currently use is a high -end version and needs to be used after logging in",
+      "message": "То, что вы в настоящее время используете, -это версия с высоким уровнем и необходимо использовать после входа в систему"
+   },
+   "error_43004": {
+      "description": "Your current balance is insufficient, please recharge or switch to the free version",
+      "message": "Ваш текущий баланс недостаточен, пожалуйста, переключитесь или переключитесь на бесплатную версию"
+   },
+   "error_message": {
+      "description": "Error message",
+      "message": "Сообщение об ошибке"
+   },
+   "fail_in_send": {
+      "description": "Failed to send",
+      "message": "Не удалось отправить"
+   },
+   "failed": {
+      "description": "fail",
+      "message": "неудача"
+   },
+   "feedback": {
+      "description": "Feedback",
+      "message": "Обратная связь"
+   },
+   "feedbackContent": {
+      "description": "Feedback content",
+      "message": "Содержание обратной связи"
+   },
+   "feedbackPlaceholder": {
+      "description": "If you find a bug or have any ideas, you can tell me",
+      "message": "Если вы найдете ошибку или у вас есть идеи, вы можете мне сказать"
+   },
+   "file_size_large": {
+      "description": "The identification failed, the picture file cannot be greater than 3M",
+      "message": "Идентификация не удалась, файл изображения не может быть больше 3M"
+   },
+   "file_type_error": {
+      "description": "File type errors, support JPG, PNG format pictures",
+      "message": "Ошибки типа файла, поддержка JPG, PNG Format изображения"
+   },
+   "general_basic": {
+      "description": "General text recognition",
+      "message": "общее Распознавание текста"
+   },
+   "guest_ocr_limit": {
+      "description": "Unexpected user restrictions every day $_$ times",
+      "message": "Неожиданные ограничения пользователей каждый день $_$ Times",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "handwriting": {
+      "description": "Handwritten text",
+      "message": "Рукописный текст"
+   },
+   "has_new_version": {
+      "description": "There are new versions to update",
+      "message": "Есть новые версии для обновления"
+   },
+   "hide_image": {
+      "description": "Hidden pictures",
+      "message": "Скрытые картинки"
+   },
+   "huaweiProvider": {
+      "description": "Huawei OCR",
+      "message": "Huawei Ocr"
+   },
+   "image_size_large": {
+      "description": "The identification failed, the picture width or height cannot be greater than 4096px",
+      "message": "Идентификация не удалась, ширина или высота изображения не может быть превышает 4096px"
+   },
+   "image_size_small": {
+      "description": "The identification failed, the picture width or height cannot be less than 15px",
+      "message": "Идентификация не удалась, ширина или высота изображения не может быть менее 15px"
+   },
+   "login_status_invalid": {
+      "description": "The login status is invalid, please log in again",
+      "message": "Статус входа в систему недействителен, пожалуйста, войдите в систему снова"
+   },
+   "more": {
+      "description": "More",
+      "message": "Более"
+   },
+   "next_step": {
+      "description": "Next step",
+      "message": "Следующий шаг"
+   },
+   "noModelDialog": {
+      "description": "The recognition result does not display the dialog box, only the notification is displayed",
+      "message": "Результат распознавания не отображает диалоговое окно, отображается только уведомление"
+   },
+   "no_words_found": {
+      "description": "No recognition of the text",
+      "message": "Нет признания текста"
+   },
+   "not_allowed": {
+      "description": "No permission to access the current page",
+      "message": "Нет разрешения на доступ к текущей странице"
+   },
+   "notification": {
+      "description": "Notice",
+      "message": "Уведомление"
+   },
+   "numbers": {
+      "description": "numbers",
+      "message": "числа"
+   },
+   "ocrType": {
+      "description": "OCR type",
+      "message": "Тип OCR"
+   },
+   "ocr_result": {
+      "description": "Identification results:",
+      "message": "Результаты идентификации:"
+   },
+   "ocr_result_error": {
+      "description": "Image recognition results: Failure",
+      "message": "Результаты распознавания изображения: сбой"
+   },
+   "ocr_result_success": {
+      "description": "Image recognition results: Success",
+      "message": "Результаты распознавания изображений: успех"
+   },
+   "parse_data_error": {
+      "description": "Parse data errors",
+      "message": "Ошибки данных анализа"
+   },
+   "password": {
+      "description": "password",
+      "message": "пароль"
+   },
+   "password_again": {
+      "description": "password again",
+      "message": "пароль снова"
+   },
+   "password_limit": {
+      "description": "At least 6 characters",
+      "message": "Не менее 6 символов"
+   },
+   "password_reset_login": {
+      "description": "Password Changed SuccessFully, Please Login Again",
+      "message": "Пароль успешно изменен, пожалуйста, войдите снова"
+   },
+   "passwords_twice_different": {
+      "description": "The passwords that are input twice are different",
+      "message": "Пароли, которые вводятся дважды, разные"
+   },
+   "pleaseRefreshPage": {
+      "description": "Please refresh the page and try again",
+      "message": "Пожалуйста, обновите страницу и попробуйте еще раз"
+   },
+   "please_retry": {
+      "description": "Please try again",
+      "message": "Пожалуйста, попробуйте еще раз"
+   },
+   "proProvider": {
+      "description": "OCR Advanced version",
+      "message": "OCR Advanced Version"
+   },
+   "qrcode": {
+      "description": "QR code",
+      "message": "QR код"
+   },
+   "reset_password": {
+      "description": "Reset Password",
+      "message": "Сброс пароля"
+   },
+   "show_image": {
+      "description": "display image",
+      "message": "отображать изображение"
+   },
+   "show_image_in_result": {
+      "description": "Display pictures in the interface of the results",
+      "message": "Отображать изображения в интерфейсе результатов"
+   },
+   "signin": {
+      "description": "Log in",
+      "message": "Авторизоваться"
+   },
+   "submit": {
+      "description": "Submit",
+      "message": "Отправить"
+   },
+   "success_and_copy": {
+      "description": "Recognition successful, copied to the clipboard",
+      "message": "Успешное распознавание, скопированное в буфер обмена"
+   },
+   "todayUsed": {
+      "description": "Has $_$ times today",
+      "message": "Сегодня есть $_$ Times",
+      "placeholders": {
+         "_": {
+            "content": "$1"
+         }
+      }
+   },
+   "unknown_error": {
+      "description": "unknown error",
+      "message": "неизвестная ошибка"
+   },
+   "upload_image_file": {
+      "description": "Upload picture file",
+      "message": "Загрузите файл изображения"
+   },
+   "upload_image_to": {
+      "description": "Upload picture recognition",
+      "message": "Загрузите распознавание изображений"
+   },
+   "useYourAccount": {
+      "description": "Use your own account number, no number of restrictions",
+      "message": "Используйте свой собственный номер учетной записи, нет ограничений"
+   },
+   "use_third_party_account": {
+      "description": "or use one of these options",
+      "message": "или используйте один из этих вариантов"
+   },
+   "webimage": {
+      "description": "Web image",
+      "message": "Веб -изображение"
+   }
+}
