@@ -278,90 +278,69 @@ body {
   }
 }
 
-/* 阵盘外框与 Canvas 画布 */
+/* 浑天奇门大阵大标题 */
+.qimen-header-title-box {
+  width: 100%;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qimen-main-title {
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  background: linear-gradient(180deg, #fff7d6 0%, #ffd700 50%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 220, 160, 0.45)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  margin: 0;
+}
+
+/* 阵盘外框与 Canvas 画布 (完全透明，无缝融入星空宇宙) */
 .reel-frame {
   width: 100%;
   position: relative;
-  border-radius: 12px;
-  background: #070f18;
-  padding: 6px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0, 160, 120, 0.18);
-  border: 2px solid rgba(0, 150, 110, 0.4);
+  background: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
-/* 周天奇门阵盘专属边框与翡翠玉青铜质感 */
+/* 周天奇门阵盘专属边框 (移除生硬矩形边框，仅保留居中圆盘悬浮) */
 .reel-frame.qimen-array-frame {
-  border: 2px solid rgba(0, 170, 130, 0.6);
-  background: radial-gradient(circle at 50% 50%, #0a1a22 0%, #050d14 100%);
-  box-shadow:
-    inset 0 0 40px rgba(0, 0, 0, 0.9),
-    0 0 28px rgba(0, 170, 130, 0.3),
-    0 0 50px rgba(0, 120, 90, 0.15);
+  border: none;
+  background: transparent;
+  box-shadow: none;
   position: relative;
-  overflow: hidden;
-}
-
-/* 阵盘四角道门周易角标 */
-.array-corner-seal {
-  position: absolute;
-  font-size: 11px;
-  font-family: serif;
-  font-weight: bold;
-  color: rgba(0, 190, 145, 0.6);
-  pointer-events: none;
-  z-index: 5;
-  text-shadow: 0 0 8px rgba(0, 200, 155, 0.5);
-}
-.array-corner-seal.corner-tl { top: 6px; left: 8px; }
-.array-corner-seal.corner-tr { top: 6px; right: 8px; }
-.array-corner-seal.corner-bl { bottom: 6px; left: 8px; }
-.array-corner-seal.corner-br { bottom: 6px; right: 8px; }
-
-/* 太极奇门推演主按钮 */
-.btn-qimen-spin {
-  display: flex !important;
-  align-items: center;
+  overflow: visible;
+  display: flex;
   justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #ffd700 0%, #e6a100 50%, #b8860b 100%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.6) !important;
-}
-
-.spin-taiji-icon {
-  font-size: 20px;
-  color: #1a1202;
-  display: inline-block;
-  animation: spinTaijiSlow 8s linear infinite;
-}
-
-@keyframes spinTaijiSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.spin-btn-title {
-  font-size: 17px;
-  font-weight: 900;
-  color: #1f1400;
-  letter-spacing: 1.5px;
+  align-items: center;
 }
 
 #reel-canvas {
   width: 100%;
-  height: auto;
-  aspect-ratio: 680 / 420;
+  max-width: 350px;
+  max-height: 42vh;
+  aspect-ratio: 1 / 1;
   display: block;
-  border-radius: 8px;
+  margin: 0 auto;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 25px rgba(0, 190, 140, 0.35)) drop-shadow(0 10px 35px rgba(0, 0, 0, 0.9));
 }
 
 /* 滚轮内部居中宣告浮层 */
 .reel-announcement {
   position: absolute;
-  top: 50%;
+  top: 56%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
+  width: 85%;
   pointer-events: none;
   display: flex;
   justify-content: center;
@@ -677,6 +656,35 @@ body {
 .btn-spin:active {
   transform: scale(0.96);
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+}
+
+.btn-qimen-spin {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffd700 0%, #e6a100 50%, #b8860b 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.6) !important;
+}
+
+.spin-taiji-icon {
+  font-size: 20px;
+  color: #1a1202;
+  display: inline-block;
+  animation: spinTaijiSlow 8s linear infinite;
+}
+
+@keyframes spinTaijiSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-btn-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #1f1400;
+  letter-spacing: 1.5px;
 }
 
 .btn-spin.disabled {

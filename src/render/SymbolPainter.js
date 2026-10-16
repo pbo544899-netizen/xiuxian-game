@@ -187,13 +187,13 @@ class SymbolPainter {
 
     ctx.save();
 
-    // 1. 绘制底板微光卡片 (中心品质光晕)
+    // 1. 绘制底板微光卡片 (中心翡翠灵玉微光)
     ctx.beginPath();
     this._drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 7);
     const cardGrad = ctx.createRadialGradient(cx, cy, 6, cx, cy, cardW * 0.7);
-    cardGrad.addColorStop(0, '#161c28');
-    cardGrad.addColorStop(0.65, '#0b0f16');
-    cardGrad.addColorStop(1, '#06080d');
+    cardGrad.addColorStop(0, 'rgba(16, 52, 34, 0.85)');
+    cardGrad.addColorStop(0.65, 'rgba(10, 34, 22, 0.90)');
+    cardGrad.addColorStop(1, 'rgba(5, 20, 13, 0.95)');
     ctx.fillStyle = cardGrad;
     ctx.fill();
 

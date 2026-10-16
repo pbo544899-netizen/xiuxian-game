@@ -13,11 +13,20 @@ class CanvasRenderer {
     this.ctx = canvas.getContext('2d');
     this.symbolPainter = new window.SlotsRPG.SymbolPainter();
 
-    // 逻辑视口规格 (680 x 420)
-    this.logicalWidth = 680;
-    this.logicalHeight = 420;
-    this.colWidth = this.logicalWidth / 5;
-    this.rowHeight = this.logicalHeight / 3;
+    // 【方案B·周天奇门阵盘 · 浑天浑元罗盘】
+    this.logicalWidth  = 680;
+    this.logicalHeight = 680;   // 正方形画布，完全契合圆形阵盘
+    this.diskCX = 340;
+    this.diskCY = 340;
+    this.diskRadius  = 320;     // 奇门阵盘外环半径
+
+    // 内部玉石阵眼矩阵 (5 列 x 3 行，单元格 100x100，完全内嵌于阵盘内，四周留有雕花神印)
+    this.colWidth  = 100;
+    this.rowHeight = 100;
+    this.gridWidth  = this.colWidth * 5;  // 500
+    this.gridHeight = this.rowHeight * 3; // 300
+    this.gridOffsetX = (this.logicalWidth - this.gridWidth) / 2; // 90
+    this.gridOffsetY = 205; // 居中微下移，上方为太极神印天枢拱门预留 145px
 
     // 阵列状态 (5 列，每列 3 个阵眼)
     this.reels = [];
@@ -398,12 +407,17 @@ class CanvasRenderer {
     const now = Date.now();
     const breathPulse = 0.5 + 0.5 * Math.sin(now / 220);
 
-    // 1. 渲染古玉青铜【周天奇门阵盘】底座与八卦天象
+    // 1. 渲染完整的圆形阵盘底座（星空 + 巨型铜环 + 上方太极法印 + 玉石衬底 + 底部莲花托座）
     this._renderArrayPlateBackground(ctx, breathPulse);
 
     const gm = window.SlotsRPG.GameManager;
     const potLevel = gm ? gm.level : 1;
     const worldTier = gm ? (gm.currentWorldTier || 1) : 1;
+
+    // ── 开始阵盘内部 15 处天机符穴渲染区 ──────────────────────
+    ctx.save();
+    // 平移到玉石阵座坐标系 (X: 90, Y: 205)
+    ctx.translate(this.gridOffsetX, this.gridOffsetY);
 
     // 2. 渲染 15 处天机符穴 (阵眼) 与承载神物
     for (let c = 0; c < 5; c++) {
@@ -420,7 +434,7 @@ class CanvasRenderer {
         const cellKey = `${r},${c}`;
         const isWinning = this.activeWinningCells.has(cellKey);
 
-        // 绘制青铜灵玉凹槽阵眼
+        // 绘制翡翠玉石凹槽阵眼
         this._drawArrayBasin(
           ctx, colX, rowY, this.colWidth, this.rowHeight,
           isWinning, reel.state === 'spinning', breathPulse,
@@ -444,14 +458,11 @@ class CanvasRenderer {
           if (isWinning) {
             ctx.globalAlpha = 1.0;
             this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, true, potLevel, worldTier);
-            // 阵眼共鸣神圣光环
             this._drawWinningBasinResonance(ctx, colX, rowY, this.colWidth, this.rowHeight, breathPulse);
           } else if (isSpinActive) {
-            // 激荡推演中：伴随微弱仙光灵气虚影
             ctx.globalAlpha = 0.85;
             this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, false, potLevel, worldTier);
           } else {
-            // 定穴停驻：非共鸣阵眼优雅隐入玉石石纹
             ctx.globalAlpha = this.nonWinningAlpha;
             this.symbolPainter.drawSymbol(ctx, symId, colX, rowY, this.colWidth, this.rowHeight, false, potLevel, worldTier);
           }
@@ -460,10 +471,10 @@ class CanvasRenderer {
       }
     }
 
-    // 3. 渲染定穴冲击灵波
+    // 3. 渲染定穴冲击灵波（在 translate 区内，坐标完全自适应）
     this._renderShockwaves(ctx);
 
-    // 4. 渲染【天道灵脉阵纹 (Winning Veins)】连携闪电与星轨
+    // 4. 渲染【天道灵脉阵纹】连携闪电与星轨
     if (this.winningLines && this.winningLines.length > 0 && this.isDissolving) {
       this._drawCelestialVeinPaylines(ctx, breathPulse);
     }
@@ -501,154 +512,315 @@ class CanvasRenderer {
       ctx.fillText(ft.text, ft.x, ft.y);
       ctx.restore();
     });
+
+    ctx.restore(); // 恢复：移除平移
+    // ── 符穴内部渲染区结束 ─────────────────────────────────
+
+    // 7. 在外层绘制巨型铜环外围、旋转铭文与八卦灵珠
+    this._renderDiskOuterRing(ctx, breathPulse);
   }
 
   /**
-   * 绘制古玉青铜【周天奇门阵盘】底座与八卦星野纹理
-   * 升级：星空宇宙背景 + 巨型圆形铜质阵盘外环 + 翡翠玉青色调
+   * 绘制浑天奇门阵盘底座与天象：
+   * 1. 虚空星野
+   * 2. 巨型玄铜底盘
+   * 3. 顶部太极阴阳天枢印 (带缓慢旋转与仙气弥漫)
+   * 4. 浑元翡翠玉牒底座 (承载 15 处阵眼)
+   * 5. 底部地脉铜莲托座
    */
   _renderArrayPlateBackground(ctx, breathPulse) {
-    const w = this.logicalWidth;
-    const h = this.logicalHeight;
-    const cx = w / 2;
-    const cy = h / 2;
+    const w  = this.logicalWidth;
+    const h  = this.logicalHeight;
+    const cx = this.diskCX; // 340
+    const cy = this.diskCY; // 340
+    const diskR = this.diskRadius; // 320
 
-    // 1. 深邃星空宇宙底色（深蓝玄青）
-    const bgGrad = ctx.createRadialGradient(cx, cy * 0.6, 20, cx, cy, w * 0.85);
-    bgGrad.addColorStop(0, '#0a1e2a');
-    bgGrad.addColorStop(0.35, '#071828');
-    bgGrad.addColorStop(0.7, '#050f1a');
-    bgGrad.addColorStop(1, '#030810');
+    // 1. 全域深邃星空底色
+    const bgGrad = ctx.createRadialGradient(cx, cy * 0.7, 20, cx, cy, w * 0.72);
+    bgGrad.addColorStop(0, '#0b202f');
+    bgGrad.addColorStop(0.35, '#071726');
+    bgGrad.addColorStop(0.75, '#040d17');
+    bgGrad.addColorStop(1, '#02060b');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // 2. 宇宙星野随机星点（一次初始化，持久闪烁）
+    // 2. 星野随机闪烁星芒
     if (!this._stars) {
       this._stars = [];
-      for (let i = 0; i < 90; i++) {
+      for (let i = 0; i < 110; i++) {
         this._stars.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          r: Math.random() * 1.4 + 0.2,
+          r: Math.random() * 1.5 + 0.2,
           phase: Math.random() * Math.PI * 2,
-          color: Math.random() > 0.7 ? 'rgba(160,220,255,' : 'rgba(200,230,255,'
+          color: Math.random() > 0.65 ? 'rgba(160,230,255,' : 'rgba(210,240,255,'
         });
       }
     }
     const now = Date.now();
     this._stars.forEach(s => {
-      const alpha = 0.2 + 0.5 * (0.5 + 0.5 * Math.sin(now / 1500 + s.phase));
+      const alpha = 0.15 + 0.5 * (0.5 + 0.5 * Math.sin(now / 1500 + s.phase));
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = s.color + alpha.toFixed(2) + ')';
       ctx.fill();
     });
 
-    // 3. 圆形阵盘星域大气辉光（青翠灵气）
-    const diskR = Math.min(w * 0.56, h * 0.92);
+    // 3. 巨型圆盘主体内部深青玉质填充
     ctx.save();
     ctx.translate(cx, cy);
 
-    const atmGlow = ctx.createRadialGradient(0, 0, diskR * 0.35, 0, 0, diskR * 1.15);
-    atmGlow.addColorStop(0, `rgba(0, 120, 100, ${0.12 + 0.06 * breathPulse})`);
-    atmGlow.addColorStop(0.5, `rgba(0, 90, 70, ${0.07 + 0.03 * breathPulse})`);
-    atmGlow.addColorStop(1, 'transparent');
-    ctx.fillStyle = atmGlow;
+    const plateFill = ctx.createRadialGradient(0, 0, 0, 0, 0, diskR - 22);
+    plateFill.addColorStop(0,   `rgba(8, 32, 22, ${0.92 + 0.04 * breathPulse})`);
+    plateFill.addColorStop(0.65, `rgba(5, 20, 14, 0.96)`);
+    plateFill.addColorStop(1,   `rgba(3, 12, 8, 0.98)`);
+    ctx.fillStyle = plateFill;
     ctx.beginPath();
-    ctx.arc(0, 0, diskR * 1.25, 0, Math.PI * 2);
+    ctx.arc(0, 0, diskR - 20, 0, Math.PI * 2);
     ctx.fill();
 
-    // 4. 外圈主铜环（厚实，古朴青铜质感）
-    ctx.shadowColor = `rgba(0, 190, 150, ${0.5 + 0.2 * breathPulse})`;
-    ctx.shadowBlur = 20 + 12 * breathPulse;
-    ctx.strokeStyle = `rgba(40, 150, 120, ${0.7 + 0.15 * breathPulse})`;
-    ctx.lineWidth = 16;
+    // 内部青翠灵气氤氲
+    const nebulaGlow = ctx.createRadialGradient(0, -60, 20, 0, 0, diskR * 0.95);
+    nebulaGlow.addColorStop(0, `rgba(0, 160, 120, ${0.16 + 0.08 * breathPulse})`);
+    nebulaGlow.addColorStop(0.5, `rgba(0, 100, 75, ${0.08 + 0.04 * breathPulse})`);
+    nebulaGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = nebulaGlow;
     ctx.beginPath();
-    ctx.arc(0, 0, diskR, 0, Math.PI * 2);
+    ctx.arc(0, 0, diskR - 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore(); // 退出圆心坐标系
+
+    // 4. 【顶部太极阴阳天枢印】（位于玉牒上方，拱卫天心）
+    const taijiCenterY = 126;
+    const taijiR = 26;
+    ctx.save();
+
+    // 太极拱门青铜基座
+    ctx.beginPath();
+    ctx.arc(cx, taijiCenterY, taijiR + 8, Math.PI * 0.85, Math.PI * 2.15);
+    ctx.strokeStyle = `rgba(180, 140, 50, ${0.65 + 0.2 * breathPulse})`;
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#c8a020';
+    ctx.shadowBlur = 10;
     ctx.stroke();
 
-    // 4b. 内侧金色细纹
-    ctx.shadowBlur = 5;
-    ctx.strokeStyle = `rgba(180, 140, 50, ${0.55 + 0.15 * breathPulse})`;
+    // 两侧青铜祥云舒展飞翼
+    ctx.strokeStyle = `rgba(40, 150, 120, ${0.6 + 0.15 * breathPulse})`;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(cx - taijiR - 8, taijiCenterY);
+    ctx.bezierCurveTo(cx - taijiR - 35, taijiCenterY - 15, cx - taijiR - 60, taijiCenterY + 12, cx - taijiR - 85, taijiCenterY + 4);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + taijiR + 8, taijiCenterY);
+    ctx.bezierCurveTo(cx + taijiR + 35, taijiCenterY - 15, cx + taijiR + 60, taijiCenterY + 12, cx + taijiR + 85, taijiCenterY + 4);
+    ctx.stroke();
+
+    // 旋转太极双鱼玉核
+    ctx.translate(cx, taijiCenterY);
+    ctx.rotate(this.taijiAngle * 0.8);
+
+    // 外圈金边
+    ctx.beginPath();
+    ctx.arc(0, 0, taijiR, 0, Math.PI * 2);
+    ctx.fillStyle = '#051810';
+    ctx.fill();
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#00e6a8';
+    ctx.shadowBlur = 12 * breathPulse;
+    ctx.stroke();
+
+    // 阳半弧 (青翠灵玉)
+    ctx.beginPath();
+    ctx.arc(0, 0, taijiR, -Math.PI / 2, Math.PI / 2);
+    ctx.arc(0, taijiR / 2, taijiR / 2, Math.PI / 2, -Math.PI / 2, true);
+    ctx.arc(0, -taijiR / 2, taijiR / 2, Math.PI / 2, -Math.PI / 2, false);
+    ctx.fillStyle = '#00d492';
+    ctx.fill();
+
+    // 阴半弧 (皓白仙辉)
+    ctx.beginPath();
+    ctx.arc(0, 0, taijiR, Math.PI / 2, -Math.PI / 2);
+    ctx.arc(0, -taijiR / 2, taijiR / 2, -Math.PI / 2, Math.PI / 2, true);
+    ctx.arc(0, taijiR / 2, taijiR / 2, -Math.PI / 2, Math.PI / 2, false);
+    ctx.fillStyle = '#e8fbf3';
+    ctx.fill();
+
+    // 阳鱼眼 (皓白)
+    ctx.beginPath();
+    ctx.arc(0, -taijiR / 2, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8fbf3';
+    ctx.fill();
+
+    // 阴鱼眼 (翠绿)
+    ctx.beginPath();
+    ctx.arc(0, taijiR / 2, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#00d492';
+    ctx.fill();
+
+    ctx.restore(); // 退出太极中心
+
+    // 5. 【浑元翡翠玉牒底座】(承托 15 处阵眼的统一玉石碑面)
+    const gx = this.gridOffsetX; // 90
+    const gy = this.gridOffsetY; // 205
+    const gw = this.gridWidth;   // 500
+    const gh = this.gridHeight;  // 300
+    const plaquePad = 8;
+    const px = gx - plaquePad;
+    const py = gy - plaquePad;
+    const pw = gw + plaquePad * 2;
+    const ph = gh + plaquePad * 2;
+
+    ctx.save();
+    // 玉牒底板
+    this.symbolPainter._drawRoundedRect(ctx, px, py, pw, ph, 14);
+    const jadePlaqueGrad = ctx.createLinearGradient(px, py, px, py + ph);
+    jadePlaqueGrad.addColorStop(0, 'rgba(14, 45, 30, 0.94)');
+    jadePlaqueGrad.addColorStop(0.5, 'rgba(8, 28, 18, 0.96)');
+    jadePlaqueGrad.addColorStop(1, 'rgba(5, 18, 12, 0.98)');
+    ctx.fillStyle = jadePlaqueGrad;
+    ctx.fill();
+
+    // 玉牒青铜外框
+    ctx.strokeStyle = `rgba(0, 160, 120, ${0.45 + 0.15 * breathPulse})`;
     ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#00a87a';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    // 玉牒内圈金色饰线
+    ctx.shadowBlur = 0;
+    this.symbolPainter._drawRoundedRect(ctx, px + 3, py + 3, pw - 6, ph - 6, 12);
+    ctx.strokeStyle = `rgba(180, 140, 50, ${0.4 + 0.15 * breathPulse})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // 阵眼行列分界细雕青铜道纹
+    ctx.strokeStyle = 'rgba(0, 150, 110, 0.15)';
+    ctx.lineWidth = 1;
+    for (let c = 1; c < 5; c++) {
+      const colLineX = gx + c * this.colWidth;
+      ctx.beginPath();
+      ctx.moveTo(colLineX, py + 6);
+      ctx.lineTo(colLineX, py + ph - 6);
+      ctx.stroke();
+    }
+    for (let r = 1; r < 3; r++) {
+      const rowLineY = gy + r * this.rowHeight;
+      ctx.beginPath();
+      ctx.moveTo(px + 6, rowLineY);
+      ctx.lineTo(px + pw - 6, rowLineY);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // 6. 【底部地脉青铜莲座】(锚定阵盘底部)
+    const lotusY = py + ph + 6;
+    ctx.save();
+    ctx.strokeStyle = `rgba(180, 140, 50, ${0.55 + 0.2 * breathPulse})`;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#c8a020';
+    ctx.shadowBlur = 8;
+
+    // 底部主弧
+    ctx.beginPath();
+    ctx.moveTo(cx - 75, lotusY);
+    ctx.quadraticCurveTo(cx, lotusY + 16, cx + 75, lotusY);
+    ctx.stroke();
+
+    // 莲瓣中枢尖端
+    ctx.beginPath();
+    ctx.moveTo(cx - 20, lotusY + 8);
+    ctx.lineTo(cx, lotusY + 24);
+    ctx.lineTo(cx + 20, lotusY + 8);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  /**
+   * 在最上层绘制圆盘外围厚实青铜环、流转符文与八卦星辰
+   */
+  _renderDiskOuterRing(ctx, breathPulse) {
+    const cx = this.diskCX; // 340
+    const cy = this.diskCY; // 340
+    const diskR = this.diskRadius; // 320
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 1. 圆环外侧柔和道韵晕染
+    ctx.shadowColor = `rgba(0, 190, 150, ${0.55 + 0.25 * breathPulse})`;
+    ctx.shadowBlur  = 24 + 14 * breathPulse;
+    ctx.strokeStyle = `rgba(32, 140, 110, ${0.75 + 0.18 * breathPulse})`;
+    ctx.lineWidth   = 22;
     ctx.beginPath();
     ctx.arc(0, 0, diskR - 10, 0, Math.PI * 2);
     ctx.stroke();
-    // 最内侧翠玉边线
-    ctx.strokeStyle = `rgba(0, 160, 120, ${0.3 + 0.1 * breathPulse})`;
-    ctx.lineWidth = 1.5;
+
+    // 2. 铜环内侧精铸金线
+    ctx.shadowBlur  = 6;
+    ctx.strokeStyle = `rgba(200, 160, 55, ${0.7 + 0.2 * breathPulse})`;
+    ctx.lineWidth   = 2.5;
     ctx.beginPath();
-    ctx.arc(0, 0, diskR - 14, 0, Math.PI * 2);
+    ctx.arc(0, 0, diskR - 21, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 5. 外圈旋转古文字铭刻（缓慢转动）
+    // 3. 铜环外缘深青玄铁收边
+    ctx.shadowBlur  = 0;
+    ctx.strokeStyle = 'rgba(16, 52, 40, 0.9)';
+    ctx.lineWidth   = 3.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, diskR + 2, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 4. 外圈旋转古道文铭刻 (缓缓绕圈流转)
     ctx.save();
-    ctx.rotate(this.taijiAngle * 0.25);
-    const inscriptions = '周天奇门阵法震坎艮离坤兑乾巽';
-    const charFontSize = Math.round(diskR * 0.085);
-    ctx.font = `${charFontSize}px serif`;
-    ctx.fillStyle = `rgba(180, 145, 55, ${0.4 + 0.12 * breathPulse})`;
-    ctx.shadowColor = '#c8a82a';
-    ctx.shadowBlur = 5;
+    ctx.rotate(this.taijiAngle * 0.2);
+    const inscriptions = '周天奇门阵法·震坎艮·离坤兑·乾巽';
+    const charFontSize = Math.round(diskR * 0.068);
+    ctx.font      = `bold ${charFontSize}px serif`;
+    ctx.fillStyle = `rgba(195, 160, 55, ${0.55 + 0.15 * breathPulse})`;
+    ctx.shadowColor = '#c8a020';
+    ctx.shadowBlur  = 5;
+    const ringR = diskR - 11;
     inscriptions.split('').forEach((ch, i) => {
+      if (ch === ' ') return;
       const angle = (i / inscriptions.length) * Math.PI * 2 - Math.PI / 2;
       ctx.save();
       ctx.rotate(angle);
-      ctx.translate(0, -(diskR - 5));
-      ctx.fillText(ch, -charFontSize * 0.45, charFontSize * 0.38);
+      ctx.translate(0, -ringR);
+      ctx.rotate(Math.PI / 2); // 文字沿切线朝外
+      ctx.fillText(ch, -charFontSize * 0.42, charFontSize * 0.38);
       ctx.restore();
     });
     ctx.restore();
 
-    ctx.restore(); // undo translate(cx, cy)
-
-    // 6. 阵盘中心太极气旋暗纹（旋转缓慢）
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(this.taijiAngle);
-    ctx.globalAlpha = 0.06 + 0.03 * breathPulse;
-    ctx.strokeStyle = '#00c8a0';
-    ctx.lineWidth = 1.5;
-    const tR = Math.min(w, h) * 0.35;
-    ctx.beginPath();
-    ctx.arc(0, 0, tR, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(0, -tR / 2, tR / 2, -Math.PI / 2, Math.PI / 2);
-    ctx.arc(0, tR / 2, tR / 2, Math.PI / 2, -Math.PI / 2, true);
-    ctx.stroke();
-    ctx.restore();
-
-    // 7. 四角周易卦象刻文（颜色换为翠绿金调）
-    ctx.save();
-    ctx.font = 'bold 12px serif';
-    ctx.fillStyle = `rgba(0, 180, 140, ${0.4 + 0.15 * breathPulse})`;
-    ctx.shadowColor = '#00c896';
-    ctx.shadowBlur = 5;
-    ctx.fillText('☰ 乾', 10, 18);
-    ctx.fillText('☲ 离', w - 40, 18);
-    ctx.fillText('☵ 坎', 10, h - 8);
-    ctx.fillText('☷ 坤', w - 40, h - 8);
-    ctx.restore();
-
-    // 8. 行列分界细刻道痕（翠绿色）
-    ctx.strokeStyle = 'rgba(0, 160, 120, 0.1)';
-    ctx.lineWidth = 1;
-    for (let c = 1; c < 5; c++) {
-      const px = c * this.colWidth;
+    // 5. 八方八卦方位真元宝石（八卦八曜）
+    const baguaAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+    baguaAngles.forEach((deg, i) => {
+      const rad = (deg - 90) * Math.PI / 180;
+      const dotR = diskR - 1;
+      const px = Math.cos(rad) * dotR;
+      const py = Math.sin(rad) * dotR;
       ctx.beginPath();
-      ctx.moveTo(px, 6);
-      ctx.lineTo(px, h - 6);
-      ctx.stroke();
-    }
-    for (let r = 1; r < 3; r++) {
-      const ry = r * this.rowHeight;
-      ctx.beginPath();
-      ctx.moveTo(6, ry);
-      ctx.lineTo(w - 6, ry);
-      ctx.stroke();
-    }
+      ctx.arc(px, py, 4.5 + 2 * breathPulse, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0
+        ? `rgba(0, 220, 170, ${0.75 + 0.25 * breathPulse})`
+        : `rgba(210, 170, 55, ${0.7 + 0.2 * breathPulse})`;
+      ctx.shadowColor = i % 2 === 0 ? '#00e6a8' : '#ffd700';
+      ctx.shadowBlur  = 12;
+      ctx.fill();
+    });
+
+    ctx.restore();
   }
+
 
   /**
    * 绘制 1 处独立凹槽阵眼 (Carved Jade Array Basin)
