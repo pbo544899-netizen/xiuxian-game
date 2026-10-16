@@ -10,7 +10,10 @@
 }
 
 body {
-  background-color: #05070a;
+  background-color: #020810;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0, 60, 80, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 80, 60, 0.3) 0%, transparent 55%);
   color: #e0e6ed;
   display: flex;
   justify-content: center;
@@ -31,12 +34,16 @@ body {
   height: 100vh;
   height: 100dvh;
   max-height: 940px;
-  background: radial-gradient(circle at 50% 30%, #151a24 0%, #0a0d13 100%);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(0, 80, 70, 0.55) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(0, 50, 80, 0.45) 0%, transparent 45%),
+    radial-gradient(circle at 50% 40%, rgba(5, 18, 30, 0.72) 0%, rgba(3, 10, 20, 0.82) 100%),
+    url('../assets/ui/qimen_array_bg.jpg') center center / cover no-repeat;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 160, 130, 0.15), 0 0 8px rgba(0, 190, 150, 0.1);
+  border: 1px solid rgba(0, 150, 110, 0.3);
   overflow: hidden;
 }
 
@@ -44,9 +51,9 @@ body {
 .top-hud {
   height: 64px;
   flex-shrink: 0;
-  background: rgba(15, 20, 30, 0.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(5, 14, 22, 0.78);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 160, 120, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -276,17 +283,20 @@ body {
   width: 100%;
   position: relative;
   border-radius: 12px;
-  background: #0d1117;
+  background: #070f18;
   padding: 6px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.15);
-  border: 2px solid rgba(212, 175, 55, 0.35);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0, 160, 120, 0.18);
+  border: 2px solid rgba(0, 150, 110, 0.4);
 }
 
-/* 周天奇门阵盘专属边框与青铜石刻质感 */
+/* 周天奇门阵盘专属边框与翡翠玉青铜质感 */
 .reel-frame.qimen-array-frame {
-  border: 2px solid rgba(212, 175, 55, 0.55);
-  background: radial-gradient(circle at 50% 50%, #0d1522 0%, #06090e 100%);
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.95), 0 0 22px rgba(56, 189, 248, 0.2), 0 0 35px rgba(212, 175, 55, 0.25);
+  border: 2px solid rgba(0, 170, 130, 0.6);
+  background: radial-gradient(circle at 50% 50%, #0a1a22 0%, #050d14 100%);
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    0 0 28px rgba(0, 170, 130, 0.3),
+    0 0 50px rgba(0, 120, 90, 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -297,10 +307,10 @@ body {
   font-size: 11px;
   font-family: serif;
   font-weight: bold;
-  color: rgba(212, 175, 55, 0.55);
+  color: rgba(0, 190, 145, 0.6);
   pointer-events: none;
   z-index: 5;
-  text-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
+  text-shadow: 0 0 8px rgba(0, 200, 155, 0.5);
 }
 .array-corner-seal.corner-tl { top: 6px; left: 8px; }
 .array-corner-seal.corner-tr { top: 6px; right: 8px; }
