@@ -73,6 +73,12 @@ class GameManager {
 
     // 核心子系统
     this.slotsEngine = new window.SlotsRPG.SlotsEngine();
+    this.dragonLootEngine = window.SlotsRPG.DragonLootEngine
+      ? new window.SlotsRPG.DragonLootEngine()
+      : null;
+    this.dragonCabinetManager = window.SlotsRPG.DragonCabinetManager
+      ? new window.SlotsRPG.DragonCabinetManager(this)
+      : null;
     this.player = new window.SlotsRPG.PlayerModel();
     this.player.gameManager = this;
     this.inventory = new window.SlotsRPG.InventoryManager(24);
@@ -427,12 +433,35 @@ class GameManager {
       this.renderer.startSpin();
     }
 
-    // 4. 核心计算生成结果 (除序章剧情首战外，所有战斗均由天机盘推演触发)
+    // 4. 核心计算生成结果 (神龙引宝双柜架构 / 兼容回退)
     let spinData;
     const ftueCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FTUESequence) || null;
     const isFTUEMode = !this.isPrologueComplete && this.prologueStep === 3 && ftueCfg;
 
-    if (isFTUEMode && this.prologueSpins < ftueCfg.targetInductionSpin) {
+    if (this.dragonLootEngine) {
+      let ftueScript = null;
+      if (isFTUEMode && this.prologueSpins < ftueCfg.targetInductionSpin) {
+        this.prologueSpins = (this.prologueSpins || 0) + 1;
+        ftueScript = ftueCfg.scriptedSpins[this.prologueSpins];
+      }
+      spinData = this.dragonLootEngine.spout({
+        player: this.player,
+        potSubLevel: this.potSubLevel,
+        multiplier: multiplier,
+        worldTier: this.worldTier,
+        options: {
+          forceBoss: this.isPotBreakthroughReady(),
+          forceMonster: false,
+          forceBonus: false
+        },
+        ftueScript: ftueScript,
+        isBreakthroughReady: this.isPotBreakthroughReady(),
+        hasJoinedSect: !this.player.isMortal
+      });
+      if (ftueScript && ftueScript.forceSectInduction) {
+        spinData.isSectInductionSpin = true;
+      }
+    } else if (isFTUEMode && this.prologueSpins < ftueCfg.targetInductionSpin) {
       this.prologueSpins = (this.prologueSpins || 0) + 1;
       const script = ftueCfg.scriptedSpins[this.prologueSpins];
 
@@ -600,7 +629,7 @@ class GameManager {
             }
           }
 
-          const newEquip = window.SlotsRPG.ItemModel.createEquipment(targetPart, qualityCode);
+          const newEquip = item.item || window.SlotsRPG.ItemModel.createEquipment(targetPart, qualityCode);
 
           // 高倍消耗词条顶格保底 (多倍消耗战力显著增强)
           if (mult > 1 && newEquip.stats) {
@@ -689,6 +718,32 @@ class GameManager {
 
     if (allLevelUps.length > 0) {
       window.SlotsRPG.EventBus.emit('PLAYER_LEVEL_UP', allLevelUps);
+    }
+
+    // 双柜结果与即时决策同步
+    if (this.dragonCabinetManager && (spinData.leftCabinet || spinData.rightCabinet)) {
+      this.dragonCabinetManager.setLoot(spinData.leftCabinet, spinData.rightCabinet);
+      window.SlotsRPG.EventBus.emit('DRAGON_LOOT_PRESENTED', {
+        leftCabinet: spinData.leftCabinet,
+        rightCabinet: spinData.rightCabinet,
+        comparison: this.dragonCabinetManager.comparisonData,
+        dragonRage: this.dragonLootEngine ? this.dragonLootEngine.dragonRage : 0
+      });
+
+      // 挂机智能筛选自动化
+      if (this.isAutoSpinning && this.dragonCabinetManager.comparisonData) {
+        const comp = this.dragonCabinetManager.comparisonData;
+        if (this.dragonCabinetManager.autoSettings.pauseOnPowerIncrease && comp.isUpgrade) {
+          this.stopAutoSpin();
+          if (this.renderer) {
+            this.renderer.addFloatingText('大爆极品神装！已自动为您驻足，请定夺！', '#ffd700');
+          }
+        } else if (this.dragonCabinetManager.autoSettings.autoEquipBetter && comp.isUpgrade) {
+          this.dragonCabinetManager.equipNewItem();
+        } else if (this.dragonCabinetManager.autoSettings.autoSmeltLesser && !comp.isUpgrade) {
+          this.dragonCabinetManager.smeltNewItem();
+        }
+      }
     }
 
     this.emitStateChange();

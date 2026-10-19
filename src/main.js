@@ -5,11 +5,13 @@
  * 纯前端零外部依赖，严格无跨域障碍
  */
 window.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('reel-canvas');
+  const canvas = document.getElementById('dragon-fx-canvas') || document.getElementById('reel-canvas');
   if (!canvas) return;
 
-  // 1. 初始化画布渲染器与游戏总控器
-  const renderer = new window.SlotsRPG.CanvasRenderer(canvas);
+  // 1. 初始化神龙画布渲染器与游戏总控器
+  const renderer = window.SlotsRPG.DragonSpoutRenderer
+    ? new window.SlotsRPG.DragonSpoutRenderer(canvas)
+    : new window.SlotsRPG.CanvasRenderer(canvas);
   const gameManager = window.SlotsRPG.GameManager;
   window.gameManager = gameManager;
   gameManager.init(renderer);
@@ -4175,6 +4177,196 @@ window.addEventListener('DOMContentLoaded', () => {
       if (modalRelief) modalRelief.classList.add('hidden');
     });
   }
+
+  // ==========================================
+  // 16.1 神龙引宝 · 乾坤双柜与即时换装交互绑定
+  // ==========================================
+  const dragonGearCompareBar = document.getElementById('dragon-gear-compare-bar');
+  const compareCurrentDesc = document.getElementById('compare-current-desc');
+  const compareNewDesc = document.getElementById('compare-new-desc');
+  const comparePowerDiff = document.getElementById('compare-power-diff');
+  const btnGearEquip = document.getElementById('btn-gear-equip');
+  const btnGearSmelt = document.getElementById('btn-gear-smelt');
+
+  const cabinetLeftPlaceholder = document.getElementById('cabinet-left-placeholder');
+  const cabinetLeftShowcase = document.getElementById('cabinet-left-showcase');
+  const leftItemIcon = document.getElementById('left-item-icon');
+  const leftItemName = document.getElementById('left-item-name');
+  const leftItemPower = document.getElementById('left-item-power');
+
+  const cabinetRightPlaceholder = document.getElementById('cabinet-right-placeholder');
+  const cabinetRightShowcase = document.getElementById('cabinet-right-showcase');
+  const rightItemIcon = document.getElementById('right-item-icon');
+  const rightItemName = document.getElementById('right-item-name');
+  const rightItemGain = document.getElementById('right-item-gain');
+
+  const dragonRageBarFill = document.getElementById('dragon-rage-bar-fill');
+  const dragonRageText = document.getElementById('dragon-rage-text');
+
+  const btnAutoFilter = document.getElementById('btn-auto-filter');
+  const autoFilterPopover = document.getElementById('auto-filter-popover');
+  const btnCloseFilter = document.getElementById('btn-close-filter');
+  const chkAutoEquip = document.getElementById('chk-auto-equip');
+  const chkAutoSmelt = document.getElementById('chk-auto-smelt');
+  const chkPauseUpgrade = document.getElementById('chk-pause-upgrade');
+  const chkAutoFight = document.getElementById('chk-auto-fight');
+
+  // 双柜展示与即时决策数据流驱动
+  window.SlotsRPG.EventBus.on('DRAGON_LOOT_PRESENTED', (data) => {
+    const { leftCabinet, rightCabinet, comparison, dragonRage } = data;
+
+    // 1. 更新真龙狂暴进度
+    if (dragonRageBarFill && dragonRageText) {
+      const rage = Math.min(100, Math.max(0, dragonRage || 0));
+      dragonRageBarFill.style.width = `${rage}%`;
+      dragonRageText.innerText = `${rage} / 100`;
+    }
+
+    // 2. 更新右柜展示 (天道灵材)
+    if (rightCabinet) {
+      if (cabinetRightPlaceholder) cabinetRightPlaceholder.classList.add('hidden');
+      if (cabinetRightShowcase) cabinetRightShowcase.classList.remove('hidden');
+
+      const icon = rightCabinet.item ? rightCabinet.item.icon : 'assets/symbols/SYM_05.png';
+      const name = rightCabinet.item ? rightCabinet.item.name : '天道灵石';
+      const desc = rightCabinet.desc || (rightCabinet.energyGain ? `机缘 +${rightCabinet.energyGain}` : `道行 +${rightCabinet.expGain || 50}`);
+
+      if (rightItemIcon) rightItemIcon.src = icon;
+      if (rightItemName) rightItemName.innerText = name;
+      if (rightItemGain) rightItemGain.innerText = desc;
+    }
+
+    // 3. 更新左柜展示 (造化玄兵 / 奇遇)
+    if (leftCabinet) {
+      if (cabinetLeftPlaceholder) cabinetLeftPlaceholder.classList.add('hidden');
+      if (cabinetLeftShowcase) cabinetLeftShowcase.classList.remove('hidden');
+
+      if (leftCabinet.type === 'equip' && leftCabinet.item) {
+        const item = leftCabinet.item;
+        if (leftItemIcon) leftItemIcon.src = item.icon || 'assets/symbols/SYM_06.png';
+        if (leftItemName) {
+          leftItemName.innerText = item.name;
+          leftItemName.style.color = item.qualityColor || '#ffd700';
+        }
+        if (leftItemPower) {
+          leftItemPower.innerText = `战力 ${item.power}`;
+        }
+
+        // 若存在即时对比数据，展示下方即时决策栏
+        if (comparison && dragonGearCompareBar) {
+          dragonGearCompareBar.classList.remove('hidden');
+          const curEq = comparison.currentEquip;
+          const curName = curEq ? curEq.name : '未穿戴';
+          const curPower = curEq ? curEq.power : 0;
+          const newPower = item.power || 0;
+          const diff = comparison.powerDiff;
+
+          if (compareCurrentDesc) compareCurrentDesc.innerText = `在身: ${curName} (${curPower})`;
+          if (compareNewDesc) compareNewDesc.innerText = `新获: ${item.name} (${newPower})`;
+          if (comparePowerDiff) {
+            comparePowerDiff.innerText = `${diff >= 0 ? '+' : ''}${diff} ⬆`;
+            comparePowerDiff.style.color = diff >= 0 ? '#52c41a' : '#ff4d4f';
+          }
+        }
+      } else if (leftCabinet.type === 'battle') {
+        if (leftItemIcon) leftItemIcon.src = 'assets/symbols/SYM_12.png';
+        if (leftItemName) {
+          leftItemName.innerText = leftCabinet.name || '妖兽突袭';
+          leftItemName.style.color = '#ff4d4f';
+        }
+        if (leftItemPower) leftItemPower.innerText = '⚠️ 警报: 妖气冲天';
+        if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+      } else if (leftCabinet.type === 'bonus') {
+        if (leftItemIcon) leftItemIcon.src = 'assets/symbols/SYM_13.png';
+        if (leftItemName) {
+          leftItemName.innerText = leftCabinet.name || '龙域造化秘境';
+          leftItemName.style.color = '#ffd700';
+        }
+        if (leftItemPower) leftItemPower.innerText = '✨ 秘境空间展开';
+        if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+      }
+    }
+  });
+
+  // 一键穿戴 (旧装回炉)
+  if (btnGearEquip) {
+    btnGearEquip.addEventListener('click', () => {
+      if (gameManager.dragonCabinetManager) {
+        const res = gameManager.dragonCabinetManager.equipNewItem();
+        if (res && res.success) {
+          if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+          if (leftItemPower) leftItemPower.innerText = '✅ 已穿戴';
+          if (renderer && renderer.addFloatingText) {
+            renderer.addFloatingText(`换装成功！战力提升！`, '#38ef7d');
+          }
+        }
+      }
+    });
+  }
+
+  // 熔炼换灵
+  if (btnGearSmelt) {
+    btnGearSmelt.addEventListener('click', () => {
+      if (gameManager.dragonCabinetManager) {
+        const res = gameManager.dragonCabinetManager.smeltNewItem();
+        if (res && res.success) {
+          if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+          if (leftItemPower) leftItemPower.innerText = '♻️ 已熔炼';
+          if (renderer && renderer.addFloatingText) {
+            renderer.addFloatingText(`熔铸神兵！获得 +${res.energy} 机缘`, '#ffd700');
+          }
+        }
+      }
+    });
+  }
+
+  // 自动筛选浮层
+  if (btnAutoFilter) {
+    btnAutoFilter.addEventListener('click', () => {
+      if (autoFilterPopover) autoFilterPopover.classList.toggle('hidden');
+    });
+  }
+  if (btnCloseFilter) {
+    btnCloseFilter.addEventListener('click', () => {
+      if (autoFilterPopover) autoFilterPopover.classList.add('hidden');
+    });
+  }
+  if (chkAutoEquip) {
+    chkAutoEquip.addEventListener('change', (e) => {
+      if (gameManager.dragonCabinetManager) {
+        gameManager.dragonCabinetManager.autoSettings.autoEquipBetter = e.target.checked;
+      }
+    });
+  }
+  if (chkAutoSmelt) {
+    chkAutoSmelt.addEventListener('change', (e) => {
+      if (gameManager.dragonCabinetManager) {
+        gameManager.dragonCabinetManager.autoSettings.autoSmeltLesser = e.target.checked;
+      }
+    });
+  }
+  if (chkPauseUpgrade) {
+    chkPauseUpgrade.addEventListener('change', (e) => {
+      if (gameManager.dragonCabinetManager) {
+        gameManager.dragonCabinetManager.autoSettings.pauseOnPowerIncrease = e.target.checked;
+      }
+    });
+  }
+  if (chkAutoFight) {
+    chkAutoFight.addEventListener('change', (e) => {
+      if (gameManager.dragonCabinetManager) {
+        gameManager.dragonCabinetManager.autoSettings.autoFightMonsters = e.target.checked;
+      }
+    });
+  }
+
+  window.SlotsRPG.EventBus.on('DRAGON_FRENZY_TRIGGERED', (data) => {
+    if (renderer && renderer.addFloatingText) {
+      renderer.addFloatingText('🔥【真龙狂暴】降世！极速连喷 10 次！', '#ffd700');
+    }
+    const rageTitle = document.getElementById('dragon-rage-title');
+    if (rageTitle) rageTitle.innerText = '🔥【真龙狂暴】爆发中！免费连喷！';
+  });
 
   // 17. 序章凡人剧情与叩问仙门交互绑定
   if (btnPrologueBattle) {

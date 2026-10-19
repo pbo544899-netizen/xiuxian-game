@@ -631,6 +631,8 @@ body {
 
 .action-buttons {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 12px;
   width: 100%;
 }
@@ -9541,4 +9543,581 @@ body.tier-spirit-realm .reel-frame {
     border-radius: 16px;
     box-shadow: 0 0 45px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.15);
   }
+}
+
+/* ============================================================
+ * 周天神龙 · 乾坤双柜 (Option B: 青铜古玉天工神机) 核心视觉样式
+ * ============================================================ */
+
+/* 背景与标题 */
+.dragon-header-title-box {
+  width: 100%;
+  text-align: center;
+  margin: 2px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.dragon-main-title {
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffd700 45%, #b8860b 80%, #795548 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.45)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
+  margin: 0;
+}
+
+/* 核心舞台区：神龙居顶，双柜在底，弹道居中 */
+.dragon-spout-stage {
+  width: 100%;
+  max-width: 440px;
+  height: 345px;
+  position: relative;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 25%, rgba(0, 60, 60, 0.35) 0%, rgba(3, 10, 18, 0.85) 75%),
+              linear-gradient(180deg, rgba(5, 15, 25, 0.5) 0%, rgba(2, 6, 12, 0.9) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* 穹顶神龙法相 */
+.dragon-head-box {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 175px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.dragon-head-sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 16px rgba(0, 229, 255, 0.3));
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: dragon-idle-breathe 4s ease-in-out infinite alternate;
+  mask-image: radial-gradient(ellipse at 50% 48%, black 50%, rgba(0, 0, 0, 0.7) 65%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 48%, black 50%, rgba(0, 0, 0, 0.7) 65%, transparent 75%);
+}
+
+@keyframes dragon-idle-breathe {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(0, 229, 255, 0.25)); }
+  100% { transform: translateY(3px) scale(1.02); filter: drop-shadow(0 8px 18px rgba(0,0,0,0.95)) drop-shadow(0 0 20px rgba(0, 229, 255, 0.45)); }
+}
+
+.dragon-head-sprite.charging {
+  animation: dragon-charge-pulse 0.25s infinite alternate !important;
+  filter: drop-shadow(0 0 25px #00e5ff) drop-shadow(0 0 35px #ffd700) !important;
+}
+
+@keyframes dragon-charge-pulse {
+  0% { transform: scale(1.01) rotate(-0.5deg); }
+  100% { transform: scale(1.04) rotate(0.5deg); }
+}
+
+.dragon-head-sprite.spouting {
+  transform: translateY(-4px) scale(1.06) !important;
+  filter: drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 45px #00e5ff) !important;
+}
+
+/* 龙息光效层 */
+.dragon-breath-glow {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.8) 0%, rgba(255, 215, 0, 0.4) 50%, transparent 80%);
+  filter: blur(6px);
+  opacity: 0.6;
+  animation: breath-glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes breath-glow-pulse {
+  0% { opacity: 0.4; transform: translateX(-50%) scale(0.85); }
+  100% { opacity: 0.85; transform: translateX(-50%) scale(1.15); }
+}
+
+/* 吐宝 Canvas 轨迹层 */
+.dragon-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* 乾坤双柜布局区 */
+.dragon-cabinets-container {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 2;
+}
+
+.dragon-cabinet {
+  flex: 1;
+  max-width: 160px;
+  height: 185px;
+  position: relative;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.dragon-cabinet.impact {
+  animation: cabinet-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cabinet-shake {
+  10%, 90% { transform: translate3d(-1px, -2px, 0) scale(1.02); filter: brightness(1.3); }
+  20%, 80% { transform: translate3d(2px, 1px, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, -1px, 0); }
+  40%, 60% { transform: translate3d(3px, 2px, 0); }
+}
+
+.cabinet-frame {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(184, 134, 11, 0.4);
+}
+
+.cabinet-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0.92;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 70%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 70%, transparent 95%);
+}
+
+.cabinet-header-tag {
+  position: absolute;
+  top: 6px;
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 8px rgba(255, 215, 0, 0.8);
+  letter-spacing: 2px;
+  z-index: 5;
+}
+
+.cabinet-slot-content {
+  position: relative;
+  width: 100%;
+  height: 145px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+/* 占位空态 */
+.cabinet-item-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0.65;
+}
+
+.placeholder-icon {
+  font-size: 26px;
+  filter: grayscale(0.5);
+}
+
+.placeholder-label {
+  font-size: 11px;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+/* 掉落展示态 */
+.cabinet-item-showcase {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: item-reveal 0.35s ease-out;
+}
+
+@keyframes item-reveal {
+  0% { transform: scale(0.6) translateY(20px); opacity: 0; }
+  70% { transform: scale(1.08) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.cabinet-item-pedestal {
+  position: absolute;
+  bottom: 12px;
+  width: 70px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.7) 0%, rgba(255, 215, 0, 0.3) 50%, transparent 80%);
+  filter: blur(4px);
+  animation: pedestal-pulse 2s infinite alternate;
+}
+
+@keyframes pedestal-pulse {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(1.2); opacity: 0.9; }
+}
+
+.cabinet-item-icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  animation: item-hover 2.5s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+@keyframes item-hover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
+}
+
+.cabinet-item-name {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  margin-top: 4px;
+  z-index: 2;
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.cabinet-item-power, .cabinet-item-gain {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38ef7d;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+  margin-top: 2px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+
+/* 即时换装对比栏 (核心决策) */
+.dragon-gear-compare-bar {
+  width: 100%;
+  max-width: 440px;
+  margin: 4px auto 2px auto;
+  background: linear-gradient(135deg, rgba(8, 20, 32, 0.95) 0%, rgba(4, 10, 18, 0.98) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 229, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.compare-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.compare-current-desc {
+  color: #94a3b8;
+  max-width: 38%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compare-arrow {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.compare-new-desc {
+  color: #ffd700;
+  font-weight: bold;
+  max-width: 38%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compare-power-diff {
+  font-weight: 900;
+  font-size: 14px;
+  color: #52c41a;
+  text-shadow: 0 0 8px rgba(82, 196, 26, 0.8);
+}
+
+.compare-action-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-gear-equip {
+  flex: 1.3;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-gear-equip:active {
+  transform: scale(0.96);
+  filter: brightness(1.1);
+}
+
+.btn-gear-smelt {
+  flex: 0.85;
+  background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.btn-gear-smelt:active {
+  transform: scale(0.96);
+}
+
+/* 真龙狂暴蓄力条 */
+.dragon-rage-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 2px auto;
+  box-sizing: border-box;
+  padding: 0 4px;
+}
+
+.dragon-rage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.dragon-rage-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ff9800;
+  text-shadow: 0 0 6px rgba(255, 152, 0, 0.5);
+}
+
+.dragon-rage-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd700;
+}
+
+.dragon-rage-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 152, 0, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.dragon-rage-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00 0%, #ffd700 60%, #ff3d00 100%);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.8);
+  transition: width 0.3s ease;
+}
+
+/* 八卦控制核心按钮 (纯正无拉伸圆形) */
+.btn-dragon-bagua-spin {
+  display: flex !important;
+  flex: 0 0 76px !important;
+  width: 76px !important;
+  height: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  aspect-ratio: 1 / 1 !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, #2d231b 0%, #15100c 80%, #0a0806 100%) !important;
+  border: 2px solid #ffd700 !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(184, 134, 11, 0.6) !important;
+  cursor: pointer;
+  padding: 0 !important;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-dragon-bagua-spin:hover {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(255, 215, 0, 0.8) !important;
+}
+
+.btn-dragon-bagua-spin:active {
+  transform: scale(0.94);
+}
+
+.dragon-bagua-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+  animation: bagua-dial-spin 30s linear infinite;
+}
+
+@keyframes bagua-dial-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-dragon-bagua-spin .spin-btn-title {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  margin-top: -2px;
+}
+
+.btn-auto-filter {
+  background: rgba(30, 41, 59, 0.85);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-auto-filter:hover {
+  background: rgba(51, 65, 85, 0.95);
+}
+
+/* 挂机智能筛选浮层 */
+.auto-filter-popover {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  width: 260px;
+  background: rgba(10, 16, 26, 0.97);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.95), 0 0 15px rgba(0, 229, 255, 0.2);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.btn-close-filter {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+  accent-color: #2ecc71;
+  cursor: pointer;
 }

@@ -54,25 +54,106 @@
           </div>
         </div>
 
-        <!-- 浑天奇门阵盘大标题 (书法金字) -->
-        <div class="qimen-header-title-box">
-          <h2 class="qimen-main-title">周天奇门阵盘</h2>
+        <!-- 周天神龙 · 乾坤吐宝大标题 (书法金字) -->
+        <div class="qimen-header-title-box dragon-header-title-box">
+          <h2 class="qimen-main-title dragon-main-title">周天神龙 · 乾坤吐宝</h2>
         </div>
 
-        <!-- 周天奇门阵盘 3x5 阵眼 Canvas 画布与阵中灵音宣告层 -->
-        <div class="reel-frame qimen-array-frame">
-          <canvas id="reel-canvas"></canvas>
+        <!-- 核心视觉区：天工神龙法相与乾坤双柜 -->
+        <div class="dragon-spout-stage" id="dragon-spout-stage">
+          <!-- 穹顶神龙法相 (青铜古玉天工神机) -->
+          <div class="dragon-head-box" id="dragon-head-box">
+            <img src="assets/dragon/dragon_head.png" alt="天工神龙" class="dragon-head-sprite" id="dragon-head-sprite" />
+            <div class="dragon-breath-glow" id="dragon-breath-glow"></div>
+          </div>
 
-          <!-- 阵盘居中显圣宣告文字层 -->
-          <div id="reel-announcement" class="reel-announcement">
+          <!-- 吐宝弹道与灵光粒子 Canvas -->
+          <canvas id="dragon-fx-canvas" class="dragon-fx-canvas"></canvas>
+
+          <!-- 乾坤双柜展示区 -->
+          <div class="dragon-cabinets-container" id="dragon-cabinets-container">
+            <!-- 左柜：造化玄兵 -->
+            <div class="dragon-cabinet cabinet-left" id="cabinet-left">
+              <div class="cabinet-frame">
+                <img src="assets/dragon/cabinet_left.png" class="cabinet-bg-img" alt="造化玄兵柜" />
+                <div class="cabinet-header-tag">造化玄兵</div>
+                <div class="cabinet-slot-content" id="cabinet-left-content">
+                  <div class="cabinet-item-placeholder" id="cabinet-left-placeholder">
+                    <span class="placeholder-icon">🗡️</span>
+                    <span class="placeholder-label">静待神兵</span>
+                  </div>
+                  <div class="cabinet-item-showcase hidden" id="cabinet-left-showcase">
+                    <div class="cabinet-item-pedestal" id="left-item-pedestal"></div>
+                    <img src="assets/symbols/SYM_06.png" class="cabinet-item-icon" id="left-item-icon" alt="装备" />
+                    <div class="cabinet-item-name" id="left-item-name">凡铁·玄铁剑</div>
+                    <div class="cabinet-item-power" id="left-item-power">战力 45</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右柜：天道灵材 -->
+            <div class="dragon-cabinet cabinet-right" id="cabinet-right">
+              <div class="cabinet-frame">
+                <img src="assets/dragon/cabinet_right.png" class="cabinet-bg-img" alt="天道灵材柜" />
+                <div class="cabinet-header-tag">天道灵材</div>
+                <div class="cabinet-slot-content" id="cabinet-right-content">
+                  <div class="cabinet-item-placeholder" id="cabinet-right-placeholder">
+                    <span class="placeholder-icon">💊</span>
+                    <span class="placeholder-label">静待资粮</span>
+                  </div>
+                  <div class="cabinet-item-showcase hidden" id="cabinet-right-showcase">
+                    <div class="cabinet-item-pedestal" id="right-item-pedestal"></div>
+                    <img src="assets/symbols/SYM_05.png" class="cabinet-item-icon" id="right-item-icon" alt="灵材" />
+                    <div class="cabinet-item-name" id="right-item-name">九转修为丹</div>
+                    <div class="cabinet-item-gain" id="right-item-gain">+150 修为</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 备用宣告文字层 (保持与既有通知逻辑兼容) -->
+          <div id="reel-announcement" class="reel-announcement hidden">
             <div id="announcement-text" class="announcement-text"></div>
+          </div>
+        </div>
+
+        <!-- 即时换装对比栏 (核心决策区: 战力对比 + 一键穿戴/熔炼) -->
+        <div class="dragon-gear-compare-bar hidden" id="dragon-gear-compare-bar">
+          <div class="compare-info-row">
+            <span class="compare-current-desc" id="compare-current-desc">在身: 锈蚀柴刀 (45)</span>
+            <span class="compare-arrow">➔</span>
+            <span class="compare-new-desc" id="compare-new-desc">新获: 玄铁剑 (120)</span>
+            <span class="compare-power-diff" id="compare-power-diff">+75 ⬆</span>
+          </div>
+          <div class="compare-action-row">
+            <button id="btn-gear-equip" class="btn-gear-equip" title="穿戴新装备并自动熔炼旧装备">
+              <span class="btn-icon">🟢</span>
+              <span class="btn-txt">一键穿戴 (旧装回炉)</span>
+            </button>
+            <button id="btn-gear-smelt" class="btn-gear-smelt" title="直接熔炼新装备折算灵石与蕴灵">
+              <span class="btn-icon">🔴</span>
+              <span class="btn-txt">熔炼换灵</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 真龙威势 (狂暴蓄力槽 0/100) 与 神龙蜕变进度 -->
+        <div class="dragon-rage-container" id="dragon-rage-container">
+          <div class="dragon-rage-header">
+            <span class="dragon-rage-title" id="dragon-rage-title">🔥 真龙威势 (蓄满狂暴连喷10次)</span>
+            <span class="dragon-rage-text" id="dragon-rage-text">0 / 100</span>
+          </div>
+          <div class="dragon-rage-bar-track">
+            <div class="dragon-rage-bar-fill" id="dragon-rage-bar-fill" style="width: 0%;"></div>
           </div>
         </div>
 
         <!-- 聚宝盆天机蕴灵升级进度条 (新增) -->
         <div class="pot-exp-container" id="pot-exp-container">
           <div class="pot-exp-header">
-            <span class="pot-tier-title" id="pot-tier-title">1 阶·凡木天机盆</span>
+            <span class="pot-tier-title" id="pot-tier-title">1 阶·盘岩螭龙</span>
             <span class="pot-exp-text" id="pot-exp-text">蕴灵: 0 / 500 (0%)</span>
           </div>
           <div class="pot-exp-bar-track">
@@ -83,7 +164,7 @@
         <!-- 序章首推专属引导横幅 (凡人未入门派阶段在此处展示神兵必出提示) -->
         <div id="prologue-spin-guide" class="prologue-spin-guide">
           <span class="guide-hand">👉</span>
-          <span class="guide-text">点击<b>【推演天机】</b>初测仙缘，首抽必爆强力法宝神兵！</span>
+          <span class="guide-text">点击<b>【引龙吐宝】</b>初测仙缘，首抽必爆强力法宝神兵！</span>
           <span class="guide-badge">神兵必出</span>
         </div>
 
@@ -114,8 +195,8 @@
         <div class="controls-panel">
           <div class="bet-info-bar">
             <div class="bet-info-col">
-              <span class="bet-label-sub">奇门运转:</span>
-              <b id="pot-array-title">周天奇门阵</b>
+              <span class="bet-label-sub">神龙运转:</span>
+              <b id="pot-array-title">九天真龙阵</b>
             </div>
             <!-- 快速注灵档位调节器 (支持 - / 档位下拉浮层 / +) -->
             <div class="bet-selector-container">
@@ -142,12 +223,39 @@
           </div>
 
           <div class="action-buttons">
-            <button id="btn-spin" class="btn-spin btn-qimen-spin">
-              <span class="spin-taiji-icon">☯</span>
-              <span class="spin-btn-title">推演天机</span>
+            <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin" title="引龙吐宝">
+              <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
+              <span class="spin-btn-title">引龙吐宝</span>
             </button>
-            <button id="btn-auto" class="btn-auto">自动推演</button>
+            <button id="btn-auto" class="btn-auto">自动引宝</button>
+            <button id="btn-auto-filter" class="btn-auto-filter" title="挂机筛选规则">⚙️</button>
             <button id="btn-meditate" class="btn-meditate hidden" title="灵机枯竭时打坐吐纳回复 30 机缘">🧘 打坐吐纳</button>
+          </div>
+
+          <!-- 挂机自动筛选浮层 -->
+          <div id="auto-filter-popover" class="auto-filter-popover hidden">
+            <div class="filter-header">
+              <span>挂机智能筛选规则</span>
+              <button id="btn-close-filter" class="btn-close-filter">✕</button>
+            </div>
+            <div class="filter-options">
+              <label class="filter-checkbox-row">
+                <input type="checkbox" id="chk-auto-equip" checked />
+                <span>战力提升时自动穿戴 (旧装回炉)</span>
+              </label>
+              <label class="filter-checkbox-row">
+                <input type="checkbox" id="chk-auto-smelt" checked />
+                <span>战力无提升时自动熔炼换灵</span>
+              </label>
+              <label class="filter-checkbox-row">
+                <input type="checkbox" id="chk-pause-upgrade" />
+                <span>爆出更强神兵时暂停挂机 (手动确认)</span>
+              </label>
+              <label class="filter-checkbox-row">
+                <input type="checkbox" id="chk-auto-fight" checked />
+                <span>遭遇妖兽突袭自动迎战</span>
+              </label>
+            </div>
           </div>
         </div>
       </section>
@@ -452,7 +560,7 @@
     <nav class="bottom-nav">
       <div id="tab-slots" class="nav-item tab-locked">
         <img class="nav-icon-img icon-locked" src="assets/ui/tab_locked.png" alt="未解锁" />
-        <span class="nav-label">奇门天机</span>
+        <span class="nav-label">神龙吐宝</span>
         <span class="nav-lock-tag">🔒</span>
       </div>
       <div id="tab-character" class="nav-item active">
@@ -1766,6 +1874,9 @@
   <script src="src/rpg/BattleJuiceEngine.js"></script>
   <script src="src/skills/SkillVisualConfig.js"></script>
   <script src="src/skills/SkillStateMachine.js"></script>
+  <script src="src/dragon/DragonLootEngine.js"></script>
+  <script src="src/dragon/DragonCabinetManager.js"></script>
+  <script src="src/dragon/DragonSpoutRenderer.js"></script>
   <script src="src/core/GameManager.js"></script>
   <script src="src/main.js"></script>
 </body>
