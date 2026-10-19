@@ -501,7 +501,11 @@ class GameManager {
       spinData = this.slotsEngine.spin(this.level, multiplier);
     }
 
-    // 5. 将计算结果交予渲染层执行停轮动画
+    // 5. 将计算结果交予渲染层执行停轮动画 (预置即将喷吐的双宝入匣数据)
+    if (this.dragonCabinetManager && (spinData.leftCabinet || spinData.rightCabinet)) {
+      this.dragonCabinetManager.prepareSpout(spinData.leftCabinet, spinData.rightCabinet);
+    }
+
     if (this.renderer) {
       this.renderer.stopSpin(spinData, (result) => {
         this._handleSpinSettlement(result);
@@ -720,9 +724,8 @@ class GameManager {
       window.SlotsRPG.EventBus.emit('PLAYER_LEVEL_UP', allLevelUps);
     }
 
-    // 双柜结果与即时决策同步
+    // 双柜结果与即时决策同步 (奖励已在弹道着陆时依次揭晓入匣)
     if (this.dragonCabinetManager && (spinData.leftCabinet || spinData.rightCabinet)) {
-      this.dragonCabinetManager.setLoot(spinData.leftCabinet, spinData.rightCabinet);
       window.SlotsRPG.EventBus.emit('DRAGON_LOOT_PRESENTED', {
         leftCabinet: spinData.leftCabinet,
         rightCabinet: spinData.rightCabinet,
@@ -800,7 +803,7 @@ class GameManager {
     if (evaluation.hasTriggeredBattle) {
       this.suspendAutoSpinForBattle();
       if (this.renderer && this.wasAutoSpinningBeforeBattle) {
-        this.renderer.addFloatingText('【天机遭遇】妖兽降临！伏妖战毕后将自动维持推演', '#ffd700');
+        this.renderer.addFloatingText('【天机遭遇】妖兽降临！请拔剑迎战', '#ffd700');
       }
       let bConfig = evaluation.battleConfig;
       if (bConfig && bConfig.tier === 'boss') {
@@ -813,11 +816,17 @@ class GameManager {
       if (bConfig && !bConfig.betMultiplier) {
         bConfig.betMultiplier = this.betMultiplier;
       }
-      window.SlotsRPG.EventBus.emit('TRIGGER_BATTLE', {
+      this.pendingBattleData = {
         scatterCount: evaluation.scatterCount,
         level: this.level,
         battleConfig: bConfig,
         betMultiplier: this.betMultiplier
+      };
+      // 唤醒出战迎敌横幅，不立即强行切屏，确保奖励全部展示后由玩家拔剑出战或倒计时切入
+      window.SlotsRPG.EventBus.emit('DRAGON_BATTLE_READY', {
+        monsterName: (spinData.leftCabinet && spinData.leftCabinet.name) || '妖兽现世',
+        battleData: this.pendingBattleData,
+        isAutoSpinning: this.wasAutoSpinningBeforeBattle
       });
     }
 
@@ -836,8 +845,20 @@ class GameManager {
     if (!stopped && this.isAutoSpinning && !evaluation.hasTriggeredBattle && !evaluation.hasTriggeredBonus) {
       this.autoSpinTimer = setTimeout(() => {
         if (this.isAutoSpinning) this.executeSpin();
-      }, 700);
+      }, 1250); // 增加沉浸节奏延迟 1.25s，让玩家看全所有奖励后才进行下一步
     }
+  }
+
+  /**
+   * 执行暂存的伏妖遭遇战 (由玩家主动点击【拔剑迎战】或倒计时触发)
+   */
+  executePendingBattle() {
+    if (!this.pendingBattleData) return;
+    const battleData = this.pendingBattleData;
+    this.pendingBattleData = null;
+    const promptEl = document.getElementById('dragon-battle-prompt');
+    if (promptEl) promptEl.classList.add('hidden');
+    window.SlotsRPG.EventBus.emit('TRIGGER_BATTLE', battleData);
   }
 
   /**

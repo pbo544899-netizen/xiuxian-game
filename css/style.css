@@ -9570,29 +9570,29 @@ body.tier-spirit-realm .reel-frame {
   margin: 0;
 }
 
-/* 核心舞台区：神龙居顶，双柜在底，弹道居中 */
+/* 核心舞台区：神龙居顶，双背包在底，弹道居中 */
 .dragon-spout-stage {
   width: 100%;
   max-width: 440px;
-  height: 345px;
+  height: 335px;
   position: relative;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 25%, rgba(0, 60, 60, 0.35) 0%, rgba(3, 10, 18, 0.85) 75%),
-              linear-gradient(180deg, rgba(5, 15, 25, 0.5) 0%, rgba(2, 6, 12, 0.9) 100%);
+  background: radial-gradient(circle at 50% 18%, rgba(0, 60, 60, 0.4) 0%, rgba(3, 10, 18, 0.88) 75%),
+              linear-gradient(180deg, rgba(5, 15, 25, 0.5) 0%, rgba(2, 6, 12, 0.95) 100%);
   border: 1px solid rgba(0, 229, 255, 0.25);
   box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
-/* 穹顶神龙法相 */
+/* 穹顶神龙法相 (居顶，比例精致，不遮挡下方背包) */
 .dragon-head-box {
   position: absolute;
-  top: 2px;
+  top: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 175px;
-  height: 150px;
+  width: 135px;
+  height: 110px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9604,16 +9604,14 @@ body.tier-spirit-realm .reel-frame {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 16px rgba(0, 229, 255, 0.3));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 14px rgba(0, 229, 255, 0.3));
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   animation: dragon-idle-breathe 4s ease-in-out infinite alternate;
-  mask-image: radial-gradient(ellipse at 50% 48%, black 50%, rgba(0, 0, 0, 0.7) 65%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 48%, black 50%, rgba(0, 0, 0, 0.7) 65%, transparent 75%);
 }
 
 @keyframes dragon-idle-breathe {
-  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(0, 229, 255, 0.25)); }
-  100% { transform: translateY(3px) scale(1.02); filter: drop-shadow(0 8px 18px rgba(0,0,0,0.95)) drop-shadow(0 0 20px rgba(0, 229, 255, 0.45)); }
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(0, 229, 255, 0.25)); }
+  100% { transform: translateY(2px) scale(1.02); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.95)) drop-shadow(0 0 18px rgba(0, 229, 255, 0.45)); }
 }
 
 .dragon-head-sprite.charging {
@@ -9627,22 +9625,22 @@ body.tier-spirit-realm .reel-frame {
 }
 
 .dragon-head-sprite.spouting {
-  transform: translateY(-4px) scale(1.06) !important;
+  transform: translateY(-3px) scale(1.05) !important;
   filter: drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 45px #00e5ff) !important;
 }
 
 /* 龙息光效层 */
 .dragon-breath-glow {
   position: absolute;
-  bottom: 25px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.8) 0%, rgba(255, 215, 0, 0.4) 50%, transparent 80%);
-  filter: blur(6px);
-  opacity: 0.6;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.85) 0%, rgba(255, 215, 0, 0.45) 50%, transparent 80%);
+  filter: blur(5px);
+  opacity: 0.65;
   animation: breath-glow-pulse 2s ease-in-out infinite alternate;
 }
 
@@ -9661,185 +9659,313 @@ body.tier-spirit-realm .reel-frame {
   z-index: 4;
 }
 
-/* 乾坤双柜布局区 */
-.dragon-cabinets-container {
+/* 左右双宝匣容器 (上方龙头，下方左右两个类似背包的界面) */
+.dragon-backpacks-container {
   position: absolute;
+  top: 122px;
   bottom: 6px;
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-around;
-  padding: 0 16px;
-  gap: 16px;
+  justify-content: space-between;
+  padding: 0 10px;
+  gap: 10px;
   z-index: 2;
+  box-sizing: border-box;
 }
 
-.dragon-cabinet {
+/* 单个宝匣 (类似背包的界面) */
+.dragon-treasure-bag {
   flex: 1;
-  max-width: 160px;
-  height: 185px;
-  position: relative;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.dragon-cabinet.impact {
-  animation: cabinet-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-@keyframes cabinet-shake {
-  10%, 90% { transform: translate3d(-1px, -2px, 0) scale(1.02); filter: brightness(1.3); }
-  20%, 80% { transform: translate3d(2px, 1px, 0); }
-  30%, 50%, 70% { transform: translate3d(-3px, -1px, 0); }
-  40%, 60% { transform: translate3d(3px, 2px, 0); }
-}
-
-.cabinet-frame {
-  width: 100%;
+  max-width: 205px;
   height: 100%;
+  background: linear-gradient(180deg, rgba(10, 18, 30, 0.92) 0%, rgba(4, 8, 16, 0.96) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8), 0 4px 18px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
   position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dragon-treasure-bag.bag-left {
+  border-color: rgba(0, 229, 255, 0.4);
+}
+
+.dragon-treasure-bag.bag-right {
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* 宝匣顶栏 */
+.treasure-bag-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(184, 134, 11, 0.4);
+  justify-content: space-between;
+  padding: 1px 4px 5px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 5px;
 }
 
-.cabinet-bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  opacity: 0.92;
-  mask-image: radial-gradient(ellipse at 50% 50%, black 70%, transparent 95%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 70%, transparent 95%);
-}
-
-.cabinet-header-tag {
-  position: absolute;
-  top: 6px;
-  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
-  font-size: 13px;
-  font-weight: 900;
-  color: #ffd700;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 8px rgba(255, 215, 0, 0.8);
-  letter-spacing: 2px;
-  z-index: 5;
-}
-
-.cabinet-slot-content {
-  position: relative;
-  width: 100%;
-  height: 145px;
+.bag-header-left {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  z-index: 4;
-}
-
-/* 占位空态 */
-.cabinet-item-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 4px;
-  opacity: 0.65;
 }
 
-.placeholder-icon {
-  font-size: 26px;
-  filter: grayscale(0.5);
+.bag-header-icon {
+  font-size: 13px;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
 }
 
-.placeholder-label {
-  font-size: 11px;
-  color: #94a3b8;
-  letter-spacing: 1px;
-}
-
-/* 掉落展示态 */
-.cabinet-item-showcase {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: item-reveal 0.35s ease-out;
-}
-
-@keyframes item-reveal {
-  0% { transform: scale(0.6) translateY(20px); opacity: 0; }
-  70% { transform: scale(1.08) translateY(-4px); opacity: 1; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-.cabinet-item-pedestal {
-  position: absolute;
-  bottom: 12px;
-  width: 70px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.7) 0%, rgba(255, 215, 0, 0.3) 50%, transparent 80%);
-  filter: blur(4px);
-  animation: pedestal-pulse 2s infinite alternate;
-}
-
-@keyframes pedestal-pulse {
-  0% { transform: scale(0.85); opacity: 0.5; }
-  100% { transform: scale(1.2); opacity: 0.9; }
-}
-
-.cabinet-item-icon {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
-  animation: item-hover 2.5s ease-in-out infinite alternate;
-  z-index: 2;
-}
-
-@keyframes item-hover {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-5px); }
-}
-
-.cabinet-item-name {
-  font-family: "STKaiti", "KaiTi", serif;
+.bag-header-title {
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
   font-size: 12px;
   font-weight: bold;
   color: #ffd700;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
-  margin-top: 4px;
-  z-index: 2;
-  text-align: center;
-  max-width: 90%;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  letter-spacing: 1px;
+}
+
+.bag-header-badge {
+  font-size: 10px;
+  color: #94a3b8;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 类似背包的格子网格 (2x2) */
+.treasure-bag-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 76px 76px;
+  gap: 6px;
+  flex: 1;
+}
+
+/* 单个宝物槽位 (背包格子) */
+.treasure-slot {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+  height: 76px;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.treasure-slot:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+/* 0号主槽位 (最新降落点，高亮外框) */
+.treasure-slot.primary-slot {
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  background: radial-gradient(circle at center, rgba(30, 48, 68, 0.85) 0%, rgba(12, 20, 32, 0.95) 100%);
+  box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+/* 空槽状态 */
+.slot-empty-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.slot-placeholder-icon {
+  font-size: 18px;
+  filter: grayscale(0.6);
+}
+
+.slot-placeholder-text {
+  font-size: 9px;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.slot-num {
+  font-size: 12px;
+  font-weight: 900;
+  color: #475569;
+  letter-spacing: 1px;
+}
+
+/* 掉落展示内容 */
+.slot-item-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 2px;
+  box-sizing: border-box;
+  position: relative;
+  min-height: 0;
+}
+
+.slot-item-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  margin-bottom: 1px;
+  transition: transform 0.2s ease;
+}
+
+.treasure-slot:hover .slot-item-icon {
+  transform: scale(1.1);
+}
+
+.slot-item-name {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #e2e8f0;
+  max-width: 95%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: rgba(0, 0, 0, 0.65);
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  line-height: 1.1;
 }
 
-.cabinet-item-power, .cabinet-item-gain {
-  font-size: 11px;
+.slot-item-badge {
+  font-size: 9px;
   font-weight: 800;
   color: #38ef7d;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0 4px;
+  border-radius: 3px;
   margin-top: 2px;
-  z-index: 2;
-  background: rgba(0, 0, 0, 0.65);
-  padding: 1px 8px;
-  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 喷吐撞击爆发动效与弹出动效 */
+.treasure-slot.impact-burst {
+  animation: slot-burst-impact 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes slot-burst-impact {
+  0% { transform: scale(0.8); filter: brightness(2.2); box-shadow: 0 0 25px #00e5ff; }
+  50% { transform: scale(1.12); filter: brightness(1.6); box-shadow: 0 0 18px #ffd700; }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.treasure-slot .slot-item-view.slot-reveal-pop {
+  animation: slot-view-pop 0.35s ease-out both;
+}
+
+@keyframes slot-view-pop {
+  0% { transform: scale(0.6) translateY(12px); opacity: 0; }
+  70% { transform: scale(1.08) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 槽位品质光边 */
+.treasure-slot.quality-border-q1 { border-color: rgba(148, 163, 184, 0.6); }
+.treasure-slot.quality-border-q2 { border-color: rgba(82, 196, 26, 0.8); box-shadow: 0 0 6px rgba(82, 196, 26, 0.3); }
+.treasure-slot.quality-border-q3 { border-color: rgba(24, 144, 255, 0.85); box-shadow: 0 0 8px rgba(24, 144, 255, 0.35); }
+.treasure-slot.quality-border-q4 { border-color: rgba(168, 85, 247, 0.9); box-shadow: 0 0 10px rgba(168, 85, 247, 0.45); }
+.treasure-slot.quality-border-q5 { border-color: rgba(245, 158, 11, 0.95); box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+.treasure-slot.quality-border-q6 { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.6); }
+.treasure-slot.quality-border-battle {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 14px rgba(255, 77, 79, 0.8) !important;
+  animation: monster-slot-pulse 1.2s infinite alternate;
+}
+
+@keyframes monster-slot-pulse {
+  0% { box-shadow: 0 0 8px rgba(255, 77, 79, 0.4); }
+  100% { box-shadow: 0 0 16px rgba(255, 77, 79, 0.9); }
+}
+
+/* 妖兽伏妖现世出战横幅 (避免突然切屏撕裂) */
+.dragon-battle-prompt {
+  width: 100%;
+  max-width: 440px;
+  margin: 4px auto 2px auto;
+  background: linear-gradient(135deg, rgba(45, 10, 10, 0.95) 0%, rgba(20, 5, 5, 0.98) 100%);
+  border: 1px solid rgba(255, 77, 79, 0.7);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px rgba(255, 77, 79, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  animation: battle-prompt-pulse 1.5s infinite alternate;
+}
+
+@keyframes battle-prompt-pulse {
+  0% { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 77, 79, 0.3); }
+  100% { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 18px rgba(255, 77, 79, 0.7); }
+}
+
+.battle-prompt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-prompt-warn {
+  font-size: 11px;
+  font-weight: 900;
+  color: #ff4d4f;
+  letter-spacing: 1px;
+}
+
+.battle-prompt-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.btn-dragon-engage-battle {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid #ffd700;
+  border-radius: 6px;
+  padding: 7px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 10px rgba(231, 76, 60, 0.5);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-dragon-engage-battle:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 14px rgba(231, 76, 60, 0.8);
+}
+
+.btn-dragon-engage-battle:active {
+  transform: scale(0.96);
 }
 
 /* 即时换装对比栏 (核心决策) */

@@ -4179,7 +4179,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 16.1 神龙引宝 · 乾坤双柜与即时换装交互绑定
+  // 16.1 神龙引宝 · 左右双宝匣与即时换装交互绑定
   // ==========================================
   const dragonGearCompareBar = document.getElementById('dragon-gear-compare-bar');
   const compareCurrentDesc = document.getElementById('compare-current-desc');
@@ -4188,17 +4188,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnGearEquip = document.getElementById('btn-gear-equip');
   const btnGearSmelt = document.getElementById('btn-gear-smelt');
 
-  const cabinetLeftPlaceholder = document.getElementById('cabinet-left-placeholder');
-  const cabinetLeftShowcase = document.getElementById('cabinet-left-showcase');
-  const leftItemIcon = document.getElementById('left-item-icon');
-  const leftItemName = document.getElementById('left-item-name');
-  const leftItemPower = document.getElementById('left-item-power');
-
-  const cabinetRightPlaceholder = document.getElementById('cabinet-right-placeholder');
-  const cabinetRightShowcase = document.getElementById('cabinet-right-showcase');
-  const rightItemIcon = document.getElementById('right-item-icon');
-  const rightItemName = document.getElementById('right-item-name');
-  const rightItemGain = document.getElementById('right-item-gain');
+  const dragonBattlePrompt = document.getElementById('dragon-battle-prompt');
+  const battlePromptMonsterName = document.getElementById('battle-prompt-monster-name');
+  const btnDragonEngageBattle = document.getElementById('btn-dragon-engage-battle');
+  const btnBattleLabel = document.getElementById('btn-battle-label');
+  let battleCountdownTimer = null;
 
   const dragonRageBarFill = document.getElementById('dragon-rage-bar-fill');
   const dragonRageText = document.getElementById('dragon-rage-text');
@@ -4211,9 +4205,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const chkPauseUpgrade = document.getElementById('chk-pause-upgrade');
   const chkAutoFight = document.getElementById('chk-auto-fight');
 
-  // 双柜展示与即时决策数据流驱动
+  // 双宝匣展示与即时决策数据流驱动
   window.SlotsRPG.EventBus.on('DRAGON_LOOT_PRESENTED', (data) => {
-    const { leftCabinet, rightCabinet, comparison, dragonRage } = data;
+    const { leftCabinet, comparison, dragonRage } = data;
 
     // 1. 更新真龙狂暴进度
     if (dragonRageBarFill && dragonRageText) {
@@ -4222,69 +4216,85 @@ window.addEventListener('DOMContentLoaded', () => {
       dragonRageText.innerText = `${rage} / 100`;
     }
 
-    // 2. 更新右柜展示 (天道灵材)
-    if (rightCabinet) {
-      if (cabinetRightPlaceholder) cabinetRightPlaceholder.classList.add('hidden');
-      if (cabinetRightShowcase) cabinetRightShowcase.classList.remove('hidden');
+    // 2. 检查是否需要展开装备即时决策栏
+    if (leftCabinet && leftCabinet.type === 'equip' && leftCabinet.item) {
+      if (comparison && dragonGearCompareBar) {
+        dragonGearCompareBar.classList.remove('hidden');
+        const curEq = comparison.currentEquip;
+        const curName = curEq ? curEq.name : '未穿戴';
+        const curPower = curEq ? curEq.power : 0;
+        const item = leftCabinet.item;
+        const newPower = item.power || 0;
+        const diff = comparison.powerDiff;
 
-      const icon = rightCabinet.item ? rightCabinet.item.icon : 'assets/symbols/SYM_05.png';
-      const name = rightCabinet.item ? rightCabinet.item.name : '天道灵石';
-      const desc = rightCabinet.desc || (rightCabinet.energyGain ? `机缘 +${rightCabinet.energyGain}` : `道行 +${rightCabinet.expGain || 50}`);
+        if (compareCurrentDesc) compareCurrentDesc.innerText = `在身: ${curName} (${curPower})`;
+        if (compareNewDesc) compareNewDesc.innerText = `新获: ${item.name} (${newPower})`;
+        if (comparePowerDiff) {
+          comparePowerDiff.innerText = `${diff >= 0 ? '+' : ''}${diff} ⬆`;
+          comparePowerDiff.style.color = diff >= 0 ? '#52c41a' : '#ff4d4f';
+        }
+      }
+    } else {
+      if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+    }
+  });
 
-      if (rightItemIcon) rightItemIcon.src = icon;
-      if (rightItemName) rightItemName.innerText = name;
-      if (rightItemGain) rightItemGain.innerText = desc;
+  // 伏妖遭遇战就绪通知 (在所有奖励显示全后唤起，支持玩家点击拔剑或倒计时进入)
+  window.SlotsRPG.EventBus.on('DRAGON_BATTLE_READY', (data) => {
+    const { monsterName, isAutoSpinning } = data;
+    if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+
+    if (dragonBattlePrompt) {
+      dragonBattlePrompt.classList.remove('hidden');
+      if (battlePromptMonsterName) {
+        battlePromptMonsterName.innerText = `${monsterName || '妖兽'} 现世！`;
+      }
     }
 
-    // 3. 更新左柜展示 (造化玄兵 / 奇遇)
-    if (leftCabinet) {
-      if (cabinetLeftPlaceholder) cabinetLeftPlaceholder.classList.add('hidden');
-      if (cabinetLeftShowcase) cabinetLeftShowcase.classList.remove('hidden');
+    if (battleCountdownTimer) {
+      clearInterval(battleCountdownTimer);
+      battleCountdownTimer = null;
+    }
 
-      if (leftCabinet.type === 'equip' && leftCabinet.item) {
-        const item = leftCabinet.item;
-        if (leftItemIcon) leftItemIcon.src = item.icon || 'assets/symbols/SYM_06.png';
-        if (leftItemName) {
-          leftItemName.innerText = item.name;
-          leftItemName.style.color = item.qualityColor || '#ffd700';
-        }
-        if (leftItemPower) {
-          leftItemPower.innerText = `战力 ${item.power}`;
-        }
-
-        // 若存在即时对比数据，展示下方即时决策栏
-        if (comparison && dragonGearCompareBar) {
-          dragonGearCompareBar.classList.remove('hidden');
-          const curEq = comparison.currentEquip;
-          const curName = curEq ? curEq.name : '未穿戴';
-          const curPower = curEq ? curEq.power : 0;
-          const newPower = item.power || 0;
-          const diff = comparison.powerDiff;
-
-          if (compareCurrentDesc) compareCurrentDesc.innerText = `在身: ${curName} (${curPower})`;
-          if (compareNewDesc) compareNewDesc.innerText = `新获: ${item.name} (${newPower})`;
-          if (comparePowerDiff) {
-            comparePowerDiff.innerText = `${diff >= 0 ? '+' : ''}${diff} ⬆`;
-            comparePowerDiff.style.color = diff >= 0 ? '#52c41a' : '#ff4d4f';
+    if (isAutoSpinning) {
+      let secondsLeft = 3;
+      if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
+      battleCountdownTimer = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(battleCountdownTimer);
+          battleCountdownTimer = null;
+          if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
+          if (gameManager && gameManager.executePendingBattle) {
+            gameManager.executePendingBattle();
           }
+        } else {
+          if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
         }
-      } else if (leftCabinet.type === 'battle') {
-        if (leftItemIcon) leftItemIcon.src = 'assets/symbols/SYM_12.png';
-        if (leftItemName) {
-          leftItemName.innerText = leftCabinet.name || '妖兽突袭';
-          leftItemName.style.color = '#ff4d4f';
-        }
-        if (leftItemPower) leftItemPower.innerText = '⚠️ 警报: 妖气冲天';
-        if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
-      } else if (leftCabinet.type === 'bonus') {
-        if (leftItemIcon) leftItemIcon.src = 'assets/symbols/SYM_13.png';
-        if (leftItemName) {
-          leftItemName.innerText = leftCabinet.name || '龙域造化秘境';
-          leftItemName.style.color = '#ffd700';
-        }
-        if (leftItemPower) leftItemPower.innerText = '✨ 秘境空间展开';
-        if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+      }, 1000);
+    } else {
+      if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战`;
+    }
+  });
+
+  if (btnDragonEngageBattle) {
+    btnDragonEngageBattle.addEventListener('click', () => {
+      if (battleCountdownTimer) {
+        clearInterval(battleCountdownTimer);
+        battleCountdownTimer = null;
       }
+      if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
+      if (gameManager && gameManager.executePendingBattle) {
+        gameManager.executePendingBattle();
+      }
+    });
+  }
+
+  window.SlotsRPG.EventBus.on('BATTLE_START', () => {
+    if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
+    if (battleCountdownTimer) {
+      clearInterval(battleCountdownTimer);
+      battleCountdownTimer = null;
     }
   });
 
@@ -4295,9 +4305,8 @@ window.addEventListener('DOMContentLoaded', () => {
         const res = gameManager.dragonCabinetManager.equipNewItem();
         if (res && res.success) {
           if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
-          if (leftItemPower) leftItemPower.innerText = '✅ 已穿戴';
           if (renderer && renderer.addFloatingText) {
-            renderer.addFloatingText(`换装成功！战力提升！`, '#38ef7d');
+            renderer.addFloatingText(`换装成功！战力提升 +${res.powerDiff}！`, '#38ef7d');
           }
         }
       }
@@ -4311,7 +4320,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const res = gameManager.dragonCabinetManager.smeltNewItem();
         if (res && res.success) {
           if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
-          if (leftItemPower) leftItemPower.innerText = '♻️ 已熔炼';
           if (renderer && renderer.addFloatingText) {
             renderer.addFloatingText(`熔铸神兵！获得 +${res.energy} 机缘`, '#ffd700');
           }

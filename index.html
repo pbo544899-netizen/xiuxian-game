@@ -70,43 +70,107 @@
           <!-- 吐宝弹道与灵光粒子 Canvas -->
           <canvas id="dragon-fx-canvas" class="dragon-fx-canvas"></canvas>
 
-          <!-- 乾坤双柜展示区 -->
-          <div class="dragon-cabinets-container" id="dragon-cabinets-container">
-            <!-- 左柜：造化玄兵 -->
-            <div class="dragon-cabinet cabinet-left" id="cabinet-left">
-              <div class="cabinet-frame">
-                <img src="assets/dragon/cabinet_left.png" class="cabinet-bg-img" alt="造化玄兵柜" />
-                <div class="cabinet-header-tag">造化玄兵</div>
-                <div class="cabinet-slot-content" id="cabinet-left-content">
-                  <div class="cabinet-item-placeholder" id="cabinet-left-placeholder">
-                    <span class="placeholder-icon">🗡️</span>
-                    <span class="placeholder-label">静待神兵</span>
+          <!-- 左右双宝匣 (类似背包的宝物列表展示: 上方龙头，下方左右两个背包界面) -->
+          <div class="dragon-backpacks-container" id="dragon-backpacks-container">
+            <!-- 左宝匣：造化玄兵 -->
+            <div class="dragon-treasure-bag bag-left" id="bag-left">
+              <div class="treasure-bag-header">
+                <div class="bag-header-left">
+                  <span class="bag-header-icon">🎒</span>
+                  <span class="bag-header-title">造化玄兵</span>
+                </div>
+                <span class="bag-header-badge" id="bag-left-badge">神兵·奇遇</span>
+              </div>
+              <div class="treasure-bag-grid" id="bag-left-grid">
+                <!-- 0号主槽位 (最新喷吐落点) -->
+                <div class="treasure-slot primary-slot" id="bag-left-slot-0" data-side="left" data-index="0" title="最新造化神兵">
+                  <div class="slot-empty-mark">
+                    <span class="slot-placeholder-icon">🗡️</span>
+                    <span class="slot-placeholder-text">静待出世</span>
                   </div>
-                  <div class="cabinet-item-showcase hidden" id="cabinet-left-showcase">
-                    <div class="cabinet-item-pedestal" id="left-item-pedestal"></div>
-                    <img src="assets/symbols/SYM_06.png" class="cabinet-item-icon" id="left-item-icon" alt="装备" />
-                    <div class="cabinet-item-name" id="left-item-name">凡铁·玄铁剑</div>
-                    <div class="cabinet-item-power" id="left-item-power">战力 45</div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" id="left-item-icon" src="assets/symbols/SYM_06.png" alt="法宝" />
+                    <span class="slot-item-name" id="left-item-name">玄铁剑</span>
+                    <span class="slot-item-badge" id="left-item-power">+45 ⬆</span>
+                  </div>
+                </div>
+                <!-- 1号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-left-slot-1" data-side="left" data-index="1">
+                  <div class="slot-empty-mark"><span class="slot-num">II</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="法宝" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
+                  </div>
+                </div>
+                <!-- 2号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-left-slot-2" data-side="left" data-index="2">
+                  <div class="slot-empty-mark"><span class="slot-num">III</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="法宝" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
+                  </div>
+                </div>
+                <!-- 3号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-left-slot-3" data-side="left" data-index="3">
+                  <div class="slot-empty-mark"><span class="slot-num">IV</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="法宝" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- 右柜：天道灵材 -->
-            <div class="dragon-cabinet cabinet-right" id="cabinet-right">
-              <div class="cabinet-frame">
-                <img src="assets/dragon/cabinet_right.png" class="cabinet-bg-img" alt="天道灵材柜" />
-                <div class="cabinet-header-tag">天道灵材</div>
-                <div class="cabinet-slot-content" id="cabinet-right-content">
-                  <div class="cabinet-item-placeholder" id="cabinet-right-placeholder">
-                    <span class="placeholder-icon">💊</span>
-                    <span class="placeholder-label">静待资粮</span>
+            <!-- 右宝匣：天道灵材 -->
+            <div class="dragon-treasure-bag bag-right" id="bag-right">
+              <div class="treasure-bag-header">
+                <div class="bag-header-left">
+                  <span class="bag-header-icon">🎒</span>
+                  <span class="bag-header-title">天道灵材</span>
+                </div>
+                <span class="bag-header-badge" id="bag-right-badge">丹药·资粮</span>
+              </div>
+              <div class="treasure-bag-grid" id="bag-right-grid">
+                <!-- 0号主槽位 (最新喷吐落点) -->
+                <div class="treasure-slot primary-slot" id="bag-right-slot-0" data-side="right" data-index="0" title="最新天道灵资">
+                  <div class="slot-empty-mark">
+                    <span class="slot-placeholder-icon">💊</span>
+                    <span class="slot-placeholder-text">静待资粮</span>
                   </div>
-                  <div class="cabinet-item-showcase hidden" id="cabinet-right-showcase">
-                    <div class="cabinet-item-pedestal" id="right-item-pedestal"></div>
-                    <img src="assets/symbols/SYM_05.png" class="cabinet-item-icon" id="right-item-icon" alt="灵材" />
-                    <div class="cabinet-item-name" id="right-item-name">九转修为丹</div>
-                    <div class="cabinet-item-gain" id="right-item-gain">+150 修为</div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" id="right-item-icon" src="assets/symbols/SYM_05.png" alt="灵材" />
+                    <span class="slot-item-name" id="right-item-name">九转丹</span>
+                    <span class="slot-item-badge" id="right-item-gain">+150 修为</span>
+                  </div>
+                </div>
+                <!-- 1号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-right-slot-1" data-side="right" data-index="1">
+                  <div class="slot-empty-mark"><span class="slot-num">II</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="灵材" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
+                  </div>
+                </div>
+                <!-- 2号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-right-slot-2" data-side="right" data-index="2">
+                  <div class="slot-empty-mark"><span class="slot-num">III</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="灵材" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
+                  </div>
+                </div>
+                <!-- 3号槽位 (历史沉淀) -->
+                <div class="treasure-slot history-slot" id="bag-right-slot-3" data-side="right" data-index="3">
+                  <div class="slot-empty-mark"><span class="slot-num">IV</span></div>
+                  <div class="slot-item-view hidden">
+                    <img class="slot-item-icon" src="" alt="灵材" />
+                    <span class="slot-item-name"></span>
+                    <span class="slot-item-badge"></span>
                   </div>
                 </div>
               </div>
@@ -116,6 +180,20 @@
           <!-- 备用宣告文字层 (保持与既有通知逻辑兼容) -->
           <div id="reel-announcement" class="reel-announcement hidden">
             <div id="announcement-text" class="announcement-text"></div>
+          </div>
+        </div>
+
+        <!-- 妖兽伏妖现世出战横幅 (在全部奖励显示全后出现，避免突然切屏撕裂) -->
+        <div class="dragon-battle-prompt hidden" id="dragon-battle-prompt">
+          <div class="battle-prompt-info">
+            <span class="battle-prompt-warn">⚠️ 龙息引煞 · 妖兽现世</span>
+            <span class="battle-prompt-name" id="battle-prompt-monster-name">荒村恶犬精 突袭！</span>
+          </div>
+          <div class="battle-prompt-action">
+            <button id="btn-dragon-engage-battle" class="btn-dragon-engage-battle" title="拔剑迎战妖兽">
+              <span class="btn-sword-icon">⚔️</span>
+              <span class="btn-battle-label" id="btn-battle-label">拔剑迎战 (3s)</span>
+            </button>
           </div>
         </div>
 
