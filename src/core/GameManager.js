@@ -90,6 +90,10 @@ class GameManager {
     this.renderer = null;
     this.pendingOfflineReward = null;
 
+    // 引龙吐宝抽奖次数累积水缸进度 (10次蓄满触发龙皇吐宝)
+    this.waterTankProgress = 0;
+    this.waterTankMax = 10;
+
     // 默认装配凡人采药破烂装束 (战力 18)
     this.player.setupMortalState();
   }
@@ -299,6 +303,11 @@ class GameManager {
       betMultiplier: this.betMultiplier,
       availableBetTiers: this.getAvailableBetTiers(),
 
+      // 引龙吐宝水缸进度条
+      waterTankProgress: this.waterTankProgress || 0,
+      waterTankMax: this.waterTankMax || 10,
+      isWaterTankFull: (this.waterTankProgress || 0) >= (this.waterTankMax || 10),
+
       // 角色数据
       realm: this.player.realmName,
       playerLevel: this.player.level,
@@ -404,6 +413,24 @@ class GameManager {
     // 1. 扣除机缘 (支持多倍快速消耗)
     this.energy -= cost;
 
+    // 灵机扣除事件 (驱动灵机飘字 -25 与龙头灵光灌注反馈)
+    window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('SPIN_COST_DEDUCTED', {
+      cost: cost,
+      energy: this.energy,
+      multiplier: this.betMultiplier
+    });
+
+    // 水缸抽奖次数/消耗累积 (10次蓄满触发龙皇吐宝)
+    this.waterTankMax = 10;
+    const isWaterTankFullBefore = (this.waterTankProgress || 0) >= this.waterTankMax;
+    let isGrandSpin = false;
+    if (isWaterTankFullBefore) {
+      isGrandSpin = true;
+      this.waterTankProgress = 0; // 龙皇吐宝后重置水缸
+    } else {
+      this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 1);
+    }
+
     // 隐藏客卿仙印：万通·金玉满堂 (每 10 次推演返还 100 灵机)
     if (this.ascensionManager && this.ascensionManager.meta && this.ascensionManager.meta.hiddenMarks && this.ascensionManager.meta.hiddenMarks.wantong) {
       this.wantongSpinCounter = (this.wantongSpinCounter || 0) + 1;
@@ -430,7 +457,10 @@ class GameManager {
 
     // 3. 启动转轮动效
     if (this.renderer) {
-      this.renderer.startSpin();
+      this.renderer.startSpin({ cost, multiplier, isGrandSpin });
+      if (isGrandSpin) {
+        this.renderer.addFloatingText('✨ 龙皇吐宝：满缸极品天机大爆！', '#ffd700');
+      }
     }
 
     // 4. 核心计算生成结果 (神龙引宝双柜架构 / 兼容回退)

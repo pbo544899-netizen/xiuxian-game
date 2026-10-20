@@ -35,7 +35,6 @@
         <!-- PRD 10.4 & 9.3 节: 仙道功德状态与转盘灵气浮泡 -->
         <div class="slots-top-bar">
           <div class="merit-ticket-bar" id="merit-ticket-bar">
-            <span class="merit-tag">今日功德: <b id="merit-progress-text" style="color:#ffd700;">0/5</b></span>
             <span class="ticket-tag">🎫 瞬发符: <b id="ticket-count-text" style="color:#34e89e;">1</b> 张</span>
           </div>
           <div class="slots-top-actions">
@@ -89,8 +88,12 @@
               <div class="showcase-title-wrap">
                 <span class="showcase-icon">✨</span>
                 <span class="showcase-title">天机宝萃</span>
+                <span class="showcase-rule-hint">品阶高者居前</span>
               </div>
-              <div class="showcase-rule-hint">品阶高者居前 · 先得居前</div>
+              <button id="btn-collect-all-slots" class="btn-collect-all-slots" title="一键收取所有宝萃放入背包">
+                <span class="collect-icon">📥</span>
+                <span class="collect-text">一键收纳</span>
+              </button>
             </div>
             <div class="rewards-grid" id="rewards-grid">
               <!-- 第一排 6格 (0 ~ 5) -->
@@ -282,9 +285,12 @@
         <!-- 核心控制区 -->
         <div class="controls-panel">
           <div class="bet-info-bar">
-            <div class="bet-info-col">
-              <span class="bet-label-sub">神龙运转:</span>
-              <b id="pot-array-title">九天真龙阵</b>
+            <!-- 拥有灵机 (机缘) 显示在 注灵 左侧，带扣除飘字反馈 -->
+            <div class="player-lingji-container" id="player-lingji-container" title="当前拥有灵机 (机缘)">
+              <span class="lingji-icon">✨</span>
+              <span class="lingji-label">灵机:</span>
+              <b id="current-lingji-val" class="current-lingji-val">0</b>
+              <span id="lingji-cost-float" class="lingji-cost-float hidden">-25</span>
             </div>
             <!-- 快速注灵档位调节器 (支持 - / 档位下拉浮层 / +) -->
             <div class="bet-selector-container">
@@ -312,8 +318,16 @@
 
           <div class="action-buttons">
             <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin" title="引龙吐宝">
+              <!-- 水缸液体注满进度层 -->
+              <div class="water-tank-wrapper" id="water-tank-wrapper">
+                <div class="water-tank-liquid" id="water-tank-liquid" style="height: 0%;">
+                  <div class="water-wave wave-1"></div>
+                  <div class="water-wave wave-2"></div>
+                </div>
+              </div>
               <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
-              <span class="spin-btn-title">引龙吐宝</span>
+              <span class="spin-btn-title" id="spin-btn-title">引龙吐宝</span>
+              <span class="water-tank-badge" id="water-tank-badge">0/10</span>
             </button>
             <button id="btn-auto" class="btn-auto">自动引宝</button>
             <button id="btn-auto-filter" class="btn-auto-filter" title="挂机筛选规则">⚙️</button>

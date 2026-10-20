@@ -44,6 +44,7 @@ class StorageService {
           level: gameManager.level,
           potExp: gameManager.potExp || 0,
           currentBet: gameManager.currentBet || 25,
+          waterTankProgress: gameManager.waterTankProgress || 0,
           defeatStreak: gameManager.defeatStreak,
           freeReliefCount: gameManager.freeReliefCount,
           lastReliefDate: gameManager.lastReliefDate,
@@ -141,6 +142,9 @@ class StorageService {
         gameManager.lockedSectBossSnapshot = Object.assign({}, data.lockedSectBossSnapshot);
       } else {
         gameManager.lockedSectBossSnapshot = null;
+      }
+      if (typeof data.waterTankProgress === 'number') {
+        gameManager.waterTankProgress = Math.min(gameManager.waterTankMax || 10, Math.max(0, data.waterTankProgress));
       }
 
       // 2. 还原角色 (通过 PlayerModel.deserialize 恢复完整境界与装备)

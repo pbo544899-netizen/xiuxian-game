@@ -72,13 +72,22 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 开始引龙吐宝蓄力
      */
-    startSpin() {
+    startSpin(options = {}) {
       this.isSpinning = true;
       this.spoutProjectiles = [];
 
       const headEl = document.getElementById('dragon-head-sprite');
       if (headEl) {
         headEl.classList.add('charging');
+      }
+
+      // 龙头灵机灌注高光反馈
+      const headBox = document.querySelector('.dragon-head-box');
+      if (headBox) {
+        headBox.classList.remove('infusing');
+        void headBox.offsetWidth;
+        headBox.classList.add('infusing');
+        setTimeout(() => headBox.classList.remove('infusing'), 700);
       }
 
       // 生成口部聚气粒子
@@ -94,6 +103,29 @@ window.SlotsRPG = window.SlotsRPG || {};
           decay: 0.05 + Math.random() * 0.03,
           color: Math.random() < 0.5 ? '#00e5ff' : '#ffd700',
           size: 2.5 + Math.random() * 3.5
+        });
+      }
+
+      // 灵机灌注：生成自下方控制区拔地而起、垂直注入龙口的灵光光束粒子流！
+      for (let i = 0; i < 22; i++) {
+        const startX = (this.width || 360) * 0.5 + (Math.random() - 0.5) * 100;
+        const startY = (this.height || 400) * 0.9 + Math.random() * 20;
+        const targetX = this.dragonMouth.x + (Math.random() - 0.5) * 16;
+        const targetY = this.dragonMouth.y + (Math.random() - 0.5) * 10;
+        const dx = targetX - startX;
+        const dy = targetY - startY;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const speed = 8 + Math.random() * 6;
+
+        this.particles.push({
+          x: startX,
+          y: startY,
+          vx: (dx / dist) * speed,
+          vy: (dy / dist) * speed,
+          life: 1.0,
+          decay: 0.04 + Math.random() * 0.02,
+          color: Math.random() < 0.65 ? '#00e5ff' : '#ffd700',
+          size: 3 + Math.random() * 3.5
         });
       }
     }

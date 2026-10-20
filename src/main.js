@@ -548,6 +548,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     if (elEnergy) elEnergy.innerText = state.energy;
+    const elCurrentLingji = document.getElementById('current-lingji-val');
+    if (elCurrentLingji) elCurrentLingji.innerText = state.energy;
+
     if (elRealm) elRealm.innerText = state.realm;
     if (elLevel) {
       if (!isPrologueComplete && prologueStep < 3) {
@@ -560,15 +563,34 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if (elPower) elPower.innerText = state.combatPower;
 
-    // 功德免广券状态条更新
-    const elMeritProgress = document.getElementById('merit-progress-text');
+    // 瞬发符状态更新 (已移除今日功德)
     const elTicketCount = document.getElementById('ticket-count-text');
     const adService = window.SlotsRPG && window.SlotsRPG.AdService;
-    if (elMeritProgress && adService) {
-      elMeritProgress.innerText = `${adService.dailyWatchedCount}/5`;
-    }
     if (elTicketCount && adService) {
       elTicketCount.innerText = adService.skipTickets;
+    }
+
+    // 引龙吐宝图标上水缸进度条更新
+    const elWaterTankLiquid = document.getElementById('water-tank-liquid');
+    const elWaterTankBadge = document.getElementById('water-tank-badge');
+    const elSpinBtnTitle = document.getElementById('spin-btn-title');
+    if (elWaterTankLiquid) {
+      const cur = state.waterTankProgress || 0;
+      const max = state.waterTankMax || 10;
+      const pct = Math.min(100, Math.round((cur / max) * 100));
+      elWaterTankLiquid.style.height = `${pct}%`;
+      if (elWaterTankBadge) {
+        elWaterTankBadge.innerText = state.isWaterTankFull ? '满' : `${cur}/${max}`;
+      }
+      if (btnSpin) {
+        if (state.isWaterTankFull) {
+          btnSpin.classList.add('tank-full');
+          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '✨ 龙皇吐宝';
+        } else {
+          btnSpin.classList.remove('tank-full');
+          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '引龙吐宝';
+        }
+      }
     }
 
     // 洞天灵气浮泡收菜更新 (PRD 10.4 节)
@@ -5389,16 +5411,78 @@ window.addEventListener('DOMContentLoaded', () => {
     showFloatingNotice('⚡ 天门大开！道友已跃迁至【灵界 · 飘渺仙域】！', '#ffd700');
   });
 
-  window.SlotsRPG.EventBus.on('MERIT_REWARD_CLAIMED', (data) => {
+  window.SlotsRPG.EventBus.on('TICKETS_UPDATED', (data) => {
     showGameNotice(
-      '功德显圣 · 天赐瞬发符',
+      '仙道机缘 · 获天机瞬发符',
       `<p style="line-height:1.6; color:#e2e8f0;">
-        大道酬勤！道友今日功德圆满，天道特赐 <b>${data.ticketsGranted} 张【天机瞬发符】</b>！<br/>
+        道友仙缘深厚，天道特赐 <b>${data.ticketsGranted} 张【天机瞬发符】</b>！<br/>
         （持符可在任意仙道机缘处<b>0秒直接秒领</b>，当前持有: <b style="color:#ffd700;">${data.totalTickets}</b> 张）
       </p>`,
       '✨ 天赐福泽'
     );
   });
+
+  // 灵机扣除飘字与龙头灌注反馈 (需求 1)
+  window.SlotsRPG.EventBus.on('SPIN_COST_DEDUCTED', ({ cost, energy }) => {
+    // 1. 灵机减少飘字
+    const floatEl = document.getElementById('lingji-cost-float');
+    if (floatEl) {
+      floatEl.innerText = `-${cost}`;
+      floatEl.classList.remove('hidden', 'anim-cost-float');
+      void floatEl.offsetWidth; // 触发 reflow
+      floatEl.classList.add('anim-cost-float');
+      setTimeout(() => {
+        floatEl.classList.add('hidden');
+      }, 850);
+    }
+
+    // 2. 龙头得到灵机灌注高光动效
+    const headBox = document.querySelector('.dragon-head-box');
+    if (headBox) {
+      headBox.classList.remove('infusing');
+      void headBox.offsetWidth;
+      headBox.classList.add('infusing');
+      setTimeout(() => headBox.classList.remove('infusing'), 700);
+    }
+  });
+
+  // 临时背包一键收纳按钮 (需求 2)
+  const btnCollectAllSlots = document.getElementById('btn-collect-all-slots');
+  if (btnCollectAllSlots) {
+    btnCollectAllSlots.addEventListener('click', () => {
+      const dcm = gameManager.dragonCabinetManager;
+      if (!dcm || !dcm.slots || dcm.slots.length === 0) {
+        showFloatingNotice('临时背包空空如也，快引龙吐宝吧！', '#94a3b8');
+        return;
+      }
+
+      // 收集当前槽位上显示的全部奖励
+      const dropItems = [];
+      for (let i = 0; i < 12; i++) {
+        const slotEl = document.getElementById(`dragon-slot-${i}`);
+        const slotData = dcm.slots[i];
+        if (slotEl && slotData) {
+          dropItems.push({
+            icon: slotData.icon || 'assets/symbols/SYM_06.png',
+            element: slotEl
+          });
+        }
+      }
+
+      const targetTab = document.getElementById('tab-character');
+      if (window.SlotsRPG.DropAnimator && dropItems.length > 0 && targetTab) {
+        window.SlotsRPG.DropAnimator.playDropAnimationFromElements(dropItems, targetTab, () => {
+          targetTab.classList.remove('jelly-bounce');
+          void targetTab.offsetWidth;
+          targetTab.classList.add('jelly-bounce');
+        });
+      }
+
+      const count = dcm.slots.length;
+      dcm.clear();
+      showFloatingNotice(`✨ 一键收纳成功！${count} 份天机宝萃已归入乾坤袋`, '#38ef7d');
+    });
+  }
 
   window.SlotsRPG.EventBus.on('CHATTER_UPDATED', (data) => {
     if (elDialog) {

@@ -12,8 +12,6 @@ class AdService {
   constructor() {
     // 今日已观看广告总数
     this.dailyWatchedCount = 0;
-    // 今日功德奖励是否已领取 (看满5次送2张瞬发符)
-    this.dailyMeritClaimed = false;
     // 玩家持有的【天机瞬发符 (免广告直达券)】数量 (开局赠送 1 张体验)
     this.skipTickets = 1;
     // 上次使用造化天工补全的时间戳 (用于10分钟冷却)
@@ -56,11 +54,10 @@ class AdService {
     if (this.lastResetDay !== today) {
       this.lastResetDay = today;
       this.dailyWatchedCount = 0;
-      this.dailyMeritClaimed = false;
       for (const key in this.QUOTAS) {
         this.QUOTAS[key].count = 0;
       }
-      console.log('[AdService] 仙道功德碑跨日刷新，每日广告配额与功德重置！');
+      console.log('[AdService] 跨日刷新，每日广告配额重置！');
     }
   }
 
@@ -121,18 +118,9 @@ class AdService {
     if (type === 'extra_heirloom') this.extraHeirloomUsedThisLife = true;
     if (type === 'equip_complete') this.lastEquipCompleteTime = Date.now();
 
-    // 累计今日功德
+    // 累计今日观看次数
     if (!usedTicket) {
       this.dailyWatchedCount++;
-      // PRD 9.3: 满 5 次自动奖励 2 张【天机瞬发符】
-      if (this.dailyWatchedCount >= 5 && !this.dailyMeritClaimed) {
-        this.dailyMeritClaimed = true;
-        this.skipTickets += 2;
-        window.SlotsRPG.EventBus.emit('MERIT_REWARD_CLAIMED', {
-          ticketsGranted: 2,
-          totalTickets: this.skipTickets
-        });
-      }
     }
 
     window.SlotsRPG.EventBus.emit('AD_QUOTA_CHANGED', {
@@ -242,7 +230,7 @@ class AdService {
    */
   grantMilestoneTickets(count = 5, reason = '大里程碑达成') {
     this.skipTickets += count;
-    window.SlotsRPG.EventBus.emit('MERIT_REWARD_CLAIMED', {
+    window.SlotsRPG.EventBus.emit('TICKETS_UPDATED', {
       ticketsGranted: count,
       totalTickets: this.skipTickets,
       reason
@@ -309,7 +297,6 @@ class AdService {
   deserialize(data) {
     if (!data) return;
     if (typeof data.dailyWatchedCount === 'number') this.dailyWatchedCount = data.dailyWatchedCount;
-    if (typeof data.dailyMeritClaimed === 'boolean') this.dailyMeritClaimed = data.dailyMeritClaimed;
     if (typeof data.skipTickets === 'number') this.skipTickets = data.skipTickets;
     if (typeof data.lastEquipCompleteTime === 'number') this.lastEquipCompleteTime = data.lastEquipCompleteTime;
     if (data.lastResetDay) this.lastResetDay = data.lastResetDay;

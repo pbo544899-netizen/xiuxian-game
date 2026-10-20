@@ -9999,18 +9999,20 @@ body.tier-spirit-realm .reel-frame {
 }
 
 .slot-item-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
   font-size: 8px;
   font-weight: 800;
-  color: #38ef7d;
-  background: rgba(0, 0, 0, 0.75);
+  color: #ffd700;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.45);
   padding: 0 3px;
-  border-radius: 2px;
-  margin-top: 1px;
+  border-radius: 3px;
   white-space: nowrap;
-  max-width: 96%;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.1;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* 宝萃撞击爆发动效与弹出动效 */
@@ -10408,4 +10410,241 @@ body.tier-spirit-realm .reel-frame {
 .filter-checkbox-row input[type="checkbox"] {
   accent-color: #2ecc71;
   cursor: pointer;
+}
+
+/* ==========================================================================
+   周天神龙吐宝 5 大核心优化交互样式
+   1. 拥有灵机显示与消耗飘字
+   2. 临时背包一键收纳按钮
+   3. 龙头灵机灌注高光动效
+   4. 引龙吐宝圆形水缸注满进度条
+   ========================================================================== */
+
+/* 1. 拥有灵机显示在 注灵 左侧 */
+.player-lingji-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 16px;
+  padding: 3px 10px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+}
+
+.player-lingji-container .lingji-icon {
+  font-size: 13px;
+  filter: drop-shadow(0 0 4px #00e5ff);
+}
+
+.player-lingji-container .lingji-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.player-lingji-container .current-lingji-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #00e5ff;
+  font-family: "STKaiti", "KaiTi", sans-serif;
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.6);
+}
+
+/* 抽奖灵机减少飘字 (-25) */
+.lingji-cost-float {
+  position: absolute;
+  top: -16px;
+  right: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ff4d4f;
+  text-shadow: 0 0 8px rgba(255, 77, 79, 0.95), 0 1px 3px #000;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.lingji-cost-float.anim-cost-float {
+  animation: cost-float-surge 0.85s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes cost-float-surge {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.25);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.9);
+  }
+}
+
+/* 龙头灵机灌注高光与气场反馈 */
+.dragon-head-box.infusing {
+  animation: dragon-infuse-flare 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.dragon-head-box.infusing .dragon-head-aura {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 25px #00e5ff) drop-shadow(0 0 40px #ffd700) !important;
+  transform: scale(1.08) !important;
+}
+
+.dragon-head-box.infusing .dragon-mouth-glow {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1.8) !important;
+  box-shadow: 0 0 35px #00e5ff, 0 0 60px #ffd700 !important;
+}
+
+@keyframes dragon-infuse-flare {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.04); filter: brightness(1.6) drop-shadow(0 0 25px rgba(0, 229, 255, 0.9)); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 2. 临时背包一键收纳按钮 */
+.btn-collect-all-slots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%);
+  border: 1px solid #38bdf8;
+  border-radius: 12px;
+  padding: 2px 9px;
+  color: #f0fdf4;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-collect-all-slots:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+  background: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
+}
+
+.btn-collect-all-slots:active {
+  transform: scale(0.95);
+}
+
+.btn-collect-all-slots .collect-icon {
+  font-size: 11px;
+}
+
+/* 5. 引龙吐宝水缸进度条 (直接显示在八卦 icon 上) */
+.btn-dragon-bagua-spin {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.water-tank-wrapper {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.water-tank-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.6) 0%, rgba(13, 148, 136, 0.8) 100%);
+  transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.7);
+}
+
+.water-wave {
+  position: absolute;
+  top: -8px;
+  left: -50%;
+  width: 200%;
+  height: 16px;
+  border-radius: 40%;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.water-wave.wave-1 {
+  animation: water-wave-anim-1 3s infinite linear;
+}
+
+.water-wave.wave-2 {
+  top: -6px;
+  background: rgba(0, 229, 255, 0.4);
+  animation: water-wave-anim-2 4s infinite linear;
+}
+
+@keyframes water-wave-anim-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes water-wave-anim-2 {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.water-tank-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.7);
+  border-radius: 8px;
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #00e5ff;
+  line-height: 1.2;
+  z-index: 5;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.8);
+}
+
+/* 按钮内部八卦图标与文字浮在水缸液体上方 */
+.btn-dragon-bagua-spin .dragon-bagua-icon,
+.btn-dragon-bagua-spin .spin-btn-title {
+  position: relative;
+  z-index: 3;
+}
+
+/* 水缸蓄满 100% (满缸金龙炎态) */
+.btn-dragon-bagua-spin.tank-full {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.95), inset 0 0 15px rgba(255, 140, 0, 0.9) !important;
+  animation: tank-full-glow 1.2s infinite alternate ease-in-out;
+}
+
+.btn-dragon-bagua-spin.tank-full .water-tank-liquid {
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.85) 0%, rgba(255, 69, 0, 0.95) 100%) !important;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.9) !important;
+}
+
+.btn-dragon-bagua-spin.tank-full .water-tank-badge {
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  background: rgba(220, 38, 38, 0.85) !important;
+  animation: pulse-icon 1s infinite alternate;
+}
+
+.btn-dragon-bagua-spin.tank-full .spin-btn-title {
+  color: #fffb00 !important;
+  text-shadow: 0 0 8px #ff4500, 0 1px 2px #000 !important;
+}
+
+@keyframes tank-full-glow {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+  100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 69, 0, 0.8); }
 }

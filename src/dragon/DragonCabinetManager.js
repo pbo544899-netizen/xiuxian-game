@@ -366,14 +366,10 @@ window.SlotsRPG = window.SlotsRPG || {};
             nameEl.style.color = data.qualityColor || (data.type === 'battle' ? '#ff4d4f' : '#e2e8f0');
           }
           if (badgeEl) {
-            badgeEl.innerText = data.gainText || '';
-            if (data.isUpgrade) {
-              badgeEl.style.color = '#38ef7d';
-            } else if (data.type === 'battle') {
-              badgeEl.style.color = '#ff4d4f';
-            } else {
-              badgeEl.style.color = '#ffd700';
-            }
+            // 临时背包只显示图标 + 数量 + 道具名字，不显示“+200道行...”等使用说明
+            const count = data.count || 1;
+            badgeEl.innerText = `x${count}`;
+            badgeEl.style.color = '#ffd700';
           }
 
           // 添加品阶外光边
