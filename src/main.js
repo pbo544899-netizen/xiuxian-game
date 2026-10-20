@@ -4250,7 +4250,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 16. 核心推演交互绑定
+  // 16. 核心推演交互绑定 (支持连续抽奖预输入缓冲 Tap Buffer)
+  let spinBufferPending = false;
+
   btnSpin.addEventListener('click', () => {
     const hasJoinedSect = !!(gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal);
     if (hasJoinedSect) {
@@ -4260,7 +4262,24 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
     btnSpin.classList.remove('pulse-anim');
+
+    // 连续抽奖预输入缓冲：若上一轮正在收尾阶段，缓冲本次连点，动画一完立即触发下一抽
+    if (gameManager.renderer && gameManager.renderer.isSpinning) {
+      spinBufferPending = true;
+      return;
+    }
     gameManager.executeSpin();
+  });
+
+  window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', () => {
+    if (spinBufferPending) {
+      spinBufferPending = false;
+      setTimeout(() => {
+        if (!gameManager.isSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
+          gameManager.executeSpin();
+        }
+      }, 40);
+    }
   });
 
   btnAutoSpin.addEventListener('click', () => {

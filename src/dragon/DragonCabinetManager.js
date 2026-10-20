@@ -191,7 +191,7 @@ window.SlotsRPG = window.SlotsRPG || {};
 
           this._sortSlots();
           const targetIndex = this.slots.indexOf(existingSlot);
-          this.renderSlots(targetIndex);
+          this.renderSlots(targetIndex, { isBump: true });
           return targetIndex;
         }
       }
@@ -310,7 +310,13 @@ window.SlotsRPG = window.SlotsRPG || {};
         this._handleOverflow(overflow);
       }
 
-      this.renderSlots(insertIndex);
+      const isEpic = !!(normalized && (
+        normalized.type === 'battle' ||
+        normalized.type === 'bonus' ||
+        ['Q4', 'Q5', 'Q6', 'Q7', 'Q8'].includes((normalized.quality || '').toUpperCase()) ||
+        normalized.isUpgrade
+      ));
+      this.renderSlots(insertIndex, { isEpic });
       return insertIndex;
     }
 
@@ -337,8 +343,9 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 刷新 12 个宝萃槽位 DOM
      * @param {number} [highlightIndex=-1] 新插入并高亮的槽位索引
+     * @param {Object} [options={}] { isBump: boolean, isEpic: boolean }
      */
-    renderSlots(highlightIndex = -1) {
+    renderSlots(highlightIndex = -1, options = {}) {
       for (let i = 0; i < this.maxSlots; i++) {
         const slotEl = document.getElementById(`dragon-slot-${i}`);
         if (!slotEl) continue;
@@ -370,6 +377,13 @@ window.SlotsRPG = window.SlotsRPG || {};
             const count = data.count || 1;
             badgeEl.innerText = `x${count}`;
             badgeEl.style.color = '#ffd700';
+
+            // 连续抽奖同类堆叠数字跳动果冻动效
+            if (i === highlightIndex && options.isBump) {
+              badgeEl.classList.remove('bump-active');
+              void badgeEl.offsetWidth;
+              badgeEl.classList.add('bump-active');
+            }
           }
 
           // 添加品阶外光边
@@ -380,11 +394,17 @@ window.SlotsRPG = window.SlotsRPG || {};
             slotEl.classList.add(`quality-border-${q}`);
           }
 
-          // 若为新插入的槽位，触发爆破插入高光动效
+          // 若为新插入的槽位，触发爆破插入高光动效 (普通插入 vs 极品大爆插入)
           if (i === highlightIndex) {
-            slotEl.classList.remove('slot-inserted-burst');
-            void slotEl.offsetWidth; // 触发 reflow
-            slotEl.classList.add('slot-inserted-burst');
+            if (options.isEpic) {
+              slotEl.classList.remove('slot-epic-burst', 'slot-inserted-burst');
+              void slotEl.offsetWidth;
+              slotEl.classList.add('slot-epic-burst');
+            } else {
+              slotEl.classList.remove('slot-inserted-burst');
+              void slotEl.offsetWidth;
+              slotEl.classList.add('slot-inserted-burst');
+            }
           }
         }
       }

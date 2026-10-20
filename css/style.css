@@ -9915,6 +9915,30 @@ body.tier-spirit-realm .reel-frame {
   filter: drop-shadow(0 0 35px #ffffff) drop-shadow(0 0 50px #00e5ff) !important;
 }
 
+/* 遇极品神装/大爆时的戏剧性刹车聚灵充能 (Drama Pause) */
+.dragon-head-sprite.epic-charging {
+  animation: dragon-epic-charge-pulse 0.14s infinite alternate !important;
+  filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 0 55px #a855f7) brightness(1.3) !important;
+}
+
+@keyframes dragon-epic-charge-pulse {
+  0% { transform: scale(1.02) rotate(-1deg); }
+  100% { transform: scale(1.07) rotate(1deg); }
+}
+
+/* 极品大货落地微震屏 (强化重音与打击感) */
+.view-slots-shake {
+  animation: screen-slots-micro-shake 0.22s ease-out !important;
+}
+
+@keyframes screen-slots-micro-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 3px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-1px, 2px); }
+  100% { transform: translate(0, 0); }
+}
+
 /* 龙息核心光聚 */
 .dragon-breath-glow {
   position: absolute;
@@ -10160,6 +10184,40 @@ body.tier-spirit-realm .reel-frame {
   0% { transform: scale(0.65) translateY(-6px); filter: brightness(2.5); box-shadow: 0 0 22px #ffd700; }
   50% { transform: scale(1.18) translateY(0); filter: brightness(1.7); box-shadow: 0 0 16px #00e5ff; }
   100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 极品大货插入专属光环爆破 (大爆冲击) */
+.dragon-reward-slot.slot-epic-burst {
+  animation: slot-epic-burst-anim 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) both !important;
+}
+
+@keyframes slot-epic-burst-anim {
+  0% {
+    transform: scale(0.6) translateY(-10px);
+    filter: brightness(3.5);
+    box-shadow: 0 0 35px #ffd700, 0 0 60px #ffd700;
+  }
+  40% {
+    transform: scale(1.26) translateY(0);
+    filter: brightness(2.0);
+    box-shadow: 0 0 28px #a855f7, 0 0 45px #38ef7d;
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* 连续抽奖同类堆叠数字跳动果冻动效 */
+.slot-item-badge.bump-active {
+  display: inline-block;
+  animation: badge-number-bump 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes badge-number-bump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.45); color: #38ef7d; text-shadow: 0 0 8px #38ef7d; }
+  100% { transform: scale(1); color: #ffd700; text-shadow: none; }
 }
 
 /* 槽位品阶光边规范 */
