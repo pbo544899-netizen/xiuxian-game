@@ -8,8 +8,8 @@
 </head>
 <body>
   <div id="app-container">
-    <!-- 常驻顶栏 -->
-    <header class="top-hud">
+    <!-- 常驻顶栏 (角色修真视图内置HUD，顶栏默认隐藏) -->
+    <header class="top-hud hidden">
       <div class="hud-item">
         <span class="hud-label">机缘:</span>
         <span id="val-energy" class="hud-val">0</span>
@@ -31,7 +31,7 @@
     <!-- 主视口内容区 -->
     <main class="main-viewport">
       <!-- 视图1: 造化聚宝盆主视口 -->
-      <section id="view-slots" class="view-panel active">
+      <section id="view-slots" class="view-panel">
         <!-- PRD 10.4 & 9.3 节: 仙道功德状态与转盘灵气浮泡 -->
         <div class="slots-top-bar">
           <div class="merit-ticket-bar" id="merit-ticket-bar">
@@ -349,7 +349,7 @@
       </section>
 
       <!-- 视图2: 角色修真与乾坤袋背包 -->
-      <section id="view-character" class="view-panel">
+      <section id="view-character" class="view-panel active">
         <!-- 一体化修真道相卡片 (极致节省空间：顶端融合顶栏信息、右侧三维战斗属性柱、下方细长修为进度条) -->
         <div class="char-hero-profile-unified">
           <!-- 融入顶部信息：机缘、聚宝盆阶位、总战力 -->

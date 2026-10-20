@@ -395,7 +395,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // 3. Tab 视图切换
-  function switchTab(tabName) {
+  function switchTab(tabName, skipSound = false) {
     if (!gameManager.isPrologueComplete) {
       if (tabName === 'slots' && gameManager.prologueStep < 3) {
         showFloatingNotice('凡心未泯，请先至【角色修真】后山采药除害！');
@@ -410,7 +410,7 @@ window.addEventListener('DOMContentLoaded', () => {
     [tabSlots, tabCharacter, tabCave].forEach(t => t && t.classList.remove('active'));
     [viewSlots, viewCharacter, viewCave].forEach(v => v && v.classList.remove('active'));
 
-    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+    if (!skipSound && window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('TAB_SWITCH');
     }
 
@@ -433,6 +433,11 @@ window.addEventListener('DOMContentLoaded', () => {
       if (tabBadgeCave) tabBadgeCave.classList.add('hidden');
       updateCaveView();
     }
+
+    // 持久化存储当前视图 Tab，保障页面刷新后视图与底部高亮严格一致
+    try {
+      localStorage.setItem('SLOTS_RPG_ACTIVE_TAB', tabName);
+    } catch (e) {}
   }
 
   if (tabSlots) tabSlots.addEventListener('click', () => switchTab('slots'));
@@ -4632,7 +4637,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // 序章引导状态初始化与断点全场景恢复
   if (!gameManager.isPrologueComplete) {
     if (gameManager.prologueStep === 0) {
-      switchTab('character');
+      switchTab('character', true);
       if (prologueSection) prologueSection.classList.remove('hidden');
       // 凡人初入开局：自动唤起背景故事对话 (林凡身世与后山遭遇)
       setTimeout(() => {
@@ -4641,10 +4646,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       }, 400);
     } else if (gameManager.prologueStep === 1) {
-      switchTab('character');
+      switchTab('character', true);
       if (prologueSection) prologueSection.classList.remove('hidden');
     } else if (gameManager.prologueStep === 2) {
-      switchTab('character');
+      switchTab('character', true);
       if (prologueSection) {
         prologueSection.classList.remove('hidden');
         const pIcon = document.getElementById('prologue-icon');
@@ -4657,11 +4662,21 @@ window.addEventListener('DOMContentLoaded', () => {
         if (pBtn) pBtn.classList.add('hidden');
       }
     } else if (gameManager.prologueStep === 3) {
-      switchTab('slots');
+      switchTab('slots', true);
       const spinGuide = document.getElementById('prologue-spin-guide');
       if (spinGuide) spinGuide.classList.remove('hidden');
       if (btnSpin) btnSpin.classList.add('pulse-anim');
     }
+  } else {
+    // 已完成序章：读取上次离开时的记忆 Tab，若无记录则默认进入【角色修真】(保障刷新后界面与底部导航栏角色修真严格一致)
+    let savedTab = 'character';
+    try {
+      const persisted = localStorage.getItem('SLOTS_RPG_ACTIVE_TAB');
+      if (persisted && (persisted === 'slots' || persisted === 'character' || persisted === 'cave')) {
+        savedTab = persisted;
+      }
+    } catch (e) {}
+    switchTab(savedTab, true);
   }
 
   // 18. 升仙天碑与九转轮回业务交互 (五行纯图案圆盘 - 取消五角星线条，未解锁灰色遮罩禁点击，已解锁聊天泡泡展示心法收益)
