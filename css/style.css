@@ -4469,6 +4469,117 @@ body {
   }
 }
 
+/* 一键装备战力直接显示浮动动效 (取缔阻断弹窗，直接动效呈现暴涨战力) */
+.quick-equip-power-gain {
+  position: absolute;
+  top: 190px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 999;
+  pointer-events: none;
+  animation: quickEquipPowerFly 2.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes quickEquipPowerFly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 18px) scale(0.65);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -12px) scale(1.15);
+  }
+  30% {
+    transform: translate(-50%, -6px) scale(1.0);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -35px) scale(1.0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -65px) scale(0.9);
+  }
+}
+
+.quick-equip-gain-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(16, 28, 22, 0.96), rgba(8, 14, 18, 0.96));
+  border: 1.5px solid #38ef7d;
+  box-shadow: 0 0 25px rgba(56, 239, 125, 0.65), 0 6px 20px rgba(0, 0, 0, 0.85);
+  border-radius: 28px;
+  padding: 8px 22px;
+  backdrop-filter: blur(8px);
+}
+
+.quick-equip-gain-icon {
+  font-size: 22px;
+  filter: drop-shadow(0 0 8px #ffd700);
+  animation: quickEquipIconSpin 1s ease-in-out infinite alternate;
+}
+
+@keyframes quickEquipIconSpin {
+  0% { transform: scale(1) rotate(-6deg); }
+  100% { transform: scale(1.22) rotate(6deg); }
+}
+
+.quick-equip-gain-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: #a7f3d0;
+  letter-spacing: 1px;
+}
+
+.quick-equip-gain-num {
+  font-size: 26px;
+  font-weight: 900;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  color: #38ef7d;
+  text-shadow: 0 0 15px rgba(56, 239, 125, 0.9), 0 2px 4px #000;
+  letter-spacing: 1px;
+}
+
+.quick-equip-count-tag {
+  font-size: 11px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* 战力数字暴击跳动光效 */
+.power-burst-pulse {
+  display: inline-block;
+  animation: powerBurstPulseAnim 1.4s cubic-bezier(0.2, 0.8, 0.3, 1.2) !important;
+}
+
+@keyframes powerBurstPulseAnim {
+  0% {
+    transform: scale(1);
+    color: inherit;
+    text-shadow: inherit;
+  }
+  25% {
+    transform: scale(1.4);
+    color: #38ef7d !important;
+    text-shadow: 0 0 18px #38ef7d, 0 0 30px #38ef7d !important;
+  }
+  60% {
+    transform: scale(1.15);
+    color: #ffd700 !important;
+    text-shadow: 0 0 12px #ffd700 !important;
+  }
+  100% {
+    transform: scale(1);
+    color: inherit;
+    text-shadow: inherit;
+  }
+}
+
 /* 5. 游戏内仙道操作提示/结果弹窗 (#modal-action-notice) */
 .action-notice-card {
   width: 82%;

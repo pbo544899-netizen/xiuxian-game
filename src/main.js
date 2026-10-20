@@ -357,6 +357,46 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 一键换装战力直接提示 (取缔阻断式弹窗，直接动效呈现暴涨战力)
+  function showCombatPowerGainNotice(powerGain, count = 1) {
+    const container = (viewCharacter && viewCharacter.classList.contains('active'))
+      ? viewCharacter
+      : (document.getElementById('app-container') || document.body);
+    if (!container) return;
+
+    // 1. 战力数值脉冲高光 (角色界面与顶部 HUD 战力数值同步呼吸跳动)
+    const powerEls = [
+      document.getElementById('hero-profile-power'),
+      document.getElementById('val-power')
+    ];
+    powerEls.forEach(el => {
+      if (!el) return;
+      el.classList.remove('power-burst-pulse');
+      void el.offsetWidth;
+      el.classList.add('power-burst-pulse');
+      setTimeout(() => el.classList.remove('power-burst-pulse'), 1500);
+    });
+
+    // 2. 悬浮战力暴涨特效胶囊 (无弹窗，居中暴击跃升)
+    const burst = document.createElement('div');
+    burst.className = 'quick-equip-power-gain';
+    const textGain = powerGain > 0 ? `+${powerGain}` : `+0`;
+    const countTag = count > 1 ? `<span class="quick-equip-count-tag">换装 ${count} 件</span>` : '';
+    burst.innerHTML = `
+      <div class="quick-equip-gain-content">
+        <span class="quick-equip-gain-icon">⚡</span>
+        <span class="quick-equip-gain-label">战力</span>
+        <span class="quick-equip-gain-num">${textGain}</span>
+        ${countTag}
+      </div>
+    `;
+
+    container.appendChild(burst);
+    setTimeout(() => {
+      if (burst.parentNode) burst.remove();
+    }, 2200);
+  }
+
   // 当前正在弹窗中查看的装备目标上下文
   let currentModalTarget = null; // { type: 'inventory'|'equipped', index, slot, item }
 
@@ -380,18 +420,21 @@ window.addEventListener('DOMContentLoaded', () => {
   function showFloatingNotice(text, color = '#f87171') {
     if (renderer && renderer.addFloatingText) {
       renderer.addFloatingText(text, color);
-    } else {
-      const container = viewCharacter || document.body;
-      const el = document.createElement('div');
-      el.className = 'floating-attr-burst dec';
-      el.style.borderColor = color;
-      el.style.color = color;
-      el.style.left = '50%';
-      el.style.top = '45%';
-      el.innerText = text;
-      container.appendChild(el);
-      setTimeout(() => el.remove(), 2000);
     }
+    const container = (viewCharacter && viewCharacter.classList.contains('active'))
+      ? viewCharacter
+      : (document.getElementById('app-container') || document.body);
+    const el = document.createElement('div');
+    el.className = 'floating-attr-burst';
+    el.style.borderColor = color;
+    el.style.color = color;
+    el.style.left = '50%';
+    el.style.top = '45%';
+    el.innerText = text;
+    container.appendChild(el);
+    setTimeout(() => {
+      if (el.parentNode) el.remove();
+    }, 2000);
   }
 
   // 3. Tab 视图切换
@@ -1418,11 +1461,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const potLevel = gameManager.potLevel || 1;
     const hasUpgrade = slots.some(slot => gameManager.canSlotBeEquippedOrUpgraded(slot));
     if (!hasUpgrade) {
-      if (renderer && renderer.addFloatingText) {
-        renderer.addFloatingText('当前佩戴已是最佳法宝组合，无需更换', '#94a3b8');
-      }
+      showFloatingNotice('当前佩戴已是最佳法宝组合，无需更换', '#94a3b8');
       return;
     }
+
+    const initialCombatPower = gameManager.player.combatPower;
     let upgradedCount = 0;
     let totalPowerGain = 0;
     const upgradedDetails = [];
@@ -1478,29 +1521,22 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    const netPowerGain = gameManager.player.combatPower - initialCombatPower;
+    const displayPowerGain = netPowerGain > 0 ? netPowerGain : totalPowerGain;
+
     if (upgradedCount > 0) {
-      if (renderer && renderer.addFloatingText) {
-        renderer.addFloatingText(`⚡ 一键神装！换装${upgradedCount}件 战力+${totalPowerGain}`, '#ffd700');
-      }
       if (window.SlotsRPG.SoundEffects) {
         window.SlotsRPG.SoundEffects.play('QUICK_EQUIP');
       }
-      showGameNotice(
-        '神兵归位 · 一键换装成功',
-        `已为您自动换装为乾坤袋中最佳法宝组合（共替换/装备 <b>${upgradedCount}</b> 件）：<br><br>` +
-        upgradedDetails.map(d => `• ${d.slotName}：<span style="color:${d.color}; font-weight:bold;">${d.name}</span>`).join('<br>') +
-        `<br><br><b>综合战力大幅提升：<span style="color:#38ef7d;">+${totalPowerGain}</span></b>`,
-        '⚡ 神装加身'
-      );
-    } else {
+
+      // 直接显示加了多少战斗力 (取缔阻断弹窗，直接动效呈现)
+      showCombatPowerGainNotice(displayPowerGain, upgradedCount);
+
       if (renderer && renderer.addFloatingText) {
-        renderer.addFloatingText('当前佩戴已是最佳法宝组合，无需更换', '#94a3b8');
+        renderer.addFloatingText(`⚡ 战力提升 +${displayPowerGain}`, '#38ef7d');
       }
-      showGameNotice(
-        '已是最佳法宝',
-        '当前全身佩戴已是乾坤袋中所拥有的最佳法宝组合，无需更换！',
-        '🛡️ 最佳配装'
-      );
+    } else {
+      showFloatingNotice('当前佩戴已是最佳法宝组合，无需更换', '#94a3b8');
     }
 
     updateQuickEquipButtonState();
