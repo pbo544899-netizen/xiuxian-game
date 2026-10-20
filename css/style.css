@@ -9617,8 +9617,10 @@ body.tier-spirit-realm .reel-frame {
 .dragon-head-box {
   position: absolute;
   top: 2px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   width: 270px;
   height: 180px;
   display: flex;
@@ -9626,14 +9628,17 @@ body.tier-spirit-realm .reel-frame {
   align-items: center;
   z-index: 3;
   pointer-events: none;
+  transform-origin: center center;
 }
 
 /* 后景：周天八卦天机光轮 (深邃神阵依托，消除悬空贴片感) */
 .dragon-celestial-halo {
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -9643,6 +9648,7 @@ body.tier-spirit-realm .reel-frame {
   pointer-events: none;
   z-index: 1;
   animation: celestial-halo-spin 60s linear infinite;
+  transform-origin: center center;
 }
 
 .dragon-celestial-halo::before {
@@ -9663,22 +9669,25 @@ body.tier-spirit-realm .reel-frame {
 }
 
 @keyframes celestial-halo-spin {
-  0% { transform: translateX(-50%) rotate(0deg); }
-  100% { transform: translateX(-50%) rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* 龙威动态光晕气场 (随狂暴蓄力与状态色彩演化) */
 .dragon-rage-aura {
   position: absolute;
   top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   width: 230px;
   height: 145px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
   transition: background 0.8s ease, filter 0.8s ease, opacity 0.5s ease;
+  transform-origin: center center;
 }
 
 .dragon-rage-aura.rage-calm {
@@ -9687,8 +9696,8 @@ body.tier-spirit-realm .reel-frame {
 }
 
 @keyframes aura-calm-pulse {
-  0% { transform: translateX(-50%) scale(0.95); opacity: 0.6; }
-  100% { transform: translateX(-50%) scale(1.06); opacity: 0.9; }
+  0% { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.06); opacity: 0.9; }
 }
 
 .dragon-rage-aura.rage-warm {
@@ -9697,8 +9706,8 @@ body.tier-spirit-realm .reel-frame {
 }
 
 @keyframes aura-warm-pulse {
-  0% { transform: translateX(-50%) scale(0.96); opacity: 0.7; }
-  100% { transform: translateX(-50%) scale(1.08); opacity: 1.0; }
+  0% { transform: scale(0.96); opacity: 0.7; }
+  100% { transform: scale(1.08); opacity: 1.0; }
 }
 
 .dragon-rage-aura.rage-blazing {
@@ -9708,8 +9717,8 @@ body.tier-spirit-realm .reel-frame {
 }
 
 @keyframes aura-blazing-pulse {
-  0% { transform: translateX(-50%) scale(0.97); opacity: 0.75; }
-  100% { transform: translateX(-50%) scale(1.12); opacity: 1.0; }
+  0% { transform: scale(0.97); opacity: 0.75; }
+  100% { transform: scale(1.12); opacity: 1.0; }
 }
 
 .dragon-rage-aura.rage-frenzy {
@@ -9719,8 +9728,8 @@ body.tier-spirit-realm .reel-frame {
 }
 
 @keyframes aura-frenzy-pulse {
-  0% { transform: translateX(-50%) scale(0.98); opacity: 0.85; }
-  100% { transform: translateX(-50%) scale(1.18); opacity: 1.0; }
+  0% { transform: scale(0.98); opacity: 0.85; }
+  100% { transform: scale(1.18); opacity: 1.0; }
 }
 
 /* 中景：透明镂空神龙法相本体 */
@@ -9799,8 +9808,10 @@ body.tier-spirit-realm .reel-frame {
 .dragon-breath-glow {
   position: absolute;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -9809,19 +9820,22 @@ body.tier-spirit-realm .reel-frame {
   opacity: 0.7;
   animation: breath-glow-pulse 2s ease-in-out infinite alternate;
   z-index: 3;
+  transform-origin: center center;
 }
 
 @keyframes breath-glow-pulse {
-  0% { opacity: 0.45; transform: translateX(-50%) scale(0.85); }
-  100% { opacity: 0.9; transform: translateX(-50%) scale(1.2); }
+  0% { opacity: 0.45; transform: scale(0.85); }
+  100% { opacity: 0.9; transform: scale(1.2); }
 }
 
 /* 龙头下颔内嵌式真龙威势细能量槽 (去文字化) */
 .dragon-rage-gauge-wrap {
   position: absolute;
   bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   width: 160px;
   height: 4px;
   background: rgba(4, 10, 18, 0.88);
