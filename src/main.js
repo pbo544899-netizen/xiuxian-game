@@ -626,6 +626,12 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // 真龙威势光环与内嵌微型能量槽同步更新
+    if (gameManager && gameManager.dragonCabinetManager && gameManager.dragonCabinetManager.updateRage) {
+      const rageVal = gameManager.dragonLootEngine ? gameManager.dragonLootEngine.dragonRage : (state.dragonRage || 0);
+      gameManager.dragonCabinetManager.updateRage(rageVal);
+    }
+
     // 宗门斩妖试炼横幅更新 (1~12关主动挑战 + 守关大妖王)
     updateSectTrialBanner();
 
@@ -4205,37 +4211,22 @@ window.addEventListener('DOMContentLoaded', () => {
   const chkPauseUpgrade = document.getElementById('chk-pause-upgrade');
   const chkAutoFight = document.getElementById('chk-auto-fight');
 
-  // 双宝匣展示与即时决策数据流驱动
+  // 宝萃展示与龙威数据流驱动
   window.SlotsRPG.EventBus.on('DRAGON_LOOT_PRESENTED', (data) => {
-    const { leftCabinet, comparison, dragonRage } = data;
+    const { dragonRage } = data;
 
-    // 1. 更新真龙狂暴进度
-    if (dragonRageBarFill && dragonRageText) {
+    // 1. 更新真龙狂暴进度与内嵌光环/能量细槽
+    if (gameManager && gameManager.dragonCabinetManager && gameManager.dragonCabinetManager.updateRage) {
+      gameManager.dragonCabinetManager.updateRage(dragonRage);
+    } else if (dragonRageBarFill && dragonRageText) {
       const rage = Math.min(100, Math.max(0, dragonRage || 0));
       dragonRageBarFill.style.width = `${rage}%`;
       dragonRageText.innerText = `${rage} / 100`;
     }
 
-    // 2. 检查是否需要展开装备即时决策栏
-    if (leftCabinet && leftCabinet.type === 'equip' && leftCabinet.item) {
-      if (comparison && dragonGearCompareBar) {
-        dragonGearCompareBar.classList.remove('hidden');
-        const curEq = comparison.currentEquip;
-        const curName = curEq ? curEq.name : '未穿戴';
-        const curPower = curEq ? curEq.power : 0;
-        const item = leftCabinet.item;
-        const newPower = item.power || 0;
-        const diff = comparison.powerDiff;
-
-        if (compareCurrentDesc) compareCurrentDesc.innerText = `在身: ${curName} (${curPower})`;
-        if (compareNewDesc) compareNewDesc.innerText = `新获: ${item.name} (${newPower})`;
-        if (comparePowerDiff) {
-          comparePowerDiff.innerText = `${diff >= 0 ? '+' : ''}${diff} ⬆`;
-          comparePowerDiff.style.color = diff >= 0 ? '#52c41a' : '#ff4d4f';
-        }
-      }
-    } else {
-      if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
+    // 2. 装备对比栏已移出主界面视觉，保持隐藏避免遮挡
+    if (dragonGearCompareBar) {
+      dragonGearCompareBar.classList.add('hidden');
     }
   });
 

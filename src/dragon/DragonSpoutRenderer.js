@@ -44,10 +44,10 @@ window.SlotsRPG = window.SlotsRPG || {};
           this.ctx.scale(dpr, dpr);
         }
 
-        // 计算龙头口部及左右双宝匣格子的物理相对坐标
-        this.dragonMouth = { x: this.width * 0.5, y: 92 };
-        this.bagLeftTarget = { x: this.width * 0.25, y: 172 };
-        this.bagRightTarget = { x: this.width * 0.75, y: 172 };
+        // 计算龙头口部及12格宝萃展示区的物理相对坐标 (适应放大后的神龙法相)
+        this.dragonMouth = { x: this.width * 0.5, y: 135 };
+        this.showcaseTargetA = { x: this.width * 0.35, y: 245 };
+        this.showcaseTargetB = { x: this.width * 0.65, y: 245 };
       };
 
       window.addEventListener('resize', updateSize);
@@ -82,27 +82,27 @@ window.SlotsRPG = window.SlotsRPG || {};
       }
 
       // 生成口部聚气粒子
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 28; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const dist = 25 + Math.random() * 45;
+        const dist = 30 + Math.random() * 55;
         this.particles.push({
           x: this.dragonMouth.x + Math.cos(angle) * dist,
           y: this.dragonMouth.y + Math.sin(angle) * dist,
-          vx: -Math.cos(angle) * 2.8,
-          vy: -Math.sin(angle) * 2.8,
+          vx: -Math.cos(angle) * 3.2,
+          vy: -Math.sin(angle) * 3.2,
           life: 1.0,
           decay: 0.05 + Math.random() * 0.03,
           color: Math.random() < 0.5 ? '#00e5ff' : '#ffd700',
-          size: 2 + Math.random() * 3
+          size: 2.5 + Math.random() * 3.5
         });
       }
     }
 
     /**
-     * 顺序吐出灵光落入双侧宝物列表格子 (节奏感驱动)
-     * 1. 龙首昂起喷吐第1发 (左侧神兵格)
-     * 2. 间隔 0.35s 喷吐第2发 (右侧灵材格)
-     * 3. 待所有弹道到达爆破并展示完毕后 (1.05s)，才进入下一步决策或遭遇
+     * 顺序吐出灵光落入12格天机宝萃阵 (节奏分明 · 依次落地归序)
+     * 1. 龙首昂起喷吐第1发 (造化神兵/奇遇)，飞向宝萃阵
+     * 2. 间隔 0.32s 喷吐第2发 (天道灵材/灵石)，飞向宝萃阵
+     * 3. 待全部奖励喷吐落地并完成品阶自动归序后，才进入下一步结算回调，保障清晰爽快的游戏节奏感
      */
     stopSpin(spinResult, callback) {
       const headEl = document.getElementById('dragon-head-sprite');
@@ -112,64 +112,66 @@ window.SlotsRPG = window.SlotsRPG || {};
         setTimeout(() => headEl.classList.remove('spouting'), 700);
       }
 
-      const leftCoord = this._getSlotCoordinates('bag-left-slot-0', this.bagLeftTarget);
-      const rightCoord = this._getSlotCoordinates('bag-right-slot-0', this.bagRightTarget);
+      const targetCoordA = this._getSlotCoordinates('dragon-slot-0', this.showcaseTargetA);
+      const targetCoordB = this._getSlotCoordinates('dragon-slot-1', this.showcaseTargetB);
 
       const now = performance.now();
       const shotDuration = 380; // 单枚飞行时长 380ms
 
-      // 第1发：飞向左侧【造化玄兵宝匣】
-      const leftProj = {
-        startX: this.dragonMouth.x - 12,
+      // 第1发：飞向天机宝萃阵
+      const projA = {
+        startX: this.dragonMouth.x - 14,
         startY: this.dragonMouth.y,
-        endX: leftCoord.x,
-        endY: leftCoord.y,
-        controlX: this.dragonMouth.x - 50,
-        controlY: 100,
+        endX: targetCoordA.x,
+        endY: targetCoordA.y,
+        controlX: this.dragonMouth.x - 45,
+        controlY: this.dragonMouth.y + 45,
         startTime: now,
         duration: shotDuration,
         color: '#00e5ff',
-        targetSlotId: 'bag-left-slot-0',
+        targetSlotId: 'dragon-slot-0',
         impactFired: false
       };
 
-      // 第2发：延后 320ms 飞向右侧【天道灵材宝匣】(层次分明，节奏感极强)
-      const rightProj = {
-        startX: this.dragonMouth.x + 12,
+      // 第2发：延后 320ms 飞向天机宝萃阵 (节奏分明，多巴胺循环)
+      const projB = {
+        startX: this.dragonMouth.x + 14,
         startY: this.dragonMouth.y,
-        endX: rightCoord.x,
-        endY: rightCoord.y,
-        controlX: this.dragonMouth.x + 50,
-        controlY: 100,
+        endX: targetCoordB.x,
+        endY: targetCoordB.y,
+        controlX: this.dragonMouth.x + 45,
+        controlY: this.dragonMouth.y + 45,
         startTime: now + 320,
         duration: shotDuration,
         color: '#ffd700',
-        targetSlotId: 'bag-right-slot-0',
+        targetSlotId: 'dragon-slot-1',
         impactFired: false
       };
 
-      this.spoutProjectiles = [leftProj, rightProj];
+      this.spoutProjectiles = [projA, projB];
 
-      // 监听第1发落点
+      // 监听第1发落点并触发揭晓与排序
       setTimeout(() => {
-        this._triggerSlotImpact('bag-left-slot-0', '#00e5ff');
+        let insertedIdx = 0;
         if (window.gameManager && window.gameManager.dragonCabinetManager) {
-          window.gameManager.dragonCabinetManager.revealSlot('left');
+          insertedIdx = window.gameManager.dragonCabinetManager.revealSlot('left');
         }
-        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: 'left', index: 0 });
+        this._triggerSlotImpact(`dragon-slot-${insertedIdx}`, '#00e5ff');
+        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: 'left', index: insertedIdx });
       }, shotDuration);
 
-      // 监听第2发落点
+      // 监听第2发落点并触发揭晓与排序
       setTimeout(() => {
-        this._triggerSlotImpact('bag-right-slot-0', '#ffd700');
+        let insertedIdx = 0;
         if (window.gameManager && window.gameManager.dragonCabinetManager) {
-          window.gameManager.dragonCabinetManager.revealSlot('right');
+          insertedIdx = window.gameManager.dragonCabinetManager.revealSlot('right');
         }
-        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: 'right', index: 0 });
+        this._triggerSlotImpact(`dragon-slot-${insertedIdx}`, '#ffd700');
+        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: 'right', index: insertedIdx });
       }, 320 + shotDuration);
 
-      // 全部奖励吐出并完全展示后 (留足 480ms 呼吸驻留时间，确保全部奖励显示全后，才进入下一步)，进入下一步！
-      const totalAnimationTime = 320 + shotDuration + 480; // ~1180ms
+      // 全部奖励吐出并完全展示后 (留足 450ms 呼吸驻留时间，确保全部奖励显示全后，才进入下一步)，进入下一步！
+      const totalAnimationTime = 320 + shotDuration + 450; // ~1150ms
       setTimeout(() => {
         this.isSpinning = false;
         window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SPOUT_ALL_REVEALED', spinResult);

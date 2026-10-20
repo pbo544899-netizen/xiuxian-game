@@ -9570,29 +9570,29 @@ body.tier-spirit-realm .reel-frame {
   margin: 0;
 }
 
-/* 核心舞台区：神龙居顶，双背包在底，弹道居中 */
+/* 核心舞台区：神龙居顶，12格宝萃阵列在底，弹道穿梭其间 */
 .dragon-spout-stage {
   width: 100%;
   max-width: 440px;
-  height: 335px;
+  height: 370px;
   position: relative;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 18%, rgba(0, 60, 60, 0.4) 0%, rgba(3, 10, 18, 0.88) 75%),
-              linear-gradient(180deg, rgba(5, 15, 25, 0.5) 0%, rgba(2, 6, 12, 0.95) 100%);
-  border: 1px solid rgba(0, 229, 255, 0.25);
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 50% 22%, rgba(0, 60, 60, 0.45) 0%, rgba(3, 10, 18, 0.92) 75%),
+              linear-gradient(180deg, rgba(5, 15, 25, 0.6) 0%, rgba(2, 6, 12, 0.98) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85), 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
-/* 穹顶神龙法相 (居顶，比例精致，不遮挡下方背包) */
+/* 穹顶神龙法相 (视觉主宰区 · 放大震撼视觉冲击) */
 .dragon-head-box {
   position: absolute;
-  top: 4px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 135px;
-  height: 110px;
+  width: 270px;
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9600,53 +9600,139 @@ body.tier-spirit-realm .reel-frame {
   pointer-events: none;
 }
 
+/* 龙威动态光晕气场 (随狂暴蓄力与状态色彩演化) */
+.dragon-rage-aura {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  height: 145px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.8s ease, filter 0.8s ease, opacity 0.5s ease;
+}
+
+.dragon-rage-aura.rage-calm {
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.35) 0%, rgba(0, 150, 200, 0.12) 55%, transparent 78%);
+  animation: aura-calm-pulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes aura-calm-pulse {
+  0% { transform: translateX(-50%) scale(0.95); opacity: 0.6; }
+  100% { transform: translateX(-50%) scale(1.06); opacity: 0.9; }
+}
+
+.dragon-rage-aura.rage-warm {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 140, 0, 0.2) 58%, transparent 80%);
+  animation: aura-warm-pulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes aura-warm-pulse {
+  0% { transform: translateX(-50%) scale(0.96); opacity: 0.7; }
+  100% { transform: translateX(-50%) scale(1.08); opacity: 1.0; }
+}
+
+.dragon-rage-aura.rage-blazing {
+  background: radial-gradient(circle, rgba(255, 80, 0, 0.68) 0%, rgba(255, 20, 0, 0.28) 62%, transparent 85%);
+  animation: aura-blazing-pulse 1.3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 16px rgba(255, 60, 0, 0.6));
+}
+
+@keyframes aura-blazing-pulse {
+  0% { transform: translateX(-50%) scale(0.97); opacity: 0.75; }
+  100% { transform: translateX(-50%) scale(1.12); opacity: 1.0; }
+}
+
+.dragon-rage-aura.rage-frenzy {
+  background: radial-gradient(circle, rgba(255, 0, 60, 0.88) 0%, rgba(255, 215, 0, 0.55) 52%, transparent 90%);
+  animation: aura-frenzy-pulse 0.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 25px rgba(255, 0, 60, 0.85)) drop-shadow(0 0 35px #ffd700);
+}
+
+@keyframes aura-frenzy-pulse {
+  0% { transform: translateX(-50%) scale(0.98); opacity: 0.85; }
+  100% { transform: translateX(-50%) scale(1.18); opacity: 1.0; }
+}
+
 .dragon-head-sprite {
-  width: 100%;
-  height: 100%;
+  width: 245px;
+  height: 160px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 14px rgba(0, 229, 255, 0.3));
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(0, 229, 255, 0.35));
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   animation: dragon-idle-breathe 4s ease-in-out infinite alternate;
+  z-index: 2;
+  position: relative;
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 70%, transparent 98%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 70%, transparent 98%);
 }
 
 @keyframes dragon-idle-breathe {
-  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(0, 229, 255, 0.25)); }
-  100% { transform: translateY(2px) scale(1.02); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.95)) drop-shadow(0 0 18px rgba(0, 229, 255, 0.45)); }
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 14px rgba(0,0,0,0.95)) drop-shadow(0 0 12px rgba(0, 229, 255, 0.28)); }
+  100% { transform: translateY(3px) scale(1.02); filter: drop-shadow(0 8px 18px rgba(0,0,0,0.98)) drop-shadow(0 0 22px rgba(0, 229, 255, 0.5)); }
 }
 
 .dragon-head-sprite.charging {
-  animation: dragon-charge-pulse 0.25s infinite alternate !important;
-  filter: drop-shadow(0 0 25px #00e5ff) drop-shadow(0 0 35px #ffd700) !important;
+  animation: dragon-charge-pulse 0.22s infinite alternate !important;
+  filter: drop-shadow(0 0 28px #00e5ff) drop-shadow(0 0 40px #ffd700) !important;
 }
 
 @keyframes dragon-charge-pulse {
   0% { transform: scale(1.01) rotate(-0.5deg); }
-  100% { transform: scale(1.04) rotate(0.5deg); }
+  100% { transform: scale(1.05) rotate(0.5deg); }
 }
 
 .dragon-head-sprite.spouting {
-  transform: translateY(-3px) scale(1.05) !important;
-  filter: drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 45px #00e5ff) !important;
+  transform: translateY(-4px) scale(1.06) !important;
+  filter: drop-shadow(0 0 35px #ffffff) drop-shadow(0 0 50px #00e5ff) !important;
 }
 
-/* 龙息光效层 */
+/* 龙息核心光聚 */
 .dragon-breath-glow {
   position: absolute;
-  bottom: 14px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.85) 0%, rgba(255, 215, 0, 0.45) 50%, transparent 80%);
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.9) 0%, rgba(255, 215, 0, 0.5) 50%, transparent 80%);
   filter: blur(5px);
-  opacity: 0.65;
+  opacity: 0.7;
   animation: breath-glow-pulse 2s ease-in-out infinite alternate;
+  z-index: 3;
 }
 
 @keyframes breath-glow-pulse {
-  0% { opacity: 0.4; transform: translateX(-50%) scale(0.85); }
-  100% { opacity: 0.85; transform: translateX(-50%) scale(1.15); }
+  0% { opacity: 0.45; transform: translateX(-50%) scale(0.85); }
+  100% { opacity: 0.9; transform: translateX(-50%) scale(1.2); }
+}
+
+/* 龙头下颔内嵌式真龙威势细能量槽 (去文字化) */
+.dragon-rage-gauge-wrap {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 4px;
+  background: rgba(4, 10, 18, 0.88);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 3px;
+  overflow: hidden;
+  z-index: 4;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.dragon-rage-gauge-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff 0%, #ffd700 70%, #ff3d00 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
+  transition: width 0.35s ease, background 0.4s ease;
 }
 
 /* 吐宝 Canvas 轨迹层 */
@@ -9659,98 +9745,72 @@ body.tier-spirit-realm .reel-frame {
   z-index: 4;
 }
 
-/* 左右双宝匣容器 (上方龙头，下方左右两个类似背包的界面) */
-.dragon-backpacks-container {
+/* 奖励呈现区：一排6个，共两排12格 (高品先列，自动前置归序) */
+.dragon-rewards-showcase {
   position: absolute;
-  top: 122px;
   bottom: 6px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-  gap: 10px;
-  z-index: 2;
-  box-sizing: border-box;
-}
-
-/* 单个宝匣 (类似背包的界面) */
-.dragon-treasure-bag {
-  flex: 1;
-  max-width: 205px;
-  height: 100%;
-  background: linear-gradient(180deg, rgba(10, 18, 30, 0.92) 0%, rgba(4, 8, 16, 0.96) 100%);
+  left: 6px;
+  right: 6px;
+  height: 162px;
+  background: linear-gradient(180deg, rgba(8, 16, 28, 0.94) 0%, rgba(3, 8, 16, 0.98) 100%);
   border: 1px solid rgba(0, 229, 255, 0.35);
   border-radius: 10px;
-  padding: 6px;
-  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8), 0 4px 18px rgba(0, 0, 0, 0.7);
+  padding: 4px 6px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 4px 16px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
+  z-index: 2;
   box-sizing: border-box;
   backdrop-filter: blur(8px);
-  position: relative;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.dragon-treasure-bag.bag-left {
-  border-color: rgba(0, 229, 255, 0.4);
-}
-
-.dragon-treasure-bag.bag-right {
-  border-color: rgba(255, 215, 0, 0.4);
-}
-
-/* 宝匣顶栏 */
-.treasure-bag-header {
+.rewards-showcase-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 1px 4px 5px 4px;
+  align-items: center;
+  padding: 1px 4px 3px 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
-.bag-header-left {
+.showcase-title-wrap {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.bag-header-icon {
-  font-size: 13px;
-  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+.showcase-icon {
+  font-size: 11px;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
 }
 
-.bag-header-title {
+.showcase-title {
   font-family: "STKaiti", "KaiTi", "Songti SC", serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #ffd700;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
   letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
 }
 
-.bag-header-badge {
-  font-size: 10px;
-  color: #94a3b8;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 1px 5px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.showcase-rule-hint {
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 0.5px;
 }
 
-/* 类似背包的格子网格 (2x2) */
-.treasure-bag-grid {
+/* 12槽位网格 (6列 x 2行) */
+.rewards-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 76px 76px;
-  gap: 6px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 62px 62px;
+  gap: 4px;
   flex: 1;
 }
 
-/* 单个宝物槽位 (背包格子) */
-.treasure-slot {
-  background: rgba(15, 23, 42, 0.75);
+/* 单个宝萃槽位 */
+.dragon-reward-slot {
+  background: rgba(13, 20, 36, 0.82);
   border: 1px solid rgba(51, 65, 85, 0.7);
   border-radius: 6px;
   position: relative;
@@ -9761,136 +9821,132 @@ body.tier-spirit-realm .reel-frame {
   overflow: hidden;
   cursor: pointer;
   box-sizing: border-box;
-  height: 76px;
+  height: 62px;
   transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.treasure-slot:hover {
+.dragon-reward-slot:hover {
   transform: translateY(-1px);
-  border-color: rgba(0, 229, 255, 0.6);
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
-}
-
-/* 0号主槽位 (最新降落点，高亮外框) */
-.treasure-slot.primary-slot {
-  border: 1px solid rgba(255, 215, 0, 0.55);
-  background: radial-gradient(circle at center, rgba(30, 48, 68, 0.85) 0%, rgba(12, 20, 32, 0.95) 100%);
-  box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.2);
+  border-color: rgba(0, 229, 255, 0.7);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
 }
 
 /* 空槽状态 */
-.slot-empty-mark {
+.slot-empty-state {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  opacity: 0.45;
+  opacity: 0.35;
   pointer-events: none;
 }
 
-.slot-placeholder-icon {
-  font-size: 18px;
-  filter: grayscale(0.6);
-}
-
-.slot-placeholder-text {
-  font-size: 9px;
-  color: #94a3b8;
+.slot-rune-icon {
+  font-size: 11px;
+  font-weight: 900;
+  color: #475569;
   letter-spacing: 0.5px;
 }
 
-.slot-num {
-  font-size: 12px;
-  font-weight: 900;
-  color: #475569;
-  letter-spacing: 1px;
-}
-
-/* 掉落展示内容 */
-.slot-item-view {
+/* 宝萃展示内容 */
+.slot-content {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1px 2px;
+  padding: 1px;
   box-sizing: border-box;
   position: relative;
   min-height: 0;
 }
 
+.slot-content.hidden {
+  display: none;
+}
+
 .slot-item-icon {
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 27px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
   margin-bottom: 1px;
   transition: transform 0.2s ease;
 }
 
-.treasure-slot:hover .slot-item-icon {
+.dragon-reward-slot:hover .slot-item-icon {
   transform: scale(1.1);
 }
 
 .slot-item-name {
   font-family: "STKaiti", "KaiTi", serif;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: bold;
   color: #e2e8f0;
-  max-width: 95%;
+  max-width: 96%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
   line-height: 1.1;
 }
 
 .slot-item-badge {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 800;
   color: #38ef7d;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 0 4px;
-  border-radius: 3px;
-  margin-top: 2px;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 0 3px;
+  border-radius: 2px;
+  margin-top: 1px;
   white-space: nowrap;
-  max-width: 95%;
+  max-width: 96%;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.1;
 }
 
-/* 喷吐撞击爆发动效与弹出动效 */
-.treasure-slot.impact-burst {
+/* 宝萃撞击爆发动效与弹出动效 */
+.dragon-reward-slot.impact-burst {
   animation: slot-burst-impact 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
 @keyframes slot-burst-impact {
-  0% { transform: scale(0.8); filter: brightness(2.2); box-shadow: 0 0 25px #00e5ff; }
-  50% { transform: scale(1.12); filter: brightness(1.6); box-shadow: 0 0 18px #ffd700; }
+  0% { transform: scale(0.75); filter: brightness(2.2); box-shadow: 0 0 25px #00e5ff; }
+  50% { transform: scale(1.15); filter: brightness(1.6); box-shadow: 0 0 18px #ffd700; }
   100% { transform: scale(1); filter: brightness(1); }
 }
 
-.treasure-slot .slot-item-view.slot-reveal-pop {
-  animation: slot-view-pop 0.35s ease-out both;
+/* 高品阶奖励插入动画 (放大爆开闪耀，体现高品排到前列的爽感) */
+.dragon-reward-slot.slot-inserted-burst {
+  animation: slot-insert-burst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
-@keyframes slot-view-pop {
-  0% { transform: scale(0.6) translateY(12px); opacity: 0; }
-  70% { transform: scale(1.08) translateY(-2px); opacity: 1; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
+@keyframes slot-insert-burst {
+  0% { transform: scale(0.65) translateY(-6px); filter: brightness(2.5); box-shadow: 0 0 22px #ffd700; }
+  50% { transform: scale(1.18) translateY(0); filter: brightness(1.7); box-shadow: 0 0 16px #00e5ff; }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
-/* 槽位品质光边 */
-.treasure-slot.quality-border-q1 { border-color: rgba(148, 163, 184, 0.6); }
-.treasure-slot.quality-border-q2 { border-color: rgba(82, 196, 26, 0.8); box-shadow: 0 0 6px rgba(82, 196, 26, 0.3); }
-.treasure-slot.quality-border-q3 { border-color: rgba(24, 144, 255, 0.85); box-shadow: 0 0 8px rgba(24, 144, 255, 0.35); }
-.treasure-slot.quality-border-q4 { border-color: rgba(168, 85, 247, 0.9); box-shadow: 0 0 10px rgba(168, 85, 247, 0.45); }
-.treasure-slot.quality-border-q5 { border-color: rgba(245, 158, 11, 0.95); box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
-.treasure-slot.quality-border-q6 { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.6); }
-.treasure-slot.quality-border-battle {
+/* 槽位品阶光边规范 */
+.dragon-reward-slot.quality-border-q1 { border-color: rgba(148, 163, 184, 0.6); }
+.dragon-reward-slot.quality-border-q2 { border-color: rgba(82, 196, 26, 0.85); box-shadow: 0 0 6px rgba(82, 196, 26, 0.35); }
+.dragon-reward-slot.quality-border-q3 { border-color: rgba(24, 144, 255, 0.9); box-shadow: 0 0 8px rgba(24, 144, 255, 0.4); }
+.dragon-reward-slot.quality-border-q4 { border-color: rgba(168, 85, 247, 0.95); box-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+.dragon-reward-slot.quality-border-q5 { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
+.dragon-reward-slot.quality-border-q6 {
+  border-color: rgba(239, 68, 68, 1) !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.75) !important;
+  animation: q6-slot-glow 1.5s infinite alternate;
+}
+
+@keyframes q6-slot-glow {
+  0% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+  100% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.95); }
+}
+
+.dragon-reward-slot.quality-border-battle {
   border-color: #ff4d4f !important;
   box-shadow: 0 0 14px rgba(255, 77, 79, 0.8) !important;
   animation: monster-slot-pulse 1.2s infinite alternate;
