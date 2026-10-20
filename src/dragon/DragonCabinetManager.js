@@ -127,13 +127,76 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     /**
-     * 将喷出的奖励插入展示区并执行品阶自动排序
+     * 将喷出的奖励插入展示区并执行同品类堆叠与品阶自动归序
+     * 规则：
+     * 1. 相同品类（如天道灵石、同种丹药、道符、妖兽）强制合并占 1 格，累加数值与数量 (xN)，不散落多格
+     * 2. 装备及新种类独立占格，按品阶自动前插高品，相同品阶先进居前 (FIFO)
      * @param {Object} rawData 
-     * @returns {number} 插入并排序后的最终索引 (用于高光动效)
+     * @returns {number} 插入或堆叠后的最终槽位索引 (用于高光动效)
      */
     addItemFromSpout(rawData) {
       if (!rawData) return 0;
 
+      // 1. 判断是否属于可单格堆叠品类并生成堆叠唯一键 (stackKey)
+      let stackKey = null;
+      let isStackable = false;
+
+      if (rawData.type === 'energy') {
+        stackKey = 'energy';
+        isStackable = true;
+      } else if (rawData.type === 'pill') {
+        const subType = rawData.subType || (rawData.item && rawData.item.subType) || 'exp';
+        stackKey = `pill_${subType}`;
+        isStackable = true;
+      } else if (rawData.type === 'rune') {
+        const sym = rawData.symbolId || (rawData.item && rawData.item.symbolId) || 'SYM_01';
+        stackKey = `rune_${sym}`;
+        isStackable = true;
+      } else if (rawData.type === 'battle') {
+        stackKey = 'battle';
+        isStackable = true;
+      } else if (rawData.type === 'bonus') {
+        stackKey = 'bonus';
+        isStackable = true;
+      }
+
+      // 2. 检查临时背包是否已有该品类，若有则原地增量堆叠，绝不散落到不同格子
+      if (isStackable && stackKey) {
+        const existingSlot = this.slots.find(s => s.stackKey === stackKey);
+        if (existingSlot) {
+          existingSlot.count = (existingSlot.count || 1) + (rawData.amount || (rawData.item && rawData.item.amount) || 1);
+          existingSlot.dropTimestamp = ++this.dropCounter;
+
+          if (stackKey === 'energy') {
+            const gain = rawData.energyGain || rawData.payout || 25;
+            existingSlot.totalEnergy = (existingSlot.totalEnergy || existingSlot.singleGain || gain) + gain;
+            existingSlot.gainText = `+${existingSlot.totalEnergy}机缘 (x${existingSlot.count})`;
+          } else if (stackKey.startsWith('pill')) {
+            const exp = rawData.expGain || 50;
+            existingSlot.totalExp = (existingSlot.totalExp || existingSlot.singleExp || exp) + exp;
+            existingSlot.gainText = `+${existingSlot.totalExp}道行 (x${existingSlot.count})`;
+          } else if (stackKey.startsWith('rune')) {
+            existingSlot.gainText = `x${existingSlot.count} 符宝`;
+          } else if (stackKey === 'battle') {
+            this.pendingBattle = rawData;
+            existingSlot.name = rawData.name || '妖兽现世';
+            existingSlot.battleConfig = rawData.battleConfig;
+            existingSlot.gainText = '⚔️ 迎战';
+          } else if (stackKey === 'bonus') {
+            this.pendingBonus = rawData;
+            existingSlot.name = rawData.name || '造化秘境';
+            existingSlot.bonusCount = (existingSlot.bonusCount || 6) + (rawData.bonusCount || 0);
+            existingSlot.gainText = `✨ 秘境 x${existingSlot.count}`;
+          }
+
+          this._sortSlots();
+          const targetIndex = this.slots.indexOf(existingSlot);
+          this.renderSlots(targetIndex);
+          return targetIndex;
+        }
+      }
+
+      // 3. 全新物品构建并放入临时背包槽位
       let normalized = null;
 
       if (rawData.type === 'equip' && rawData.item) {
@@ -149,19 +212,20 @@ window.SlotsRPG = window.SlotsRPG || {};
 
         normalized = {
           type: 'equip',
+          stackKey: `equip_${item.id || item.name}`,
           item: item,
           name: item.name,
           icon: item.icon || 'assets/symbols/SYM_06.png',
-          quality: (item.quality || 'Q1').toUpperCase(),
-          qualityRank: QUALITY_RANK[(item.quality || 'Q1').toUpperCase()] || 1,
+          quality: (item.quality || item.qualityCode || 'Q1').toUpperCase(),
+          qualityRank: QUALITY_RANK[(item.quality || item.qualityCode || 'Q1').toUpperCase()] || 1,
           qualityColor: item.qualityColor || '#94a3b8',
           gainText: gainText,
           isUpgrade: isUpgrade,
           powerDiff: diff,
+          count: 1,
           dropTimestamp: ++this.dropCounter
         };
 
-        // 战力提升时给玩家爽快浮字
         if (isUpgrade && diff > 0 && this.gameManager && this.gameManager.renderer && this.gameManager.renderer.addFloatingText) {
           this.gameManager.renderer.addFloatingText(`神兵现世！战力 +${diff} ⬆`, '#38ef7d');
         }
@@ -169,6 +233,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.pendingBattle = rawData;
         normalized = {
           type: 'battle',
+          stackKey: 'battle',
           name: rawData.name || '妖兽现世',
           icon: 'assets/symbols/SYM_12.png',
           quality: 'battle',
@@ -176,12 +241,14 @@ window.SlotsRPG = window.SlotsRPG || {};
           qualityColor: '#ff4d4f',
           battleConfig: rawData.battleConfig,
           gainText: '⚔️ 迎战',
+          count: 1,
           dropTimestamp: ++this.dropCounter
         };
       } else if (rawData.type === 'bonus') {
         this.pendingBonus = rawData;
         normalized = {
           type: 'bonus',
+          stackKey: 'bonus',
           name: rawData.name || '造化秘境',
           icon: 'assets/symbols/SYM_13.png',
           quality: 'Q5',
@@ -189,58 +256,71 @@ window.SlotsRPG = window.SlotsRPG || {};
           qualityColor: '#ffd700',
           gainText: '✨ 秘境',
           bonusCount: rawData.bonusCount || 6,
+          count: 1,
           dropTimestamp: ++this.dropCounter
         };
       } else {
-        // 灵药 / 灵石机缘 / 灵符
-        const itemObj = rawData.item || {
-          name: rawData.type === 'energy' ? '天道灵石' : '上品灵药',
-          icon: rawData.type === 'energy' ? 'assets/symbols/SYM_05.png' : 'assets/symbols/SYM_05.png'
-        };
-        const gainText = rawData.desc 
-          ? (rawData.desc.length > 8 ? rawData.desc.substring(0, 7) + '..' : rawData.desc)
-          : (rawData.energyGain ? `+${rawData.energyGain}机缘` : `+${rawData.expGain || 50}道行`);
+        // 灵药 / 天道灵石 / 符文
+        const isEnergy = rawData.type === 'energy';
+        const isPill = rawData.type === 'pill';
+        const isRune = rawData.type === 'rune';
 
-        const q = (rawData.quality || 'Q2').toUpperCase();
+        let name = isEnergy ? '天道灵石' : (isRune ? '道门真符' : '上品灵药');
+        let icon = isEnergy ? 'assets/symbols/SYM_05.png' : (isRune ? 'assets/symbols/SYM_01.png' : 'assets/symbols/SYM_05.png');
+        if (rawData.item) {
+          name = rawData.item.name || name;
+          icon = rawData.item.icon || icon;
+        }
+
+        const energyVal = rawData.energyGain || 25;
+        const expVal = rawData.expGain || 50;
+        const gainText = isEnergy 
+          ? `+${energyVal}机缘`
+          : (isRune ? 'x1 符宝' : (rawData.desc ? (rawData.desc.length > 8 ? rawData.desc.substring(0, 7) + '..' : rawData.desc) : `+${expVal}道行`));
+
+        const q = (rawData.quality || (isEnergy ? 'Q2' : (isPill ? 'Q3' : 'Q2'))).toUpperCase();
 
         normalized = {
-          type: rawData.type || 'pill',
-          item: itemObj,
-          name: itemObj.name,
-          icon: itemObj.icon,
+          type: rawData.type || (isEnergy ? 'energy' : 'pill'),
+          stackKey: stackKey || (isEnergy ? 'energy' : 'pill_exp'),
+          item: rawData.item || null,
+          name: name,
+          icon: icon,
           quality: q,
           qualityRank: QUALITY_RANK[q] || 2,
-          qualityColor: rawData.qualityColor || '#52c41a',
+          qualityColor: rawData.qualityColor || (isEnergy ? '#52c41a' : '#1890ff'),
           gainText: gainText,
           isCrit: rawData.isCrit || false,
+          count: rawData.amount || 1,
+          totalEnergy: isEnergy ? energyVal : 0,
+          totalExp: isPill ? expVal : 0,
+          singleGain: energyVal,
+          singleExp: expVal,
           dropTimestamp: ++this.dropCounter
         };
       }
 
-      // 放入展示槽位列表
       this.slots.push(normalized);
+      this._sortSlots();
 
-      // 【核心规则 5】：按照品阶自动排序，高品阶自动排在前列，相同按时间先后排列
-      this.slots.sort((a, b) => {
-        if (b.qualityRank !== a.qualityRank) {
-          return b.qualityRank - a.qualityRank; // 品阶高者居前
-        }
-        return a.dropTimestamp - b.dropTimestamp; // 时间先得居前 (FIFO)
-      });
-
-      // 确定新加入物品在排序后的最终索引
       const insertIndex = this.slots.indexOf(normalized);
 
-      // 超过 12 格时，从末尾溢出
       while (this.slots.length > this.maxSlots) {
         const overflow = this.slots.pop();
         this._handleOverflow(overflow);
       }
 
-      // 刷新 12 格渲染
       this.renderSlots(insertIndex);
-
       return insertIndex;
+    }
+
+    _sortSlots() {
+      this.slots.sort((a, b) => {
+        if (b.qualityRank !== a.qualityRank) {
+          return b.qualityRank - a.qualityRank;
+        }
+        return a.dropTimestamp - b.dropTimestamp;
+      });
     }
 
     _handleOverflow(overflowItem) {

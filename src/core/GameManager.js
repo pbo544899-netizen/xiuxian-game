@@ -816,7 +816,9 @@ class GameManager {
       if (bConfig && !bConfig.betMultiplier) {
         bConfig.betMultiplier = this.betMultiplier;
       }
+      const monsterName = (spinData.leftCabinet && spinData.leftCabinet.name) || '妖兽现世';
       this.pendingBattleData = {
+        monsterName: monsterName,
         scatterCount: evaluation.scatterCount,
         level: this.level,
         battleConfig: bConfig,
@@ -824,7 +826,7 @@ class GameManager {
       };
       // 唤醒出战迎敌横幅，不立即强行切屏，确保奖励全部展示后由玩家拔剑出战或倒计时切入
       window.SlotsRPG.EventBus.emit('DRAGON_BATTLE_READY', {
-        monsterName: (spinData.leftCabinet && spinData.leftCabinet.name) || '妖兽现世',
+        monsterName: monsterName,
         battleData: this.pendingBattleData,
         isAutoSpinning: this.wasAutoSpinningBeforeBattle
       });
@@ -859,6 +861,7 @@ class GameManager {
     const promptEl = document.getElementById('dragon-battle-prompt');
     if (promptEl) promptEl.classList.add('hidden');
     window.SlotsRPG.EventBus.emit('TRIGGER_BATTLE', battleData);
+    this.emitStateChange();
   }
 
   /**

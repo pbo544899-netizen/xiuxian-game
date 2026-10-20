@@ -200,16 +200,15 @@
           </div>
         </div>
 
-        <!-- 妖兽伏妖现世出战横幅 (在全部奖励显示全后出现，避免突然切屏撕裂) -->
-        <div class="dragon-battle-prompt hidden" id="dragon-battle-prompt">
+        <!-- 保持 DOM 引用兼容但移出主视觉 (战斗挑战已统一融入下方宗门试炼横幅) -->
+        <div class="dragon-battle-prompt hidden" id="dragon-battle-prompt" style="display: none !important;">
           <div class="battle-prompt-info">
             <span class="battle-prompt-warn">⚠️ 龙息引煞 · 妖兽现世</span>
             <span class="battle-prompt-name" id="battle-prompt-monster-name">荒村恶犬精 突袭！</span>
           </div>
           <div class="battle-prompt-action">
-            <button id="btn-dragon-engage-battle" class="btn-dragon-engage-battle" title="拔剑迎战妖兽">
-              <span class="btn-sword-icon">⚔️</span>
-              <span class="btn-battle-label" id="btn-battle-label">拔剑迎战 (3s)</span>
+            <button id="btn-dragon-engage-battle" class="btn-dragon-engage-battle">
+              <span class="btn-battle-label" id="btn-battle-label">拔剑迎战</span>
             </button>
           </div>
         </div>

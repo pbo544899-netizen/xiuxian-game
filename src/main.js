@@ -878,8 +878,40 @@ window.addEventListener('DOMContentLoaded', () => {
   // 宗门斩妖试炼横幅刷新 (1~12关递增试炼 + 第13战守关大妖王决战，软性绑定；未入门派前隐藏)
   function updateSectTrialBanner() {
     if (!sectTrialBanner || !gameManager) return;
-    const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
     const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+
+    // 【核心改动 4】：当触发伏妖遭遇战时，下方的挑战横幅临时变更为触发的伏妖挑战
+    if (gameManager.pendingBattleData) {
+      const pData = gameManager.pendingBattleData;
+      sectTrialBanner.classList.remove('hidden');
+      sectTrialBanner.classList.add('battle-triggered-mode');
+      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+
+      if (trialStageBadge) trialStageBadge.innerText = '⚠️ 妖兽突袭';
+      if (trialDiffTag) {
+        trialDiffTag.className = 'trial-diff-tag danger';
+        trialDiffTag.innerText = '紧急迎战';
+      }
+      if (trialRewardTag) trialRewardTag.innerText = '🎁 降妖机缘';
+      if (trialTargetName) trialTargetName.innerText = `${pData.monsterName || '恶兽突袭'}！`;
+      if (trialRecPower) trialRecPower.innerText = (gameManager.player ? gameManager.player.combatPower : 35);
+      if (trialPowerStatus) {
+        trialPowerStatus.className = 'trial-power-status danger';
+        trialPowerStatus.innerText = '临阵对决';
+      }
+      if (btnActiveTrialChallenge) {
+        btnActiveTrialChallenge.classList.remove('disabled');
+        btnActiveTrialChallenge.disabled = false;
+        btnActiveTrialChallenge.classList.add('pulse-gold');
+      }
+      if (trialBtnText) trialBtnText.innerText = '拔剑迎战';
+      return;
+    }
+
+    // 恢复常规宗门试炼横幅样式
+    sectTrialBanner.classList.remove('battle-triggered-mode');
+
+    const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
 
     if (!hasJoinedSect) {
       sectTrialBanner.classList.add('hidden');
@@ -978,6 +1010,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 主动挑战事件发起处理 (零消耗，随时检验换装输出与战力成长)
   function handleActiveTrialChallenge() {
+    // 【核心改动 4】：若当前有暂存的伏妖遭遇战，点击优先响应拔剑迎战
+    if (gameManager.pendingBattleData) {
+      if (battleCountdownTimer) {
+        clearInterval(battleCountdownTimer);
+        battleCountdownTimer = null;
+      }
+      gameManager.executePendingBattle();
+      return;
+    }
+
     const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
     if (!hasJoinedSect) {
       showFloatingNotice('凡人未入门派，请先叩问仙门拜入宗门！');
@@ -3293,6 +3335,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 13. 监听转盘触发妖兽与秘境事件
   window.SlotsRPG.EventBus.on('TRIGGER_BATTLE', (data) => {
+    if (battleCountdownTimer) {
+      clearInterval(battleCountdownTimer);
+      battleCountdownTimer = null;
+    }
+    updateSectTrialBanner();
     if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
       window.SlotsRPG.BGMPlayer.setDucking(true);
     }
@@ -4230,17 +4277,34 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 伏妖遭遇战就绪通知 (在所有奖励显示全后唤起，支持玩家点击拔剑或倒计时进入)
+  // 掉落结算：动画播放完毕后，奖励统一掉落飞入背包
+  window.SlotsRPG.EventBus.on('REWARDS_DROPPED', (data) => {
+    const rewards = data && data.rewards;
+    if (!rewards || rewards.length === 0) return;
+    const targetTab = document.getElementById('tab-character');
+    if (window.DropAnimator && targetTab) {
+      const dropItems = rewards.map((r, idx) => {
+        const slotEl = document.getElementById(`dragon-slot-${idx % 12}`);
+        return {
+          icon: r.icon || 'assets/symbols/SYM_05.png',
+          element: slotEl
+        };
+      });
+      window.DropAnimator.playDropAnimationFromElements(dropItems, targetTab, () => {
+        targetTab.classList.remove('jelly-bounce');
+        void targetTab.offsetWidth;
+        targetTab.classList.add('jelly-bounce');
+      });
+    }
+  });
+
+  // 伏妖遭遇战就绪通知 (在所有奖励显示全后唤起，下方挑战横幅变身为当前妖兽挑战)
   window.SlotsRPG.EventBus.on('DRAGON_BATTLE_READY', (data) => {
     const { monsterName, isAutoSpinning } = data;
     if (dragonGearCompareBar) dragonGearCompareBar.classList.add('hidden');
 
-    if (dragonBattlePrompt) {
-      dragonBattlePrompt.classList.remove('hidden');
-      if (battlePromptMonsterName) {
-        battlePromptMonsterName.innerText = `${monsterName || '妖兽'} 现世！`;
-      }
-    }
+    // 变身下方宗门挑战横幅
+    updateSectTrialBanner();
 
     if (battleCountdownTimer) {
       clearInterval(battleCountdownTimer);
@@ -4249,6 +4313,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (isAutoSpinning) {
       let secondsLeft = 3;
+      if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
       if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
       battleCountdownTimer = setInterval(() => {
         secondsLeft--;
@@ -4260,10 +4325,12 @@ window.addEventListener('DOMContentLoaded', () => {
             gameManager.executePendingBattle();
           }
         } else {
+          if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
           if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
         }
       }, 1000);
     } else {
+      if (trialBtnText) trialBtnText.innerText = `拔剑迎战`;
       if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战`;
     }
   });
@@ -4287,6 +4354,7 @@ window.addEventListener('DOMContentLoaded', () => {
       clearInterval(battleCountdownTimer);
       battleCountdownTimer = null;
     }
+    updateSectTrialBanner();
   });
 
   // 一键穿戴 (旧装回炉)
