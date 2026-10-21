@@ -192,50 +192,30 @@ class GameManager {
   }
 
   /**
-   * 当前消耗对应的基础倍率 (以 25 为 1x)
+   * 当前消耗对应的基础倍率 (已废除赔率倍率放大，固定为 1x 标准倍率)
    */
   get betMultiplier() {
-    return Math.max(1, Math.floor((this.currentBet || 25) / 25));
+    return 1;
   }
 
   /**
-   * 根据玩家当前拥有的资源(灵机)决定出现哪些消耗档位
-   * PRD 需求：有 25 50 100 200 等等选项，根据用户拥有的资源决定
+   * 固定单抽消耗 25 灵机
    */
   getAvailableBetTiers() {
-    const available = this.ALL_BET_TIERS.filter(t => t <= this.energy);
-    return available.length > 0 ? available : [25];
+    return [25];
   }
 
   /**
-   * 切换至指定消耗档位
-   * @param {number} newBet 
+   * 兼容保留接口，固定档位 25
    */
   setBet(newBet) {
-    const val = Number(newBet);
-    if (!this.ALL_BET_TIERS.includes(val)) return false;
-    // 只有当前机缘允许的档位或基础保底 25 允许设置
-    if (val > this.energy && val > 25) return false;
-    this.currentBet = val;
+    this.currentBet = 25;
     this.emitStateChange();
     return true;
   }
 
-  /**
-   * 步进切换消耗档位 (-1 降低, +1 提高)
-   * @param {number} direction 
-   */
   stepBet(direction = 1) {
-    const tiers = this.getAvailableBetTiers();
-    let idx = tiers.indexOf(this.currentBet);
-    if (idx === -1) {
-      idx = tiers.length - 1;
-    }
-    const nextIdx = idx + direction;
-    if (nextIdx >= 0 && nextIdx < tiers.length) {
-      this.currentBet = tiers[nextIdx];
-      this.emitStateChange();
-    }
+    this.currentBet = 25;
   }
 
   init(renderer) {
@@ -387,7 +367,7 @@ class GameManager {
   /**
    * 执行一次推演天机 (Spin)
    */
-  executeSpin() {
+  executeSpin(options = {}) {
     if (this.renderer && this.renderer.isSpinning) return;
 
     // 序章阶段未获神物认主时禁止转盘推演
@@ -398,16 +378,17 @@ class GameManager {
       return;
     }
 
-    // 自适应校验当前消耗档位：若玩家灵机消耗后不足以支持当前档位，自动降级至当前能承受的最高档位
-    const availableTiers = this.getAvailableBetTiers();
-    if (!availableTiers.includes(this.currentBet)) {
-      this.currentBet = availableTiers[availableTiers.length - 1];
+    this.waterTankMax = 10;
+    const isWaterTankFull = (this.waterTankProgress || 0) >= this.waterTankMax;
+
+    // 若显式调用引龙吐宝 (options.isDragonSpout)，但进度未满时严禁触发
+    if (options.isDragonSpout && !isWaterTankFull) {
+      return false;
     }
 
-    // 检查是否触发引龙吐宝蓄满免费抽奖 (满10次免费赠送一次龙皇吐宝，初始开局也免费赠送一次)
-    this.waterTankMax = 10;
-    const isFreeSpin = (this.waterTankProgress || 0) >= this.waterTankMax;
-    const cost = isFreeSpin ? 0 : this.currentBet;
+    // 判断本次是否享受免费大爆（玩家主动点击蓄满的引龙吐宝，或挂机连续推演过程中自然蓄满触发）
+    const isFreeSpin = options.isDragonSpout || isWaterTankFull;
+    const cost = isFreeSpin ? 0 : 25; // 固定单抽消耗 25 灵机
 
     if (!isFreeSpin && this.energy < cost) {
       this.stopAutoSpin();
@@ -417,7 +398,7 @@ class GameManager {
         canRelief: this.freeReliefCount > 0,
         remainingRelief: this.freeReliefCount
       });
-      return;
+      return false;
     }
 
     // 1. 扣除机缘 (免费抽奖消耗为 0)
@@ -429,7 +410,7 @@ class GameManager {
     window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('SPIN_COST_DEDUCTED', {
       cost: cost,
       energy: this.energy,
-      multiplier: this.betMultiplier,
+      multiplier: 1,
       isFree: isFreeSpin
     });
 

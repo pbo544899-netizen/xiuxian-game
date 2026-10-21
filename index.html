@@ -295,32 +295,16 @@
               <b id="current-lingji-val" class="current-lingji-val">0</b>
               <span id="lingji-cost-float" class="lingji-cost-float hidden">-25</span>
             </div>
-            <!-- 快速注灵档位调节器 (支持 - / 档位下拉浮层 / +) -->
-            <div class="bet-selector-container">
-              <button id="btn-bet-minus" class="bet-step-btn" title="降低注灵档位">-</button>
-              <button id="btn-bet-toggle" class="btn-bet-toggle" title="点击展开快速注灵档位">
-                <span class="bet-toggle-label">注灵:</span>
-                <b id="val-cost" class="bet-val-cost">25</b>
-                <span id="val-mult" class="bet-mult-badge">1x</span>
-                <span class="bet-caret">▾</span>
-              </button>
-              <button id="btn-bet-plus" class="bet-step-btn" title="提高注灵档位">+</button>
-            </div>
-          </div>
-
-          <!-- 快速注灵档位自适应下拉选择浮层 -->
-          <div id="bet-popover" class="bet-popover hidden">
-            <div class="bet-popover-header">
-              <span>选择单次推演注灵 (机缘)</span>
-              <span class="bet-popover-hint">(依当前机缘自适应开放)</span>
-            </div>
-            <div id="bet-tiers-list" class="bet-tiers-list">
-              <!-- 动态装填 25 50 100 200 ... -->
+            <!-- 固定单抽消耗标识 (删除旧倍率调节) -->
+            <div class="spin-cost-fixed-badge" id="spin-cost-fixed-badge" title="每次推演消耗 25 灵机">
+              <span class="cost-badge-label">推演消耗:</span>
+              <b class="cost-badge-val">25</b>
+              <span class="cost-badge-unit">灵机/次</span>
             </div>
           </div>
 
           <div class="action-buttons">
-            <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin" title="引龙吐宝">
+            <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin charging-locked" title="天机蓄能中 (需蓄满10次灵能方可引龙吐宝)">
               <!-- 水缸液体注满进度层 -->
               <div class="water-tank-wrapper" id="water-tank-wrapper">
                 <div class="water-tank-liquid" id="water-tank-liquid" style="height: 0%;">
@@ -330,23 +314,24 @@
               </div>
               <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
               <div class="spin-btn-text-wrap">
-                <span class="spin-btn-title" id="spin-btn-title">引龙吐宝</span>
+                <span class="spin-btn-title" id="spin-btn-title">蓄能中</span>
                 <span class="water-tank-badge" id="water-tank-badge">0/10</span>
               </div>
             </button>
             <div class="auto-spin-group" id="auto-spin-group">
-              <button id="btn-auto" class="btn-auto" title="开启/停止自动推演">
-                <span class="auto-btn-title" id="auto-btn-title">自动推演</span>
+              <button id="btn-auto" class="btn-auto" title="开启推演">
+                <span class="auto-btn-title" id="auto-btn-title">开始推演</span>
                 <span class="auto-btn-progress hidden" id="auto-btn-progress">0/50</span>
               </button>
-              <button id="btn-auto-count-toggle" class="btn-auto-count-toggle" title="选择自动推演连抽次数">
+              <button id="btn-auto-count-toggle" class="btn-auto-count-toggle" title="选择推演次数 (单推/连抽)">
                 <span id="auto-count-label">50次</span><span class="caret">▾</span>
               </button>
             </div>
             <!-- 自动推演次数选择浮层 -->
             <div id="auto-count-popover" class="auto-count-popover hidden">
-              <div class="count-popover-title">选择自动推演次数</div>
+              <div class="count-popover-title">选择推演连抽次数</div>
               <div class="count-popover-options">
+                <button class="count-opt-btn" data-count="1">单次推演</button>
                 <button class="count-opt-btn" data-count="10">10 连抽</button>
                 <button class="count-opt-btn active" data-count="50">50 连抽</button>
                 <button class="count-opt-btn" data-count="100">100 连抽</button>

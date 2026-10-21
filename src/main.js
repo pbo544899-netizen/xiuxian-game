@@ -623,17 +623,19 @@ window.addEventListener('DOMContentLoaded', () => {
       const pct = Math.min(100, Math.round((cur / max) * 100));
       elWaterTankLiquid.style.height = `${pct}%`;
       if (elWaterTankBadge) {
-        elWaterTankBadge.innerText = state.isWaterTankFull ? '10/10 免费' : `${cur}/${max}`;
+        elWaterTankBadge.innerText = state.isWaterTankFull ? '10/10 可引' : `${cur}/${max}`;
       }
       if (btnSpin) {
         if (state.isWaterTankFull) {
+          btnSpin.classList.remove('charging-locked');
           btnSpin.classList.add('tank-full');
           if (elSpinBtnTitle) elSpinBtnTitle.innerText = '免费引宝';
-          btnSpin.title = '天道蓄满！本次【引龙吐宝】完全免费，必爆强力法宝神兵！';
+          btnSpin.title = '天道蓄满！点击立即引龙吐宝，必爆强力法宝神兵！';
         } else {
           btnSpin.classList.remove('tank-full');
-          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '引龙吐宝';
-          btnSpin.title = `消耗 ${state.currentBet || 25} 机缘注灵引龙吐宝 (进度: ${cur}/${max})`;
+          btnSpin.classList.add('charging-locked');
+          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '蓄能中';
+          btnSpin.title = `天机盘灵能蓄积中 (${cur}/${max})，需普通推演满10次解锁引龙吐宝`;
         }
       }
     }
@@ -721,34 +723,16 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       } else {
         btnAutoSpin.classList.remove('active');
-        if (autoBtnTitle) autoBtnTitle.innerText = '自动推演';
         if (autoBtnProgress) {
           autoBtnProgress.classList.add('hidden');
+        }
+        if (autoBtnTitle) {
+          autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
         }
       }
     }
 
-    // 快速消耗档位状态更新
-    const currentBet = state.currentBet || 25;
-    const betMultiplier = state.betMultiplier || 1;
-    const availableTiers = state.availableBetTiers || [25];
-
-    if (valCost) valCost.innerText = currentBet;
-    if (valMult) valMult.innerText = `${betMultiplier}x`;
-
-    if (btnBetMinus) {
-      const minTier = availableTiers[0] || 25;
-      btnBetMinus.disabled = currentBet <= minTier;
-    }
-    if (btnBetPlus) {
-      const maxTier = availableTiers[availableTiers.length - 1] || 25;
-      btnBetPlus.disabled = currentBet >= maxTier;
-    }
-
-    // 若档位浮层处于展开状态，实时刷新
-    if (betPopover && !betPopover.classList.contains('hidden')) {
-      renderBetPopover(state);
-    }
+// 注灵倍率已精简废除，单抽固定消耗 25 灵机
 
     // 角色面板更新
     if (charRealmText) charRealmText.innerText = state.realm;
@@ -4154,95 +4138,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 15. 快速消耗档位交互管理
-  function renderBetPopover(state = null) {
-    if (!betTiersList) return;
-    const curState = state || {
-      currentBet: gameManager.currentBet,
-      betMultiplier: gameManager.betMultiplier,
-      availableBetTiers: gameManager.getAvailableBetTiers()
-    };
-    const available = curState.availableBetTiers || [25];
-    const currentBet = curState.currentBet || 25;
+// 15. 快速消耗档位管理已下线，统一采用固定 25 灵机与连抽次数选择器
 
-    betTiersList.innerHTML = '';
-    available.forEach(tier => {
-      const mult = Math.floor(tier / 25);
-      const btn = document.createElement('button');
-      btn.className = `bet-tier-btn ${tier === currentBet ? 'active' : ''}`;
-      btn.innerHTML = `
-        <span class="bet-tier-cost">${tier}</span>
-        <span class="bet-tier-mult">${mult}x 收益</span>
-      `;
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        gameManager.setBet(tier);
-        closeBetPopover();
-      });
-      betTiersList.appendChild(btn);
-    });
-  }
-
-  function toggleBetPopover() {
-    if (!betPopover) return;
-    const isOpen = !betPopover.classList.contains('hidden');
-    if (isOpen) {
-      closeBetPopover();
-    } else {
-      openBetPopover();
-    }
-  }
-
-  function openBetPopover() {
-    if (!betPopover) return;
-    renderBetPopover();
-    betPopover.classList.remove('hidden');
-    if (btnBetToggle) btnBetToggle.classList.add('active');
-  }
-
-  function closeBetPopover() {
-    if (!betPopover) return;
-    betPopover.classList.add('hidden');
-    if (btnBetToggle) btnBetToggle.classList.remove('active');
-  }
-
-  if (btnBetMinus) {
-    btnBetMinus.addEventListener('click', (e) => {
-      e.stopPropagation();
-      gameManager.stepBet(-1);
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('BET_SWITCH', gameManager.betMultiplier);
-      }
-    });
-  }
-
-  if (btnBetPlus) {
-    btnBetPlus.addEventListener('click', (e) => {
-      e.stopPropagation();
-      gameManager.stepBet(1);
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('BET_SWITCH', gameManager.betMultiplier);
-      }
-    });
-  }
-
-  if (btnBetToggle) {
-    btnBetToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleBetPopover();
-    });
-  }
-
-  // 点击空白区域自动收起快速消耗档位面板
-  document.addEventListener('click', (e) => {
-    if (betPopover && !betPopover.classList.contains('hidden')) {
-      if (!betPopover.contains(e.target) && !btnBetToggle.contains(e.target)) {
-        closeBetPopover();
-      }
-    }
-  });
-
-  // 16. 核心推演交互绑定 (支持连续抽奖预输入缓冲 Tap Buffer)
+  // 16. 核心推演交互绑定：【引龙吐宝】改为进度蓄满 (10/10) 才能点击触发免费大爆
   let spinBufferPending = false;
 
   btnSpin.addEventListener('click', () => {
@@ -4255,12 +4153,26 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     btnSpin.classList.remove('pulse-anim');
 
-    // 连续抽奖预输入缓冲：若上一轮正在收尾阶段，缓冲本次连点，动画一完立即触发下一抽
-    if (gameManager.renderer && gameManager.renderer.isSpinning) {
-      spinBufferPending = true;
+    // 检查水缸灵能是否蓄满
+    const isFull = (gameManager.waterTankProgress || 0) >= (gameManager.waterTankMax || 10);
+    if (!isFull) {
+      const cur = gameManager.waterTankProgress || 0;
+      const max = gameManager.waterTankMax || 10;
+      showFloatingNotice(`天机盘灵能蓄积中 (${cur}/${max})，请先推演修真！`, '#38bdf8');
+      btnSpin.classList.remove('shake-locked');
+      void btnSpin.offsetWidth;
+      btnSpin.classList.add('shake-locked');
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('CLICK');
+      }
       return;
     }
-    gameManager.executeSpin();
+
+    // 正在转动中防止重复连点
+    if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+
+    // 蓄满 10/10，解封点击释放 0 消耗龙皇吐宝大招！
+    gameManager.executeSpin({ isDragonSpout: true });
   });
 
   window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', () => {
@@ -4290,6 +4202,10 @@ window.addEventListener('DOMContentLoaded', () => {
     countOptBtns.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.count === savedCount);
     });
+    const autoBtnTitle = document.getElementById('auto-btn-title');
+    if (autoBtnTitle && !gameManager.isAutoSpinning) {
+      autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
+    }
   }
   if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
 
@@ -4313,6 +4229,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (autoCountLabel) {
           autoCountLabel.innerText = countVal === 'Infinity' ? '无限' : `${currentAutoCount}次`;
         }
+        const autoBtnTitle = document.getElementById('auto-btn-title');
+        if (autoBtnTitle && !gameManager.isAutoSpinning) {
+          autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
+        }
         autoCountPopover.classList.add('hidden');
       });
     });
@@ -4325,7 +4245,18 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   btnAutoSpin.addEventListener('click', () => {
-    gameManager.toggleAutoSpin(currentAutoCount);
+    if (gameManager.isAutoSpinning) {
+      gameManager.stopAutoSpin();
+      return;
+    }
+    if (currentAutoCount === 1) {
+      // 单次推演：防连点拦截
+      if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+      gameManager.executeSpin();
+    } else {
+      // 连抽 / 自动推演
+      gameManager.toggleAutoSpin(currentAutoCount);
+    }
   });
 
   if (btnClaimRelief) {
