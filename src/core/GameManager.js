@@ -680,11 +680,6 @@ class GameManager {
             }
           }
 
-          if (isLuckyBurst && this.renderer) {
-            const burstText = mult > 1 ? `⚡${mult}倍气运神兵！大爆【${newEquip.name}】！` : `⚡天赐神兵！大爆【${newEquip.name}】！`;
-            this.renderer.addFloatingText(burstText, '#ffd700');
-          }
-
           // 判定该装备是否能带来提升
           const hasImprovement = this.player.hasEquipmentImprovement(newEquip, this.level);
           newEquip.isNew = hasImprovement;
@@ -707,7 +702,12 @@ class GameManager {
             }
           } else if (addRes.buffered) {
             if (this.renderer) {
-              this.renderer.addFloatingText(`乾坤袋满，入暂存槽 (${addRes.bufferCount}/6)!`, '#f39c12');
+              if (isLuckyBurst) {
+                const burstText = mult > 1 ? `⚡${mult}倍气运神兵！大爆【${newEquip.name}】！` : `⚡天赐神兵！大爆【${newEquip.name}】！`;
+                this.renderer.addFloatingText(burstText, '#ffd700');
+              } else {
+                this.renderer.addFloatingText(`乾坤袋满，入暂存槽 (${addRes.bufferCount}/6)!`, '#f39c12');
+              }
             }
             droppedRewards.push({
               type: 'equip',
@@ -726,7 +726,12 @@ class GameManager {
             }
           } else if (addRes.success) {
             if (this.renderer) {
-              this.renderer.addFloatingText(`获宝: 【${newEquip.name}】`, newEquip.qualityColor);
+              if (isLuckyBurst) {
+                const burstText = mult > 1 ? `⚡${mult}倍气运神兵！大爆【${newEquip.name}】！` : `⚡天赐神兵！大爆【${newEquip.name}】！`;
+                this.renderer.addFloatingText(burstText, '#ffd700');
+              } else {
+                this.renderer.addFloatingText(`获宝: 【${newEquip.name}】`, newEquip.qualityColor);
+              }
             }
             droppedRewards.push({
               type: 'equip',

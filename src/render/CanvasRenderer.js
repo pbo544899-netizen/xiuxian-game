@@ -394,8 +394,8 @@ class CanvasRenderer {
     // 5. 更新飘字
     for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
       const ft = this.floatingTexts[i];
-      ft.y -= 1.2;
-      ft.alpha -= 0.015;
+      ft.y -= 0.65;
+      ft.alpha -= 0.012;
       if (ft.alpha <= 0) this.floatingTexts.splice(i, 1);
     }
   }
@@ -500,15 +500,40 @@ class CanvasRenderer {
       });
     }
 
-    // 6. 飘字渲染
+    // 6. 飘字渲染（带防重叠半透胶囊底板与仙韵边框）
     this.floatingTexts.forEach(ft => {
       ctx.save();
-      ctx.globalAlpha = Math.max(0, ft.alpha);
-      ctx.fillStyle = ft.color || '#ffd700';
-      ctx.font = 'bold 22px sans-serif';
+      ctx.globalAlpha = Math.max(0, Math.min(1, ft.alpha));
+      ctx.font = 'bold 15px "STKaiti", "KaiTi", "Songti SC", serif';
       ctx.textAlign = 'center';
-      ctx.shadowColor = '#ffd700';
-      ctx.shadowBlur = 14;
+      ctx.textBaseline = 'middle';
+
+      const metrics = ctx.measureText(ft.text);
+      const textW = metrics.width;
+      const padX = 14;
+      const boxW = Math.max(76, textW + padX * 2);
+      const boxH = 26;
+      const boxX = ft.x - boxW / 2;
+      const boxY = ft.y - boxH / 2;
+      const radius = 13;
+
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(boxX, boxY, boxW, boxH, radius);
+      } else {
+        ctx.rect(boxX, boxY, boxW, boxH);
+      }
+      ctx.fillStyle = 'rgba(8, 14, 24, 0.86)';
+      ctx.shadowColor = ft.color || '#ffd700';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+
+      ctx.strokeStyle = ft.color || '#ffd700';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = ft.color || '#ffd700';
+      ctx.shadowBlur = 4;
       ctx.fillText(ft.text, ft.x, ft.y);
       ctx.restore();
     });
@@ -1120,6 +1145,14 @@ class CanvasRenderer {
   }
 
   addFloatingText(text, color = '#ffd700') {
+    const ROW_SPACING = 32;
+    for (const ft of this.floatingTexts) {
+      ft.y -= ROW_SPACING;
+      if (ft.alpha > 0.65) ft.alpha = 0.65;
+    }
+    while (this.floatingTexts.length >= 2) {
+      this.floatingTexts.shift();
+    }
     this.floatingTexts.push({
       text,
       color,

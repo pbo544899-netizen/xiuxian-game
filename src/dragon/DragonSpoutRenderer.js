@@ -34,13 +34,16 @@ window.SlotsRPG = window.SlotsRPG || {};
     _initResize() {
       if (!this.canvas) return;
       const updateSize = () => {
+        if (!this.canvas) return;
         const rect = this.canvas.getBoundingClientRect();
+        if (rect.width <= 0) return;
         const dpr = window.devicePixelRatio || 1;
         this.width = rect.width;
         this.height = rect.height;
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
         if (this.ctx) {
+          this.ctx.setTransform(1, 0, 0, 1, 0, 0);
           this.ctx.scale(dpr, dpr);
         }
 
@@ -49,6 +52,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.showcaseTargetA = { x: this.width * 0.35, y: 245 };
         this.showcaseTargetB = { x: this.width * 0.65, y: 245 };
       };
+      this.updateSize = updateSize;
 
       window.addEventListener('resize', updateSize);
       setTimeout(updateSize, 100);
@@ -563,18 +567,38 @@ window.SlotsRPG = window.SlotsRPG || {};
 
 
     /**
-     * 飘字提示系统
+     * 飘字提示系统 - 级联防重叠队列与暗金仙韵胶囊底板
      */
     addFloatingText(text, color = '#ffd700') {
+      if ((!this.width || this.width === 0) && this.updateSize) {
+        this.updateSize();
+      }
+      const ROW_SPACING = 32;
+
+      // 1. 若当前已有飘字，将其向上平移留出充足垂直间距，彻底消除文字重叠
+      for (const ft of this.floatingTexts) {
+        ft.y -= ROW_SPACING;
+        if (ft.life > 0.65) {
+          ft.life = 0.65;
+        }
+      }
+
+      // 2. 限制同屏最多保留 2 条飘字（旧字在上，新字在下）
+      while (this.floatingTexts.length >= 2) {
+        this.floatingTexts.shift();
+      }
+
+      // 3. 压入最新飘字
+      const baseY = (this.height || 400) * 0.46;
       this.floatingTexts.push({
         text,
         color,
         x: (this.width || 360) * 0.5,
-        y: (this.height || 400) * 0.48,
+        y: baseY,
         opacity: 1.0,
-        vy: -1.2,
+        vy: -0.65,
         life: 1.0,
-        decay: 0.016
+        decay: 0.012
       });
     }
 
@@ -646,7 +670,11 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     _render(timestamp) {
-      if (!this.ctx || !this.width) return;
+      if (!this.ctx) return;
+      if ((!this.width || this.width === 0) && this.updateSize) {
+        this.updateSize();
+      }
+      if (!this.width) return;
       this.ctx.clearRect(0, 0, this.width, this.height);
 
       // 1. 绘制落入双宝匣格子的弧形灵球
@@ -694,19 +722,43 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.ctx.restore();
       }
 
-      // 3. 绘制居中高光浮字
+      // 3. 绘制居中高光浮字（带防遮挡半透胶囊底板与仙韵边框，彻底杜绝混叠）
       for (const ft of this.floatingTexts) {
         this.ctx.save();
-        this.ctx.globalAlpha = ft.opacity;
-        this.ctx.font = 'bold 16px "STKaiti", "KaiTi", "Songti SC", serif';
+        this.ctx.globalAlpha = Math.max(0, Math.min(1, ft.opacity));
+        this.ctx.font = 'bold 15px "STKaiti", "KaiTi", "Songti SC", serif';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillStyle = ft.color;
-        this.ctx.shadowBlur = 10;
+
+        const metrics = this.ctx.measureText(ft.text);
+        const textW = metrics.width;
+        const padX = 14;
+        const boxW = Math.max(76, textW + padX * 2);
+        const boxH = 26;
+        const boxX = ft.x - boxW / 2;
+        const boxY = ft.y - boxH / 2;
+        const radius = 13;
+
+        // 绘制暗色玄金半透胶囊底板
+        this.ctx.beginPath();
+        if (this.ctx.roundRect) {
+          this.ctx.roundRect(boxX, boxY, boxW, boxH, radius);
+        } else {
+          this.ctx.rect(boxX, boxY, boxW, boxH);
+        }
+        this.ctx.fillStyle = 'rgba(8, 14, 24, 0.86)';
         this.ctx.shadowColor = ft.color;
-        this.ctx.strokeStyle = '#000000';
-        this.ctx.lineWidth = 3;
-        this.ctx.strokeText(ft.text, ft.x, ft.y);
+        this.ctx.shadowBlur = 10;
+        this.ctx.fill();
+
+        // 细微仙灵光晕描边
+        this.ctx.strokeStyle = ft.color;
+        this.ctx.lineWidth = 1.2;
+        this.ctx.stroke();
+
+        // 绘制高亮文字
+        this.ctx.fillStyle = ft.color;
+        this.ctx.shadowBlur = 4;
         this.ctx.fillText(ft.text, ft.x, ft.y);
         this.ctx.restore();
       }

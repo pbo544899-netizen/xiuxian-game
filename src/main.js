@@ -449,6 +449,9 @@ window.addEventListener('DOMContentLoaded', () => {
       if (viewSlots) viewSlots.classList.add('active');
       if (topHud) topHud.classList.remove('hidden');
       if (modalActionNotice) modalActionNotice.classList.add('hidden');
+      if (renderer && renderer.updateSize) {
+        requestAnimationFrame(() => renderer.updateSize());
+      }
     } else if (tabName === 'character') {
       if (tabCharacter) tabCharacter.classList.add('active');
       if (viewCharacter) viewCharacter.classList.add('active');

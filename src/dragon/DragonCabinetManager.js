@@ -229,7 +229,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         };
 
         if (isUpgrade && diff > 0 && this.gameManager && this.gameManager.renderer && this.gameManager.renderer.addFloatingText) {
-          this.gameManager.renderer.addFloatingText(`神兵现世！战力 +${diff} ⬆`, '#38ef7d');
+          this.gameManager.renderer.addFloatingText(`⚡ 战力提升 +${diff} ⬆`, '#38ef7d');
         }
       } else if (rawData.type === 'battle') {
         this.pendingBattle = rawData;
