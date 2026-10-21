@@ -396,8 +396,9 @@ window.SlotsRPG = window.SlotsRPG || {};
             slotEl.classList.add(`quality-border-${q}`);
           }
 
-          // 若指定视觉延迟显现（等待龙嘴吐出的宝物粒子飞抵），先隐藏格子内容
-          if (options.visuallyPending && i === highlightIndex) {
+          // 若指定视觉延迟显现（等待龙嘴吐出的宝物粒子飞抵），先隐藏格子内容 (仅在天机推演面板展示)
+          const isSlotsActive = document.getElementById('view-slots')?.classList.contains('active');
+          if (options.visuallyPending && i === highlightIndex && isSlotsActive) {
             slotEl.classList.add('slot-pending-flyer');
           } else {
             slotEl.classList.remove('slot-pending-flyer');

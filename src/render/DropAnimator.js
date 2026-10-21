@@ -16,6 +16,15 @@ class DropAnimator {
   static playDropAnimation(rewards, canvas, targetBtn, onEachArrival) {
     if (!rewards || rewards.length === 0 || !canvas || !targetBtn) return;
 
+    // 界面守卫：若当前不在天机推演面板，静默结算抵达回调，不展示飞行动画
+    const viewSlots = document.getElementById('view-slots');
+    if (viewSlots && !viewSlots.classList.contains('active')) {
+      if (typeof onEachArrival === 'function') {
+        rewards.forEach(() => onEachArrival());
+      }
+      return;
+    }
+
     const canvasRect = canvas.getBoundingClientRect();
     const targetRect = targetBtn.getBoundingClientRect();
 
@@ -50,6 +59,16 @@ class DropAnimator {
    */
   static playDropAnimationFromElements(items, targetBtn, onEachArrival) {
     if (!items || items.length === 0 || !targetBtn) return;
+
+    // 界面守卫：若当前不在天机推演面板，静默结算抵达回调，不展示飞行动画
+    const viewSlots = document.getElementById('view-slots');
+    if (viewSlots && !viewSlots.classList.contains('active')) {
+      if (typeof onEachArrival === 'function') {
+        items.forEach(() => onEachArrival());
+      }
+      return;
+    }
+
     const targetRect = targetBtn.getBoundingClientRect();
     const endX = targetRect.left + targetRect.width / 2;
     const endY = targetRect.top + targetRect.height / 2;
@@ -85,6 +104,16 @@ class DropAnimator {
     const controlY = startY - 80;
 
     function frame(now) {
+      // 若飞行动画中途用户切出推演面板，立即销毁动画并执行回调，绝不污染角色修真界面
+      const viewSlots = document.getElementById('view-slots');
+      if (viewSlots && !viewSlots.classList.contains('active')) {
+        flyer.remove();
+        if (typeof onArrival === 'function') {
+          onArrival();
+        }
+        return;
+      }
+
       const elapsed = now - startTime;
       const t = Math.min(1, elapsed / duration);
 

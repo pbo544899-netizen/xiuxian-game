@@ -464,15 +464,30 @@ window.SlotsRPG = window.SlotsRPG || {};
      */
     _spawnSpoutFlyer(item, targetSlotId, durationMs = 240, delayMs = 0, isEpic = false) {
       if (!item) return;
+
+      // 界面守卫：若当前不在天机推演面板 (例如玩家在角色修真或洞天)，静默跳过视觉飞行动画
+      const viewSlots = document.getElementById('view-slots');
+      if (!viewSlots || !viewSlots.classList.contains('active')) {
+        return;
+      }
+
       setTimeout(() => {
+        // 延时触发时再次检查界面，若玩家在此期间切换至角色修真等其它面板，立即放弃生成飞行动画
+        const viewSlotsNow = document.getElementById('view-slots');
+        if (!viewSlotsNow || !viewSlotsNow.classList.contains('active')) {
+          return;
+        }
+
         // 1. 获取龙头龙嘴屏幕起点
         const headEl = document.getElementById('dragon-head-sprite') || document.querySelector('.dragon-head-box');
         let startX = window.innerWidth * 0.5;
         let startY = window.innerHeight * 0.22;
         if (headEl) {
           const hRect = headEl.getBoundingClientRect();
-          startX = hRect.left + hRect.width * 0.5;
-          startY = hRect.top + hRect.height * 0.7;
+          if (hRect.width > 0 && hRect.height > 0) {
+            startX = hRect.left + hRect.width * 0.5;
+            startY = hRect.top + hRect.height * 0.7;
+          }
         }
 
         // 2. 获取终点槽位元素与屏幕坐标
@@ -481,11 +496,14 @@ window.SlotsRPG = window.SlotsRPG || {};
         let endY = window.innerHeight * 0.6;
         if (targetSlotEl) {
           const sRect = targetSlotEl.getBoundingClientRect();
-          endX = sRect.left + sRect.width * 0.5;
-          endY = sRect.top + sRect.height * 0.5;
+          if (sRect.width > 0 && sRect.height > 0) {
+            endX = sRect.left + sRect.width * 0.5;
+            endY = sRect.top + sRect.height * 0.5;
+          }
         }
 
-        // 3. 构造飞行动画 DOM 宝物元素
+        // 3. 构造飞行动画 DOM 宝物元素，挂载至 view-slots 内部专属层中，确保切面板时自动隐藏
+        const flyerLayer = document.getElementById('dragon-spout-flyer-layer') || viewSlotsNow;
         const flyer = document.createElement('div');
         flyer.className = `dragon-spout-flyer ${isEpic ? 'epic' : ''}`;
 
@@ -507,7 +525,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         img.src = iconSrc;
         img.alt = item.name || '宝萃';
         flyer.appendChild(img);
-        document.body.appendChild(flyer);
+        flyerLayer.appendChild(flyer);
 
         // 4. 生成贝塞尔抛物线关键帧动画 (从龙口拱出下坠砸入格子)
         const ctrlX = (startX + endX) * 0.5 + (startX > endX ? -35 : 35);

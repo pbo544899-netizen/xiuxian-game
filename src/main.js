@@ -453,6 +453,9 @@ window.addEventListener('DOMContentLoaded', () => {
     [tabSlots, tabCharacter, tabCave].forEach(t => t && t.classList.remove('active'));
     [viewSlots, viewCharacter, viewCave].forEach(v => v && v.classList.remove('active'));
 
+    // 切换 Tab 时立即清除所有屏幕残留的飞行宝物粒子与掉落物，防止溢出污染目标界面
+    document.querySelectorAll('.dragon-spout-flyer, .drop-flyer').forEach(el => el.remove());
+
     if (!skipSound && window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('TAB_SWITCH');
     }
@@ -5476,48 +5479,26 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 监听龙头吐宝完全展示完毕：若开启自动收纳，则抽一次收纳一次
+  // 监听龙头吐宝完全展示完毕：若开启自动收纳，则抽一次静默收纳一次 (无需触发掉落与额外提示)
   window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', (spinResult) => {
     if (chkAutoCollect && chkAutoCollect.checked) {
       setTimeout(() => {
         const dcm = gameManager && gameManager.dragonCabinetManager;
         if (dcm && dcm.slots && dcm.slots.length > 0) {
-          if (btnCollectAllSlots) btnCollectAllSlots.click();
+          dcm.clear();
         }
       }, 160);
     }
   });
 
-  // 临时背包一键收纳按钮 (需求 2)
+  // 临时背包一键收纳按钮
   const btnCollectAllSlots = document.getElementById('btn-collect-all-slots');
   if (btnCollectAllSlots) {
     btnCollectAllSlots.addEventListener('click', () => {
-      const dcm = gameManager.dragonCabinetManager;
+      const dcm = gameManager && gameManager.dragonCabinetManager;
       if (!dcm || !dcm.slots || dcm.slots.length === 0) {
         showFloatingNotice('临时背包空空如也，快引龙吐宝吧！', '#94a3b8');
         return;
-      }
-
-      // 收集当前槽位上显示的全部奖励
-      const dropItems = [];
-      for (let i = 0; i < 12; i++) {
-        const slotEl = document.getElementById(`dragon-slot-${i}`);
-        const slotData = dcm.slots[i];
-        if (slotEl && slotData) {
-          dropItems.push({
-            icon: slotData.icon || 'assets/symbols/SYM_06.png',
-            element: slotEl
-          });
-        }
-      }
-
-      const targetTab = document.getElementById('tab-character');
-      if (window.SlotsRPG.DropAnimator && dropItems.length > 0 && targetTab) {
-        window.SlotsRPG.DropAnimator.playDropAnimationFromElements(dropItems, targetTab, () => {
-          targetTab.classList.remove('jelly-bounce');
-          void targetTab.offsetWidth;
-          targetTab.classList.add('jelly-bounce');
-        });
       }
 
       const count = dcm.slots.length;

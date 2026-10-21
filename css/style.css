@@ -11034,6 +11034,17 @@ body.tier-spirit-realm .reel-frame {
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }
 
+/* 龙口吐宝飞行动画专属层 (严格随 view-slots 联动，切换 Tab 时整层随父级隐藏) */
+.dragon-spout-flyer-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
 /* 龙口吐宝飞行动画 DOM 宝物粒子 */
 .dragon-spout-flyer {
   position: fixed;
@@ -11049,6 +11060,21 @@ body.tier-spirit-realm .reel-frame {
   align-items: center;
   justify-content: center;
   will-change: transform, opacity;
+}
+
+/* 严禁任何推演/吐宝/掉落飞行动画在角色修真或洞天等其它面板展示 */
+body:has(#view-character.active) .dragon-spout-flyer,
+body:has(#view-character.active) .drop-flyer,
+body:has(#view-cave.active) .dragon-spout-flyer,
+body:has(#view-cave.active) .drop-flyer,
+#view-character.active ~ .dragon-spout-flyer,
+#view-character.active ~ .drop-flyer,
+#view-cave.active ~ .dragon-spout-flyer,
+#view-cave.active ~ .drop-flyer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .dragon-spout-flyer img {
