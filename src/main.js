@@ -419,6 +419,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 2000);
   }
 
+  function getAutoBtnTitleText(count) {
+    if (count === 1) return '单抽推演';
+    if (count === 10) return '周天十连';
+    return '自动推演';
+  }
+
   // 3. Tab 视图切换
   function switchTab(tabName, skipSound = false) {
     if (!gameManager.isPrologueComplete) {
@@ -716,7 +722,10 @@ window.addEventListener('DOMContentLoaded', () => {
           autoBtnProgress.classList.add('hidden');
         }
         if (autoBtnTitle) {
-          autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
+          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+        }
+        if (btnAutoSpin) {
+          btnAutoSpin.classList.toggle('ten-pull-mode', currentAutoCount === 10);
         }
       }
     }
@@ -3664,7 +3673,10 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     const autoBtnTitle = document.getElementById('auto-btn-title');
     if (autoBtnTitle && !gameManager.isAutoSpinning) {
-      autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
+      autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+    }
+    if (btnAutoSpin) {
+      btnAutoSpin.classList.toggle('ten-pull-mode', currentAutoCount === 10);
     }
   }
   if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
@@ -3691,7 +3703,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         const autoBtnTitle = document.getElementById('auto-btn-title');
         if (autoBtnTitle && !gameManager.isAutoSpinning) {
-          autoBtnTitle.innerText = currentAutoCount === 1 ? '单次推演' : '开始推演';
+          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+        }
+        if (btnAutoSpin) {
+          btnAutoSpin.classList.toggle('ten-pull-mode', currentAutoCount === 10);
         }
         autoCountPopover.classList.add('hidden');
       });
@@ -3713,8 +3728,12 @@ window.addEventListener('DOMContentLoaded', () => {
       // 单次推演：防连点拦截
       if (gameManager.renderer && gameManager.renderer.isSpinning) return;
       gameManager.executeSpin();
+    } else if (currentAutoCount === 10) {
+      // 方案 A：周天十连（瞬时批量聚爆展示）
+      if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+      gameManager.executeTenPull();
     } else {
-      // 连抽 / 自动推演
+      // 50 / 100 / 无限：长线连抽自动挂机推演
       gameManager.toggleAutoSpin(currentAutoCount);
     }
   });

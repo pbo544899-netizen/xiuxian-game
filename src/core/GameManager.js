@@ -542,6 +542,169 @@ class GameManager {
   }
 
   /**
+   * 方案 A：周天十连推演 (瞬时批量聚爆展示)
+   * 扣除 250 灵机，批量计算 10 次推演结果，一次性喷涌入 12 格天机宝萃，并弹出综合战力提升看板
+   */
+  executeTenPull() {
+    if (this.renderer && this.renderer.isSpinning) return false;
+
+    // 序章阶段未获神物认主时禁止转盘推演
+    if (!this.isPrologueComplete && this.prologueStep < 3) {
+      if (this.renderer) {
+        this.renderer.addFloatingText('天机盘未觉醒，请先至角色面板采药除害！', '#ef4444');
+      }
+      return false;
+    }
+
+    const cost = 250; // 10 抽 * 25 灵机
+    if (this.energy < cost) {
+      this.stopAutoSpin();
+      this.checkDailyReliefReset();
+      this.checkWantongSecretEgg();
+      window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
+        canRelief: this.freeReliefCount > 0,
+        remainingRelief: this.freeReliefCount
+      });
+      if (this.renderer) {
+        this.renderer.addFloatingText(`灵机不足 ${cost}，无法开启十连！`, '#ef4444');
+      }
+      return false;
+    }
+
+    // 1. 扣除灵机并派发扣减事件
+    this.energy -= cost;
+    window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('SPIN_COST_DEDUCTED', {
+      cost: cost,
+      energy: this.energy,
+      multiplier: 10,
+      isFree: false
+    });
+
+    // 2. 累加角色经验与天机盘蕴灵值
+    const levelUps = this.player.addExp(50);
+    if (levelUps && levelUps.length > 0) {
+      window.SlotsRPG.EventBus.emit('PLAYER_LEVEL_UP', levelUps);
+    }
+    this.addPotExp(10);
+    this.addPotSubExp(10);
+
+    // 引龙吐宝蓄能增加 10
+    this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 10);
+
+    // 隐藏客卿仙印：万通·金玉满堂 (每 10 次返还 100 灵机)
+    if (this.ascensionManager && this.ascensionManager.meta && this.ascensionManager.meta.hiddenMarks && this.ascensionManager.meta.hiddenMarks.wantong) {
+      this.wantongSpinCounter = (this.wantongSpinCounter || 0) + 10;
+      const refunds = Math.floor(this.wantongSpinCounter / 10);
+      if (refunds > 0) {
+        this.wantongSpinCounter %= 10;
+        this.energy += refunds * 100;
+        if (this.renderer) {
+          this.renderer.addFloatingText(`万通·金玉满堂：天降金元 +${refunds * 100}灵机！`, '#ffd700');
+        }
+      }
+    }
+
+    this.emitStateChange();
+
+    // 3. 批量生成 10 次推演结果
+    const allLootItems = [];
+    let totalPayout = 0;
+    let highestQualityRank = 0;
+    let bestEquip = null;
+    let maxPowerDiff = 0;
+
+    for (let i = 0; i < 10; i++) {
+      let spinData = null;
+      if (this.dragonLootEngine) {
+        spinData = this.dragonLootEngine.spout({
+          player: this.player,
+          potSubLevel: this.potSubLevel,
+          multiplier: 1,
+          worldTier: this.worldTier,
+          options: {
+            forceBoss: false,
+            forceMonster: false,
+            forceBonus: false
+          },
+          hasJoinedSect: !this.player.isMortal
+        });
+      } else {
+        spinData = this.slotsEngine.spin(this.level, 1);
+      }
+
+      if (spinData.evaluation && spinData.evaluation.totalPayout > 0) {
+        totalPayout += spinData.evaluation.totalPayout;
+      }
+      if (spinData.leftCabinet) {
+        allLootItems.push(spinData.leftCabinet);
+      }
+      if (spinData.rightCabinet) {
+        allLootItems.push(spinData.rightCabinet);
+      }
+    }
+
+    if (totalPayout > 0) {
+      this.energy += totalPayout;
+    }
+
+    // 4. 将所有产出道具录入天机宝萃 (临时背包)
+    if (this.dragonCabinetManager) {
+      for (const rawItem of allLootItems) {
+        this.dragonCabinetManager.addItemFromSpout(rawItem, {
+          silentFloating: true,
+          isTenPull: true
+        });
+
+        if (rawItem.type === 'equip' && rawItem.item) {
+          const comp = this.dragonCabinetManager._calculateComparison(rawItem.item);
+          const diff = comp ? comp.powerDiff : 0;
+          const isUp = comp ? comp.isUpgrade : false;
+          const qRank = (rawItem.item.qualityRank || 1);
+          if (qRank > highestQualityRank) {
+            highestQualityRank = qRank;
+          }
+          if (isUp && diff > maxPowerDiff) {
+            maxPowerDiff = diff;
+            bestEquip = rawItem.item;
+          } else if (!bestEquip) {
+            bestEquip = rawItem.item;
+          }
+        }
+      }
+    }
+
+    const tenPullSummary = {
+      cost,
+      totalPayout,
+      itemsCount: allLootItems.length,
+      allLootItems,
+      bestEquip,
+      maxPowerDiff,
+      highestQualityRank,
+      hasEpic: highestQualityRank >= 4 || maxPowerDiff > 0
+    };
+
+    // 5. 驱动十连聚爆动效与浮字看板
+    if (this.renderer && this.renderer.startTenPullBurst) {
+      this.renderer.startTenPullBurst(tenPullSummary, () => {
+        this.emitStateChange();
+      });
+    } else {
+      if (bestEquip && maxPowerDiff > 0) {
+        this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
+        this.renderer.addFloatingText(`⚡ 战力飙升 +${maxPowerDiff} ⬆`, '#38ef7d');
+      } else if (bestEquip) {
+        this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
+      } else {
+        this.renderer.addFloatingText(`✨ 周天十连圆满：获宝 10 份！`, '#ffd700');
+      }
+      this.emitStateChange();
+    }
+
+    return true;
+  }
+
+  /**
    * 停轮结算
    */
   _handleSpinSettlement(spinData) {

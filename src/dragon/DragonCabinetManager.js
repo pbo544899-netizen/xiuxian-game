@@ -228,7 +228,7 @@ window.SlotsRPG = window.SlotsRPG || {};
           dropTimestamp: ++this.dropCounter
         };
 
-        if (isUpgrade && diff > 0 && this.gameManager && this.gameManager.renderer && this.gameManager.renderer.addFloatingText) {
+        if (!options.silentFloating && isUpgrade && diff > 0 && this.gameManager && this.gameManager.renderer && this.gameManager.renderer.addFloatingText) {
           this.gameManager.renderer.addFloatingText(`⚡ 战力提升 +${diff} ⬆`, '#38ef7d');
         }
       } else if (rawData.type === 'battle') {

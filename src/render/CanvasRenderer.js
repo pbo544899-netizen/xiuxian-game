@@ -1144,6 +1144,22 @@ class CanvasRenderer {
     ctx.restore();
   }
 
+  startTenPullBurst(summary, callback) {
+    this.isSpinning = true;
+    setTimeout(() => {
+      this.isSpinning = false;
+      if (summary.bestEquip && summary.maxPowerDiff > 0) {
+        this.addFloatingText(`⚡ 周天十连大爆！斩获【${summary.bestEquip.name}】！`, '#ffd700');
+        this.addFloatingText(`⚡ 战力飙升 +${summary.maxPowerDiff} ⬆`, '#38ef7d');
+      } else if (summary.bestEquip) {
+        this.addFloatingText(`⚡ 周天十连大爆！斩获【${summary.bestEquip.name}】！`, '#ffd700');
+      } else {
+        this.addFloatingText(`✨ 周天十连推演：获宝 10 份！`, '#ffd700');
+      }
+      if (typeof callback === 'function') callback();
+    }, 700);
+  }
+
   addFloatingText(text, color = '#ffd700') {
     const ROW_SPACING = 32;
     for (const ft of this.floatingTexts) {

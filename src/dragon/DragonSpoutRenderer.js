@@ -437,6 +437,118 @@ window.SlotsRPG = window.SlotsRPG || {};
       }
     }
 
+    /**
+     * 周天十连抽 · 瞬时聚爆倾泻动效 (方案 A)
+     * 1. 龙头高能剧烈充能 (260ms)
+     * 2. 10连发灵光法宝弧形弹道如流星暴雨般喷出，密集降落至 12 格天机宝萃
+     * 3. 槽位连环金光激荡，并在 ~850ms 处轰出十连结算高光看板与飘字
+     */
+    startTenPullBurst(summary, callback) {
+      this.isSpinning = true;
+      const headEl = document.getElementById('dragon-head-sprite');
+      const hasEpic = !!summary.hasEpic;
+
+      // 1. 龙头高能蓄力充能
+      if (headEl) {
+        headEl.classList.remove('spouting');
+        headEl.classList.add(hasEpic ? 'epic-charging' : 'charging');
+      }
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play(hasEpic ? 'REEL_SPIN' : 'CLICK');
+      }
+
+      const chargeDelay = 260; // 260ms 聚灵充能
+      const volleyCount = Math.min(12, summary.itemsCount || 10);
+
+      setTimeout(() => {
+        if (headEl) {
+          headEl.classList.remove('charging', 'epic-charging');
+          headEl.classList.add('spouting');
+          setTimeout(() => headEl.classList.remove('spouting'), 450);
+        }
+
+        // 2. 连环十发流星弹道如扇形散开直轰 12 格
+        const flightDuration = 260;
+        const stagger = 32; // 每发仅间隔 32ms
+
+        for (let i = 0; i < volleyCount; i++) {
+          const delay = i * stagger;
+          const targetSlotId = `dragon-slot-${i % 12}`;
+          const targetCoord = this._getSlotCoordinates(targetSlotId, {
+            x: (this.width || 360) * (0.16 + (i % 6) * 0.14),
+            y: (this.height || 400) * (i < 6 ? 0.65 : 0.85)
+          });
+
+          const isItemEpic = (i === 0 && hasEpic);
+          const orbColor = isItemEpic ? '#ffd700' : (i % 2 === 0 ? '#00e5ff' : '#38ef7d');
+
+          // 生成画布飞弹
+          setTimeout(() => {
+            const curNow = performance.now();
+            this.spoutProjectiles.push({
+              startX: this.dragonMouth.x + (Math.random() - 0.5) * 16,
+              startY: this.dragonMouth.y,
+              endX: targetCoord.x,
+              endY: targetCoord.y,
+              controlX: this.dragonMouth.x + (i % 2 === 0 ? -30 : 30) + (Math.random() - 0.5) * 20,
+              controlY: this.dragonMouth.y + 40,
+              startTime: curNow,
+              duration: flightDuration,
+              color: orbColor,
+              targetSlotId: targetSlotId,
+              isEpic: isItemEpic,
+              impactFired: false
+            });
+
+            // 槽位落地激荡波
+            setTimeout(() => {
+              this._triggerSlotImpact(targetSlotId, orbColor, isItemEpic);
+              if (window.SlotsRPG && window.SlotsRPG.SoundEffects && i % 3 === 0) {
+                window.SlotsRPG.SoundEffects.play('CLICK');
+              }
+            }, flightDuration);
+
+          }, delay);
+        }
+
+        // 3. 终局结算与多巴胺爆发 (全部落定后)
+        const totalWait = volleyCount * stagger + flightDuration + 100;
+        setTimeout(() => {
+          this.isSpinning = false;
+
+          // 震屏与高光音效
+          if (hasEpic) {
+            const viewSlots = document.getElementById('view-slots');
+            if (viewSlots) {
+              viewSlots.classList.remove('view-slots-shake');
+              void viewSlots.offsetWidth;
+              viewSlots.classList.add('view-slots-shake');
+              setTimeout(() => viewSlots.classList.remove('view-slots-shake'), 300);
+            }
+            if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+              window.SlotsRPG.SoundEffects.play('TREASURE_BURST');
+            }
+          }
+
+          // 飘字汇总看板
+          if (summary.bestEquip && summary.maxPowerDiff > 0) {
+            this.addFloatingText(`⚡ 周天十连大爆！斩获【${summary.bestEquip.name}】！`, '#ffd700');
+            this.addFloatingText(`⚡ 战力飙升 +${summary.maxPowerDiff} ⬆`, '#38ef7d');
+          } else if (summary.bestEquip) {
+            this.addFloatingText(`⚡ 周天十连大爆！斩获【${summary.bestEquip.name}】！`, '#ffd700');
+          } else {
+            this.addFloatingText(`✨ 周天十连圆满：获宝 10 份！`, '#ffd700');
+          }
+
+          // 触发全部揭晓完成事件
+          window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SPOUT_ALL_REVEALED', summary);
+
+          if (typeof callback === 'function') callback();
+        }, totalWait);
+
+      }, chargeDelay);
+    }
+
     _triggerSlotImpact(slotId, glowColor, isEpic = false) {
       const el = document.getElementById(slotId);
       if (!el) return;
