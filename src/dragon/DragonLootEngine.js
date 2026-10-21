@@ -136,16 +136,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         };
       }
 
-      // (4) 强指定洞天秘境
-      if (!leftCabinet && options.forceBonus) {
-        leftCabinet = {
-          type: 'bonus',
-          name: '龙域秘境 · 造化机缘',
-          bonusCount: 6
-        };
-      }
-
-      // (5) 常规随机生成：妖兽遭遇(~6%)、秘境空间(~2%)、或者装备掉落(~92%)
+      // (4) 常规随机生成：妖兽遭遇(~6%)、或者装备掉落(~94%)，彻底移除秘境与跑马灯触发
       if (!leftCabinet) {
         const randEvent = Math.random();
         

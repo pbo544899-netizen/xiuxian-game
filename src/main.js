@@ -448,6 +448,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (tabSlots) tabSlots.classList.add('active');
       if (viewSlots) viewSlots.classList.add('active');
       if (topHud) topHud.classList.remove('hidden');
+      if (modalActionNotice) modalActionNotice.classList.add('hidden');
     } else if (tabName === 'character') {
       if (tabCharacter) tabCharacter.classList.add('active');
       if (viewCharacter) viewCharacter.classList.add('active');
