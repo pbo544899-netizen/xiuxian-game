@@ -11,10 +11,6 @@
     <!-- 常驻顶栏 (角色修真视图内置HUD，顶栏默认隐藏) -->
     <header class="top-hud hidden">
       <div class="hud-item">
-        <span class="hud-label">机缘:</span>
-        <span id="val-energy" class="hud-val">0</span>
-      </div>
-      <div class="hud-item">
         <span id="val-realm" class="hud-badge">凡人境 · 未入道</span>
       </div>
       <div class="hud-item">
@@ -90,10 +86,17 @@
                 <span class="showcase-title">天机宝萃</span>
                 <span class="showcase-rule-hint">品阶高者居前</span>
               </div>
-              <button id="btn-collect-all-slots" class="btn-collect-all-slots" title="一键收取所有宝萃放入背包">
-                <span class="collect-icon">📥</span>
-                <span class="collect-text">一键收纳</span>
-              </button>
+              <div class="showcase-actions">
+                <label class="auto-collect-toggle" title="抽奖完成后自动将宝萃收纳至乾坤袋">
+                  <input type="checkbox" id="chk-auto-collect" />
+                  <span class="auto-collect-slider"></span>
+                  <span class="auto-collect-label">自动收纳</span>
+                </label>
+                <button id="btn-collect-all-slots" class="btn-collect-all-slots" title="一键收取所有宝萃放入背包">
+                  <span class="collect-icon">📥</span>
+                  <span class="collect-text">一键收纳</span>
+                </button>
+              </div>
             </div>
             <div class="rewards-grid" id="rewards-grid">
               <!-- 第一排 6格 (0 ~ 5) -->
@@ -255,8 +258,8 @@
         <!-- 序章首推专属引导横幅 (凡人未入门派阶段在此处展示神兵必出提示) -->
         <div id="prologue-spin-guide" class="prologue-spin-guide">
           <span class="guide-hand">👉</span>
-          <span class="guide-text">点击<b>【引龙吐宝】</b>初测仙缘，首抽必爆强力法宝神兵！</span>
-          <span class="guide-badge">神兵必出</span>
+          <span class="guide-text">天道馈赠：免费体验<b>【引龙吐宝】</b>，首抽必爆强力法宝神兵！</span>
+          <span class="guide-badge">免费首抽</span>
         </div>
 
         <!-- 宗门斩妖试炼横幅 (主动挑战 1~12 关 + 守关大妖王，入宗门后开放并取代神兵必出横幅) -->
@@ -326,10 +329,30 @@
                 </div>
               </div>
               <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
-              <span class="spin-btn-title" id="spin-btn-title">引龙吐宝</span>
-              <span class="water-tank-badge" id="water-tank-badge">0/10</span>
+              <div class="spin-btn-text-wrap">
+                <span class="spin-btn-title" id="spin-btn-title">引龙吐宝</span>
+                <span class="water-tank-badge" id="water-tank-badge">0/10</span>
+              </div>
             </button>
-            <button id="btn-auto" class="btn-auto">自动引宝</button>
+            <div class="auto-spin-group" id="auto-spin-group">
+              <button id="btn-auto" class="btn-auto" title="开启/停止自动推演">
+                <span class="auto-btn-title" id="auto-btn-title">自动推演</span>
+                <span class="auto-btn-progress hidden" id="auto-btn-progress">0/50</span>
+              </button>
+              <button id="btn-auto-count-toggle" class="btn-auto-count-toggle" title="选择自动推演连抽次数">
+                <span id="auto-count-label">50次</span><span class="caret">▾</span>
+              </button>
+            </div>
+            <!-- 自动推演次数选择浮层 -->
+            <div id="auto-count-popover" class="auto-count-popover hidden">
+              <div class="count-popover-title">选择自动推演次数</div>
+              <div class="count-popover-options">
+                <button class="count-opt-btn" data-count="10">10 连抽</button>
+                <button class="count-opt-btn active" data-count="50">50 连抽</button>
+                <button class="count-opt-btn" data-count="100">100 连抽</button>
+                <button class="count-opt-btn" data-count="Infinity">无限推演</button>
+              </div>
+            </div>
             <button id="btn-auto-filter" class="btn-auto-filter" title="挂机筛选规则">⚙️</button>
             <button id="btn-meditate" class="btn-meditate hidden" title="灵机枯竭时打坐吐纳回复 30 机缘">🧘 打坐吐纳</button>
           </div>

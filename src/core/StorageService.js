@@ -145,6 +145,8 @@ class StorageService {
       }
       if (typeof data.waterTankProgress === 'number') {
         gameManager.waterTankProgress = Math.min(gameManager.waterTankMax || 10, Math.max(0, data.waterTankProgress));
+      } else {
+        gameManager.waterTankProgress = 10; // 新手或首登赠送一次免费引龙吐宝
       }
 
       // 2. 还原角色 (通过 PlayerModel.deserialize 恢复完整境界与装备)

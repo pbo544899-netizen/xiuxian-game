@@ -116,14 +116,15 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 兼容既有弹道落点调用：单发落地揭晓
      * @param {'left'|'right'} side 
+     * @param {Object} [options={}] 可选参数 { visuallyPending: boolean, isEpic: boolean }
      * @returns {number} 插入后的槽位索引
      */
-    revealSlot(side) {
+    revealSlot(side, options = {}) {
       const idx = this.incomingQueue.findIndex(item => item.side === side);
       if (idx === -1) return 0;
 
       const queueItem = this.incomingQueue.splice(idx, 1)[0];
-      return this.addItemFromSpout(queueItem.data);
+      return this.addItemFromSpout(queueItem.data, options);
     }
 
     /**
@@ -132,9 +133,10 @@ window.SlotsRPG = window.SlotsRPG || {};
      * 1. 相同品类（如天道灵石、同种丹药、道符、妖兽）强制合并占 1 格，累加数值与数量 (xN)，不散落多格
      * 2. 装备及新种类独立占格，按品阶自动前插高品，相同品阶先进居前 (FIFO)
      * @param {Object} rawData 
+     * @param {Object} [options={}]
      * @returns {number} 插入或堆叠后的最终槽位索引 (用于高光动效)
      */
-    addItemFromSpout(rawData) {
+    addItemFromSpout(rawData, options = {}) {
       if (!rawData) return 0;
 
       // 1. 判断是否属于可单格堆叠品类并生成堆叠唯一键 (stackKey)
@@ -191,7 +193,7 @@ window.SlotsRPG = window.SlotsRPG || {};
 
           this._sortSlots();
           const targetIndex = this.slots.indexOf(existingSlot);
-          this.renderSlots(targetIndex, { isBump: true });
+          this.renderSlots(targetIndex, { ...options, isBump: true });
           return targetIndex;
         }
       }
@@ -310,13 +312,13 @@ window.SlotsRPG = window.SlotsRPG || {};
         this._handleOverflow(overflow);
       }
 
-      const isEpic = !!(normalized && (
+      const isEpic = options.isEpic !== undefined ? options.isEpic : !!(normalized && (
         normalized.type === 'battle' ||
         normalized.type === 'bonus' ||
         ['Q4', 'Q5', 'Q6', 'Q7', 'Q8'].includes((normalized.quality || '').toUpperCase()) ||
         normalized.isUpgrade
       ));
-      this.renderSlots(insertIndex, { isEpic });
+      this.renderSlots(insertIndex, { ...options, isEpic });
       return insertIndex;
     }
 
@@ -394,8 +396,15 @@ window.SlotsRPG = window.SlotsRPG || {};
             slotEl.classList.add(`quality-border-${q}`);
           }
 
-          // 若为新插入的槽位，触发爆破插入高光动效 (普通插入 vs 极品大爆插入)
-          if (i === highlightIndex) {
+          // 若指定视觉延迟显现（等待龙嘴吐出的宝物粒子飞抵），先隐藏格子内容
+          if (options.visuallyPending && i === highlightIndex) {
+            slotEl.classList.add('slot-pending-flyer');
+          } else {
+            slotEl.classList.remove('slot-pending-flyer');
+          }
+
+          // 若为新插入的槽位且非延迟显现，触发爆破插入高光动效
+          if (i === highlightIndex && !options.visuallyPending) {
             if (options.isEpic) {
               slotEl.classList.remove('slot-epic-burst', 'slot-inserted-burst');
               void slotEl.offsetWidth;
@@ -407,6 +416,26 @@ window.SlotsRPG = window.SlotsRPG || {};
             }
           }
         }
+      }
+    }
+
+    /**
+     * 宝物飞抵槽位时触发揭示爆破动效
+     * @param {number} slotIndex 槽位索引
+     * @param {boolean} isEpic 是否极品
+     */
+    revealSlotImpact(slotIndex, isEpic = false) {
+      const slotEl = document.getElementById(`dragon-slot-${slotIndex}`);
+      if (!slotEl) return;
+      slotEl.classList.remove('slot-pending-flyer');
+      slotEl.classList.remove('slot-epic-burst', 'slot-inserted-burst');
+      void slotEl.offsetWidth;
+      slotEl.classList.add(isEpic ? 'slot-epic-burst' : 'slot-inserted-burst');
+      const badgeEl = slotEl.querySelector('.slot-item-badge');
+      if (badgeEl) {
+        badgeEl.classList.remove('bump-active');
+        void badgeEl.offsetWidth;
+        badgeEl.classList.add('bump-active');
       }
     }
 

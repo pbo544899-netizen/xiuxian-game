@@ -10779,13 +10779,22 @@ body.tier-spirit-realm .reel-frame {
   100% { transform: rotate(0deg); }
 }
 
+.spin-btn-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 3;
+  line-height: 1;
+}
+
 .water-tank-badge {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  background: rgba(0, 0, 0, 0.8);
+  position: static !important;
+  margin-top: 1px;
+  background: rgba(0, 0, 0, 0.75);
   border: 1px solid rgba(0, 229, 255, 0.7);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 0 4px;
   font-size: 8px;
   font-weight: 800;
@@ -10818,7 +10827,8 @@ body.tier-spirit-realm .reel-frame {
 .btn-dragon-bagua-spin.tank-full .water-tank-badge {
   border-color: #ffd700 !important;
   color: #ffd700 !important;
-  background: rgba(220, 38, 38, 0.85) !important;
+  background: rgba(220, 38, 38, 0.9) !important;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
   animation: pulse-icon 1s infinite alternate;
 }
 
@@ -10830,4 +10840,234 @@ body.tier-spirit-realm .reel-frame {
 @keyframes tank-full-glow {
   0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
   100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 69, 0, 0.8); }
+}
+
+/* 宝萃展示区顶部操作栏 (自动收纳开关 + 一键收纳按钮) */
+.showcase-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-collect-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 10px;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.auto-collect-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.auto-collect-slider {
+  position: relative;
+  width: 22px;
+  height: 12px;
+  background-color: #334155;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auto-collect-slider::before {
+  position: absolute;
+  content: "";
+  height: 8px;
+  width: 8px;
+  left: 1px;
+  bottom: 1px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.auto-collect-toggle input:checked + .auto-collect-slider {
+  background-color: #059669;
+  border-color: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+.auto-collect-toggle input:checked + .auto-collect-slider::before {
+  transform: translateX(10px);
+  background-color: #ffffff;
+}
+
+.auto-collect-toggle input:checked ~ .auto-collect-label {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* 自动推演组合控件与连抽次数选择器 */
+.auto-spin-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  gap: 4px;
+  height: 52px;
+}
+
+.auto-spin-group .btn-auto {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 26px 0 0 26px;
+  padding: 0 8px;
+}
+
+.auto-spin-group .btn-auto-count-toggle {
+  height: 100%;
+  padding: 0 9px;
+  border-radius: 0 26px 26px 0;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-left: none;
+  color: #ffd700;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.auto-spin-group .btn-auto-count-toggle:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: #ffd700;
+}
+
+.auto-spin-group .btn-auto-count-toggle .caret {
+  font-size: 8px;
+  opacity: 0.8;
+}
+
+.auto-btn-progress {
+  font-size: 10px;
+  color: #38bdf8;
+  font-weight: 800;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 0 5px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  line-height: 1.2;
+}
+
+.btn-auto.active .auto-btn-progress {
+  color: #fef08a;
+  border-color: rgba(254, 240, 138, 0.6);
+  background: rgba(185, 28, 28, 0.7);
+}
+
+/* 自动推演次数选择浮层 */
+.auto-count-popover {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.2);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.count-popover-title {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.count-popover-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.count-opt-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.count-opt-btn:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: #38bdf8;
+  color: #f0fdf4;
+}
+
+.count-opt-btn.active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.5) 100%);
+  border-color: #ffd700;
+  color: #ffd700;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* 龙口吐宝飞行动画 DOM 宝物粒子 */
+.dragon-spout-flyer {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: radial-gradient(circle, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid #00e5ff;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+
+.dragon-spout-flyer img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.dragon-spout-flyer.epic {
+  border-color: #ffd700;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.95), 0 0 35px rgba(255, 69, 0, 0.7);
+  animation: flyer-epic-spin 0.6s linear infinite;
+}
+
+@keyframes flyer-epic-spin {
+  0% { filter: drop-shadow(0 0 8px #ffd700); }
+  50% { filter: drop-shadow(0 0 18px #ff4500); }
+  100% { filter: drop-shadow(0 0 8px #ffd700); }
+}
+
+/* 飞行中的预占槽位保持隐藏，抵达时瞬间显现 */
+.slot-pending-flyer .slot-content {
+  opacity: 0 !important;
+  visibility: hidden !important;
 }

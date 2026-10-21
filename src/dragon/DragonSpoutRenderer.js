@@ -204,66 +204,87 @@ window.SlotsRPG = window.SlotsRPG || {};
           setTimeout(() => headEl.classList.remove('spouting'), 360);
         }
 
-        const shotDuration = 190; // 极速流光 190ms
-        const shotDelay = 85;     // 次发仅延后 85ms，连珠喷吐
+        const shotDuration = 220; // 极速流光 220ms
+        const shotDelay = 100;    // 次发仅延后 100ms，连珠喷吐
 
         // 第1发：右侧材料 (灵石/丹药)
+        let idx1 = 0;
+        if (window.gameManager && window.gameManager.dragonCabinetManager) {
+          idx1 = window.gameManager.dragonCabinetManager.revealSlot('right', { visuallyPending: true, isBump: true });
+        }
+        const targetSlot1 = `dragon-slot-${idx1}`;
+        const targetCoord1 = this._getSlotCoordinates(targetSlot1, targetCoordB);
+
         const proj1 = {
           startX: this.dragonMouth.x + 12,
           startY: this.dragonMouth.y,
-          endX: targetCoordB.x,
-          endY: targetCoordB.y,
+          endX: targetCoord1.x,
+          endY: targetCoord1.y,
           controlX: this.dragonMouth.x + 35,
           controlY: this.dragonMouth.y + 35,
           startTime: now,
           duration: shotDuration,
           color: '#52c41a',
-          targetSlotId: 'dragon-slot-1',
+          targetSlotId: targetSlot1,
           impactFired: false
         };
 
-        // 第2发：左侧常规物
-        const proj2 = {
-          startX: this.dragonMouth.x - 12,
-          startY: this.dragonMouth.y,
-          endX: targetCoordA.x,
-          endY: targetCoordA.y,
-          controlX: this.dragonMouth.x - 35,
-          controlY: this.dragonMouth.y + 35,
-          startTime: now + shotDelay,
-          duration: shotDuration,
-          color: '#00e5ff',
-          targetSlotId: 'dragon-slot-0',
-          impactFired: false
-        };
-
-        this.spoutProjectiles = [proj1, proj2];
+        // 实体宝物飞行动画从龙口喷向槽位
+        this._spawnSpoutFlyer(spinResult.rightCabinet, targetSlot1, shotDuration, 0, false);
 
         // 第1发落地
         setTimeout(() => {
-          let idx = 0;
           if (window.gameManager && window.gameManager.dragonCabinetManager) {
-            idx = window.gameManager.dragonCabinetManager.revealSlot('right');
+            window.gameManager.dragonCabinetManager.revealSlotImpact(idx1, false);
           }
-          this._triggerSlotImpact(`dragon-slot-${idx}`, '#52c41a');
+          this._triggerSlotImpact(targetSlot1, '#52c41a');
           if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
             window.SlotsRPG.SoundEffects.play('CLICK');
           }
         }, shotDuration);
 
-        // 第2发落地
+        // 第2发：左侧常规物 (延后 shotDelay 喷出)
         setTimeout(() => {
-          let idx = 0;
+          let idx2 = 0;
           if (window.gameManager && window.gameManager.dragonCabinetManager) {
-            idx = window.gameManager.dragonCabinetManager.revealSlot('left');
+            idx2 = window.gameManager.dragonCabinetManager.revealSlot('left', { visuallyPending: true, isBump: true });
           }
-          this._triggerSlotImpact(`dragon-slot-${idx}`, '#00e5ff');
-          if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-            window.SlotsRPG.SoundEffects.play('REEL_STOP');
-          }
-        }, shotDelay + shotDuration);
+          const targetSlot2 = `dragon-slot-${idx2}`;
+          const targetCoord2 = this._getSlotCoordinates(targetSlot2, targetCoordA);
 
-        // 常规流转结清 (短促驻留 160ms，总耗时 435ms)
+          const proj2 = {
+            startX: this.dragonMouth.x - 12,
+            startY: this.dragonMouth.y,
+            endX: targetCoord2.x,
+            endY: targetCoord2.y,
+            controlX: this.dragonMouth.x - 35,
+            controlY: this.dragonMouth.y + 35,
+            startTime: performance.now(),
+            duration: shotDuration,
+            color: '#00e5ff',
+            targetSlotId: targetSlot2,
+            impactFired: false
+          };
+          this.spoutProjectiles.push(proj2);
+
+          // 实体宝物飞行动画
+          this._spawnSpoutFlyer(spinResult.leftCabinet, targetSlot2, shotDuration, 0, false);
+
+          // 第2发落地
+          setTimeout(() => {
+            if (window.gameManager && window.gameManager.dragonCabinetManager) {
+              window.gameManager.dragonCabinetManager.revealSlotImpact(idx2, false);
+            }
+            this._triggerSlotImpact(targetSlot2, '#00e5ff');
+            if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+              window.SlotsRPG.SoundEffects.play('REEL_STOP');
+            }
+          }, shotDuration);
+        }, shotDelay);
+
+        this.spoutProjectiles = [proj1];
+
+        // 常规流转结清 (总耗时 ~480ms)
         const totalDuration = shotDelay + shotDuration + 160;
         setTimeout(() => {
           this.isSpinning = false;
@@ -273,37 +294,45 @@ window.SlotsRPG = window.SlotsRPG || {};
 
       } else {
         // ==========================================
-        // 模式 B：极品高光骤停与破空大爆 (Total ~1150ms)
+        // 模式 B：极品高光骤停与破空大爆 (Total ~1200ms)
         // ==========================================
         const normalSide = (epicSide === 'left') ? 'right' : 'left';
+        const normalItem = (epicSide === 'left') ? spinResult.rightCabinet : spinResult.leftCabinet;
         const epicTargetCoord = (epicSide === 'left') ? targetCoordA : targetCoordB;
         const normalTargetCoord = (epicSide === 'left') ? targetCoordB : targetCoordA;
 
-        // 1. 常规耗材率先喷出入格铺垫 (170ms)
-        const normalDuration = 170;
+        // 1. 常规耗材率先喷出入格铺垫 (200ms)
+        const normalDuration = 200;
+        let idxNormal = 0;
+        if (window.gameManager && window.gameManager.dragonCabinetManager) {
+          idxNormal = window.gameManager.dragonCabinetManager.revealSlot(normalSide, { visuallyPending: true, isBump: true });
+        }
+        const normalSlotId = `dragon-slot-${idxNormal}`;
+        const normalSlotCoord = this._getSlotCoordinates(normalSlotId, normalTargetCoord);
+
         const projNormal = {
           startX: this.dragonMouth.x + (epicSide === 'left' ? 12 : -12),
           startY: this.dragonMouth.y,
-          endX: normalTargetCoord.x,
-          endY: normalTargetCoord.y,
+          endX: normalSlotCoord.x,
+          endY: normalSlotCoord.y,
           controlX: this.dragonMouth.x + (epicSide === 'left' ? 35 : -35),
           controlY: this.dragonMouth.y + 35,
           startTime: now,
           duration: normalDuration,
           color: '#00e5ff',
-          targetSlotId: epicSide === 'left' ? 'dragon-slot-1' : 'dragon-slot-0',
+          targetSlotId: normalSlotId,
           impactFired: false
         };
 
         this.spoutProjectiles = [projNormal];
+        this._spawnSpoutFlyer(normalItem, normalSlotId, normalDuration, 0, false);
 
         // 常规物快速入格
         setTimeout(() => {
-          let idx = 0;
           if (window.gameManager && window.gameManager.dragonCabinetManager) {
-            idx = window.gameManager.dragonCabinetManager.revealSlot(normalSide);
+            window.gameManager.dragonCabinetManager.revealSlotImpact(idxNormal, false);
           }
-          this._triggerSlotImpact(`dragon-slot-${idx}`, '#00e5ff');
+          this._triggerSlotImpact(normalSlotId, '#00e5ff');
         }, normalDuration);
 
         // 2. 戏剧性刹车顿挫 (Drama Pause ~350ms) 龙头聚灵狂暴蓄能！
@@ -333,10 +362,11 @@ window.SlotsRPG = window.SlotsRPG || {};
           }
         }, brakeDelay);
 
-        // 3. 极品破空怒喷 (在 170 + 350 = 520ms 发射)
+        // 3. 极品破空怒喷 (在 200 + 350 = 550ms 发射)
         const epicShotStartTime = brakeDelay + 350;
-        const epicShotDuration = 270;
+        const epicShotDuration = 280;
         const epicColor = this._getLootEpicColor(epicItem);
+        let idxEpic = 0;
 
         setTimeout(() => {
           if (headEl) {
@@ -345,32 +375,39 @@ window.SlotsRPG = window.SlotsRPG || {};
             setTimeout(() => headEl.classList.remove('spouting'), 500);
           }
 
+          if (window.gameManager && window.gameManager.dragonCabinetManager) {
+            idxEpic = window.gameManager.dragonCabinetManager.revealSlot(epicSide, { visuallyPending: true, isEpic: true });
+          }
+          const epicSlotId = `dragon-slot-${idxEpic}`;
+          const epicSlotCoord = this._getSlotCoordinates(epicSlotId, epicTargetCoord);
+
           const projEpic = {
             startX: this.dragonMouth.x,
             startY: this.dragonMouth.y,
-            endX: epicTargetCoord.x,
-            endY: epicTargetCoord.y,
+            endX: epicSlotCoord.x,
+            endY: epicSlotCoord.y,
             controlX: this.dragonMouth.x + (epicSide === 'left' ? -25 : 25),
             controlY: this.dragonMouth.y + 25,
             startTime: performance.now(),
             duration: epicShotDuration,
             color: epicColor,
             isEpic: true,
-            targetSlotId: epicSide === 'left' ? 'dragon-slot-0' : 'dragon-slot-1',
+            targetSlotId: epicSlotId,
             impactFired: false
           };
 
           this.spoutProjectiles.push(projEpic);
+          this._spawnSpoutFlyer(epicItem, epicSlotId, epicShotDuration, 0, true);
         }, epicShotStartTime);
 
         // 4. 极品砸地轰鸣与震屏
-        const epicImpactTime = epicShotStartTime + epicShotDuration; // ~790ms
+        const epicImpactTime = epicShotStartTime + epicShotDuration; // ~830ms
         setTimeout(() => {
-          let insertedIdx = 0;
+          const epicSlotId = `dragon-slot-${idxEpic}`;
           if (window.gameManager && window.gameManager.dragonCabinetManager) {
-            insertedIdx = window.gameManager.dragonCabinetManager.revealSlot(epicSide);
+            window.gameManager.dragonCabinetManager.revealSlotImpact(idxEpic, true);
           }
-          this._triggerSlotImpact(`dragon-slot-${insertedIdx}`, epicColor, true);
+          this._triggerSlotImpact(epicSlotId, epicColor, true);
 
           // 触发震屏与仙乐音效
           const viewSlots = document.getElementById('view-slots');
@@ -383,10 +420,10 @@ window.SlotsRPG = window.SlotsRPG || {};
           if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
             window.SlotsRPG.SoundEffects.play('WIN_LINE');
           }
-          window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: epicSide, index: insertedIdx, isEpic: true });
+          window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SLOT_REVEAL', { side: epicSide, index: idxEpic, isEpic: true });
         }, epicImpactTime);
 
-        // 5. 极品结算展示完毕 (~1160ms)
+        // 5. 极品结算展示完毕 (~1200ms)
         const totalDuration = epicImpactTime + 370;
         setTimeout(() => {
           this.isSpinning = false;
@@ -422,6 +459,90 @@ window.SlotsRPG = window.SlotsRPG || {};
         });
       }
     }
+    /**
+     * 生成从龙口喷出、沿抛物线掉落砸入目标格子槽位的 DOM 实体宝萃飞行动画
+     */
+    _spawnSpoutFlyer(item, targetSlotId, durationMs = 240, delayMs = 0, isEpic = false) {
+      if (!item) return;
+      setTimeout(() => {
+        // 1. 获取龙头龙嘴屏幕起点
+        const headEl = document.getElementById('dragon-head-sprite') || document.querySelector('.dragon-head-box');
+        let startX = window.innerWidth * 0.5;
+        let startY = window.innerHeight * 0.22;
+        if (headEl) {
+          const hRect = headEl.getBoundingClientRect();
+          startX = hRect.left + hRect.width * 0.5;
+          startY = hRect.top + hRect.height * 0.7;
+        }
+
+        // 2. 获取终点槽位元素与屏幕坐标
+        const targetSlotEl = document.getElementById(targetSlotId) || document.getElementById('dragon-slot-0');
+        let endX = window.innerWidth * 0.5;
+        let endY = window.innerHeight * 0.6;
+        if (targetSlotEl) {
+          const sRect = targetSlotEl.getBoundingClientRect();
+          endX = sRect.left + sRect.width * 0.5;
+          endY = sRect.top + sRect.height * 0.5;
+        }
+
+        // 3. 构造飞行动画 DOM 宝物元素
+        const flyer = document.createElement('div');
+        flyer.className = `dragon-spout-flyer ${isEpic ? 'epic' : ''}`;
+
+        let iconSrc = 'assets/symbols/SYM_06.png';
+        let qColor = isEpic ? '#ffd700' : '#00e5ff';
+        if (item.icon) iconSrc = item.icon;
+        else if (item.item && item.item.icon) iconSrc = item.item.icon;
+        else if (item.type === 'energy') iconSrc = 'assets/symbols/SYM_05.png';
+        else if (item.type === 'battle') iconSrc = 'assets/symbols/SYM_12.png';
+        else if (item.type === 'pill') iconSrc = 'assets/symbols/SYM_07.png';
+
+        if (item.qualityColor) qColor = item.qualityColor;
+        else if (item.item && item.item.qualityColor) qColor = item.item.qualityColor;
+
+        flyer.style.borderColor = qColor;
+        flyer.style.boxShadow = `0 0 16px ${qColor}, inset 0 0 8px rgba(255, 255, 255, 0.4)`;
+
+        const img = document.createElement('img');
+        img.src = iconSrc;
+        img.alt = item.name || '宝萃';
+        flyer.appendChild(img);
+        document.body.appendChild(flyer);
+
+        // 4. 生成贝塞尔抛物线关键帧动画 (从龙口拱出下坠砸入格子)
+        const ctrlX = (startX + endX) * 0.5 + (startX > endX ? -35 : 35);
+        const ctrlY = Math.min(startY, endY) - 30;
+        const steps = 16;
+        const keyframes = [];
+
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const inv = 1 - t;
+          const curX = inv * inv * startX + 2 * inv * t * ctrlX + t * t * endX;
+          const curY = inv * inv * startY + 2 * inv * t * ctrlY + t * t * endY;
+          const scale = (t < 0.25) ? (0.35 + t * 3.8) : (1.2 - (t - 0.25) * 0.22);
+          const rot = (t * 360 * (startX > endX ? -1 : 1)).toFixed(1) + 'deg';
+          keyframes.push({
+            transform: `translate3d(${curX}px, ${curY}px, 0) translate(-50%, -50%) scale(${scale}) rotate(${rot})`,
+            opacity: t < 0.05 ? t * 20 : (t > 0.95 ? (1 - t) * 20 : 1)
+          });
+        }
+
+        if (flyer.animate) {
+          const anim = flyer.animate(keyframes, {
+            duration: durationMs,
+            easing: 'cubic-bezier(0.2, 0, 0.2, 1)',
+            fill: 'forwards'
+          });
+          anim.onfinish = () => {
+            flyer.remove();
+          };
+        } else {
+          setTimeout(() => flyer.remove(), durationMs);
+        }
+      }, delayMs);
+    }
+
 
     /**
      * 飘字提示系统

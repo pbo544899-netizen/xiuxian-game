@@ -90,9 +90,13 @@ class GameManager {
     this.renderer = null;
     this.pendingOfflineReward = null;
 
-    // 引龙吐宝抽奖次数累积水缸进度 (10次蓄满触发龙皇吐宝)
-    this.waterTankProgress = 0;
+    // 引龙吐宝抽奖次数累积水缸进度 (10次蓄满触发免费抽奖，初始开局直接免费赠送1次：10/10)
+    this.waterTankProgress = 10;
     this.waterTankMax = 10;
+
+    // 自动推演连抽次数设置与当前进度计数
+    this.autoSpinTargetCount = 50;
+    this.autoSpinCompletedCount = 0;
 
     // 默认装配凡人采药破烂装束 (战力 18)
     this.player.setupMortalState();
@@ -329,6 +333,8 @@ class GameManager {
 
       // 运转状态
       isAutoSpinning: this.isAutoSpinning,
+      autoSpinTargetCount: this.autoSpinTargetCount !== undefined ? this.autoSpinTargetCount : 50,
+      autoSpinCompletedCount: this.autoSpinCompletedCount || 0,
       freeReliefCount: this.freeReliefCount,
       dailySecretRealmCount: this.dailySecretRealmCount,
       canExploreSecretRealmToday: this.canExploreSecretRealmToday(),
@@ -398,8 +404,12 @@ class GameManager {
       this.currentBet = availableTiers[availableTiers.length - 1];
     }
 
-    const cost = this.currentBet;
-    if (this.energy < cost) {
+    // 检查是否触发引龙吐宝蓄满免费抽奖 (满10次免费赠送一次龙皇吐宝，初始开局也免费赠送一次)
+    this.waterTankMax = 10;
+    const isFreeSpin = (this.waterTankProgress || 0) >= this.waterTankMax;
+    const cost = isFreeSpin ? 0 : this.currentBet;
+
+    if (!isFreeSpin && this.energy < cost) {
       this.stopAutoSpin();
       this.checkDailyReliefReset();
       this.checkWantongSecretEgg();
@@ -410,25 +420,30 @@ class GameManager {
       return;
     }
 
-    // 1. 扣除机缘 (支持多倍快速消耗)
-    this.energy -= cost;
+    // 1. 扣除机缘 (免费抽奖消耗为 0)
+    if (!isFreeSpin) {
+      this.energy -= cost;
+    }
 
-    // 灵机扣除事件 (驱动灵机飘字 -25 与龙头灵光灌注反馈)
+    // 灵机扣除事件 (驱动灵机飘字 -25 与龙头灵光灌注反馈，免费时飘字“免费引宝”)
     window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('SPIN_COST_DEDUCTED', {
       cost: cost,
       energy: this.energy,
-      multiplier: this.betMultiplier
+      multiplier: this.betMultiplier,
+      isFree: isFreeSpin
     });
 
-    // 水缸抽奖次数/消耗累积 (10次蓄满触发龙皇吐宝)
-    this.waterTankMax = 10;
-    const isWaterTankFullBefore = (this.waterTankProgress || 0) >= this.waterTankMax;
     let isGrandSpin = false;
-    if (isWaterTankFullBefore) {
+    if (isFreeSpin) {
       isGrandSpin = true;
       this.waterTankProgress = 0; // 龙皇吐宝后重置水缸
     } else {
       this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 1);
+    }
+
+    // 自动推演计数累加
+    if (this.isAutoSpinning) {
+      this.autoSpinCompletedCount = (this.autoSpinCompletedCount || 0) + 1;
     }
 
     // 隐藏客卿仙印：万通·金玉满堂 (每 10 次推演返还 100 灵机)
@@ -875,6 +890,14 @@ class GameManager {
     // 自动推演高光停机保护与步进调度 (PRD 10.4 节)
     const stopped = this.checkSmartStop(evaluation);
     if (!stopped && this.isAutoSpinning && !evaluation.hasTriggeredBattle && !evaluation.hasTriggeredBonus) {
+      if (this.autoSpinTargetCount !== Infinity && this.autoSpinCompletedCount >= this.autoSpinTargetCount) {
+        const finishedCount = this.autoSpinTargetCount;
+        this.stopAutoSpin();
+        if (this.renderer && this.renderer.addFloatingText) {
+          this.renderer.addFloatingText(`🎉 已完成 ${finishedCount} 连抽自动推演！`, '#ffd700');
+        }
+        return;
+      }
       this.autoSpinTimer = setTimeout(() => {
         if (this.isAutoSpinning) this.executeSpin();
       }, 1250); // 增加沉浸节奏延迟 1.25s，让玩家看全所有奖励后才进行下一步
@@ -1122,11 +1145,14 @@ class GameManager {
     this.emitStateChange();
   }
 
-  toggleAutoSpin() {
+  toggleAutoSpin(targetCount) {
     this.isAutoSpinning = !this.isAutoSpinning;
-    this.emitStateChange();
-
     if (this.isAutoSpinning) {
+      if (targetCount !== undefined) {
+        this.autoSpinTargetCount = targetCount;
+      }
+      this.autoSpinCompletedCount = 0;
+      this.emitStateChange();
       this.executeSpin();
     } else {
       this.stopAutoSpin();
@@ -1135,6 +1161,7 @@ class GameManager {
 
   stopAutoSpin() {
     this.isAutoSpinning = false;
+    this.autoSpinCompletedCount = 0;
     this.wasAutoSpinningBeforeBattle = false; // 用户主动关闭或耗尽停止，清除战斗恢复标记
     this.wasAutoSpinningBeforeBonus = false;  // 用户主动关闭或耗尽停止，清除秘境恢复标记
     if (this.autoSpinTimer) {

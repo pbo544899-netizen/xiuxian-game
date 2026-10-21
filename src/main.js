@@ -623,15 +623,17 @@ window.addEventListener('DOMContentLoaded', () => {
       const pct = Math.min(100, Math.round((cur / max) * 100));
       elWaterTankLiquid.style.height = `${pct}%`;
       if (elWaterTankBadge) {
-        elWaterTankBadge.innerText = state.isWaterTankFull ? '满' : `${cur}/${max}`;
+        elWaterTankBadge.innerText = state.isWaterTankFull ? '10/10 免费' : `${cur}/${max}`;
       }
       if (btnSpin) {
         if (state.isWaterTankFull) {
           btnSpin.classList.add('tank-full');
-          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '✨ 龙皇吐宝';
+          if (elSpinBtnTitle) elSpinBtnTitle.innerText = '免费引宝';
+          btnSpin.title = '天道蓄满！本次【引龙吐宝】完全免费，必爆强力法宝神兵！';
         } else {
           btnSpin.classList.remove('tank-full');
           if (elSpinBtnTitle) elSpinBtnTitle.innerText = '引龙吐宝';
+          btnSpin.title = `消耗 ${state.currentBet || 25} 机缘注灵引龙吐宝 (进度: ${cur}/${max})`;
         }
       }
     }
@@ -705,14 +707,24 @@ window.addEventListener('DOMContentLoaded', () => {
     // 宗门斩妖试炼横幅更新 (1~12关主动挑战 + 守关大妖王)
     updateSectTrialBanner();
 
-    // 自动推演按钮状态
+    // 自动推演按钮状态与连抽进度显示
     if (btnAutoSpin) {
+      const autoBtnTitle = document.getElementById('auto-btn-title');
+      const autoBtnProgress = document.getElementById('auto-btn-progress');
       if (state.isAutoSpinning) {
         btnAutoSpin.classList.add('active');
-        btnAutoSpin.innerText = '停止推演';
+        if (autoBtnTitle) autoBtnTitle.innerText = '停止推演';
+        if (autoBtnProgress) {
+          autoBtnProgress.classList.remove('hidden');
+          const targetStr = (state.autoSpinTargetCount === Infinity) ? '∞' : (state.autoSpinTargetCount || 50);
+          autoBtnProgress.innerText = `${state.autoSpinCompletedCount || 0}/${targetStr}`;
+        }
       } else {
         btnAutoSpin.classList.remove('active');
-        btnAutoSpin.innerText = '自动推演';
+        if (autoBtnTitle) autoBtnTitle.innerText = '自动推演';
+        if (autoBtnProgress) {
+          autoBtnProgress.classList.add('hidden');
+        }
       }
     }
 
@@ -1947,29 +1959,9 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9. 监听奖励掉落飞入动效 (图片缩小掉落至底部角色修真位置，按钮数字一直累加直至 999+，仅在点击角色修真后刷新)
+  // 9. 监听奖励掉落动效 (已由龙头吐宝入格动画与临时背包一键收纳接管，抽奖时不再直接掉入角色修真)
   window.SlotsRPG.EventBus.on('REWARDS_DROPPED', (data) => {
-    const { rewards } = data;
-    if (rewards && rewards.length > 0) {
-      if (window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('REWARD_DROP');
-      }
-      if (window.SlotsRPG.DropAnimator) {
-        window.SlotsRPG.DropAnimator.playDropAnimation(
-          rewards,
-          canvas,
-          tabCharacter,
-          () => {
-            // 每个物品抵达时，消息提示数字累加 +1，一直增加直到 999+
-            pendingNotificationCount++;
-            updateNotificationBadge();
-          }
-        );
-      } else {
-        pendingNotificationCount += rewards.length;
-        updateNotificationBadge();
-      }
-    }
+    // 抽奖过程只进入展示区槽位，由【一键收纳】或【自动收纳】统一收取飞入背包
   });
 
   // 10. 突破与爆仓弹窗事件
@@ -4282,8 +4274,58 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const btnAutoCountToggle = document.getElementById('btn-auto-count-toggle');
+  const autoCountPopover = document.getElementById('auto-count-popover');
+  const autoCountLabel = document.getElementById('auto-count-label');
+  const countOptBtns = document.querySelectorAll('.count-opt-btn');
+
+  // 初始化已保存的连抽次数设置
+  let currentAutoCount = 50;
+  const savedCount = localStorage.getItem('slots_rpg_auto_count');
+  if (savedCount) {
+    currentAutoCount = savedCount === 'Infinity' ? Infinity : parseInt(savedCount, 10);
+    if (autoCountLabel) {
+      autoCountLabel.innerText = currentAutoCount === Infinity ? '无限' : `${currentAutoCount}次`;
+    }
+    countOptBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.count === savedCount);
+    });
+  }
+  if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
+
+  if (btnAutoCountToggle && autoCountPopover) {
+    btnAutoCountToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      autoCountPopover.classList.toggle('hidden');
+    });
+
+    countOptBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const countVal = btn.dataset.count;
+        currentAutoCount = countVal === 'Infinity' ? Infinity : parseInt(countVal, 10);
+        if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
+        localStorage.setItem('slots_rpg_auto_count', countVal);
+
+        countOptBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (autoCountLabel) {
+          autoCountLabel.innerText = countVal === 'Infinity' ? '无限' : `${currentAutoCount}次`;
+        }
+        autoCountPopover.classList.add('hidden');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!autoCountPopover.contains(e.target) && e.target !== btnAutoCountToggle) {
+        autoCountPopover.classList.add('hidden');
+      }
+    });
+  }
+
   btnAutoSpin.addEventListener('click', () => {
-    gameManager.toggleAutoSpin();
+    gameManager.toggleAutoSpin(currentAutoCount);
   });
 
   if (btnClaimRelief) {
@@ -4359,26 +4401,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 掉落结算：动画播放完毕后，奖励统一掉落飞入背包
-  window.SlotsRPG.EventBus.on('REWARDS_DROPPED', (data) => {
-    const rewards = data && data.rewards;
-    if (!rewards || rewards.length === 0) return;
-    const targetTab = document.getElementById('tab-character');
-    if (window.DropAnimator && targetTab) {
-      const dropItems = rewards.map((r, idx) => {
-        const slotEl = document.getElementById(`dragon-slot-${idx % 12}`);
-        return {
-          icon: r.icon || 'assets/symbols/SYM_05.png',
-          element: slotEl
-        };
-      });
-      window.DropAnimator.playDropAnimationFromElements(dropItems, targetTab, () => {
-        targetTab.classList.remove('jelly-bounce');
-        void targetTab.offsetWidth;
-        targetTab.classList.add('jelly-bounce');
-      });
-    }
-  });
+  // 掉落结算已由 DragonSpoutRenderer 龙口吐宝动画与临时背包接管，抽奖不再向角色修真飞入
 
   // 伏妖遭遇战就绪通知 (在所有奖励显示全后唤起，下方挑战横幅变身为当前妖兽挑战)
   window.SlotsRPG.EventBus.on('DRAGON_BATTLE_READY', (data) => {
@@ -5482,7 +5505,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // 1. 灵机减少飘字
     const floatEl = document.getElementById('lingji-cost-float');
     if (floatEl) {
-      floatEl.innerText = `-${cost}`;
+      if (data && data.isFree) {
+        floatEl.innerText = '免费引宝';
+        floatEl.style.color = '#ffd700';
+      } else {
+        floatEl.innerText = `-${cost}`;
+        floatEl.style.color = '#ff4d4f';
+      }
       floatEl.classList.remove('hidden', 'anim-cost-float');
       void floatEl.offsetWidth; // 触发 reflow
       floatEl.classList.add('anim-cost-float');
@@ -5498,6 +5527,33 @@ window.addEventListener('DOMContentLoaded', () => {
       void headBox.offsetWidth;
       headBox.classList.add('infusing');
       setTimeout(() => headBox.classList.remove('infusing'), 700);
+    }
+  });
+
+  // 临时背包自动收纳开关 (需求 3: 抽一次收纳一次)
+  const chkAutoCollect = document.getElementById('chk-auto-collect');
+  if (chkAutoCollect) {
+    const savedAutoCollect = localStorage.getItem('slots_rpg_auto_collect') === 'true';
+    chkAutoCollect.checked = savedAutoCollect;
+    if (gameManager) gameManager.autoCollect = savedAutoCollect;
+
+    chkAutoCollect.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      if (gameManager) gameManager.autoCollect = isChecked;
+      localStorage.setItem('slots_rpg_auto_collect', isChecked ? 'true' : 'false');
+      showFloatingNotice(isChecked ? '已开启【自动收纳】：抽一次收纳一次' : '已关闭【自动收纳】', isChecked ? '#34d399' : '#94a3b8');
+    });
+  }
+
+  // 监听龙头吐宝完全展示完毕：若开启自动收纳，则抽一次收纳一次
+  window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', (spinResult) => {
+    if (chkAutoCollect && chkAutoCollect.checked) {
+      setTimeout(() => {
+        const dcm = gameManager && gameManager.dragonCabinetManager;
+        if (dcm && dcm.slots && dcm.slots.length > 0) {
+          if (btnCollectAllSlots) btnCollectAllSlots.click();
+        }
+      }, 160);
     }
   });
 
