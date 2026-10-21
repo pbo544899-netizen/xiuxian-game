@@ -9727,17 +9727,17 @@ body.tier-spirit-realm .reel-frame {
 /* 穹顶神龙法相 (视觉主宰区 · 3D深度仙境机栝融合) */
 .dragon-head-box {
   position: absolute;
-  top: 2px;
+  top: 0;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  width: 270px;
-  height: 180px;
+  width: 250px;
+  height: 165px;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3;
+  z-index: 2;
   pointer-events: none;
   transform-origin: center center;
 }
@@ -9745,13 +9745,13 @@ body.tier-spirit-realm .reel-frame {
 /* 后景：周天八卦天机光轮 (深邃神阵依托，消除悬空贴片感) */
 .dragon-celestial-halo {
   position: absolute;
-  top: 10px;
+  top: 4px;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  width: 200px;
-  height: 200px;
+  width: 175px;
+  height: 175px;
   border-radius: 50%;
   border: 1px dashed rgba(0, 229, 255, 0.35);
   box-shadow: inset 0 0 30px rgba(0, 229, 255, 0.15), 0 0 25px rgba(0, 229, 255, 0.12);
@@ -9845,8 +9845,8 @@ body.tier-spirit-realm .reel-frame {
 
 /* 中景：透明镂空神龙法相本体 */
 .dragon-head-sprite {
-  width: 250px;
-  height: 170px;
+  width: 225px;
+  height: 152px;
   object-fit: contain;
   filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.45)) drop-shadow(0 10px 24px rgba(0, 0, 0, 0.95));
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -9863,10 +9863,10 @@ body.tier-spirit-realm .reel-frame {
 /* 前景：仙道瑞气祥云 (前后景深遮挡，消除下颔截断生硬感) */
 .dragon-mist-veil {
   position: absolute;
-  bottom: 14px;
+  bottom: 8px;
   left: 0;
   right: 0;
-  height: 48px;
+  height: 38px;
   pointer-events: none;
   z-index: 3;
   display: flex;
@@ -9877,8 +9877,8 @@ body.tier-spirit-realm .reel-frame {
 }
 
 .dragon-cloud-scroll {
-  width: 105px;
-  height: 38px;
+  width: 90px;
+  height: 32px;
   background: radial-gradient(ellipse at center, rgba(14, 40, 60, 0.95) 0%, rgba(6, 20, 32, 0.8) 55%, transparent 80%);
   filter: blur(2px) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
   border-radius: 50% 50% 40% 40%;
@@ -9942,7 +9942,7 @@ body.tier-spirit-realm .reel-frame {
 /* 龙息核心光聚 */
 .dragon-breath-glow {
   position: absolute;
-  bottom: 24px;
+  bottom: 18px;
   left: 0;
   right: 0;
   margin-left: auto;
@@ -9966,7 +9966,7 @@ body.tier-spirit-realm .reel-frame {
 /* 龙头下颔内嵌式真龙威势细能量槽 (去文字化) */
 .dragon-rage-gauge-wrap {
   position: absolute;
-  bottom: 4px;
+  bottom: 0px;
   left: 0;
   right: 0;
   margin-left: auto;
@@ -9997,7 +9997,7 @@ body.tier-spirit-realm .reel-frame {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 4;
+  z-index: 6;
 }
 
 /* 奖励呈现区：一排6个，共两排12格 (高品先列，自动前置归序) */
@@ -10014,7 +10014,7 @@ body.tier-spirit-realm .reel-frame {
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 4px 16px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
-  z-index: 2;
+  z-index: 5;
   box-sizing: border-box;
   backdrop-filter: blur(8px);
 }
