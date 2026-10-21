@@ -165,15 +165,8 @@ window.SlotsRPG = window.SlotsRPG || {};
               betMultiplier: multiplier
             }
           };
-        } else if (!isFrenzyGuaranteed10th && randEvent < 0.08 && hasJoinedSect) {
-          // 龙脉秘境：造化空间 (Hold & Spin)
-          leftCabinet = {
-            type: 'bonus',
-            name: '龙脉秘境 · 洞天福地',
-            bonusCount: 6
-          };
         } else {
-          // 装备掉落 (开箱流核心)
+          // 装备掉落 (开箱流核心，取消推演过程中的跑马灯附属玩法打断)
           leftCabinet = this._generateEquipmentLoot({
             player,
             potSubLevel,
@@ -245,8 +238,8 @@ window.SlotsRPG = window.SlotsRPG || {};
         itemsWon: itemsWon,
         hasTriggeredBattle: leftCabinet.type === 'battle',
         battleConfig: leftCabinet.battleConfig || null,
-        hasTriggeredBonus: leftCabinet.type === 'bonus',
-        bonusCount: leftCabinet.bonusCount || 0,
+        hasTriggeredBonus: false,
+        bonusCount: 0,
         scatterCount: leftCabinet.type === 'battle' ? (leftCabinet.battleConfig?.scatterCount || 3) : 0,
         winningLines: totalPayout > 0 ? [{ payout: totalPayout, coords: [1, 1, 1] }] : []
       };

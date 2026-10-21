@@ -225,25 +225,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnUpgradeArray = document.getElementById('btn-upgrade-array');
   const btnCaveSecretRealm = document.getElementById('btn-cave-secret-realm');
   const caveRealmDailyBadge = document.getElementById('cave-realm-daily-badge');
-
-  // 洞天秘境 · 八卦仙光跑灯元素
-  const modalSecretRealmMarquee = document.getElementById('modal-secret-realm-marquee');
-  const btnCloseMarquee = document.getElementById('btn-close-marquee');
-  const marqueeGrid = document.getElementById('marquee-grid');
-  const marqueeCoreBox = document.getElementById('marquee-core-box');
-  const marqueeDailyBadge = document.getElementById('marquee-daily-badge');
-  const marqueeDailyCount = document.getElementById('marquee-daily-count');
-  const btnStartMarquee = document.getElementById('btn-start-marquee');
-  const marqueeStatusTip = document.getElementById('marquee-status-tip');
-
-  // 秘境结算弹窗
-  const modalHoldspinSettlement = document.getElementById('modal-holdspin-settlement');
-  const settlementGrandBadge = document.getElementById('settlement-grand-badge');
-  const settlementLockedLabel = document.getElementById('settlement-locked-label');
-  const settlementLockedCount = document.getElementById('settlement-locked-count');
-  const settlementTotalEnergy = document.getElementById('settlement-total-energy');
-  const settlementExtraRow = document.getElementById('settlement-extra-row');
-  const btnHoldspinClaim = document.getElementById('btn-holdspin-claim');
+  const caveRealmBtnAction = document.getElementById('cave-realm-btn-action');
 
   // 仙府归来离线收益元素
   const modalOfflineReward = document.getElementById('modal-offline-reward');
@@ -3432,23 +3414,26 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 每日秘境探寻状态更新 (每日限 1 次)
+    // 每日洞天灵泉采撷状态更新 (每日限 1 次直接采撷，去赌场跑马灯化)
     const canExplore = gameManager.canExploreSecretRealmToday();
+    const caveRealmBtnAction = document.getElementById('cave-realm-btn-action');
     if (btnCaveSecretRealm) {
       if (canExplore) {
         btnCaveSecretRealm.classList.add('ready');
         btnCaveSecretRealm.classList.remove('exhausted');
         if (caveRealmDailyBadge) {
-          caveRealmDailyBadge.innerHTML = '✨ 仙气凝聚 · 今日可探寻 (1/1)';
+          caveRealmDailyBadge.innerHTML = '✨ 灵泉圆满 · 今日可采撷 (1/1)';
           caveRealmDailyBadge.style.color = '#38bdf8';
         }
+        if (caveRealmBtnAction) caveRealmBtnAction.innerText = '采撷造化 ➔';
       } else {
         btnCaveSecretRealm.classList.remove('ready');
         btnCaveSecretRealm.classList.add('exhausted');
         if (caveRealmDailyBadge) {
-          caveRealmDailyBadge.innerHTML = '⌛ 灵机蓄积中 · 今日已耗尽 (0/1)';
+          caveRealmDailyBadge.innerHTML = '⌛ 灵泉凝结中 · 明日辰时复苏 (0/1)';
           caveRealmDailyBadge.style.color = '#94a3b8';
         }
+        if (caveRealmBtnAction) caveRealmBtnAction.innerText = '已采撷';
       }
     }
 
@@ -3498,12 +3483,43 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 15. 洞天灵泉 · 采撷灵脉造化 (每日 1 次，直接点入乾坤袋，无需转盘)
   if (btnCaveSecretRealm) {
     btnCaveSecretRealm.addEventListener('click', () => {
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('CLICK');
+      if (!gameManager.canExploreSecretRealmToday()) {
+        showFloatingNotice('今日洞天灵泉已采撷，天地灵机凝结温养中，明日辰时复苏！', '#94a3b8');
+        return;
       }
-      openSecretRealmMarquee(false);
+
+      const res = gameManager.claimCaveSpringFortune();
+      if (!res) return;
+
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('CAVE_COLLECT');
+      }
+
+      // 组装造化清单文字
+      let giftList = [];
+      if (res.energy > 0) giftList.push(`✨ 机缘 +${res.energy}`);
+      if (res.pills > 0) giftList.push(`💊 纯阳丹 x${res.pills}`);
+      if (res.runes && res.runes.length > 0) {
+        res.runes.forEach(r => giftList.push(`📜 ${r.name} x${r.count}`));
+      }
+      if (res.equip) {
+        giftList.push(`⚔️ 【${res.equip.name}】(${res.equip.qualityName || '极品'})`);
+      }
+
+      showGameNotice(
+        res.isGrand ? '🌟 灵泉大爆 · 洞天太极大圆满' : '🌊 灵泉蕴润 · 采撷造化功成',
+        `<p style="line-height:1.7; color:#e2e8f0; font-size:14px;">
+          引灵化露，洞天灵泉喷涌出天地至纯造化灵萃：<br/>
+          <b style="color:#ffd700;">${giftList.join(' · ')}</b><br/><br/>
+          <span style="font-size:12px; color:#94a3b8;">已悉数汇入道友法力与乾坤袋中，灵脉温养明日辰时再聚天露！</span>
+        </p>`,
+        res.isGrand ? '✨ 鸿蒙大造化' : '☯ 灵泉纳福'
+      );
+
+      updateCaveView();
     });
   }
 
@@ -3523,569 +3539,6 @@ window.addEventListener('DOMContentLoaded', () => {
       updateCaveView();
     });
   }
-
-  // 15. 洞天秘境 · 八卦仙光跑灯交互引擎 (Marquee Roulette)
-  const MARQUEE_COORDS = [
-    { row: 1, col: 1 }, // 0: 鸿蒙道藏 (特等大奖)
-    { row: 1, col: 2 }, // 1: 纯阳丹 x3
-    { row: 1, col: 3 }, // 2: 机缘 +888
-    { row: 1, col: 4 }, // 3: 降妖神符 x2
-    { row: 2, col: 4 }, // 4: 洞天纳福 +1888
-    { row: 3, col: 4 }, // 5: 九转金丹 x5
-    { row: 4, col: 4 }, // 6: 天阶神兵 (极品仙剑)
-    { row: 4, col: 3 }, // 7: 聚灵机缘 +666
-    { row: 4, col: 2 }, // 8: 凝气金丹 x2
-    { row: 4, col: 1 }, // 9: 造化灵珠 +2688
-    { row: 3, col: 1 }, // 10: 破障灵符 x3
-    { row: 2, col: 1 }  // 11: 天玄仙甲 (极品宝甲)
-  ];
-
-  const MARQUEE_PRIZES = [
-    {
-      id: 'grand_jackpot',
-      name: '鸿蒙道藏',
-      icon: 'assets/symbols/SYM_13.png',
-      badge: '特等',
-      isGrand: true,
-      weight: 4,
-      reward: { energy: 8888, pills: 10, equipType: 'weapon' },
-      desc: '机缘 +8888、九转金丹 x10、天阶神兵'
-    },
-    {
-      id: 'pill_3',
-      name: '纯阳丹 x3',
-      icon: 'assets/symbols/SYM_04.png',
-      badge: '丹药',
-      weight: 16,
-      reward: { pills: 3 },
-      desc: '纯阳修为金丹 x3'
-    },
-    {
-      id: 'energy_888',
-      name: '机缘 +888',
-      icon: 'assets/symbols/SYM_01.png',
-      badge: '机缘',
-      weight: 22,
-      reward: { energy: 888 },
-      desc: '造化机缘 +888'
-    },
-    {
-      id: 'talisman_boss_2',
-      name: '降妖符 x2',
-      icon: 'assets/symbols/SYM_03.png',
-      badge: '神符',
-      weight: 15,
-      reward: { rune: 'SYM_03', runeCount: 2 },
-      desc: '降妖破魔神符 x2'
-    },
-    {
-      id: 'energy_1888',
-      name: '机缘 +1888',
-      icon: 'assets/symbols/SYM_08.png',
-      badge: '厚赠',
-      weight: 14,
-      reward: { energy: 1888 },
-      desc: '洞天福禄机缘 +1888'
-    },
-    {
-      id: 'pill_5',
-      name: '九转丹 x5',
-      icon: 'assets/symbols/SYM_05.png',
-      badge: '金丹',
-      weight: 12,
-      reward: { pills: 5 },
-      desc: '九转金丹 x5'
-    },
-    {
-      id: 'weapon_rare',
-      name: '天阶仙剑',
-      icon: 'assets/symbols/SYM_06.png',
-      badge: '极品',
-      isRare: true,
-      weight: 8,
-      reward: { equipType: 'weapon' },
-      desc: '门派极品飞剑'
-    },
-    {
-      id: 'energy_666',
-      name: '机缘 +666',
-      icon: 'assets/symbols/SYM_01.png',
-      badge: '机缘',
-      weight: 22,
-      reward: { energy: 666 },
-      desc: '造化机缘 +666'
-    },
-    {
-      id: 'pill_2',
-      name: '凝气丹 x2',
-      icon: 'assets/symbols/SYM_04.png',
-      badge: '丹药',
-      weight: 18,
-      reward: { pills: 2 },
-      desc: '凝气金丹 x2'
-    },
-    {
-      id: 'energy_2688',
-      name: '机缘 +2688',
-      icon: 'assets/symbols/SYM_10.png',
-      badge: '珍宝',
-      weight: 10,
-      reward: { energy: 2688 },
-      desc: '造化灵珠机缘 +2688'
-    },
-    {
-      id: 'talisman_break_3',
-      name: '破障符 x3',
-      icon: 'assets/symbols/SYM_02.png',
-      badge: '灵符',
-      weight: 15,
-      reward: { rune: 'SYM_02', runeCount: 3 },
-      desc: '破障灵符 x3'
-    },
-    {
-      id: 'armor_rare',
-      name: '天玄仙甲',
-      icon: 'assets/symbols/SYM_07.png',
-      badge: '极品',
-      isRare: true,
-      weight: 8,
-      reward: { equipType: 'armor' },
-      desc: '门派极品宝甲'
-    }
-  ];
-
-  let isMarqueeRunning = false;
-  let currentMarqueeIndex = 0;
-  let isBonusFreeSpin = false;
-  let lastClaimedMarqueeReward = null;
-
-  function initMarqueeBoard() {
-    if (!marqueeGrid) return;
-    const oldCells = marqueeGrid.querySelectorAll('.marquee-cell');
-    oldCells.forEach(c => c.remove());
-
-    MARQUEE_PRIZES.forEach((item, idx) => {
-      const coord = MARQUEE_COORDS[idx];
-      const cell = document.createElement('div');
-      cell.className = `marquee-cell ${item.isGrand ? 'grand-prize' : ''}`;
-      cell.dataset.index = String(idx);
-      cell.style.gridRow = String(coord.row);
-      cell.style.gridColumn = String(coord.col);
-      cell.innerHTML = `
-        <span class="marquee-cell-badge">${item.badge}</span>
-        <img class="marquee-cell-icon" src="${item.icon}" alt="${item.name}" />
-        <span class="marquee-cell-name">${item.name}</span>
-      `;
-      if (marqueeCoreBox) {
-        marqueeGrid.insertBefore(cell, marqueeCoreBox);
-      } else {
-        marqueeGrid.appendChild(cell);
-      }
-    });
-
-    updateMarqueeHighlight(currentMarqueeIndex);
-  }
-
-  function updateMarqueeHighlight(idx, isWinner = false) {
-    if (!marqueeGrid) return;
-    const cells = marqueeGrid.querySelectorAll('.marquee-cell');
-    cells.forEach((c) => {
-      const cIdx = parseInt(c.dataset.index, 10);
-      c.classList.remove('active', 'winner');
-      if (cIdx === idx) {
-        c.classList.add(isWinner ? 'winner' : 'active');
-      }
-    });
-  }
-
-  function openSecretRealmMarquee(isFreeBonus = false) {
-    if (gameManager && gameManager.isAutoSpinning) {
-      gameManager.suspendAutoSpinForBonus();
-    }
-    isBonusFreeSpin = isFreeBonus;
-    initMarqueeBoard();
-
-    const canExplore = gameManager.canExploreSecretRealmToday();
-    const count = isBonusFreeSpin ? '天机灵光' : (canExplore ? '1' : '0');
-
-    if (marqueeDailyCount) marqueeDailyCount.innerText = count;
-    if (marqueeDailyBadge) {
-      marqueeDailyBadge.innerHTML = isBonusFreeSpin
-        ? '阵盘共鸣: <b style="color:#38bdf8;">天机免费引灵</b>'
-        : `今日可探寻: <b id="marquee-daily-count" style="color:${canExplore ? '#34e89e' : '#f87171'};">${canExplore ? '1' : '0'}</b> / 1 次`;
-    }
-
-    const canStart = isBonusFreeSpin || canExplore;
-    if (btnStartMarquee) {
-      btnStartMarquee.disabled = !canStart;
-      btnStartMarquee.classList.toggle('ready', canStart);
-      btnStartMarquee.classList.toggle('disabled', !canStart);
-      btnStartMarquee.innerText = '✨ 启 动 引 灵 ✨';
-    }
-
-    if (btnCloseMarquee) {
-      btnCloseMarquee.style.pointerEvents = '';
-      btnCloseMarquee.style.opacity = '1';
-    }
-
-    if (marqueeStatusTip) {
-      marqueeStatusTip.innerText = canStart
-        ? (isBonusFreeSpin ? '洞天造化共鸣！点击下方按钮启动引灵！' : '点击启动引灵，仙光环绕八卦神位！')
-        : '今日灵机已耗尽，明日辰时灵气再现！';
-    }
-
-    if (modalSecretRealmMarquee) {
-      modalSecretRealmMarquee.classList.remove('hidden');
-    }
-
-    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-      window.SlotsRPG.SoundEffects.play('MODAL_OPEN');
-    }
-  }
-
-  if (window.SlotsRPG) {
-    window.SlotsRPG.openSecretRealmMarquee = openSecretRealmMarquee;
-  }
-
-  function startMarqueeSpin() {
-    if (isMarqueeRunning) return;
-
-    if (!isBonusFreeSpin && !gameManager.canExploreSecretRealmToday()) {
-      showGameNotice('今日灵机已竭', '洞天秘境每日限探寻 1 次，仙气将于明日辰时复苏！', '☯ 秘境休歇');
-      return;
-    }
-
-    if (!isBonusFreeSpin) {
-      gameManager.consumeSecretRealmToday();
-      updateCaveView();
-      if (marqueeDailyBadge) {
-        marqueeDailyBadge.innerHTML = '今日可探寻: <b style="color:#f87171;">0</b> / 1 次';
-      }
-    }
-
-    isMarqueeRunning = true;
-    if (btnStartMarquee) {
-      btnStartMarquee.disabled = true;
-      btnStartMarquee.classList.remove('ready');
-      btnStartMarquee.classList.add('disabled');
-    }
-    if (btnCloseMarquee) {
-      btnCloseMarquee.style.pointerEvents = 'none';
-      btnCloseMarquee.style.opacity = '0.4';
-    }
-    if (marqueeStatusTip) {
-      marqueeStatusTip.innerText = '✨ 仙光飞旋，八卦逆乱，引动天地机缘...';
-    }
-
-    // 按权重抽取目标中奖索引
-    const totalWeight = MARQUEE_PRIZES.reduce((sum, p) => sum + p.weight, 0);
-    let rnd = Math.random() * totalWeight;
-    let targetIndex = 0;
-    for (let i = 0; i < MARQUEE_PRIZES.length; i++) {
-      if (rnd < MARQUEE_PRIZES[i].weight) {
-        targetIndex = i;
-        break;
-      }
-      rnd -= MARQUEE_PRIZES[i].weight;
-    }
-
-    const fullRounds = 3;
-    const delta = (targetIndex - currentMarqueeIndex + 12) % 12;
-    const totalSteps = fullRounds * 12 + delta;
-    let currentStep = 0;
-
-    function runStep() {
-      currentMarqueeIndex = (currentMarqueeIndex + 1) % 12;
-      currentStep++;
-      updateMarqueeHighlight(currentMarqueeIndex, false);
-
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('MARQUEE_STEP', currentStep);
-      }
-
-      if (currentStep < totalSteps) {
-        let nextDelay = 45;
-        const remainingSteps = totalSteps - currentStep;
-        if (currentStep <= 4) {
-          nextDelay = 150 - currentStep * 24;
-        } else if (remainingSteps <= 12) {
-          const t = (12 - remainingSteps) / 12;
-          nextDelay = 45 + Math.pow(t, 2.4) * 520;
-        }
-        setTimeout(runStep, nextDelay);
-      } else {
-        isMarqueeRunning = false;
-        updateMarqueeHighlight(targetIndex, true);
-
-        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-          window.SlotsRPG.SoundEffects.play('MARQUEE_WIN');
-        }
-
-        const prize = MARQUEE_PRIZES[targetIndex];
-        const rewardResult = gameManager.claimMarqueeReward(prize);
-        lastClaimedMarqueeReward = { prize, rewardResult };
-
-        if (marqueeStatusTip) {
-          marqueeStatusTip.innerText = `🎉 功德圆满！引得【${prize.name}】！`;
-        }
-
-        if (btnCloseMarquee) {
-          btnCloseMarquee.style.pointerEvents = '';
-          btnCloseMarquee.style.opacity = '1';
-        }
-
-        setTimeout(() => {
-          showMarqueeSettlementModal(prize, rewardResult);
-        }, 750);
-      }
-    }
-
-    runStep();
-  }
-
-  let marqueeSettlementTimer = null;
-  let marqueeCountdownTimer = null;
-  let marqueeAutoStartTimer = null;
-
-  function closeMarqueeSettlement() {
-    if (marqueeSettlementTimer) {
-      clearTimeout(marqueeSettlementTimer);
-      marqueeSettlementTimer = null;
-    }
-    if (marqueeCountdownTimer) {
-      clearInterval(marqueeCountdownTimer);
-      marqueeCountdownTimer = null;
-    }
-    if (marqueeAutoStartTimer) {
-      clearInterval(marqueeAutoStartTimer);
-      clearTimeout(marqueeAutoStartTimer);
-      marqueeAutoStartTimer = null;
-    }
-
-    if (modalHoldspinSettlement) {
-      modalHoldspinSettlement.classList.add('hidden');
-    }
-    if (modalSecretRealmMarquee) {
-      modalSecretRealmMarquee.classList.add('hidden');
-    }
-    isBonusFreeSpin = false;
-
-    // 清理主阵盘公告与高光残留，恢复轮盘自然常态
-    if (elAnnouncement) {
-      elAnnouncement.classList.remove('show', 'play-anim');
-    }
-    if (elAnnouncementText) {
-      elAnnouncementText.innerText = '';
-    }
-    if (renderer) {
-      renderer.isDissolving = false;
-      renderer.activeWinningCells.clear();
-      renderer.nonWinningAlpha = 1.0;
-    }
-
-    // 重新允许玩家点击推演
-    if (btnSpin) {
-      btnSpin.classList.remove('disabled');
-    }
-
-    if (lastClaimedMarqueeReward) {
-      const pName = lastClaimedMarqueeReward.prize ? lastClaimedMarqueeReward.prize.name : '造化仙机';
-      if (renderer) {
-        renderer.addFloatingText(`洞天满载: 【${pName}】入库!`, '#ffd700');
-      }
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('CAVE_COLLECT');
-      }
-      lastClaimedMarqueeReward = null;
-    }
-    updateCaveView();
-
-    // 若此前处于自动推演状态，秘境探索完毕后无缝恢复天机盘自动旋转
-    if (gameManager && gameManager.wasAutoSpinningBeforeBonus) {
-      switchTab('slots');
-      gameManager.resumeAutoSpinAfterBonus();
-    }
-  }
-
-  function showMarqueeSettlementModal(prize, rewardResult) {
-    if (marqueeSettlementTimer) {
-      clearTimeout(marqueeSettlementTimer);
-      marqueeSettlementTimer = null;
-    }
-    if (marqueeCountdownTimer) {
-      clearInterval(marqueeCountdownTimer);
-      marqueeCountdownTimer = null;
-    }
-
-    if (settlementGrandBadge) {
-      if (prize.isGrand) {
-        settlementGrandBadge.classList.remove('hidden');
-      } else {
-        settlementGrandBadge.classList.add('hidden');
-      }
-    }
-
-    if (settlementLockedLabel) settlementLockedLabel.innerText = '所获造化:';
-    if (settlementLockedCount) {
-      settlementLockedCount.innerText = prize.name;
-      settlementLockedCount.style.color = prize.isGrand ? '#ff9900' : (prize.isRare ? '#c084fc' : '#ffd700');
-    }
-
-    const energyRow = settlementTotalEnergy ? settlementTotalEnergy.parentElement : null;
-    if (energyRow) {
-      if (rewardResult.energy > 0) {
-        energyRow.style.display = 'flex';
-        settlementTotalEnergy.innerText = `+${rewardResult.energy}`;
-      } else {
-        energyRow.style.display = 'none';
-      }
-    }
-
-    if (settlementExtraRow) {
-      settlementExtraRow.innerHTML = '';
-
-      if (rewardResult.pills > 0) {
-        const pillBadge = document.createElement('div');
-        pillBadge.className = 'reward-pill-badge';
-        pillBadge.innerHTML = `<span>九转金丹:</span><b style="color:#ffd700;">+${rewardResult.pills} 颗</b>`;
-        settlementExtraRow.appendChild(pillBadge);
-      }
-
-      if (rewardResult.runes && rewardResult.runes.length > 0) {
-        rewardResult.runes.forEach(r => {
-          const runeBadge = document.createElement('div');
-          runeBadge.className = 'reward-pill-badge';
-          runeBadge.innerHTML = `<span>${r.name}:</span><b style="color:#38bdf8;">+${r.count} 张</b>`;
-          settlementExtraRow.appendChild(runeBadge);
-        });
-      }
-
-      if (rewardResult.equip) {
-        const eqBadge = document.createElement('div');
-        eqBadge.className = 'reward-pill-badge';
-        eqBadge.innerHTML = `<span>天道仙装:</span><b style="color:${rewardResult.equip.qualityColor || '#ffd700'};">${rewardResult.equip.name}</b>`;
-        settlementExtraRow.appendChild(eqBadge);
-      }
-    }
-
-    if (modalHoldspinSettlement) {
-      modalHoldspinSettlement.classList.remove('hidden');
-    }
-
-    // 自动收纳倒计时：留足 5 秒让玩家清晰看清全部珍品收获，亦可随时手动点击收纳
-    let remainSec = 5;
-    if (btnHoldspinClaim) {
-      btnHoldspinClaim.innerText = `收纳造化机缘 (${remainSec}s)`;
-    }
-
-    marqueeCountdownTimer = setInterval(() => {
-      remainSec--;
-      if (remainSec > 0) {
-        if (btnHoldspinClaim) {
-          btnHoldspinClaim.innerText = `收纳造化机缘 (${remainSec}s)`;
-        }
-      } else {
-        if (marqueeCountdownTimer) {
-          clearInterval(marqueeCountdownTimer);
-          marqueeCountdownTimer = null;
-        }
-      }
-    }, 1000);
-
-    marqueeSettlementTimer = setTimeout(() => {
-      closeMarqueeSettlement();
-    }, 5000);
-  }
-
-  if (btnStartMarquee) {
-    btnStartMarquee.addEventListener('click', () => {
-      if (marqueeAutoStartTimer) {
-        clearInterval(marqueeAutoStartTimer);
-        clearTimeout(marqueeAutoStartTimer);
-        marqueeAutoStartTimer = null;
-      }
-      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-        window.SlotsRPG.SoundEffects.play('CLICK');
-      }
-      startMarqueeSpin();
-    });
-  }
-
-  if (btnCloseMarquee) {
-    btnCloseMarquee.addEventListener('click', () => {
-      if (isMarqueeRunning) return;
-      closeMarqueeSettlement();
-    });
-  }
-
-  if (btnHoldspinClaim) {
-    btnHoldspinClaim.addEventListener('click', () => {
-      closeMarqueeSettlement();
-    });
-  }
-
-  if (modalHoldspinSettlement) {
-    modalHoldspinSettlement.addEventListener('click', (e) => {
-      if (e.target === modalHoldspinSettlement) {
-        closeMarqueeSettlement();
-      }
-    });
-  }
-
-  // 监听转盘触发秘境 (免费引灵 1 次)
-  window.SlotsRPG.EventBus.on('TRIGGER_BONUS', (data) => {
-    // 立即锁定推演按钮，防止时序穿透
-    if (btnSpin) {
-      btnSpin.classList.add('disabled');
-    }
-
-    if (renderer) {
-      renderer.addFloatingText(`✨【洞天共鸣】引动 ${data.bonusCount || 5} 道造化秘印！`, '#34e89e');
-    }
-    if (window.SlotsRPG && window.SlotsRPG.StoryManager) {
-      window.SlotsRPG.StoryManager.triggerChatter('hold_spin');
-    }
-    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-      window.SlotsRPG.SoundEffects.play('MODAL_OPEN');
-    }
-
-    // 快速定格(300ms)展现全盘 10+ 秘印与横幅弹入，随后无缝顺畅弹入八卦仙光跑灯小游戏，杜绝卡顿感
-    setTimeout(() => {
-      openSecretRealmMarquee(true);
-
-      // 若此前处于自动推演状态，提供 5 秒主动交互时间，未点击则贴心代启
-      if (gameManager && gameManager.wasAutoSpinningBeforeBonus) {
-        if (marqueeAutoStartTimer) {
-          clearInterval(marqueeAutoStartTimer);
-          clearTimeout(marqueeAutoStartTimer);
-          marqueeAutoStartTimer = null;
-        }
-        let autoSec = 5;
-        if (marqueeStatusTip) {
-          marqueeStatusTip.innerText = `洞天造化共鸣！请点击启动引灵 (${autoSec}s后自动启动)...`;
-        }
-        marqueeAutoStartTimer = setInterval(() => {
-          autoSec--;
-          if (autoSec > 0) {
-            if (marqueeStatusTip) {
-              marqueeStatusTip.innerText = `洞天造化共鸣！请点击启动引灵 (${autoSec}s后自动启动)...`;
-            }
-          } else {
-            if (marqueeAutoStartTimer) {
-              clearInterval(marqueeAutoStartTimer);
-              marqueeAutoStartTimer = null;
-            }
-            if (modalSecretRealmMarquee && !modalSecretRealmMarquee.classList.contains('hidden') && !isMarqueeRunning) {
-              startMarqueeSpin();
-            }
-          }
-        }, 1000);
-      }
-    }, 300);
-  });
-
-  // 初始构建跑灯盘
-  initMarqueeBoard();
 
   // 14. 机缘耗尽救济弹窗管理 (PRD 规范: 当今日次数为 0 时隐藏“纳灵”按钮)
   function updateReliefModalUI(remainingRelief) {

@@ -858,19 +858,9 @@ class GameManager {
       });
     }
 
-    if (evaluation.hasTriggeredBonus) {
-      this.suspendAutoSpinForBonus();
-      if (this.renderer && this.wasAutoSpinningBeforeBonus) {
-        this.renderer.addFloatingText('【洞天共鸣】造化秘境开启！秘境毕后将自动维持推演', '#34e89e');
-      }
-      window.SlotsRPG.EventBus.emit('TRIGGER_BONUS', {
-        bonusCount: evaluation.bonusCount
-      });
-    }
-
-    // 自动推演高光停机保护与步进调度 (PRD 10.4 节)
+    // 自动推演高光停机保护与步进调度 (PRD 10.4 节，推演不再受跑马灯弹窗中断)
     const stopped = this.checkSmartStop(evaluation);
-    if (!stopped && this.isAutoSpinning && !evaluation.hasTriggeredBattle && !evaluation.hasTriggeredBonus) {
+    if (!stopped && this.isAutoSpinning && !evaluation.hasTriggeredBattle) {
       if (this.autoSpinTargetCount !== Infinity && this.autoSpinCompletedCount >= this.autoSpinTargetCount) {
         const finishedCount = this.autoSpinTargetCount;
         this.stopAutoSpin();
@@ -1968,7 +1958,71 @@ class GameManager {
   }
 
   /**
-   * 结算洞天秘境 · 八卦仙光跑灯奖励
+   * 采撷洞天灵泉造化 (每日限 1 次，直接吸纳灵泉精粹，无需转盘弹窗)
+   */
+  claimCaveSpringFortune() {
+    if (!this.canExploreSecretRealmToday()) return null;
+    this.consumeSecretRealmToday();
+
+    const result = {
+      energy: 0,
+      pills: 0,
+      runes: [],
+      equip: null,
+      itemsGiven: [],
+      isGrand: false
+    };
+
+    // 1. 机缘与金丹：有 12% 概率触发出水祥瑞大爆，其余获得丰厚资粮
+    const isJackpot = Math.random() < 0.12;
+    result.isGrand = isJackpot;
+    if (isJackpot) {
+      result.energy = 8888;
+      result.pills = 10;
+    } else {
+      const energyPool = [666, 888, 1288, 1888, 2688];
+      result.energy = energyPool[Math.floor(Math.random() * energyPool.length)];
+      result.pills = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 颗纯阳金丹
+    }
+    this.energy += result.energy;
+
+    // 2. 纯阳金丹发放
+    const pillItem = window.SlotsRPG.ItemModel.createPill('exp', result.pills);
+    this.inventory.addItem(pillItem);
+    result.itemsGiven.push(pillItem);
+
+    // 3. 随机赐予 1~2 张高阶神符 (破障符 / 降妖符)
+    const runePool = ['SYM_02', 'SYM_03'];
+    const selectedRune = runePool[Math.floor(Math.random() * runePool.length)];
+    const runeCount = isJackpot ? 3 : (Math.random() < 0.5 ? 2 : 1);
+    const runeItem = window.SlotsRPG.ItemModel.createTalisman(selectedRune, runeCount);
+    this.inventory.addItem(runeItem);
+    result.runes.push({ name: runeItem.name, count: runeCount });
+    result.itemsGiven.push(runeItem);
+
+    // 4. 大爆或 28% 几率获赐门派极品法宝神装
+    if (isJackpot || Math.random() < 0.28) {
+      const parts = ['weapon', 'armor', 'ring', 'boots'];
+      const part = parts[Math.floor(Math.random() * parts.length)];
+      const qualityCode = isJackpot ? 'legendary' : 'epic';
+      const eq = window.SlotsRPG.ItemModel.createEquipment(part, qualityCode);
+      const hasImp = this.player.hasEquipmentImprovement(eq, this.level);
+      eq.isNew = hasImp;
+      this.inventory.addItem(eq);
+      result.equip = eq;
+      result.itemsGiven.push(eq);
+    }
+
+    this.emitStateChange();
+    window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
+    if (window.SlotsRPG.StorageService) {
+      window.SlotsRPG.StorageService.saveGame(this, true);
+    }
+    return result;
+  }
+
+  /**
+   * 结算洞天秘境 · 八卦仙光跑灯奖励 (兼容旧接口)
    * @param {Object} prize 跑灯中奖项
    */
   claimMarqueeReward(prize) {
@@ -2542,20 +2596,13 @@ class GameManager {
     let shouldStop = false;
     let reason = '';
 
-    // 遭遇妖兽伏妖时挂起自动推演 (战毕后自动恢复维持旋转)；遭遇洞天秘境时主动停机保护
+    // 遭遇妖兽伏妖时挂起自动推演 (战毕后自动恢复维持旋转)
     if (evaluation.hasTriggeredBattle || (evaluation.scatterCount && evaluation.scatterCount >= 3)) {
       this.suspendAutoSpinForBattle();
       if (this.renderer) {
         this.renderer.addFloatingText('【天机遭遇】妖兽降临！伏妖战毕后将自动维持推演', '#ffd700');
       }
       window.SlotsRPG.EventBus.emit('SMART_STOP_TRIGGERED', { reason: '⚡ 感应到高阶妖兽围攻！' });
-      return true;
-    } else if (evaluation.hasTriggeredBonus || (evaluation.bonusCount && evaluation.bonusCount >= 5)) {
-      this.suspendAutoSpinForBonus();
-      if (this.renderer) {
-        this.renderer.addFloatingText('【洞天共鸣】造化秘境开启！秘境毕后将自动维持推演', '#34e89e');
-      }
-      window.SlotsRPG.EventBus.emit('SMART_STOP_TRIGGERED', { reason: '✨ 洞天造化秘境现世！' });
       return true;
     }
     return false;

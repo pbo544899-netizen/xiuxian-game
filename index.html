@@ -650,20 +650,19 @@
           </div>
         </div>
 
-        <!-- 底部洞天秘境探寻 (每日限 1 次) -->
+        <!-- 底部洞天灵泉造化 (每日限 1 次直接采撷，去赌场跑灯化) -->
         <div class="cave-footer-actions">
-          <button id="btn-cave-secret-realm" class="btn-cave-secret-realm ready" title="每日探寻洞天秘境，赢取大额机缘与极品神丹法宝">
+          <button id="btn-cave-secret-realm" class="btn-cave-secret-realm ready" title="每日采撷洞天灵泉造化，直接获取大额机缘、纯阳金丹、神符与极品神兵">
             <div class="cave-realm-glow-bg"></div>
             <div class="cave-realm-btn-content">
-              <span class="cave-realm-btn-icon">🌌</span>
+              <span class="cave-realm-btn-icon">🏺</span>
               <div class="cave-realm-btn-texts">
-                <span class="cave-realm-btn-title">洞天秘境 · 仙光跑灯盘</span>
-                <span id="cave-realm-daily-badge" class="cave-realm-btn-sub">✨ 仙气凝聚 · 今日可探寻 (1/1)</span>
+                <span class="cave-realm-btn-title">洞天灵泉 · 灵脉天露温润</span>
+                <span id="cave-realm-daily-badge" class="cave-realm-btn-sub">✨ 灵泉圆满 · 今日可采撷 (1/1)</span>
               </div>
-              <span class="cave-realm-btn-action">探寻 ➔</span>
+              <span id="cave-realm-btn-action" class="cave-realm-btn-action">采撷造化 ➔</span>
             </div>
           </button>
-          <button id="btn-test-holdspin" class="hidden" style="display:none !important;"></button>
         </div>
       </section>
     </main>
@@ -1119,86 +1118,6 @@
             </label>
           </div>
           <button id="btn-defeat-confirm" class="btn-secondary">凝神整备</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 弹窗8: 洞天秘境 · 八卦仙缘跑灯盘 (经典走马灯寻宝转盘) -->
-    <div id="modal-secret-realm-marquee" class="modal-overlay hidden">
-      <div class="marquee-modal-card">
-        <!-- 跑灯盘顶栏 -->
-        <div class="marquee-header">
-          <div class="marquee-title-box">
-            <span class="marquee-title-icon">🌌</span>
-            <div class="marquee-title-texts">
-              <h2 class="marquee-main-title">洞天秘境 · 八卦仙光跑灯</h2>
-              <span class="marquee-sub-title">引灵回旋 · 吉凶造化尽在天机</span>
-            </div>
-          </div>
-          <button id="btn-close-marquee" class="marquee-close-btn" title="离开秘境">✕</button>
-        </div>
-
-        <!-- 跑灯主盘：四周 12 格环形排列，中央太极引灵阵眼 -->
-        <div class="marquee-board-wrap">
-          <!-- 跑灯边框闪烁彩灯光点装饰 -->
-          <div class="marquee-bulb-ring" id="marquee-bulb-ring"></div>
-
-          <!-- 4x4 网格布局：四周 12 格环形，中央 2x2 为阵眼 -->
-          <div class="marquee-grid" id="marquee-grid">
-            <!-- 12 个奖励格子由 JS 渲染注入 -->
-
-            <!-- 中央核心阵眼 (位于网格正中 2x2 区域) -->
-            <div class="marquee-core-box" id="marquee-core-box">
-              <div class="marquee-taiji-halo">☯</div>
-              <div class="marquee-core-headline">太极浑天阵</div>
-              <div class="marquee-daily-badge" id="marquee-daily-badge">
-                今日可探寻: <b id="marquee-daily-count">1</b> / 1 次
-              </div>
-              <button id="btn-start-marquee" class="btn-start-marquee ready">
-                ✨ 启 动 引 灵 ✨
-              </button>
-              <div id="marquee-status-tip" class="marquee-status-tip">
-                点击启动引灵，仙光环绕八卦神位！
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 底部说明与功德提示 -->
-        <div class="marquee-footer-note">
-          <span>💡 秘境每日辰时复苏灵机 (限探寻 1 次)，可获丰厚机缘、真品丹药、破魔神符与专属法宝！</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 兼容隐藏旧容器 -->
-    <div id="modal-hold-and-spin" class="hidden" style="display:none !important;"></div>
-
-    <!-- 弹窗9: 秘境造化大结算法单 -->
-    <div id="modal-holdspin-settlement" class="modal-overlay hidden">
-      <div class="modal-card settlement-card">
-        <div class="settlement-banner">
-          <div id="settlement-grand-badge" class="grand-badge hidden">🏆 乾坤圆满 · 天道九重天 🏆</div>
-          <h2 class="settlement-title">秘 境 满 载</h2>
-          <p class="settlement-subtitle">引灵功成，八卦造化归一！</p>
-        </div>
-
-        <div class="settlement-stats-card">
-          <div class="settlement-stat-row">
-            <span id="settlement-locked-label">锁入秘印:</span>
-            <b id="settlement-locked-count" style="color:#ffd700;">12 / 15</b>
-          </div>
-          <div class="settlement-stat-row">
-            <span>所获机缘:</span>
-            <b id="settlement-total-energy" style="color:#34e89e; font-size:18px;">+1580</b>
-          </div>
-          <div id="settlement-extra-row" class="settlement-extra-items">
-            <!-- 丹药与极品装备展示 -->
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button id="btn-holdspin-claim" class="btn-primary btn-victory">收纳造化机缘</button>
         </div>
       </div>
     </div>
