@@ -52,19 +52,20 @@ class DropAnimator {
   }
 
   /**
-   * 从指定 DOM 元素或绝对坐标飞向目标按钮 (用于战胜弹窗/事件纳宝入囊飞向乾坤袋)
-   * @param {Array<{ icon: string, element?: HTMLElement, startX?: number, startY?: number }>} items
+   * 从指定 DOM 元素或绝对坐标飞向目标按钮 (用于战胜弹窗/事件纳宝入囊/临时背包一键收纳)
+   * @param {Array<{ icon: string, element?: HTMLElement, startX?: number, startY?: number, count?: number }>} items
    * @param {HTMLElement} targetBtn
    * @param {Function} onEachArrival
+   * @param {Object} [options={}]
    */
-  static playDropAnimationFromElements(items, targetBtn, onEachArrival) {
+  static playDropAnimationFromElements(items, targetBtn, onEachArrival, options = {}) {
     if (!items || items.length === 0 || !targetBtn) return;
 
     // 界面守卫：若当前不在天机推演面板，静默结算抵达回调，不展示飞行动画
     const viewSlots = document.getElementById('view-slots');
     if (viewSlots && !viewSlots.classList.contains('active')) {
       if (typeof onEachArrival === 'function') {
-        items.forEach(() => onEachArrival());
+        items.forEach((it) => onEachArrival(it));
       }
       return;
     }
@@ -73,21 +74,38 @@ class DropAnimator {
     const endX = targetRect.left + targetRect.width / 2;
     const endY = targetRect.top + targetRect.height / 2;
 
-    items.forEach((item, index) => {
-      setTimeout(() => {
-        let startX = window.innerWidth / 2;
-        let startY = window.innerHeight / 2;
-        if (item.element) {
-          const rect = item.element.getBoundingClientRect();
+    const stagger = options.stagger !== undefined ? options.stagger : Math.max(35, Math.floor(400 / items.length));
+
+    // 提前同步捕获起飞原点，防止后续槽位 DOM 数据更新后坐标错位
+    const preparedItems = items.map((item) => {
+      let startX = window.innerWidth / 2;
+      let startY = window.innerHeight / 2;
+      if (item.element) {
+        const rect = item.element.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
           startX = rect.left + rect.width / 2;
           startY = rect.top + rect.height / 2;
-        } else if (item.startX !== undefined && item.startY !== undefined) {
-          startX = item.startX;
-          startY = item.startY;
         }
+      } else if (item.startX !== undefined && item.startY !== undefined) {
+        startX = item.startX;
+        startY = item.startY;
+      }
+      return {
+        icon: item.icon,
+        startX,
+        startY,
+        originalItem: item
+      };
+    });
 
-        this._animateSingleItem(item.icon, startX, startY, endX, endY, targetBtn, onEachArrival);
-      }, index * 140);
+    preparedItems.forEach((prep, index) => {
+      setTimeout(() => {
+        this._animateSingleItem(prep.icon, prep.startX, prep.startY, endX, endY, targetBtn, () => {
+          if (typeof onEachArrival === 'function') {
+            onEachArrival(prep.originalItem);
+          }
+        });
+      }, index * stagger);
     });
   }
 

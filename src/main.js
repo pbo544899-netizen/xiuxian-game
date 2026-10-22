@@ -400,8 +400,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 浮动轻提示
   function showFloatingNotice(text, color = '#f87171') {
-    if (renderer && renderer.addFloatingText) {
-      renderer.addFloatingText(text, color);
+    if (viewSlots && viewSlots.classList.contains('active')) {
+      if (renderer && renderer.addFloatingText) {
+        renderer.addFloatingText(text, color);
+        return;
+      }
     }
     const container = (viewCharacter && viewCharacter.classList.contains('active'))
       ? viewCharacter
@@ -4955,15 +4958,82 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 监听龙头吐宝完全展示完毕：若开启自动收纳，则抽一次静默收纳一次 (无需触发掉落与额外提示)
+  let isCollectingSlots = false;
+
+  /**
+   * 临时背包【一键收纳】与【自动收纳】通用执行函数
+   * 将 12 格天机宝萃中的宝物以优雅抛物线依次飞入底部【角色修真】乾坤袋，伴随果冻回弹与红点累加
+   * @param {boolean} isAuto - 是否由自动收纳静默唤起
+   */
+  function collectAllTemporarySlots(isAuto = false) {
+    const dcm = gameManager && gameManager.dragonCabinetManager;
+    if (!dcm || !dcm.slots || dcm.slots.length === 0) {
+      if (!isAuto) {
+        showFloatingNotice('临时背包空空如也，快引龙吐宝吧！', '#94a3b8');
+      }
+      return;
+    }
+    if (isCollectingSlots) return;
+    isCollectingSlots = true;
+
+    const totalCount = dcm.slots.length;
+    const itemsToFly = [];
+
+    dcm.slots.forEach((s, idx) => {
+      const slotEl = document.getElementById(`dragon-slot-${idx}`);
+      let iconSrc = 'assets/symbols/SYM_06.png';
+      if (s.icon) iconSrc = s.icon;
+      else if (s.item && s.item.icon) iconSrc = s.item.icon;
+      else if (s.type === 'energy') iconSrc = 'assets/symbols/SYM_05.png';
+      else if (s.type === 'pill') iconSrc = 'assets/symbols/SYM_07.png';
+      else if (s.type === 'rune') iconSrc = 'assets/symbols/SYM_01.png';
+      else if (s.type === 'battle') iconSrc = 'assets/symbols/SYM_12.png';
+      else if (s.type === 'bonus') iconSrc = 'assets/symbols/SYM_13.png';
+
+      itemsToFly.push({
+        icon: iconSrc,
+        element: slotEl,
+        name: s.name,
+        count: s.count || 1
+      });
+    });
+
+    // 播放纳宝入袋音效
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('REWARD_DROP');
+    }
+
+    // 执行飞入底部【角色修真】乾坤袋的优雅抛物线动画
+    if (window.SlotsRPG && window.SlotsRPG.DropAnimator && tabCharacter) {
+      window.SlotsRPG.DropAnimator.playDropAnimationFromElements(
+        itemsToFly,
+        tabCharacter,
+        (arrivedItem) => {
+          pendingNotificationCount += (arrivedItem && arrivedItem.count) ? arrivedItem.count : 1;
+          updateNotificationBadge();
+        }
+      );
+    } else {
+      pendingNotificationCount += totalCount;
+      updateNotificationBadge();
+    }
+
+    // 延时清空展示区槽位，让飞行动画有清晰的离位起飞感
+    setTimeout(() => {
+      dcm.clear();
+      isCollectingSlots = false;
+      if (!isAuto) {
+        showFloatingNotice(`✨ 一键收纳成功！${totalCount} 份天机宝萃已归入乾坤袋`, '#38ef7d');
+      }
+    }, 120);
+  }
+
+  // 监听龙头吐宝完全展示完毕：若开启自动收纳，则触发顺畅收纳入袋动效
   window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', (spinResult) => {
     if (chkAutoCollect && chkAutoCollect.checked) {
       setTimeout(() => {
-        const dcm = gameManager && gameManager.dragonCabinetManager;
-        if (dcm && dcm.slots && dcm.slots.length > 0) {
-          dcm.clear();
-        }
-      }, 160);
+        collectAllTemporarySlots(true);
+      }, 200);
     }
   });
 
@@ -4971,15 +5041,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnCollectAllSlots = document.getElementById('btn-collect-all-slots');
   if (btnCollectAllSlots) {
     btnCollectAllSlots.addEventListener('click', () => {
-      const dcm = gameManager && gameManager.dragonCabinetManager;
-      if (!dcm || !dcm.slots || dcm.slots.length === 0) {
-        showFloatingNotice('临时背包空空如也，快引龙吐宝吧！', '#94a3b8');
-        return;
-      }
-
-      const count = dcm.slots.length;
-      dcm.clear();
-      showFloatingNotice(`✨ 一键收纳成功！${count} 份天机宝萃已归入乾坤袋`, '#38ef7d');
+      collectAllTemporarySlots(false);
     });
   }
 
