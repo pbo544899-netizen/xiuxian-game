@@ -114,6 +114,33 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     /**
+     * 预测奖励飞向的目标槽位索引 (在实际落地插入前用于弹道计算，避免提前修改 DOM 槽位)
+     * @param {'left'|'right'|Object} target
+     * @returns {number} 0 ~ 11
+     */
+    predictTargetSlotIndex(target) {
+      let rawData = target;
+      if (typeof target === 'string') {
+        const queueItem = this.incomingQueue.find(item => item.side === target);
+        rawData = queueItem ? queueItem.data : null;
+      }
+      if (!rawData) return Math.min(11, this.slots.length);
+
+      let stackKey = null;
+      if (rawData.type === 'energy') stackKey = 'energy';
+      else if (rawData.type === 'pill') stackKey = `pill_${rawData.subType || (rawData.item && rawData.item.subType) || 'exp'}`;
+      else if (rawData.type === 'rune') stackKey = `rune_${rawData.symbolId || (rawData.item && rawData.item.symbolId) || 'SYM_01'}`;
+      else if (rawData.type === 'battle') stackKey = 'battle';
+      else if (rawData.type === 'bonus') stackKey = 'bonus';
+
+      if (stackKey) {
+        const existingIdx = this.slots.findIndex(s => s.stackKey === stackKey);
+        if (existingIdx !== -1) return existingIdx;
+      }
+      return Math.min(11, this.slots.length);
+    }
+
+    /**
      * 兼容既有弹道落点调用：单发落地揭晓
      * @param {'left'|'right'} side 
      * @param {Object} [options={}] 可选参数 { visuallyPending: boolean, isEpic: boolean }
@@ -333,13 +360,39 @@ window.SlotsRPG = window.SlotsRPG || {};
 
     _handleOverflow(overflowItem) {
       if (!overflowItem) return;
-      // 若为未穿戴的装备，自动熔炼换灵，保障资源不丢失
-      if (overflowItem.type === 'equip' && overflowItem.item && !overflowItem.isEquipped && !overflowItem.isSmelted) {
-        if (this.gameManager && this.gameManager.player) {
-          const refund = overflowItem.item.salvageEnergy || 10;
-          this.gameManager.energy += refund;
+      const gm = this.gameManager;
+      if (!gm) return;
+
+      const itemName = overflowItem.name || (overflowItem.item && overflowItem.item.name) || '天机宝萃';
+
+      // 1. 真实物品妥善转存入玩家乾坤袋，杜绝任何资源丢失
+      if (overflowItem.type === 'equip' && overflowItem.item) {
+        if (gm.inventory) {
+          gm.inventory.addItem(overflowItem.item);
         }
+      } else if (overflowItem.type === 'pill' || (overflowItem.item && overflowItem.item.type === 'pill')) {
+        const item = overflowItem.item || (window.SlotsRPG && window.SlotsRPG.ItemModel && window.SlotsRPG.ItemModel.createPill(overflowItem.subType || 'exp', overflowItem.count || 1));
+        if (item && gm.inventory) {
+          gm.inventory.addItem(item);
+        }
+      } else if (overflowItem.type === 'rune' || (overflowItem.item && overflowItem.item.type === 'rune')) {
+        const item = overflowItem.item || (window.SlotsRPG && window.SlotsRPG.ItemModel && window.SlotsRPG.ItemModel.createTalisman(overflowItem.symbolId || 'SYM_01', overflowItem.count || 1));
+        if (item && gm.inventory) {
+          gm.inventory.addItem(item);
+        }
+      } else if (overflowItem.type === 'energy') {
+        const energyGain = overflowItem.totalEnergy || overflowItem.singleGain || (overflowItem.count ? overflowItem.count * 25 : 25);
+        gm.energy += energyGain;
       }
+
+      // 2. 贴心浮字提示，杜绝玩家产生“系统吃奖励/扣收益”的误解与疑虑
+      if (gm.renderer && gm.renderer.addFloatingText) {
+        gm.renderer.addFloatingText(`📦 宝萃已满，【${itemName}】已自动存入乾坤袋`, '#38ef7d');
+      }
+
+      // 3. 触发背包红点增加与全局通知
+      window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
+      window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('REWARD_OVERFLOW_SAVED', { item: overflowItem });
     }
 
     /**
@@ -603,6 +656,14 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     clear() {
+      if (this.incomingQueue && this.incomingQueue.length > 0) {
+        this.incomingQueue.forEach(qItem => {
+          if (qItem && qItem.data) {
+            this._handleOverflow(qItem.data);
+          }
+        });
+        this.incomingQueue = [];
+      }
       this.slots = [];
       this.pendingEquip = null;
       this.pendingBattle = null;

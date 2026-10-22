@@ -2522,7 +2522,7 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="monster-mini-hp-fill" id="monster-hp-fill-${idx}" style="width: ${initialHpPct}%;"></div>
           </div>
           <div class="monster-mini-hp-text ${showBottomHp ? '' : 'hidden'}" id="monster-hp-text-${idx}">${curHpVal} / ${maxHpVal}</div>
-          <div class="monster-defeated-badge hidden" id="monster-defeated-${idx}">💀 伏诛</div>
+          <div class="monster-defeated-badge hidden" id="monster-defeated-${idx}"><span>💀</span>&nbsp;<span>伏诛</span></div>
         `;
 
         // 交互：多怪时点击卡片切换当前锁定目标
@@ -5044,6 +5044,12 @@ window.addEventListener('DOMContentLoaded', () => {
       collectAllTemporarySlots(false);
     });
   }
+
+  // 监听天机宝萃满额溢出：自动安全转存乾坤袋，累加角色背包红点
+  window.SlotsRPG.EventBus.on('REWARD_OVERFLOW_SAVED', () => {
+    pendingNotificationCount++;
+    updateNotificationBadge();
+  });
 
   window.SlotsRPG.EventBus.on('CHATTER_UPDATED', (data) => {
     if (elDialog) {

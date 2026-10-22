@@ -647,14 +647,9 @@ class GameManager {
       this.energy += totalPayout;
     }
 
-    // 4. 将所有产出道具录入天机宝萃 (临时背包)
+    // 4. 计算产出对比数据 (最高战力与极品等级)
     if (this.dragonCabinetManager) {
       for (const rawItem of allLootItems) {
-        this.dragonCabinetManager.addItemFromSpout(rawItem, {
-          silentFloating: true,
-          isTenPull: true
-        });
-
         if (rawItem.type === 'equip' && rawItem.item) {
           const comp = this.dragonCabinetManager._calculateComparison(rawItem.item);
           const diff = comp ? comp.powerDiff : 0;
@@ -684,19 +679,27 @@ class GameManager {
       hasEpic: highestQualityRank >= 4 || maxPowerDiff > 0
     };
 
-    // 5. 驱动十连聚爆动效与浮字看板
+    // 5. 驱动十连聚爆动效：由龙头流星弹道逐颗飞抵槽位时再显露宝物
     if (this.renderer && this.renderer.startTenPullBurst) {
       this.renderer.startTenPullBurst(tenPullSummary, () => {
         this.emitStateChange();
       });
     } else {
+      if (this.dragonCabinetManager) {
+        for (const rawItem of allLootItems) {
+          this.dragonCabinetManager.addItemFromSpout(rawItem, {
+            silentFloating: true,
+            isTenPull: true
+          });
+        }
+      }
       if (bestEquip && maxPowerDiff > 0) {
-        this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
-        this.renderer.addFloatingText(`⚡ 战力飙升 +${maxPowerDiff} ⬆`, '#38ef7d');
+        this.renderer && this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
+        this.renderer && this.renderer.addFloatingText(`⚡ 战力飙升 +${maxPowerDiff} ⬆`, '#38ef7d');
       } else if (bestEquip) {
-        this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
+        this.renderer && this.renderer.addFloatingText(`⚡ 周天十连大爆！斩获【${bestEquip.name}】！`, '#ffd700');
       } else {
-        this.renderer.addFloatingText(`✨ 周天十连圆满：获宝 10 份！`, '#ffd700');
+        this.renderer && this.renderer.addFloatingText(`✨ 周天十连圆满：获宝 10 份！`, '#ffd700');
       }
       this.emitStateChange();
     }

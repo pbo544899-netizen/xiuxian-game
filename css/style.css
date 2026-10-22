@@ -5105,6 +5105,12 @@ body {
   z-index: 15;
   box-shadow: 0 0 12px rgba(244, 63, 94, 0.5);
   text-shadow: 0 0 6px #f43f5e;
+  white-space: nowrap !important;
+  width: max-content !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
 }
 
 /* 怪物尺寸直观区分 (普通 / 精英 / Boss) */
