@@ -29,6 +29,8 @@
     const statAtk = document.getElementById('stat-atk');
     const statDef = document.getElementById('stat-def');
     const btnQuickEquip = document.getElementById('btn-quick-equip');
+    const btnSpin = document.getElementById('btn-spin');
+
     const bagCapText = document.getElementById('bag-capacity-text');
     const bagGrid = document.getElementById('bag-grid');
     const chkAutoSalvage = document.getElementById('chk-auto-salvage');

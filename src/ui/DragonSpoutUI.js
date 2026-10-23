@@ -18,6 +18,11 @@
     const btnAutoSpin = document.getElementById('btn-auto');
     const waterTankBadge = document.getElementById('water-tank-badge');
     const viewSlots = document.getElementById('view-slots');
+    const modalSectInduction = document.getElementById('modal-sect-induction');
+
+    const tabCharacter = document.getElementById('tab-character');
+    const elDialog = document.getElementById('cheat-dialog');
+
     const elAnnouncement = document.getElementById('reel-announcement');
     const elAnnouncementText = document.getElementById('announcement-text');
     const trialBtnText = document.getElementById('trial-btn-text');
@@ -461,6 +466,11 @@
 
     // 3. 画面震颤与大爆音效
     const viewSlots = document.getElementById('view-slots');
+    const modalSectInduction = document.getElementById('modal-sect-induction');
+
+    const tabCharacter = document.getElementById('tab-character');
+    const elDialog = document.getElementById('cheat-dialog');
+
     if (viewSlots) {
       viewSlots.classList.remove('view-slots-shake');
       void viewSlots.offsetWidth;
@@ -493,7 +503,9 @@
   });
 
   // 灵机扣除飘字与龙头灌注反馈 (需求 1)
-  window.SlotsRPG.EventBus.on('SPIN_COST_DEDUCTED', ({ cost, energy }) => {
+  window.SlotsRPG.EventBus.on('SPIN_COST_DEDUCTED', (data = {}) => {
+    const cost = data.cost || 0;
+    const energy = data.energy;
     // 1. 灵机减少飘字
     const floatEl = document.getElementById('lingji-cost-float');
     if (floatEl) {
@@ -588,13 +600,11 @@
         itemsToFly,
         tabCharacter,
         (arrivedItem) => {
-          pendingNotificationCount += (arrivedItem && arrivedItem.count) ? arrivedItem.count : 1;
-          updateNotificationBadge();
+          if (window.incrementNotificationBadge) window.incrementNotificationBadge((arrivedItem && arrivedItem.count) ? arrivedItem.count : 1);
         }
       );
     } else {
-      pendingNotificationCount += totalCount;
-      updateNotificationBadge();
+      if (window.incrementNotificationBadge) window.incrementNotificationBadge(totalCount);
     }
 
     // 延时清空展示区槽位，让飞行动画有清晰的离位起飞感
@@ -684,8 +694,7 @@
 
   // 监听天机宝萃满额溢出：自动安全转存乾坤袋，累加角色背包红点
   window.SlotsRPG.EventBus.on('REWARD_OVERFLOW_SAVED', () => {
-    pendingNotificationCount++;
-    updateNotificationBadge();
+    if (window.incrementNotificationBadge) window.incrementNotificationBadge(1);
   });
 
   window.SlotsRPG.EventBus.on('CHATTER_UPDATED', (data) => {

@@ -50,6 +50,18 @@
     const defeatProgressPct = document.getElementById('defeat-progress-pct');
     const defeatProgressBarFill = document.getElementById('defeat-progress-bar-fill');
     const defeatProgressDelta = document.getElementById('defeat-progress-delta');
+    const battlePillQty = document.getElementById('battle-pill-qty');
+    const battleTalismanQty = document.getElementById('battle-talisman-qty');
+    const battleWaveBadge = document.getElementById('battle-wave-badge');
+    const btnBattleAttack = document.getElementById('btn-battle-attack');
+    const btnBattleAutoToggle = document.getElementById('btn-battle-auto-toggle');
+    const btnBattleUsePill = document.getElementById('btn-battle-use-pill');
+    const btnBattleUseTalisman = document.getElementById('btn-battle-use-talisman');
+    const modalAwakening = document.getElementById('modal-awakening');
+
+    const tabCharacter = document.getElementById('tab-character');
+    const elDialog = document.getElementById('cheat-dialog');
+
 
 
       const switchTab = (tab, skipSound) => window.switchTab && window.switchTab(tab, skipSound);
@@ -1452,8 +1464,7 @@
           dropItems,
           tabCharacter,
           () => {
-            pendingNotificationCount++;
-            updateNotificationBadge();
+            if (window.incrementNotificationBadge) window.incrementNotificationBadge(1);
           }
         );
       }

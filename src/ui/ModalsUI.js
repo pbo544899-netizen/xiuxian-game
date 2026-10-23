@@ -72,11 +72,16 @@
 
     // 破产救济
     const modalRelief = document.getElementById('modal-relief');
+    const reliefCount = document.getElementById('relief-count');
     const btnClaimRelief = document.getElementById('btn-claim-relief');
     const btnMeditateRelief = document.getElementById('btn-meditate-relief');
     const btnCloseRelief = document.getElementById('btn-close-relief');
 
     let currentModalTarget = null;
+    const btnSpin = document.getElementById('btn-spin');
+    const elAnnouncement = document.getElementById('reel-announcement');
+    const elAnnouncementText = document.getElementById('announcement-text');
+
     const switchTab = (tab, skipSound) => window.switchTab && window.switchTab(tab, skipSound);
     const showFloatingNotice = (msg, clr) => window.showFloatingNotice && window.showFloatingNotice(msg, clr);
     const showFloatingAttrBurst = (diff) => window.showFloatingAttrBurst && window.showFloatingAttrBurst(diff);

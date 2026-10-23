@@ -128,6 +128,11 @@
       this.updateNotificationBadge();
     },
 
+    incrementNotificationCount(delta = 1) {
+      pendingNotificationCount += delta;
+      this.updateNotificationBadge();
+    },
+
     // 浮动轻提示
     showFloatingNotice(text, color = '#f87171') {
       const viewSlots = document.getElementById('view-slots');
@@ -180,5 +185,6 @@
   window.showCombatPowerGainNotice = ToastNotificationUI.showCombatPowerGainNotice;
   window.showFloatingNotice = ToastNotificationUI.showFloatingNotice;
   window.updateNotificationBadge = ToastNotificationUI.updateNotificationBadge.bind(ToastNotificationUI);
+  window.incrementNotificationBadge = (delta = 1) => ToastNotificationUI.incrementNotificationCount(delta);
   window.getAutoBtnTitleText = ToastNotificationUI.getAutoBtnTitleText;
 })();
