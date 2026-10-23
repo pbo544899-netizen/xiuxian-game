@@ -60,11 +60,11 @@ window.addEventListener('DOMContentLoaded', () => {
   function switchTab(tabName, skipSound = false) {
     if (!gameManager.isPrologueComplete) {
       if (tabName === 'slots' && gameManager.prologueStep < 3) {
-        if (window.showFloatingNotice) window.showFloatingNotice('尚未通过叩问仙门试炼');
+        if (window.showFloatingNotice) window.showFloatingNotice('天机盘未觉醒，请先至角色面板采药除害！');
         return;
       }
       if (tabName === 'cave') {
-        if (window.showFloatingNotice) window.showFloatingNotice('尚未开启洞府仙脉');
+        if (window.showFloatingNotice) window.showFloatingNotice('尚未拜入仙门，洞府仙脉暂未开启！');
         return;
       }
     }
@@ -104,10 +104,67 @@ window.addEventListener('DOMContentLoaded', () => {
       if (window.updateCaveView) window.updateCaveView();
     }
 
+    updateTabLockStates();
+
     try {
       localStorage.setItem('SLOTS_RPG_ACTIVE_TAB', tabName);
     } catch (e) {}
   }
+
+  /**
+   * 底部导航栏锁定态与图标联动 (带锁图片与锁徽标)
+   */
+  function updateTabLockStates() {
+    if (!gameManager) return;
+    const isPrologueComplete = !!gameManager.isPrologueComplete;
+    const prologueStep = gameManager.prologueStep || 0;
+
+    // 1. 神龙吐宝 (天机盘推演)：未完成序章且未觉醒天机盘 (prologueStep < 3) 时锁定
+    const isSlotsLocked = !isPrologueComplete && prologueStep < 3;
+    if (tabSlots) {
+      const imgSlots = tabSlots.querySelector('.nav-icon-img');
+      const lockTag = tabSlots.querySelector('.nav-lock-tag');
+      if (isSlotsLocked) {
+        tabSlots.classList.add('tab-locked');
+        if (imgSlots) {
+          imgSlots.src = 'assets/ui/tab_locked.png';
+          imgSlots.classList.add('icon-locked');
+        }
+        if (lockTag) lockTag.classList.remove('hidden');
+      } else {
+        tabSlots.classList.remove('tab-locked');
+        if (imgSlots) {
+          imgSlots.src = 'assets/ui/tab_slots.png';
+          imgSlots.classList.remove('icon-locked');
+        }
+        if (lockTag) lockTag.classList.add('hidden');
+      }
+    }
+
+    // 2. 洞天灵脉：未完成序章（未拜入仙门）时锁定
+    const isCaveLocked = !isPrologueComplete;
+    if (tabCave) {
+      const imgCave = tabCave.querySelector('.nav-icon-img');
+      const lockTag = tabCave.querySelector('.nav-lock-tag');
+      if (isCaveLocked) {
+        tabCave.classList.add('tab-locked');
+        if (imgCave) {
+          imgCave.src = 'assets/ui/tab_locked.png';
+          imgCave.classList.add('icon-locked');
+        }
+        if (lockTag) lockTag.classList.remove('hidden');
+      } else {
+        tabCave.classList.remove('tab-locked');
+        if (imgCave) {
+          imgCave.src = 'assets/ui/tab_cave.png';
+          imgCave.classList.remove('icon-locked');
+        }
+        if (lockTag) lockTag.classList.add('hidden');
+      }
+    }
+  }
+
+  window.updateTabLockStates = updateTabLockStates;
 
   // 绑定 Tab 点击事件
   if (tabSlots) tabSlots.addEventListener('click', () => switchTab('slots'));
@@ -116,8 +173,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
   window.switchTab = switchTab;
 
+  // 初始化导航锁状态
+  updateTabLockStates();
+
+  // 监听觉醒与序章完成事件
+  if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+    window.SlotsRPG.EventBus.on('ARTIFACT_AWAKENED', () => updateTabLockStates());
+    window.SlotsRPG.EventBus.on('PROLOGUE_COMPLETED', () => updateTabLockStates());
+    window.SlotsRPG.EventBus.on('SECT_JOINED', () => updateTabLockStates());
+  }
+
   // 4. 监听全局状态变更，同步更新 HUD 与角色流派属性
   window.SlotsRPG.EventBus.on('STATE_CHANGE', (state) => {
+    updateTabLockStates();
     // A. 顶部统一 HUD 与主推演盘灵机实时同步
     const elEnergy = document.getElementById('val-energy');
     const elCurrentLingji = document.getElementById('current-lingji-val');
