@@ -392,14 +392,20 @@ class GameManager {
       return false;
     }
 
-    // 判断本次是否享受免费大爆（玩家主动点击蓄满的引龙吐宝，或挂机连续推演过程中自然蓄满触发，或十连追加顿悟）
-    const isFreeSpin = options.isFreeOverride || options.isDragonSpout || isWaterTankFull;
+    // 免费推演判定：
+    // 1. 显式追加免费 (options.isFreeOverride，如周天十连追加顿悟)
+    // 2. 玩家主动点击八卦唤龙台释放蓄满的引龙吐宝 (options.isDragonSpout && isWaterTankFull)
+    // 普通推演或挂机推演即便水缸已蓄满，也必须消耗 25 灵机，绝不擅自占用引龙吐宝大招
+    const isFreeSpin = !!(options.isFreeOverride || (options.isDragonSpout && isWaterTankFull));
     const cost = isFreeSpin ? 0 : 25; // 固定单抽消耗 25 灵机
 
     if (!isFreeSpin && this.energy < cost) {
       this.stopAutoSpin();
       this.checkDailyReliefReset();
       this.checkWantongSecretEgg();
+      if (this.renderer) {
+        this.renderer.addFloatingText(`灵机不足 ${cost}，无法推演！`, '#ef4444');
+      }
       window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
         canRelief: this.freeReliefCount > 0,
         remainingRelief: this.freeReliefCount

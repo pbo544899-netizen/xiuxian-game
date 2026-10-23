@@ -239,15 +239,45 @@
       return;
     }
     if (currentAutoCount === 1) {
-      // 单次推演：防连点拦截
+      // 单次推演：防连点拦截与灵机硬校验
       if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+      if (gameManager.energy < 25) {
+        showFloatingNotice('灵机不足 (单次推演需 25 灵机)！', '#ef4444');
+        gameManager.checkDailyReliefReset();
+        gameManager.checkWantongSecretEgg();
+        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
+          canRelief: gameManager.freeReliefCount > 0,
+          remainingRelief: gameManager.freeReliefCount
+        });
+        return;
+      }
       gameManager.executeSpin();
     } else if (currentAutoCount === 10) {
       // 方案 A：周天十连（瞬时批量聚爆展示）
       if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+      if (gameManager.energy < 250) {
+        showFloatingNotice('灵机不足 (周天十连需 250 灵机)！', '#ef4444');
+        gameManager.checkDailyReliefReset();
+        gameManager.checkWantongSecretEgg();
+        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
+          canRelief: gameManager.freeReliefCount > 0,
+          remainingRelief: gameManager.freeReliefCount
+        });
+        return;
+      }
       gameManager.executeTenPull();
     } else {
       // 50 / 100 / 无限：长线连抽自动挂机推演
+      if (gameManager.energy < 25) {
+        showFloatingNotice('灵机不足，无法开启连抽！', '#ef4444');
+        gameManager.checkDailyReliefReset();
+        gameManager.checkWantongSecretEgg();
+        window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
+          canRelief: gameManager.freeReliefCount > 0,
+          remainingRelief: gameManager.freeReliefCount
+        });
+        return;
+      }
       gameManager.toggleAutoSpin(currentAutoCount);
     }
   });
