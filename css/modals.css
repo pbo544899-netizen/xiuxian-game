@@ -1,0 +1,3088 @@
+/* ==========================================================
+   css/modals.css - 系统弹窗、雷劫飞升、英灵殿、尊号录与锁妖塔
+   ========================================================== */
+
+/* ========================================================
+   九重雷劫 · 大境界突破 1.8 秒全屏沉浸仪式演出
+   ======================================================== */
+.tribulation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 18, 0.92);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+/* 苍穹旋转劫云涡流 */
+.tribulation-cloud-vortex {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(59, 130, 246, 0.15) 40%, transparent 75%);
+  animation: cloudVortexSpin 12s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes cloudVortexSpin {
+  from { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+/* 苍穹白炽雷暴闪光 */
+.tribulation-lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tribulation-lightning-flash.flash-active {
+  animation: lightningWhiteout 0.45s ease-out;
+}
+
+@keyframes lightningWhiteout {
+  0% { opacity: 0; }
+  15% { opacity: 0.92; }
+  35% { opacity: 0.4; }
+  60% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* 破空贯顶紫金雷柱 */
+.tribulation-thunder-beam {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #ffffff, #c084fc, #ffd700);
+  box-shadow: 0 0 35px #a855f7, 0 0 70px #ffd700;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tribulation-thunder-beam.beam-active {
+  animation: thunderBeamStrike 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes thunderBeamStrike {
+  0% { opacity: 0; width: 6px; }
+  20% { opacity: 1; width: 28px; }
+  50% { opacity: 0.9; width: 18px; }
+  100% { opacity: 0; width: 4px; }
+}
+
+/* 突破境界主标题 */
+.tribulation-title-wrap {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.tribulation-stage-hint {
+  font-size: 13px;
+  color: #a78bfa;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
+  margin-bottom: 8px;
+}
+
+.tribulation-realm-transition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #f8fafc;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.6);
+}
+
+.tribulation-realm-transition .realm-arrow {
+  color: #ffd700;
+  font-size: 20px;
+  animation: arrowPulse 0.8s ease-in-out infinite alternate;
+}
+
+.tribulation-realm-transition .realm-new {
+  color: #ffd700;
+  text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes arrowPulse {
+  from { transform: translateX(-2px); opacity: 0.7; }
+  to { transform: translateX(3px); opacity: 1; }
+}
+
+/* 破境功成 · 朱红古篆重印 */
+.tribulation-seal {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding: 10px 28px;
+  border: 3px solid #f43f5e;
+  border-radius: 12px;
+  background: rgba(159, 18, 57, 0.45);
+  box-shadow: 0 0 35px rgba(244, 63, 94, 0.6), inset 0 0 20px rgba(244, 63, 94, 0.4);
+  color: #ffe4e6;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: 6px;
+  text-shadow: 0 0 12px #f43f5e;
+  transform: scale(2.2);
+  opacity: 0;
+}
+
+.tribulation-seal.seal-slammed {
+  animation: sealSlam 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes sealSlam {
+  0% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 战力暴涨浮标看板 */
+.tribulation-power-badge {
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #38ef7d;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 239, 125, 0.35);
+  opacity: 0;
+}
+
+.tribulation-power-badge.badge-revealed {
+  animation: badgeSlideUp 0.35s ease-out forwards;
+}
+
+@keyframes badgeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tribulation-skip-hint {
+  position: absolute;
+  bottom: 30px;
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 1px;
+
+}
+/* 怪物尺寸直观区分 (普通 / 精英 / Boss) */
+.battle-boss-avatar.size-normal {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+}
+
+.battle-boss-avatar.size-elite {
+  width: 140px;
+  height: 140px;
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.65));
+}
+
+.battle-boss-avatar.size-boss {
+  width: 175px;
+  height: 175px;
+  filter: drop-shadow(0 0 24px rgba(239, 68, 68, 0.8));
+}
+
+/* 妖兽前扑与手臂/巨爪向主角挥击姿势 */
+.battle-boss-avatar.monster-arm-slash {
+  animation: monsterArmSlash 0.55s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important;
+}
+
+@keyframes monsterArmSlash {
+  0% {
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.12) translateY(-10px) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.25) translateY(35px) rotate(14deg);
+  }
+  75% {
+    transform: scale(1.1) translateY(12px) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+/* 妖兽爪击/撕裂撕开光效 */
+.claw-scratch-fx {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130px;
+  height: 130px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 40;
+}
+
+.claw-scratch-fx.active {
+  animation: clawScratchAnim 0.45s ease-out forwards;
+}
+
+@keyframes clawScratchAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4) rotate(-20deg);
+    filter: drop-shadow(0 0 15px #ef4444);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+    background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.85) 0%, rgba(220, 38, 38, 0.4) 50%, transparent 75%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.4) rotate(15deg);
+  }
+}
+
+/* 技能特效层 */
+.skill-fx-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 35;
+}
+
+/* 战中操作与道具使用栏 */
+.battle-action-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.btn-battle-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  border-radius: 6px;
+  padding: 4px 2px;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: all 0.15s ease;
+}
+
+.btn-battle-item:active {
+  transform: scale(0.95);
+}
+
+.btn-battle-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+}
+
+.battle-item-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.battle-item-info {
+  font-size: 10px;
+  font-weight: bold;
+  color: #6ee7b7;
+}
+
+.battle-item-hint {
+  font-size: 8.5px;
+  color: #94a3b8;
+}
+
+.btn-battle-action {
+  flex: 1.1;
+  height: 38px;
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+}
+
+.btn-battle-action:active {
+  transform: scale(0.96);
+}
+
+.btn-battle-toggle {
+  height: 38px;
+  padding: 0 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 10.5px;
+  cursor: pointer;
+}
+
+.btn-battle-toggle.active {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  color: #34d399;
+  font-weight: bold;
+}
+
+
+/* ========================================================
+ * 第二阶段：凡人序章、天机觉醒与叩问仙门 UI 专属样式
+ * ======================================================== */
+
+/* 1. 底部导航栏锁定态 (高亮清晰金锁与锁徽标) */
+.nav-item.tab-locked {
+  opacity: 0.9 !important;
+  filter: none !important;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.nav-item.tab-locked .nav-icon-img.icon-locked {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 18px rgba(255, 170, 0, 0.3);
+  border: 1.5px solid #ffd700;
+  background: #0d1117;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-item.tab-locked:hover .nav-icon-img.icon-locked {
+  transform: scale(1.15);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.95);
+  border-color: #ffe600;
+}
+
+.nav-item.tab-locked .nav-lock-tag {
+  display: block;
+  position: absolute;
+  top: 0px;
+  right: 12px;
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px #ffd700);
+  z-index: 5;
+}
+
+.nav-item:not(.tab-locked) .nav-lock-tag {
+  display: none !important;
+}
+
+.nav-item.tab-locked .nav-label {
+  color: #a0aec0;
+}
+
+/* 2. 凡人采药除害引导卡片 */
+.prologue-section {
+  padding: 4px 10px 10px 10px;
+  flex-shrink: 0;
+}
+
+.prologue-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(88, 28, 28, 0.75), rgba(24, 24, 27, 0.95));
+  border: 1.5px solid #ef4444;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+}
+
+.prologue-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.prologue-info {
+  flex: 1;
+}
+
+.prologue-title {
+  font-size: 13.5px;
+  font-weight: bold;
+  color: #fca5a5;
+  margin-bottom: 3px;
+}
+
+.prologue-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.btn-prologue-battle {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+}
+
+.btn-prologue-battle:active {
+  transform: scale(0.96);
+}
+
+/* 3. 天机盘觉醒认主弹窗 */
+.awakening-card {
+  background: linear-gradient(145deg, #18181b, #0c1222);
+  border: 2px solid #eab308;
+  border-radius: 14px;
+  padding: 22px 20px;
+  max-width: 360px;
+  box-shadow: 0 0 35px rgba(234, 179, 8, 0.35);
+  text-align: center;
+}
+
+.awakening-halo-wrap {
+  margin-bottom: 8px;
+}
+
+.awakening-ring-anim {
+  display: inline-block;
+  font-size: 46px;
+  color: #facc15;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.8);
+  animation: spinBagua 8s linear infinite;
+}
+
+@keyframes spinBagua {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.awakening-title {
+  font-size: 18px;
+  color: #fde047;
+  margin: 6px 0 12px 0;
+  letter-spacing: 1px;
+}
+
+.awakening-lore-box {
+  background: rgba(0, 0, 0, 0.45);
+  border-left: 3px solid #eab308;
+  border-radius: 6px;
+  padding: 10px 12px;
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.awakening-lore-line {
+  color: #fef08a;
+  font-size: 12.5px;
+  font-weight: bold;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.awakening-lore-sub {
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.awakening-reward-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.reward-pill {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #1c1917;
+  font-weight: bold;
+  border: 1px solid #fef08a;
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+}
+
+/* 4. 叩问仙门自选弹窗 */
+.sect-induction-card {
+  background: linear-gradient(145deg, #131722, #0d1017);
+  border: 1.5px solid #bb9af7;
+  border-radius: 14px;
+  padding: 18px 16px;
+  max-width: 380px;
+  box-shadow: 0 0 30px rgba(187, 154, 247, 0.3);
+}
+
+.induction-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.induction-badge {
+  display: inline-block;
+  background: rgba(187, 154, 247, 0.15);
+  color: #c0caf5;
+  border: 1px solid rgba(187, 154, 247, 0.4);
+  border-radius: 20px;
+  font-size: 10.5px;
+  padding: 2px 10px;
+  margin-bottom: 4px;
+}
+
+.induction-title {
+  font-size: 17px;
+  color: #ffd700;
+  margin: 4px 0;
+}
+
+.induction-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.induction-sects-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.induction-sect-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.induction-sect-card:hover {
+  border-color: #ffd700;
+  background: rgba(234, 179, 8, 0.08);
+}
+
+.induction-sect-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.induction-sect-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.induction-sect-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.induction-sect-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.induction-sect-skills {
+  font-size: 11px;
+  color: #34e89e;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  padding: 6px 8px;
+  line-height: 1.4;
+}
+
+.btn-join-sect {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 0;
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border: 1px solid #fbbf24;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-join-sect:active {
+  transform: scale(0.98);
+}
+
+.induction-hint {
+  font-size: 10.5px;
+  color: #64748b;
+  text-align: center;
+  margin-top: 6px;
+}
+
+
+/* ========================================================
+ * 第三阶段：升仙天碑、五卷归一与九转轮回 UI 专属样式
+ * ======================================================== */
+
+/* 1. 角色面板飞升专属入口按钮 (置于角色信息右侧空白处，显示 n/5 进度) */
+.btn-ascend-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 54px;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.9), rgba(49, 46, 129, 0.95));
+  border: 1px solid rgba(234, 179, 8, 0.55);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(234, 179, 8, 0.15);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 2px 2px;
+  gap: 2px;
+  user-select: none;
+}
+
+.btn-ascend-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.55), inset 0 0 10px rgba(234, 179, 8, 0.25);
+  border-color: #ffd700;
+}
+
+.btn-ascend-entry:active {
+  transform: scale(0.96);
+}
+
+.btn-ascend-entry.ready {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.95));
+  border-color: #34d399;
+  box-shadow: 0 0 14px rgba(52, 211, 153, 0.6), inset 0 0 8px rgba(52, 211, 153, 0.3);
+  animation: heroAuraBreath 2s infinite ease-in-out;
+}
+
+.ascend-progress-pill {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffd700;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  border-radius: 8px;
+  padding: 0 5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.ascend-btn-text {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(234, 179, 8, 0.8);
+  line-height: 1.2;
+}
+
+
+/* 2. 散功坐化 / 兵解转世入口 */
+.samsara-action-bar {
+  display: flex;
+  justify-content: center;
+  padding: 8px 10px;
+}
+
+.btn-samsara-nirvana {
+  width: 100%;
+  max-width: 280px;
+  background: linear-gradient(135deg, rgba(39, 39, 42, 0.9), rgba(24, 24, 27, 0.95));
+  border: 1px solid rgba(161, 161, 170, 0.3);
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-size: 11.5px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-samsara-nirvana.ready {
+  background: linear-gradient(135deg, rgba(88, 28, 28, 0.85), rgba(30, 27, 75, 0.95));
+  border-color: #f43f5e;
+  color: #fecdd3;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.25);
+}
+
+.btn-samsara-nirvana:active {
+  transform: scale(0.98);
+}
+
+/* 3. 升仙天碑弹窗 */
+.stele-modal-card {
+  background: linear-gradient(145deg, #12151f, #090c13);
+  border: 2px solid #d4af37;
+  border-radius: 16px;
+  padding: 18px 16px;
+  max-width: 400px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.35);
+  text-align: center;
+}
+
+.stele-header {
+  margin-bottom: 12px;
+}
+
+.stele-badge-tag {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.15);
+  color: #ffd700;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 20px;
+  font-size: 10.5px;
+  padding: 2px 10px;
+  margin-bottom: 4px;
+}
+
+.stele-title {
+  font-size: 18px;
+  color: #fef08a;
+  margin: 4px 0;
+  letter-spacing: 1px;
+}
+
+.stele-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.stele-shards-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px auto 6px auto;
+  width: 100%;
+}
+
+
+/* ==========================================================================
+   五行纯图案法阵 (取消五角星线条，5 大纯图案圆盘，灰色遮罩与心法收益气泡)
+   ========================================================================== */
+.wuxing-board {
+  position: relative;
+  width: 320px;
+  height: 270px;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.wuxing-star-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 外环微光圆圈 (取消五角星线条，保留空灵星轨微光环) */
+.wuxing-circle-ring {
+  fill: none;
+  stroke: rgba(255, 215, 0, 0.4);
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.wuxing-circle-ring-inner {
+  fill: none;
+  stroke: rgba(212, 175, 55, 0.3);
+  stroke-width: 1;
+}
+
+.wuxing-board.all-collected .wuxing-circle-ring {
+  stroke: #ffd700;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.85));
+}
+
+/* 阵眼中心太极印记 */
+.wuxing-center-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1a162b 0%, #0c0817 90%);
+  border: 1.5px solid rgba(212, 175, 55, 0.55);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.8), inset 0 0 8px rgba(212, 175, 55, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+.wuxing-center-taiji {
+  font-size: 20px;
+  color: #ffd700;
+  line-height: 1;
+  animation: spinBagua 12s linear infinite;
+}
+
+.wuxing-center-num {
+  font-size: 10px;
+  font-weight: 800;
+  color: #f87171;
+  margin-top: 1px;
+}
+
+.wuxing-center-core.core-ready {
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, #17112b 90%);
+  border-color: #ffd700;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), inset 0 0 12px rgba(52, 232, 158, 0.4);
+}
+
+.wuxing-center-core.core-ready .wuxing-center-num {
+  color: #34e89e;
+}
+
+/* 5 角五行纯图案节点 */
+.wuxing-corner-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wuxing-orb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.wuxing-orb-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: block;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+/* 未解锁状态：灰色遮罩，不允许点击 */
+.wuxing-corner-node.locked {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.wuxing-corner-node.locked .wuxing-orb-img {
+  filter: grayscale(100%) brightness(0.4) !important;
+  opacity: 0.5 !important;
+  box-shadow: none !important;
+}
+
+.wuxing-lock-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+/* 已解锁状态：全彩高亮，可点击交互 */
+.wuxing-corner-node.unlocked {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.wuxing-corner-node.unlocked:hover .wuxing-orb {
+  transform: scale(1.12);
+}
+
+.wuxing-corner-node.selected .wuxing-orb {
+  outline: 2.5px solid #ffd700;
+  outline-offset: 3px;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.85);
+  animation: selectedRingPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes selectedRingPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+}
+
+/* 聊天泡泡 (点击已解锁五行图标显示心法收益) */
+.stele-bubble-box {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  margin: 6px auto;
+  background: linear-gradient(135deg, rgba(20, 26, 40, 0.98), rgba(12, 16, 26, 0.98));
+  border: 1.5px solid rgba(212, 175, 55, 0.65);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), inset 0 0 12px rgba(212, 175, 55, 0.12);
+  animation: bubblePopIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.stele-bubble-box.hidden {
+  display: none !important;
+}
+
+@keyframes bubblePopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.stele-bubble-tail {
+  position: absolute;
+  top: -9px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 9px solid rgba(212, 175, 55, 0.8);
+  transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bubble-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+
+.bubble-sect-title {
+  font-size: 12.5px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.bubble-close-btn {
+  font-size: 14px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.bubble-close-btn:hover {
+  color: #ef4444;
+}
+
+.bubble-buff-line {
+  font-size: 11px;
+  color: #34e89e;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.bubble-skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10.5px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.bubble-skills-list b {
+  color: #f8fafc;
+}
+
+/* 仙门状态指示栏 */
+.stele-gate-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  padding: 7px 12px;
+  margin: 6px 0;
+}
+
+.stele-gate-ring {
+  font-size: 20px;
+  color: #ffd700;
+  animation: spinBagua 10s linear infinite;
+}
+
+.stele-gate-info {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.stele-clue-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  padding: 6px 8px;
+  line-height: 1.4;
+}
+
+.stele-clue-hint.hidden {
+  display: none !important;
+}
+
+/* 白日飞升精简按钮 (未满足条件不可点击且为灰色) */
+.btn-ascend-heaven {
+  flex: 1;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 800;
+  border-radius: 8px;
+  letter-spacing: 2px;
+  text-align: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-ascend-heaven.disabled,
+.btn-ascend-heaven:disabled {
+  background: #374151 !important;
+  color: #9ca3af !important;
+  border: 1px solid #4b5563 !important;
+  cursor: not-allowed !important;
+  opacity: 0.65 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+.btn-ascend-heaven.ready {
+  background: linear-gradient(135deg, #ffd700, #f59e0b) !important;
+  color: #1a1003 !important;
+  border: 1.5px solid #fef08a !important;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.6) !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  animation: ascendHeavenPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes ascendHeavenPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(255, 215, 0, 0.7); }
+  50% { transform: scale(1.03); box-shadow: 0 0 24px rgba(255, 215, 0, 0.95); }
+}
+
+/* 天碑入口：宗门通关兵解转世按钮 */
+.btn-stele-reincarnate {
+  flex: 1;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 8px;
+  letter-spacing: 1.5px;
+  text-align: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-stele-reincarnate.disabled,
+.btn-stele-reincarnate:disabled {
+  background: #374151 !important;
+  color: #9ca3af !important;
+  border: 1px solid #4b5563 !important;
+  cursor: not-allowed !important;
+  opacity: 0.65 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+.btn-stele-reincarnate.ready {
+  background: linear-gradient(135deg, #059669, #0d9488) !important;
+  color: #ecfdf5 !important;
+  border: 1.5px solid #6ee7b7 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.7), inset 0 0 8px rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  animation: steleReincarnatePulse 2s infinite ease-in-out;
+}
+
+@keyframes steleReincarnatePulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 14px rgba(16, 185, 129, 0.6); }
+  50% { transform: scale(1.02); box-shadow: 0 0 22px rgba(16, 185, 129, 0.9); }
+}
+
+.clue-desc {
+  font-size: 10.5px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* 4. 轮回结算弹窗 */
+.samsara-settlement-card {
+  background: linear-gradient(145deg, #181528, #0a0b12);
+  border: 2px solid #a855f7;
+  border-radius: 16px;
+  padding: 20px 18px;
+  max-width: 360px;
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.35);
+  text-align: center;
+}
+
+.samsara-reincarnate-halo {
+  font-size: 44px;
+  color: #c084fc;
+  text-shadow: 0 0 16px rgba(192, 132, 252, 0.8);
+  margin-bottom: 6px;
+  animation: spinBagua 8s linear infinite;
+}
+
+.samsara-title {
+  font-size: 18px;
+  color: #f3e8ff;
+  margin: 4px 0;
+}
+
+.samsara-subtitle {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.samsara-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.samsara-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.samsara-summary-item.full-width {
+  grid-column: span 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+.sum-label {
+  color: #94a3b8;
+  font-size: 10.5px;
+}
+
+.samsara-hint {
+  font-size: 10.5px;
+  color: #94a3b8;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   Phase 4 & Phase 5: 灵界仙域、纯 IAA 变现与爽感体验润色样式
+   ========================================================================== */
+
+/* 灵界位面大地图专属深邃星河主题 (World Tier 2) */
+body.tier-spirit-realm {
+  background: radial-gradient(circle at 50% 10%, #1c0d33 0%, #090314 60%, #020108 100%) !important;
+}
+
+body.tier-spirit-realm .reel-frame {
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35) !important;
+}
+
+/* 转盘顶部状态栏与功德免广券条 */
+.slots-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+.merit-ticket-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: #cbd5e1;
+}
+
+/* 洞天灵气悬浮气泡 (PRD 10.4 节) */
+.cave-bubble-collector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.4));
+  border: 1px solid rgba(52, 232, 158, 0.7);
+  color: #a7f3d0;
+  font-size: 10.5px;
+  font-weight: bold;
+  padding: 2px 9px;
+  border-radius: 14px;
+  cursor: pointer;
+  animation: bubbleFloat 2.2s ease-in-out infinite alternate;
+  box-shadow: 0 0 10px rgba(52, 232, 158, 0.4);
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.cave-bubble-collector:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+@keyframes bubbleFloat {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-3px) scale(1.04); }
+}
+
+/* 打坐吐纳兜底按钮 */
+.btn-meditate {
+  background: linear-gradient(135deg, #059669, #047857);
+  border: 1px solid #34d399;
+  color: #ecfdf5;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-meditate:hover {
+  filter: brightness(1.15);
+}
+
+/* 全屏白日飞升 · 天门大开渡劫过场 (Modal 15) */
+.ascension-cutscene-container {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #240e42 0%, #0a0319 75%, #000 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.ascension-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.ascension-gate-fx {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+}
+
+.thunder-sky {
+  position: absolute;
+  inset: -100px;
+  background: radial-gradient(ellipse at top, rgba(168, 85, 247, 0.4), transparent 70%);
+  animation: thunderFlash 3.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes thunderFlash {
+  0%, 90%, 100% { opacity: 0.2; }
+  92%, 94% { opacity: 0.9; filter: brightness(2.2); }
+}
+
+.heavenly-gate-anim {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  border: 4px solid #ffd700;
+  border-bottom: none;
+  border-radius: 60px 60px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(168, 85, 247, 0.6);
+  margin-bottom: 20px;
+}
+
+.gate-arch-symbol {
+  font-size: 50px;
+  color: #ffd700;
+  text-shadow: 0 0 20px #ffd700;
+  animation: spin360 12s linear infinite;
+}
+
+.gate-light-pillar {
+  position: absolute;
+  top: -80px;
+  bottom: -150px;
+  width: 36px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9), rgba(255, 215, 0, 0.9), transparent);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.ascension-main-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.9), 0 0 30px rgba(168, 85, 247, 0.8);
+  margin-bottom: 6px;
+}
+
+.ascension-sub-desc {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.ascension-reward-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.asc-badge {
+  background: rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #f3e8ff;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* 原生仿真纯 IAA 激励视频播放器 (Modal 16) */
+.rewarded-ad-card {
+  max-width: 340px;
+  width: 88%;
+  background: linear-gradient(180deg, #111827 0%, #030712 100%);
+  border: 2px solid rgba(255, 215, 0, 0.45);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.25);
+  padding: 16px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.ad-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ad-tag {
+  font-size: 11px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.ad-countdown-pill {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  color: #e2e8f0;
+}
+
+.ad-cosmos-visual {
+  position: relative;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, transparent 70%);
+  margin-bottom: 10px;
+}
+
+.ad-cosmos-core {
+  font-size: 38px;
+  color: #ffd700;
+  animation: spin360 8s linear infinite;
+  margin-bottom: 6px;
+}
+
+.ad-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #f3e8ff;
+}
+
+.ad-hint {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+}
+
+.ad-progress-track {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.ad-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #34e89e);
+  transition: width 0.3s ease;
+}
+
+.ad-player-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-ticket-instant {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border: 1px solid #c084fc;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: bold;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+  transition: all 0.2s;
+}
+
+.btn-ticket-instant:hover {
+  filter: brightness(1.15);
+}
+
+/* 妖王绝地复活 · 起死回生抉择弹窗 (Modal 17) */
+.revive-card {
+  max-width: 340px;
+  width: 88%;
+  background: linear-gradient(180deg, #1c1018 0%, #0d060c 100%);
+  border: 2px solid rgba(239, 68, 68, 0.55);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.35);
+  padding: 16px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.revive-halo {
+  font-size: 36px;
+  color: #ef4444;
+  margin-bottom: 4px;
+  animation: bounce 1.2s infinite;
+}
+
+.revive-title {
+  font-size: 17px;
+  color: #fca5a5;
+  margin: 2px 0;
+}
+
+.revive-subtitle {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin: 6px 0 10px 0;
+}
+
+.revive-stats-hint {
+  font-size: 10.5px;
+  margin-bottom: 12px;
+}
+
+.modal-actions-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* =========================================================
+   上古隐世暗阁 · 客卿仙印与宗门大能法相殿 (英灵殿) 样式
+   ========================================================= */
+
+/* 隐世暗阁容器 */
+.stele-hidden-vault {
+  margin-top: 8px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.stele-vault-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.vault-title-tag {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffd700;
+  letter-spacing: 0.5px;
+}
+
+.vault-count-badge {
+  font-size: 10px;
+  color: #94a3b8;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.stele-marks-container {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.hidden-mark-card {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.hidden-mark-card.unlocked {
+  border-color: #ffd700;
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+.hidden-mark-card.locked {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+.hidden-mark-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  margin-bottom: 3px;
+}
+
+.hidden-mark-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #f1f5f9;
+  white-space: nowrap;
+}
+
+.hidden-mark-desc {
+  font-size: 8.5px;
+  color: #38ef7d;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+/* 启视法相神位按钮 */
+.btn-view-sect-pantheon {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(245, 158, 11, 0.4));
+  border: 1px solid #ffd700;
+  border-radius: 6px;
+  color: #fef08a;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-sect-pantheon:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(245, 158, 11, 0.6));
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+/* 宗门大能法相殿 (英灵殿) 弹窗样式 */
+.pantheon-modal-card {
+  width: 90%;
+  max-width: 380px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  border: 1.5px solid #d4af37;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+  border-radius: 12px;
+  padding: 16px;
+  color: #f8fafc;
+  position: relative;
+}
+
+.pantheon-header {
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.pantheon-element-badge {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.2);
+  border: 2px solid #ffd700;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffd700;
+  margin-bottom: 4px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+}
+
+.pantheon-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffd700;
+  margin: 2px 0;
+}
+
+.pantheon-subtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.pantheon-stats-summary {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+}
+
+.pantheon-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pantheon-stat-label {
+  font-size: 10.5px;
+  color: #94a3b8;
+}
+
+.pantheon-stat-val {
+  font-size: 13px;
+  font-weight: bold;
+  color: #38ef7d;
+  margin-top: 2px;
+}
+
+.pantheon-equips-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+
+.pantheon-equips-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.pantheon-equip-slot {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1.5px solid #475569;
+  border-radius: 6px;
+  padding: 6px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 64px;
+  justify-content: center;
+}
+
+.pantheon-equip-slot.has-item {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.pantheon-equip-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.pantheon-equip-name {
+  font-size: 8.5px;
+  font-weight: bold;
+  margin-top: 3px;
+  line-height: 1.1;
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 朱砂金印 */
+.pantheon-seal-stamp {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.seal-stamp-border {
+  border: 2px solid #ef4444;
+  border-radius: 4px;
+  padding: 4px 14px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  transform: rotate(-3deg);
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
+}
+
+
+/* ==========================================================
+   500 抽长线成长：天机盘子等级、守关妖王战力标尺、门票发放弹窗样式
+   ========================================================== */
+
+/* 天机盘子等级标签 */
+.pot-sub-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 4px;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+.pot-title-name {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.pot-sub-hint {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+/* 关卡守关妖王战力雷达标尺 */
+.boss-radar-panel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(239, 68, 68, 0.08);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.boss-radar-panel.ready {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(34, 197, 94, 0.12);
+}
+
+.boss-radar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.boss-radar-target {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.boss-radar-icon {
+  font-size: 14px;
+}
+
+.boss-radar-label {
+  color: #94a3b8;
+}
+
+.boss-radar-name {
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+.boss-radar-req-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.boss-radar-status {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.boss-radar-status.danger {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.boss-radar-status.warning {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.boss-radar-status.ready {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  animation: pulseGreen 1.5s infinite;
+}
+
+.boss-radar-track {
+  width: 100%;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.boss-radar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  border-radius: 4px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.boss-radar-fill.ready {
+  background: linear-gradient(90deg, #10b981, #22c55e, #38ef7d);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+.boss-radar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.boss-radar-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-boss-radar-challenge {
+  background: linear-gradient(135deg, #e11d48, #b91c1c);
+  border: 1px solid rgba(254, 202, 202, 0.4);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
+.btn-boss-radar-challenge:hover {
+  background: linear-gradient(135deg, #f43f5e, #dc2626);
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.boss-radar-hint {
+  color: #fbbf24;
+}
+
+/* 战力检验削血进展反馈 (软性绑定) */
+.defeat-damage-progress {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+.defeat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.defeat-progress-label {
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.defeat-progress-val {
+  color: #fbbf24;
+  font-weight: bold;
+}
+
+.defeat-progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.defeat-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.defeat-progress-delta {
+  font-size: 10.5px;
+  color: #34d399;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* 宗门真传接引令牌发放弹窗 */
+.sect-ticket-modal-card {
+  max-width: 440px;
+  width: 90%;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+  border: 2px solid #ffd700;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.15);
+  text-align: center;
+  position: relative;
+  animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sect-ticket-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #000;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.sect-ticket-title {
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.sect-ticket-subtitle {
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.sect-ticket-token-display {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1.5px solid rgba(255, 215, 0, 0.5);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.token-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px #ffd700);
+  animation: floatToken 3s ease-in-out infinite;
+}
+
+@keyframes floatToken {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.token-info {
+  text-align: left;
+}
+
+.token-title {
+  color: #ffd700;
+  font-size: 16px;
+  margin: 0 0 4px 0;
+}
+
+.token-sect-tag {
+  display: inline-block;
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: bold;
+  background: rgba(6, 182, 212, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.token-description {
+  color: #94a3b8;
+  font-size: 11px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sect-ticket-perks {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ticket-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.ticket-perk-item .perk-icon {
+  font-size: 14px;
+}
+
+.btn-primary-action, #btn-claim-sect-ticket {
+  background: linear-gradient(135deg, #ffd700, #f59e0b);
+  color: #000;
+  font-weight: 900;
+  font-size: 15px;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 32px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.45);
+  transition: all 0.25s ease;
+  display: inline-block;
+}
+
+.btn-primary-action:hover, #btn-claim-sect-ticket:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.65);
+}
+
+.btn-primary-action:active, #btn-claim-sect-ticket:active {
+  transform: translateY(1px);
+}
+
+
+
+
+/* ========================================================
+   天机盘规则按钮与动作栏 (Paytable & Rules HUD)
+   ======================================================== */
+.btn-rules-icon {
+  margin-right: 6px;
+  background: rgba(255, 215, 0, 0.12);
+}
+.btn-rules-icon:hover {
+  background: rgba(255, 215, 0, 0.25);
+  border-color: #ffd700;
+  transform: scale(1.08);
+}
+
+.slots-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-paytable-rules {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(0, 0, 0, 0.45));
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  color: #fde047;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+.btn-paytable-rules:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(0, 0, 0, 0.6));
+  border-color: #ffd700;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* 常驻【修仙作弊系统】互动入口 (点击主动触发系统对话与战力指导) */
+.btn-cheat-system-ai {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.22), rgba(234, 179, 8, 0.22));
+  border: 1.2px solid rgba(56, 189, 248, 0.65);
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+  user-select: none;
+  position: relative;
+}
+
+.btn-cheat-system-ai:hover,
+.btn-cheat-system-ai:active {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(234, 179, 8, 0.45));
+  border-color: #ffd700;
+  transform: scale(1.06);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+  color: #fef08a;
+}
+
+.cheat-system-avatar-mini {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.2px solid #ffd700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #0b1329;
+}
+
+.cheat-system-avatar-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cheat-system-unread-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border: 1.5px solid #0f172a;
+  box-shadow: 0 0 6px #ef4444;
+  animation: pulse-badge 1.5s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.22); }
+}
+
+
+/* ========================================================
+   天机秘卷与赔率概率弹窗 (Paytable & Rules Modal)
+   ======================================================== */
+.paytable-card {
+  position: relative;
+  width: 92vw;
+  max-width: 440px !important;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px 12px 14px !important;
+  background: radial-gradient(circle at 50% 10%, #151b2a 0%, #0d111a 100%) !important;
+  border: 1px solid rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 175, 55, 0.2) !important;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+/* 手机端顶部右上角悬浮圆形关闭按钮 */
+.btn-close-paytable {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #cbd5e1;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  user-select: none;
+  touch-action: manipulation;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.btn-close-paytable:hover,
+.btn-close-paytable:active {
+  background: rgba(255, 215, 0, 0.25);
+  border-color: #ffd700;
+  color: #ffd700;
+  transform: scale(0.92);
+}
+
+.paytable-header {
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 0 34px;
+}
+
+/* 手机端底部大拇指直达便捷闭卷操作栏 */
+.paytable-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 215, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-paytable-confirm-btn {
+  width: 100%;
+  max-width: 280px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.btn-paytable-confirm-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+  filter: brightness(1.1);
+}
+
+.paytable-badge {
+  display: inline-block;
+  font-size: 11px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 12px;
+  padding: 2px 10px;
+  margin-bottom: 4px;
+}
+
+.paytable-title {
+  font-size: 19px;
+  font-weight: 800;
+  margin: 2px 0;
+  background: linear-gradient(180deg, #fff, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.paytable-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.paytable-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 4px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+.paytable-tab-btn {
+  flex: 1;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paytable-tab-btn.active {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(245, 158, 11, 0.2));
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+}
+
+.paytable-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.paytable-pane {
+  display: none;
+}
+
+.paytable-pane.active {
+  display: block;
+}
+
+.paytable-note {
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  background: rgba(30, 41, 59, 0.5);
+  border-left: 3px solid #ffd700;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.paytable-section-title {
+  font-size: 12.5px;
+  font-weight: bold;
+  color: #fde047;
+  margin: 12px 0 6px 0;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+.specials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.special-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.special-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.special-name {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.special-desc {
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.paytable-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.paytable-tbl th {
+  background: rgba(30, 41, 59, 0.8);
+  color: #cbd5e1;
+  padding: 6px 4px;
+  font-weight: normal;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.paytable-tbl td {
+  padding: 5px 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+.sym-name-col {
+  font-weight: bold;
+  color: #f8fafc;
+}
+
+.paytable-tbl .mult {
+  color: #fde047;
+  font-family: monospace;
+}
+
+.paytable-tbl .mult.highlight {
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+.extra-effect {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.weight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.weight-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 5px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.weight-card .w-name { color: #cbd5e1; }
+.weight-card .w-val { color: #34e89e; }
+
+.odds-section {
+  margin-bottom: 14px;
+}
+
+.odds-title {
+  font-size: 12.5px;
+  font-weight: bold;
+  color: #ffd700;
+  margin: 0 0 4px 0;
+}
+
+.odds-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0 0 6px 0;
+}
+
+.matrix-tbl .highlight-row td {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+}
+
+.matrix-tbl .god-row td {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+}
+
+.pity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pity-item {
+  background: rgba(0, 0, 0, 0.35);
+  border-left: 3px solid #38bdf8;
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+.pity-title {
+  font-size: 11.5px;
+  font-weight: bold;
+  color: #38bdf8;
+  margin-bottom: 2px;
+}
+
+.pity-content {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.rule-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.rule-card h4 {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #ffd700;
+}
+
+.rule-card p {
+  margin: 0;
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+
+/* ========================================================
+   修仙尊号与道门头衔系统 (Titles)
+   ======================================================== */
+.hero-title-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd700;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.25);
+  transition: all 0.2s ease;
+  user-select: none;
+  margin-bottom: 2px;
+}
+
+.hero-title-badge:hover {
+  border-color: #ffd700;
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.55);
+}
+
+.title-select-modal-card {
+  max-width: 380px;
+  width: 92%;
+  background: linear-gradient(180deg, #0f172a 0%, #090d16 100%) !important;
+  border: 1px solid rgba(255, 215, 0, 0.35) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 0.2) !important;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.title-modal-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 6px 0 12px 0;
+  line-height: 1.4;
+}
+
+.title-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.title-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.title-card-item.is-equipped {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.title-card-item.is-locked {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+.title-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title-card-name {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.title-card-desc {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.title-card-power {
+  font-size: 10px;
+  color: #38ef7d;
+  font-weight: 700;
+}
+
+.btn-title-action {
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-title-action.btn-equip {
+  background: linear-gradient(135deg, #0284c7, #0d9488);
+  color: #ffffff;
+}
+
+.btn-title-action.btn-equip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+}
+
+.btn-title-action.btn-equipped-tag {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  cursor: default;
+}
+
+.btn-title-action.btn-locked-tag {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+
+/* ========================================================
+   锁妖天关 · 镇妖塔 (Demon Tower)
+   ======================================================== */
+.demon-tower-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.45);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 12px 0 10px 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6), inset 0 0 16px rgba(168, 85, 247, 0.15);
+  overflow: hidden;
+}
+
+.demon-tower-glow {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.demon-tower-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.tower-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.tower-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: #f8fafc;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+  flex: 1;
+  margin-left: 8px;
+}
+
+.tower-floor-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #c084fc;
+}
+
+.demon-tower-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tower-target-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tower-target-label {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.tower-boss-name {
+  font-size: 13px;
+  color: #fca5a5;
+  font-weight: 800;
+}
+
+.tower-req-power {
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.btn-enter-demon-tower {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+  border: 1px solid #c084fc;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.45);
+  transition: all 0.2s ease;
+}
+
+.btn-enter-demon-tower:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 18px rgba(192, 132, 252, 0.7);
+}
+
+.btn-enter-demon-tower:active {
+  transform: scale(0.96);
+}
+
+/* 锁妖天关详情挑战弹窗 */
+.demon-tower-modal-card {
+  max-width: 380px;
+  width: 92%;
+  background: linear-gradient(180deg, #0f172a 0%, #090d16 100%) !important;
+  border: 1.5px solid rgba(168, 85, 247, 0.45) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(168, 85, 247, 0.25) !important;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.tower-stage-banner {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+  margin-bottom: 12px;
+}
+
+.tower-boss-visual-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tower-boss-avatar-preview {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.6));
+}
+
+.tower-power-compare {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 6px 14px;
+}
+
+.power-compare-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.power-compare-item .label {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.power-compare-item .val.player {
+  font-size: 14px;
+  font-weight: 800;
+  color: #38ef7d;
+}
+
+.power-compare-item .val.req {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.power-compare-vs {
+  font-size: 12px;
+  font-weight: 900;
+  color: #f43f5e;
+}
+
+.tower-rewards-preview {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px dashed rgba(255, 215, 0, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+}
+
+.rewards-preview-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 6px;
+}
+
+.rewards-items-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reward-pill-tag {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 239, 125, 0.35);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #86efac;
+}
+
+.btn-tower-fight {
+  width: 100%;
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%) !important;
+  border-color: #c084fc !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px;
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.5) !important;
+}
+

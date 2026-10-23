@@ -1,0 +1,683 @@
+/* ==========================================================
+   css/story.css - 剧情对白泡泡舞台与作弊器阵灵系统立绘
+   ========================================================== */
+
+/* =========================================================================
+   弹窗 18: 仙侠RPG沉浸式剧情对白泡泡舞台 (.story-theatre-card)
+   全新范式：告别即时通讯软件，回归纯正仙侠手游RPG剧情气泡舞台
+   ========================================================================= */
+.story-dialog-overlay {
+  background: radial-gradient(circle at 50% 60%, rgba(10, 18, 35, 0.78) 0%, rgba(4, 7, 16, 0.92) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+}
+
+/* 沉浸式对白全屏舞台容器 (告别呆板弹窗框，融入游戏场景) */
+.story-overhead-theatre,
+.story-theatre-card,
+.story-chat-card {
+  max-width: 440px;
+  width: 94%;
+  height: 88vh;
+  max-height: 680px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+  cursor: pointer;
+  user-select: none;
+}
+
+.story-halo-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 280px;
+  color: rgba(212, 175, 55, 0.03);
+  pointer-events: none;
+  animation: spinSlow 40s linear infinite;
+  z-index: 1;
+}
+
+/* 顶部轻量浮动章节挂件 (仙侠卷轴风) */
+.story-theatre-header,
+.story-overhead-header,
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 12px rgba(212, 175, 55, 0.15);
+  position: relative;
+  z-index: 2;
+  margin: 6px 4px 0 4px;
+}
+
+.story-theatre-title-box,
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.story-theatre-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #ffd700;
+  font-weight: bold;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.story-theatre-titles,
+.chat-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.story-theatre-title,
+.chat-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-theatre-speaker-tag,
+.chat-subtitle {
+  font-size: 10.5px;
+  color: #ffd700;
+  opacity: 0.88;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-skip-btn,
+.chat-skip-btn,
+.btn-story-skip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #ffd700;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.story-skip-btn:hover,
+.chat-skip-btn:hover,
+.btn-story-skip:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #ffffff;
+  border-color: #ffd700;
+}
+
+/* 核心对白舞台：林凡与系统对立站位，气泡在其头顶上方展示 */
+.story-overhead-stage,
+.story-stage-actors {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 10px 8px 30px 8px;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 角色整体单元 (头顶气泡 + 立绘形象) */
+.overhead-actor-wrap,
+.stage-actor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 47%;
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 角色头顶气泡主体 (悬浮于角色立绘上方 14px，绝不遮挡角色！向上自适应扩展) */
+.actor-overhead-bubble {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  width: min(285px, calc(100vw - 40px));
+  max-width: calc(100vw - 40px);
+  min-height: 54px;
+  max-height: 38vh;
+  overflow-y: auto;
+  padding: 12px 14px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+  z-index: 10;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.actor-overhead-bubble::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes bubbleBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+  }
+  65% {
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 激活说话者的头顶气泡弹入显现 */
+.stage-actor.active-speaker .actor-overhead-bubble {
+  opacity: 1;
+  pointer-events: auto;
+  animation: bubbleBounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 非说话者的头顶气泡温和隐藏 */
+.stage-actor:not(.active-speaker) .actor-overhead-bubble {
+  opacity: 0;
+  transform: scale(0.85) translateY(12px);
+  pointer-events: none;
+}
+
+.bubble-speaker-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bubble-speaker-tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.bubble-body-text {
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  word-break: break-word;
+}
+
+/* 宿主林凡气泡 (翠竹青玉风，向下指向林凡头部) */
+.bubble-player {
+  left: 0;
+  background: linear-gradient(145deg, rgba(14, 30, 44, 0.98) 0%, rgba(8, 20, 30, 0.98) 100%);
+  border: 1.5px solid rgba(52, 232, 158, 0.75);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 16px rgba(52, 232, 158, 0.25);
+  color: #f1f5f9;
+}
+
+.bubble-player .bubble-speaker-tag {
+  color: #34e89e;
+}
+
+/* 林凡气泡尖角向下精准对齐头像中心 */
+.pointer-player {
+  position: absolute;
+  bottom: -10px;
+  left: 80px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid rgba(14, 30, 44, 0.98);
+  filter: drop-shadow(0 2px 3px rgba(52, 232, 158, 0.6));
+}
+
+/* 系统气泡 (上古玄金神灵风，向下指向系统灵识头部) */
+.bubble-system {
+  right: 0;
+  background: linear-gradient(145deg, rgba(32, 22, 48, 0.98) 0%, rgba(16, 12, 28, 0.98) 100%);
+  border: 1.5px solid rgba(255, 215, 0, 0.85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 20px rgba(255, 215, 0, 0.35);
+  color: #fef08a;
+}
+
+.bubble-system .bubble-speaker-tag {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* 系统气泡尖角向下精准对齐系统头像中心 */
+.pointer-system {
+  position: absolute;
+  bottom: -10px;
+  right: 80px;
+  transform: translateX(50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid rgba(32, 22, 48, 0.98);
+  filter: drop-shadow(0 2px 3px rgba(255, 215, 0, 0.6));
+}
+
+/* 系统未激活/沉眠状态 (序章凡人阶段未觉醒作弊器) */
+.stage-actor.actor-dormant {
+  opacity: 0.38;
+  filter: grayscale(0.5);
+  transform: scale(0.92);
+}
+
+.stage-actor.actor-dormant .actor-portrait-frame {
+  border-color: #64748b;
+  box-shadow: none;
+}
+
+.stage-actor.actor-dormant .actor-nameplate {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+/* 系统苏醒爆发动效 */
+.stage-actor.actor-awakened {
+  animation: systemAwakenBurst 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes systemAwakenBurst {
+  0% {
+    transform: scale(0.9);
+    filter: brightness(0.6);
+  }
+  50% {
+    transform: scale(1.15);
+    filter: brightness(1.8) drop-shadow(0 0 25px #ffd700);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* 角色立绘框与名牌 */
+.actor-portrait-frame {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.actor-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 宿主玩家立绘框 */
+.actor-player .actor-portrait-frame {
+  border: 2.5px solid #34e89e;
+  background: radial-gradient(circle, #18382c 0%, #0d2118 100%);
+  box-shadow: 0 0 14px rgba(52, 232, 158, 0.4);
+}
+
+/* 系统阵灵立绘框与法环 */
+.actor-cheat .actor-portrait-frame,
+.actor-system .actor-portrait-frame {
+  border: 2.5px solid #ffd700;
+  background: radial-gradient(circle, #2e2815 0%, #15140d 100%);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.5);
+}
+
+.actor-nameplate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.player-tag {
+  background: rgba(52, 232, 158, 0.15);
+  border: 1px solid rgba(52, 232, 158, 0.45);
+  color: #34e89e;
+}
+
+.cheat-tag {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  color: #ffd700;
+}
+
+.actor-icon {
+  font-size: 11px;
+}
+
+/* 舞台中央法则共鸣微光 */
+.stage-resonance-fx {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.5;
+  pointer-events: none;
+  margin-bottom: 20px;
+}
+
+.resonance-taiji {
+  font-size: 26px;
+  color: rgba(212, 175, 55, 0.7);
+  animation: spinSlow 20s linear infinite;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+.resonance-sparkles {
+  font-size: 11px;
+  animation: pulseAvatar 2s infinite ease-in-out;
+}
+
+/* 说话角色聚焦聚光灯高亮 (Active Speaker Spotlight) */
+.stage-actor.active-speaker {
+  transform: scale(1.08) translateY(-4px);
+  opacity: 1;
+  filter: brightness(1.2);
+}
+
+.stage-actor.active-speaker .actor-portrait-frame {
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.8);
+}
+
+.stage-actor.active-speaker.actor-player .actor-portrait-frame {
+  box-shadow: 0 0 24px rgba(52, 232, 158, 0.8);
+}
+
+.stage-actor:not(.active-speaker) {
+  transform: scale(0.92);
+  opacity: 0.45;
+  filter: grayscale(30%) brightness(0.72);
+}
+
+/* 底部推进行动栏 */
+.story-overhead-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 12px;
+}
+
+.story-overhead-footer #btn-story-next {
+  display: none !important;
+}
+
+/* 游戏对白剧情气泡流主视窗 (兼容老测试) */
+.game-bubble-stream,
+.chat-stream-container {
+  display: none !important;
+}
+
+.game-bubble-stream::-webkit-scrollbar,
+.chat-stream-container::-webkit-scrollbar {
+  width: 5px;
+}
+.game-bubble-stream::-webkit-scrollbar-track,
+.chat-stream-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.game-bubble-stream::-webkit-scrollbar-thumb,
+.chat-stream-container::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 3px;
+}
+
+/* 气泡单行容器 */
+.game-bubble-row,
+.chat-msg-row {
+  display: flex;
+  width: 100%;
+  animation: bubblePop 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bubblePop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubble-left,
+.chat-msg-left {
+  justify-content: flex-start;
+}
+
+.bubble-right,
+.chat-msg-right {
+  justify-content: flex-end;
+}
+
+/* 游戏剧情对话气泡卡片主体 */
+.game-bubble-card {
+  position: relative;
+  max-width: 88%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bubble-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.bubble-sender-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.bubble-intent-tag {
+  font-size: 9.5px;
+  opacity: 0.8;
+  letter-spacing: 0.2px;
+}
+
+.bubble-content-text {
+  font-size: 13.5px;
+  line-height: 1.6;
+  letter-spacing: 0.35px;
+  word-break: break-word;
+}
+
+/* 左侧：宿主玩家气泡 (翠玉幽墨风，指向左侧玩家立绘) */
+.bubble-player .game-bubble-card,
+.chat-msg-left .chat-bubble {
+  background: linear-gradient(135deg, rgba(14, 32, 28, 0.96), rgba(10, 22, 30, 0.96));
+  border: 1.5px solid rgba(52, 232, 158, 0.55);
+  border-radius: 4px 14px 14px 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 10px rgba(52, 232, 158, 0.15);
+  align-self: flex-start;
+}
+
+.bubble-player .bubble-sender-badge {
+  color: #34e89e;
+}
+
+.bubble-player .bubble-intent-tag {
+  color: rgba(52, 232, 158, 0.75);
+}
+
+.bubble-player .bubble-content-text {
+  color: #f1f5f9;
+}
+
+/* 宿主气泡指向尖角 (指向左立绘) */
+.bubble-player .bubble-tail {
+  position: absolute;
+  top: -8px;
+  left: 14px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 8px solid rgba(52, 232, 158, 0.7);
+}
+
+/* 右侧：作弊器系统气泡 (鎏金赤玄风，指向右侧阵灵立绘) */
+.bubble-cheat .game-bubble-card,
+.chat-msg-right .chat-bubble {
+  background: linear-gradient(135deg, rgba(28, 24, 12, 0.96), rgba(18, 26, 42, 0.96));
+  border: 1.5px solid rgba(255, 215, 0, 0.65);
+  border-radius: 14px 4px 14px 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 215, 0, 0.2);
+  align-self: flex-end;
+}
+
+.bubble-cheat .bubble-sender-badge {
+  color: #ffd700;
+}
+
+.bubble-cheat .bubble-intent-tag {
+  color: rgba(255, 215, 0, 0.75);
+}
+
+.bubble-cheat .bubble-content-text {
+  color: #fef08a;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.15);
+}
+
+/* 作弊器气泡指向尖角 (指向右立绘) */
+.bubble-cheat .bubble-tail {
+  position: absolute;
+  top: -8px;
+  right: 14px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 8px solid rgba(255, 215, 0, 0.75);
+}
+
+/* NPC 角色气泡 (紫霄玄秘风) */
+.bubble-npc .game-bubble-card {
+  background: linear-gradient(135deg, rgba(32, 18, 42, 0.96), rgba(18, 14, 28, 0.96));
+  border: 1.5px solid rgba(192, 132, 252, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 10px rgba(192, 132, 252, 0.2);
+  align-self: center;
+}
+
+.bubble-npc .bubble-sender-badge {
+  color: #c084fc;
+}
+
+.bubble-npc .bubble-content-text {
+  color: #f3e8ff;
+}
+
+/* 底部推进行动栏 (摒弃假聊天输入框，回归经典RPG点击继续手感) */
+.story-theatre-footer,
+.chat-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(10, 15, 24, 0.96);
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.story-tap-prompt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.tap-hint-arrow {
+  color: #ffd700;
+  font-size: 11px;
+}
+
+.btn-bubble-next,
+.btn-chat-send,
+.btn-story-next {
+  padding: 8px 22px;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #070a10;
+  border: 1px solid #ffe57f;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+  transition: all 0.2s;
+}
+
+.btn-bubble-next:hover,
+.btn-chat-send:hover,
+.btn-story-next:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+}
+

@@ -1,0 +1,1600 @@
+/* ==========================================================
+   css/dragon-spout.css - 周天神龙机台、12格陈列架、八卦底座与狂暴顿悟
+   ========================================================== */
+
+/* ============================================================
+ * 周天神龙 · 乾坤双柜 (Option B: 青铜古玉天工神机) 核心视觉样式
+ * ============================================================ */
+
+/* 背景与标题 */
+.dragon-header-title-box {
+  width: 100%;
+  text-align: center;
+  margin: 2px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.dragon-main-title {
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffd700 45%, #b8860b 80%, #795548 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.45)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
+  margin: 0;
+}
+
+/* 核心舞台区：神龙居顶，12格宝萃阵列在底，弹道穿梭其间 */
+.dragon-spout-stage {
+  width: 100%;
+  max-width: 440px;
+  height: 370px;
+  position: relative;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 22%, rgba(0, 60, 60, 0.45) 0%, rgba(3, 10, 18, 0.92) 75%),
+              linear-gradient(180deg, rgba(5, 15, 25, 0.6) 0%, rgba(2, 6, 12, 0.98) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85), 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* 穹顶神龙法相 (视觉主宰区 · 3D深度仙境机栝融合) */
+.dragon-head-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 250px;
+  height: 165px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: center center;
+}
+
+/* 后景：周天八卦天机光轮 (深邃神阵依托，消除悬空贴片感) */
+.dragon-celestial-halo {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 229, 255, 0.35);
+  box-shadow: inset 0 0 30px rgba(0, 229, 255, 0.15), 0 0 25px rgba(0, 229, 255, 0.12);
+  background: radial-gradient(circle, rgba(10, 32, 50, 0.6) 0%, rgba(3, 12, 22, 0.88) 72%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+  animation: celestial-halo-spin 60s linear infinite;
+  transform-origin: center center;
+}
+
+.dragon-celestial-halo::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  box-shadow: inset 0 0 16px rgba(255, 215, 0, 0.15);
+}
+
+.dragon-celestial-halo::after {
+  content: '';
+  position: absolute;
+  inset: 32px;
+  border-radius: 50%;
+  border: 1px dotted rgba(0, 229, 255, 0.4);
+}
+
+@keyframes celestial-halo-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 龙威动态光晕气场 (随狂暴蓄力与状态色彩演化) */
+.dragon-rage-aura {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 230px;
+  height: 145px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.8s ease, filter 0.8s ease, opacity 0.5s ease;
+  transform-origin: center center;
+}
+
+.dragon-rage-aura.rage-calm {
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.35) 0%, rgba(0, 150, 200, 0.12) 55%, transparent 78%);
+  animation: aura-calm-pulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes aura-calm-pulse {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.06); opacity: 0.9; }
+}
+
+.dragon-rage-aura.rage-warm {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 140, 0, 0.2) 58%, transparent 80%);
+  animation: aura-warm-pulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes aura-warm-pulse {
+  0% { transform: scale(0.96); opacity: 0.7; }
+  100% { transform: scale(1.08); opacity: 1.0; }
+}
+
+.dragon-rage-aura.rage-blazing {
+  background: radial-gradient(circle, rgba(255, 80, 0, 0.68) 0%, rgba(255, 20, 0, 0.28) 62%, transparent 85%);
+  animation: aura-blazing-pulse 1.3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 16px rgba(255, 60, 0, 0.6));
+}
+
+@keyframes aura-blazing-pulse {
+  0% { transform: scale(0.97); opacity: 0.75; }
+  100% { transform: scale(1.12); opacity: 1.0; }
+}
+
+.dragon-rage-aura.rage-frenzy {
+  background: radial-gradient(circle, rgba(255, 0, 60, 0.88) 0%, rgba(255, 215, 0, 0.55) 52%, transparent 90%);
+  animation: aura-frenzy-pulse 0.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 25px rgba(255, 0, 60, 0.85)) drop-shadow(0 0 35px #ffd700);
+}
+
+@keyframes aura-frenzy-pulse {
+  0% { transform: scale(0.98); opacity: 0.85; }
+  100% { transform: scale(1.18); opacity: 1.0; }
+}
+
+/* 中景：透明镂空神龙法相本体 */
+.dragon-head-sprite {
+  width: 225px;
+  height: 152px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.45)) drop-shadow(0 10px 24px rgba(0, 0, 0, 0.95));
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: dragon-idle-breathe 4s ease-in-out infinite alternate;
+  z-index: 2;
+  position: relative;
+}
+
+@keyframes dragon-idle-breathe {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.38)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95)); }
+  100% { transform: translateY(3px) scale(1.02); filter: drop-shadow(0 0 22px rgba(0, 229, 255, 0.6)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.98)); }
+}
+
+/* 前景：仙道瑞气祥云 (前后景深遮挡，消除下颔截断生硬感) */
+.dragon-mist-veil {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  height: 38px;
+  pointer-events: none;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 18px;
+  box-sizing: border-box;
+}
+
+.dragon-cloud-scroll {
+  width: 90px;
+  height: 32px;
+  background: radial-gradient(ellipse at center, rgba(14, 40, 60, 0.95) 0%, rgba(6, 20, 32, 0.8) 55%, transparent 80%);
+  filter: blur(2px) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  border-radius: 50% 50% 40% 40%;
+  animation: cloud-float 4.5s ease-in-out infinite alternate;
+}
+
+.dragon-cloud-scroll.cloud-left {
+  transform: rotate(-5deg);
+  animation-delay: 0s;
+}
+
+.dragon-cloud-scroll.cloud-right {
+  transform: rotate(5deg);
+  animation-delay: 2.2s;
+}
+
+@keyframes cloud-float {
+  0% { transform: translateY(0) scale(0.95); opacity: 0.7; }
+  100% { transform: translateY(-4px) scale(1.05); opacity: 0.95; }
+}
+
+.dragon-head-sprite.charging {
+  animation: dragon-charge-pulse 0.22s infinite alternate !important;
+  filter: drop-shadow(0 0 28px #00e5ff) drop-shadow(0 0 40px #ffd700) !important;
+}
+
+@keyframes dragon-charge-pulse {
+  0% { transform: scale(1.01) rotate(-0.5deg); }
+  100% { transform: scale(1.05) rotate(0.5deg); }
+}
+
+.dragon-head-sprite.spouting {
+  transform: translateY(-4px) scale(1.06) !important;
+  filter: drop-shadow(0 0 35px #ffffff) drop-shadow(0 0 50px #00e5ff) !important;
+}
+
+/* 遇极品神装/大爆时的戏剧性刹车聚灵充能 (Drama Pause) */
+.dragon-head-sprite.epic-charging {
+  animation: dragon-epic-charge-pulse 0.14s infinite alternate !important;
+  filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 0 55px #a855f7) brightness(1.3) !important;
+}
+
+@keyframes dragon-epic-charge-pulse {
+  0% { transform: scale(1.02) rotate(-1deg); }
+  100% { transform: scale(1.07) rotate(1deg); }
+}
+
+/* 极品大货落地微震屏 (强化重音与打击感) */
+.view-slots-shake {
+  animation: screen-slots-micro-shake 0.22s ease-out !important;
+}
+
+@keyframes screen-slots-micro-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 3px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-1px, 2px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 龙息核心光聚 */
+.dragon-breath-glow {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.9) 0%, rgba(255, 215, 0, 0.5) 50%, transparent 80%);
+  filter: blur(5px);
+  opacity: 0.7;
+  animation: breath-glow-pulse 2s ease-in-out infinite alternate;
+  z-index: 3;
+  transform-origin: center center;
+}
+
+@keyframes breath-glow-pulse {
+  0% { opacity: 0.45; transform: scale(0.85); }
+  100% { opacity: 0.9; transform: scale(1.2); }
+}
+
+/* 龙头下颔内嵌式真龙威势细能量槽 (去文字化) */
+.dragon-rage-gauge-wrap {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 160px;
+  height: 4px;
+  background: rgba(4, 10, 18, 0.88);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 3px;
+  overflow: hidden;
+  z-index: 4;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.dragon-rage-gauge-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff 0%, #ffd700 70%, #ff3d00 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
+  transition: width 0.35s ease, background 0.4s ease;
+}
+
+/* 吐宝 Canvas 轨迹层 */
+.dragon-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* 奖励呈现区：一排6个，共两排12格 (高品先列，自动前置归序) */
+.dragon-rewards-showcase {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  height: 162px;
+  background: linear-gradient(180deg, rgba(8, 16, 28, 0.94) 0%, rgba(3, 8, 16, 0.98) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 10px;
+  padding: 4px 6px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 4px 16px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+}
+
+.rewards-showcase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1px 4px 3px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 4px;
+}
+
+.showcase-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.showcase-icon {
+  font-size: 11px;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+}
+
+.showcase-title {
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffd700;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.showcase-rule-hint {
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+/* 12槽位网格 (6列 x 2行) */
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 62px 62px;
+  gap: 4px;
+  flex: 1;
+}
+
+/* 单个宝萃槽位 */
+.dragon-reward-slot {
+  background: rgba(13, 20, 36, 0.82);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+  height: 62px;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dragon-reward-slot:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 229, 255, 0.7);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
+/* 空槽状态 */
+.slot-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.slot-rune-icon {
+  font-size: 11px;
+  font-weight: 900;
+  color: #475569;
+  letter-spacing: 0.5px;
+}
+
+/* 宝萃展示内容 */
+.slot-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  box-sizing: border-box;
+  position: relative;
+  min-height: 0;
+}
+
+.slot-content.hidden {
+  display: none;
+}
+
+.slot-item-icon {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  margin-bottom: 1px;
+  transition: transform 0.2s ease;
+}
+
+.dragon-reward-slot:hover .slot-item-icon {
+  transform: scale(1.1);
+}
+
+.slot-item-name {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 9px;
+  font-weight: bold;
+  color: #e2e8f0;
+  max-width: 96%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  line-height: 1.1;
+}
+
+.slot-item-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #ffd700;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  padding: 0 3px;
+  border-radius: 3px;
+  white-space: nowrap;
+  line-height: 1.1;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* 宝萃撞击爆发动效与弹出动效 */
+.dragon-reward-slot.impact-burst {
+  animation: slot-burst-impact 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes slot-burst-impact {
+  0% { transform: scale(0.75); filter: brightness(2.2); box-shadow: 0 0 25px #00e5ff; }
+  50% { transform: scale(1.15); filter: brightness(1.6); box-shadow: 0 0 18px #ffd700; }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 高品阶奖励插入动画 (放大爆开闪耀，体现高品排到前列的爽感) */
+.dragon-reward-slot.slot-inserted-burst {
+  animation: slot-insert-burst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes slot-insert-burst {
+  0% { transform: scale(0.65) translateY(-6px); filter: brightness(2.5); box-shadow: 0 0 22px #ffd700; }
+  50% { transform: scale(1.18) translateY(0); filter: brightness(1.7); box-shadow: 0 0 16px #00e5ff; }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 极品大货插入专属光环爆破 (大爆冲击) */
+.dragon-reward-slot.slot-epic-burst {
+  animation: slot-epic-burst-anim 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) both !important;
+}
+
+@keyframes slot-epic-burst-anim {
+  0% {
+    transform: scale(0.6) translateY(-10px);
+    filter: brightness(3.5);
+    box-shadow: 0 0 35px #ffd700, 0 0 60px #ffd700;
+  }
+  40% {
+    transform: scale(1.26) translateY(0);
+    filter: brightness(2.0);
+    box-shadow: 0 0 28px #a855f7, 0 0 45px #38ef7d;
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* 连续抽奖同类堆叠数字跳动果冻动效 */
+.slot-item-badge.bump-active {
+  display: inline-block;
+  animation: badge-number-bump 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes badge-number-bump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.45); color: #38ef7d; text-shadow: 0 0 8px #38ef7d; }
+  100% { transform: scale(1); color: #ffd700; text-shadow: none; }
+}
+
+/* 槽位品阶光边规范 */
+.dragon-reward-slot.quality-border-q1 { border-color: rgba(148, 163, 184, 0.6); }
+.dragon-reward-slot.quality-border-q2 { border-color: rgba(82, 196, 26, 0.85); box-shadow: 0 0 6px rgba(82, 196, 26, 0.35); }
+.dragon-reward-slot.quality-border-q3 { border-color: rgba(24, 144, 255, 0.9); box-shadow: 0 0 8px rgba(24, 144, 255, 0.4); }
+.dragon-reward-slot.quality-border-q4 { border-color: rgba(168, 85, 247, 0.95); box-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+.dragon-reward-slot.quality-border-q5 { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
+.dragon-reward-slot.quality-border-q6 {
+  border-color: rgba(239, 68, 68, 1) !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.75) !important;
+  animation: q6-slot-glow 1.5s infinite alternate;
+}
+
+@keyframes q6-slot-glow {
+  0% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+  100% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.95); }
+}
+
+.dragon-reward-slot.quality-border-battle {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 14px rgba(255, 77, 79, 0.8) !important;
+  animation: monster-slot-pulse 1.2s infinite alternate;
+}
+
+@keyframes monster-slot-pulse {
+  0% { box-shadow: 0 0 8px rgba(255, 77, 79, 0.4); }
+  100% { box-shadow: 0 0 16px rgba(255, 77, 79, 0.9); }
+}
+
+/* 妖兽伏妖现世出战横幅 (避免突然切屏撕裂) */
+.dragon-battle-prompt {
+  width: 100%;
+  max-width: 440px;
+  margin: 4px auto 2px auto;
+  background: linear-gradient(135deg, rgba(45, 10, 10, 0.95) 0%, rgba(20, 5, 5, 0.98) 100%);
+  border: 1px solid rgba(255, 77, 79, 0.7);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px rgba(255, 77, 79, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  animation: battle-prompt-pulse 1.5s infinite alternate;
+}
+
+@keyframes battle-prompt-pulse {
+  0% { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 77, 79, 0.3); }
+  100% { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 18px rgba(255, 77, 79, 0.7); }
+}
+
+.battle-prompt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-prompt-warn {
+  font-size: 11px;
+  font-weight: 900;
+  color: #ff4d4f;
+  letter-spacing: 1px;
+}
+
+.battle-prompt-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.btn-dragon-engage-battle {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid #ffd700;
+  border-radius: 6px;
+  padding: 7px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 10px rgba(231, 76, 60, 0.5);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-dragon-engage-battle:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 14px rgba(231, 76, 60, 0.8);
+}
+
+.btn-dragon-engage-battle:active {
+  transform: scale(0.96);
+}
+
+/* 即时换装对比栏 (核心决策) */
+.dragon-gear-compare-bar {
+  width: 100%;
+  max-width: 440px;
+  margin: 4px auto 2px auto;
+  background: linear-gradient(135deg, rgba(8, 20, 32, 0.95) 0%, rgba(4, 10, 18, 0.98) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 229, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.compare-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.compare-current-desc {
+  color: #94a3b8;
+  max-width: 38%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compare-arrow {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.compare-new-desc {
+  color: #ffd700;
+  font-weight: bold;
+  max-width: 38%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compare-power-diff {
+  font-weight: 900;
+  font-size: 14px;
+  color: #52c41a;
+  text-shadow: 0 0 8px rgba(82, 196, 26, 0.8);
+}
+
+.compare-action-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-gear-equip {
+  flex: 1.3;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-gear-equip:active {
+  transform: scale(0.96);
+  filter: brightness(1.1);
+}
+
+.btn-gear-smelt {
+  flex: 0.85;
+  background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.btn-gear-smelt:active {
+  transform: scale(0.96);
+}
+
+/* 真龙狂暴蓄力条 */
+.dragon-rage-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 2px auto;
+  box-sizing: border-box;
+  padding: 0 4px;
+}
+
+.dragon-rage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.dragon-rage-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ff9800;
+  text-shadow: 0 0 6px rgba(255, 152, 0, 0.5);
+}
+
+.dragon-rage-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd700;
+}
+
+.dragon-rage-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 152, 0, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.dragon-rage-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00 0%, #ffd700 60%, #ff3d00 100%);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.8);
+  transition: width 0.3s ease;
+}
+
+/* 八卦控制核心按钮 (纯正无拉伸圆形) */
+.btn-dragon-bagua-spin {
+  display: flex !important;
+  flex: 0 0 76px !important;
+  width: 76px !important;
+  height: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  aspect-ratio: 1 / 1 !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, #2d231b 0%, #15100c 80%, #0a0806 100%) !important;
+  border: 2px solid #ffd700 !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(184, 134, 11, 0.6) !important;
+  cursor: pointer;
+  padding: 0 !important;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-dragon-bagua-spin:hover {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(255, 215, 0, 0.8) !important;
+}
+
+.btn-dragon-bagua-spin:active {
+  transform: scale(0.94);
+}
+
+.dragon-bagua-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+  animation: bagua-dial-spin 30s linear infinite;
+}
+
+@keyframes bagua-dial-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-dragon-bagua-spin .spin-btn-title {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  margin-top: -2px;
+}
+
+.btn-auto-filter {
+  background: rgba(30, 41, 59, 0.85);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-auto-filter:hover {
+  background: rgba(51, 65, 85, 0.95);
+}
+
+/* 挂机智能筛选浮层 */
+.auto-filter-popover {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  width: 260px;
+  background: rgba(10, 16, 26, 0.97);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.95), 0 0 15px rgba(0, 229, 255, 0.2);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.btn-close-filter {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+  accent-color: #2ecc71;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   周天神龙吐宝 5 大核心优化交互样式
+   1. 拥有灵机显示与消耗飘字
+   2. 临时背包一键收纳按钮
+   3. 龙头灵机灌注高光动效
+   4. 引龙吐宝圆形水缸注满进度条
+   ========================================================================== */
+
+/* 1. 拥有灵机显示在 注灵 左侧 */
+.player-lingji-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 16px;
+  padding: 3px 10px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+}
+
+.player-lingji-container .lingji-icon {
+  font-size: 13px;
+  filter: drop-shadow(0 0 4px #00e5ff);
+}
+
+.player-lingji-container .lingji-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.player-lingji-container .current-lingji-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #00e5ff;
+  font-family: "STKaiti", "KaiTi", sans-serif;
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.6);
+}
+
+/* 抽奖灵机减少飘字 (-25) */
+.lingji-cost-float {
+  position: absolute;
+  top: -16px;
+  right: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ff4d4f;
+  text-shadow: 0 0 8px rgba(255, 77, 79, 0.95), 0 1px 3px #000;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.lingji-cost-float.anim-cost-float {
+  animation: cost-float-surge 0.85s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes cost-float-surge {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.25);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.9);
+  }
+}
+
+/* 龙头灵机灌注高光与气场反馈 */
+.dragon-head-box.infusing {
+  animation: dragon-infuse-flare 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.dragon-head-box.infusing .dragon-head-aura {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 25px #00e5ff) drop-shadow(0 0 40px #ffd700) !important;
+  transform: scale(1.08) !important;
+}
+
+.dragon-head-box.infusing .dragon-mouth-glow {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1.8) !important;
+  box-shadow: 0 0 35px #00e5ff, 0 0 60px #ffd700 !important;
+}
+
+@keyframes dragon-infuse-flare {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.04); filter: brightness(1.6) drop-shadow(0 0 25px rgba(0, 229, 255, 0.9)); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 2. 临时背包一键收纳按钮 */
+.btn-collect-all-slots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%);
+  border: 1px solid #38bdf8;
+  border-radius: 12px;
+  padding: 2px 9px;
+  color: #f0fdf4;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-collect-all-slots:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+  background: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
+}
+
+.btn-collect-all-slots:active {
+  transform: scale(0.95);
+}
+
+.btn-collect-all-slots .collect-icon {
+  font-size: 11px;
+}
+
+/* 过滤设置按钮 */
+.btn-filter-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  padding: 2px 7px;
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filter-settings:hover {
+  border-color: #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+.btn-filter-settings:active {
+  transform: scale(0.95);
+}
+
+/* 过滤设置弹窗卡片 */
+.filter-settings-modal-card {
+  max-width: 360px;
+  width: 90%;
+  background: linear-gradient(180deg, #0f172a 0%, #090d16 100%) !important;
+  border: 1px solid rgba(0, 229, 255, 0.35) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 229, 255, 0.25) !important;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.filter-hint-banner {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px dashed rgba(255, 215, 0, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #fde047;
+  line-height: 1.4;
+  margin: 12px 0 14px 0;
+}
+
+.filter-options-group {
+  margin-bottom: 14px;
+}
+
+.filter-group-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: rgba(30, 41, 59, 0.35);
+  margin-bottom: 6px;
+  transition: background 0.15s ease;
+}
+
+.filter-checkbox-row:hover {
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+  accent-color: #00e5ff;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.filter-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.filter-badge.badge-q1 { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+.filter-badge.badge-q2 { background: rgba(56, 239, 125, 0.15); color: #86efac; border: 1px solid #22c55e; }
+.filter-badge.badge-q3 { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid #0284c7; }
+.filter-badge.badge-upgrade { background: rgba(255, 215, 0, 0.15); color: #fde047; border: 1px solid #eab308; }
+.filter-badge.badge-lesser { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid #e11d48; }
+
+.filter-row-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+/* 5. 引龙吐宝水缸进度条 (直接显示在八卦 icon 上) */
+.btn-dragon-bagua-spin {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.water-tank-wrapper {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.water-tank-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.6) 0%, rgba(13, 148, 136, 0.8) 100%);
+  transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.7);
+}
+
+.water-wave {
+  position: absolute;
+  top: -8px;
+  left: -50%;
+  width: 200%;
+  height: 16px;
+  border-radius: 40%;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.water-wave.wave-1 {
+  animation: water-wave-anim-1 3s infinite linear;
+}
+
+.water-wave.wave-2 {
+  top: -6px;
+  background: rgba(0, 229, 255, 0.4);
+  animation: water-wave-anim-2 4s infinite linear;
+}
+
+@keyframes water-wave-anim-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes water-wave-anim-2 {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.spin-btn-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 3;
+  line-height: 1;
+}
+
+.water-tank-badge {
+  position: static !important;
+  margin-top: 1px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(0, 229, 255, 0.7);
+  border-radius: 6px;
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #00e5ff;
+  line-height: 1.2;
+  z-index: 5;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.8);
+}
+
+/* 按钮内部八卦图标与文字浮在水缸液体上方 */
+.btn-dragon-bagua-spin .dragon-bagua-icon,
+.btn-dragon-bagua-spin .spin-btn-title {
+  position: relative;
+  z-index: 3;
+}
+
+/* 水缸蓄满 100% (满缸金龙炎态) */
+.btn-dragon-bagua-spin.tank-full {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.95), inset 0 0 15px rgba(255, 140, 0, 0.9) !important;
+  animation: tank-full-glow 1.2s infinite alternate ease-in-out;
+}
+
+.btn-dragon-bagua-spin.tank-full .water-tank-liquid {
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.85) 0%, rgba(255, 69, 0, 0.95) 100%) !important;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.9) !important;
+}
+
+.btn-dragon-bagua-spin.tank-full .water-tank-badge {
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  background: rgba(220, 38, 38, 0.9) !important;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+  animation: pulse-icon 1s infinite alternate;
+}
+
+.btn-dragon-bagua-spin.tank-full .spin-btn-title {
+  color: #fffb00 !important;
+  text-shadow: 0 0 8px #ff4500, 0 1px 2px #000 !important;
+}
+
+@keyframes tank-full-glow {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+  100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 69, 0, 0.8); }
+}
+
+/* 宝萃展示区顶部操作栏 (自动收纳开关 + 一键收纳按钮) */
+.showcase-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-collect-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 10px;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.auto-collect-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.auto-collect-slider {
+  position: relative;
+  width: 22px;
+  height: 12px;
+  background-color: #334155;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auto-collect-slider::before {
+  position: absolute;
+  content: "";
+  height: 8px;
+  width: 8px;
+  left: 1px;
+  bottom: 1px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.auto-collect-toggle input:checked + .auto-collect-slider {
+  background-color: #059669;
+  border-color: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+.auto-collect-toggle input:checked + .auto-collect-slider::before {
+  transform: translateX(10px);
+  background-color: #ffffff;
+}
+
+.auto-collect-toggle input:checked ~ .auto-collect-label {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* 自动推演组合控件与连抽次数选择器 */
+.auto-spin-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  gap: 4px;
+  height: 52px;
+}
+
+.auto-spin-group .btn-auto {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 26px 0 0 26px;
+  padding: 0 8px;
+}
+
+.auto-spin-group .btn-auto.ten-pull-mode {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(60, 38, 12, 0.95) 100%) !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.18) !important;
+}
+
+.auto-spin-group .btn-auto.ten-pull-mode .auto-btn-title {
+  color: #ffd700 !important;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.7) !important;
+  font-weight: 900 !important;
+}
+
+.auto-spin-group .btn-auto-count-toggle {
+  height: 100%;
+  padding: 0 9px;
+  border-radius: 0 26px 26px 0;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-left: none;
+  color: #ffd700;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.auto-spin-group .btn-auto-count-toggle:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: #ffd700;
+}
+
+.auto-spin-group .btn-auto-count-toggle .caret {
+  font-size: 8px;
+  opacity: 0.8;
+}
+
+.auto-btn-progress {
+  font-size: 10px;
+  color: #38bdf8;
+  font-weight: 800;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 0 5px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  line-height: 1.2;
+}
+
+.btn-auto.active .auto-btn-progress {
+  color: #fef08a;
+  border-color: rgba(254, 240, 138, 0.6);
+  background: rgba(185, 28, 28, 0.7);
+}
+
+/* 自动推演次数选择浮层 */
+.auto-count-popover {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.2);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.count-popover-title {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.count-popover-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.count-opt-btn[data-count="Infinity"] {
+  grid-column: span 2;
+}
+
+.count-opt-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.count-opt-btn:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: #38bdf8;
+  color: #f0fdf4;
+}
+
+.count-opt-btn.active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.5) 100%);
+  border-color: #ffd700;
+  color: #ffd700;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* 龙口吐宝飞行动画专属层 (严格随 view-slots 联动，切换 Tab 时整层随父级隐藏) */
+.dragon-spout-flyer-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* 龙口吐宝飞行动画 DOM 宝物粒子 */
+.dragon-spout-flyer {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: radial-gradient(circle, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid #00e5ff;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+
+/* 严禁任何推演/吐宝/掉落飞行动画在角色修真或洞天等其它面板展示 */
+body:has(#view-character.active) .dragon-spout-flyer,
+body:has(#view-character.active) .drop-flyer,
+body:has(#view-cave.active) .dragon-spout-flyer,
+body:has(#view-cave.active) .drop-flyer,
+#view-character.active ~ .dragon-spout-flyer,
+#view-character.active ~ .drop-flyer,
+#view-cave.active ~ .dragon-spout-flyer,
+#view-cave.active ~ .drop-flyer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.dragon-spout-flyer img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.dragon-spout-flyer.epic {
+  border-color: #ffd700;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.95), 0 0 35px rgba(255, 69, 0, 0.7);
+  animation: flyer-epic-spin 0.6s linear infinite;
+}
+
+@keyframes flyer-epic-spin {
+  0% { filter: drop-shadow(0 0 8px #ffd700); }
+  50% { filter: drop-shadow(0 0 18px #ff4500); }
+  100% { filter: drop-shadow(0 0 8px #ffd700); }
+}
+
+/* 飞行中的预占槽位保持隐藏，抵达时瞬间显现 */
+.slot-pending-flyer .slot-content {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* 固定单抽消耗标识 (取代原倍率选择器) */
+.spin-cost-fixed-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: #94a3b8;
+  backdrop-filter: blur(4px);
+}
+
+.spin-cost-fixed-badge .cost-badge-val {
+  color: #00e5ff;
+  font-weight: 800;
+  font-size: 13px;
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.6);
+}
+
+.spin-cost-fixed-badge .cost-badge-unit {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* 八卦引龙吐宝锁定蓄能状态 (0/10 ~ 9/10) */
+.btn-dragon-bagua-spin.charging-locked {
+  filter: grayscale(0.25) brightness(0.85);
+  border-color: rgba(0, 229, 255, 0.45) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(0, 229, 255, 0.25) !important;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-dragon-bagua-spin.charging-locked:hover {
+  filter: grayscale(0.1) brightness(0.95);
+  border-color: rgba(0, 229, 255, 0.7) !important;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.5) !important;
+}
+
+.btn-dragon-bagua-spin.charging-locked .spin-btn-title {
+  color: #94a3b8 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+}
+
+.btn-dragon-bagua-spin.charging-locked .water-tank-badge {
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+}
+
+/* 点击锁定时轻微抖动反馈 */
+.btn-dragon-bagua-spin.shake-locked {
+  animation: shake-locked-anim 0.35s ease-in-out;
+}
+
+@keyframes shake-locked-anim {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px) rotate(-3deg); }
+  40%, 80% { transform: translateX(4px) rotate(3deg); }
+}
+
