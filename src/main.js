@@ -96,6 +96,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (window.SlotsRPG.UI.ToastNotificationUI) {
         window.SlotsRPG.UI.ToastNotificationUI.setPendingNotificationCount(0);
       }
+      if (window.renderBossRadarPanel) window.renderBossRadarPanel();
       gameManager.emitStateChange();
     } else if (tabName === 'cave') {
       if (tabCave) tabCave.classList.add('active');
@@ -253,7 +254,8 @@ window.addEventListener('DOMContentLoaded', () => {
       if (elLifesteal) elLifesteal.innerText = `${Math.round(pModel.lifestealRate * 100)}%`;
     }
 
-    // 刷新装备与背包
+    // 刷新装备、背包与试炼妖王战力雷达
+    if (window.renderBossRadarPanel) window.renderBossRadarPanel(state);
     if (viewCharacter && viewCharacter.classList.contains('active')) {
       if (window.renderEquipmentSlots) window.renderEquipmentSlots(state);
       if (window.renderBagGrid) window.renderBagGrid(state);

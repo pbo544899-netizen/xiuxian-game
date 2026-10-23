@@ -46,6 +46,18 @@
     const floatingMergeWrap = document.getElementById('floating-merge-wrap');
     const btnBagSalvage = document.getElementById('btn-bag-salvage');
 
+    // 守关妖王与关卡试炼战力雷达标尺 DOM
+    const bossRadarPanel = document.getElementById('boss-radar-panel');
+    const bossRadarIcon = document.getElementById('boss-radar-icon');
+    const bossRadarLabel = document.getElementById('boss-radar-label');
+    const bossRadarName = document.getElementById('boss-radar-name');
+    const bossRadarReqPower = document.getElementById('boss-radar-req-power');
+    const bossRadarStatus = document.getElementById('boss-radar-status');
+    const bossRadarFill = document.getElementById('boss-radar-fill');
+    const bossRadarProgressText = document.getElementById('boss-radar-progress-text');
+    const bossRadarHint = document.getElementById('boss-radar-hint');
+    const btnBossRadarChallenge = document.getElementById('btn-boss-radar-challenge');
+
     // 升级突破与背包满载弹窗 DOM
     const modalLevelUp = document.getElementById('modal-level-up');
     const levelupRealmOld = document.getElementById('levelup-realm-old');
@@ -199,9 +211,9 @@
   }
 
   // 6. 渲染乾坤袋 24 格网格 (支持红点提示与拖拽发起)
-  function renderBagGrid(state) {
-    const items = state.inventorySlots || [];
-    const capacity = state.inventoryCapacity || 24;
+  function renderBagGrid(state = {}) {
+    const items = (state && state.inventorySlots) || (gameManager && gameManager.inventory ? gameManager.inventory.slots : []);
+    const capacity = (state && state.inventoryCapacity) || (gameManager && gameManager.inventory ? gameManager.inventory.capacity : 24);
     const occupied = items.filter(it => it !== null).length;
 
     if (bagCapText) {
@@ -748,14 +760,154 @@
         EventBus.on('REWARDS_DROPPED', (data) => {
           if (data && data.items && data.items.length > 0) {
             const inventory = gameManager ? gameManager.inventory : null;
-            if (inventory) renderBagGrid(gameManager.getState());
+            if (inventory) renderBagGrid({ inventorySlots: inventory.slots, inventoryCapacity: inventory.capacity });
           }
         });
+      }
+
+      /**
+       * 渲染角色修真界面的守关妖王与宗门试炼战力雷达标尺 (与天机盘横幅严格统一)
+       */
+      function renderBossRadarPanel(state) {
+        if (!bossRadarPanel || !gameManager) return;
+        const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
+
+        if (!hasJoinedSect) {
+          bossRadarPanel.classList.add('hidden');
+          return;
+        }
+
+        const info = (typeof gameManager.getCurrentTrialStageInfo === 'function') ? gameManager.getCurrentTrialStageInfo() : null;
+        if (!info || info.isMortal) {
+          bossRadarPanel.classList.add('hidden');
+          return;
+        }
+
+        bossRadarPanel.classList.remove('hidden');
+
+        const curPower = info.playerPower || (state && state.combatPower) || (gameManager.player && gameManager.player.combatPower) || 18;
+        const reqPower = info.reqPower || 100;
+        const pct = Math.min(100, Math.max(5, Math.floor((curPower / reqPower) * 100)));
+        const diff = curPower - reqPower;
+        const isReady = curPower >= reqPower;
+        const isHard = !isReady && curPower >= reqPower * 0.85;
+
+        if (info.isAllCleared) {
+          if (bossRadarIcon) bossRadarIcon.innerText = '🏆';
+          if (bossRadarLabel) bossRadarLabel.innerText = '试炼通关:';
+          if (bossRadarName) bossRadarName.innerText = '本门派妖魔已全灭';
+          if (bossRadarReqPower) bossRadarReqPower.innerText = '圆满';
+
+          if (bossRadarFill) {
+            bossRadarFill.style.width = '100%';
+            bossRadarFill.classList.add('ready');
+          }
+          if (bossRadarProgressText) {
+            bossRadarProgressText.innerText = '战力达成度: 100% (已通关)';
+          }
+
+          if (bossRadarStatus) {
+            bossRadarStatus.className = 'boss-radar-status ready';
+            bossRadarStatus.innerText = '登峰造极 (试炼圆满)';
+            bossRadarPanel.classList.add('ready');
+            if (bossRadarHint) bossRadarHint.innerText = '🎉 恭喜！当前门派所有试炼妖兽与守关妖王已被尽数伏诛！';
+          }
+
+          if (btnBossRadarChallenge) {
+            btnBossRadarChallenge.disabled = true;
+            btnBossRadarChallenge.classList.add('disabled');
+            btnBossRadarChallenge.innerText = '已通关';
+            btnBossRadarChallenge.classList.remove('pulse-gold');
+          }
+        } else if (info.isFinalBoss) {
+          // 守关大妖王终局标尺
+          if (bossRadarIcon) bossRadarIcon.innerText = '🔥';
+          if (bossRadarLabel) bossRadarLabel.innerText = '守关妖王:';
+          if (bossRadarName) bossRadarName.innerText = info.title;
+          if (bossRadarReqPower) bossRadarReqPower.innerText = `推荐战力 ${reqPower}`;
+
+          if (bossRadarFill) {
+            bossRadarFill.style.width = `${pct}%`;
+            bossRadarFill.classList.toggle('ready', isReady);
+          }
+          if (bossRadarProgressText) {
+            bossRadarProgressText.innerText = `战力达成度: ${pct}% (${curPower} / ${reqPower})`;
+          }
+
+          if (bossRadarStatus) {
+            bossRadarStatus.className = 'boss-radar-status';
+            if (isReady) {
+              bossRadarStatus.classList.add('ready');
+              bossRadarStatus.innerText = '道基大成 (可斩妖王)';
+              bossRadarPanel.classList.add('ready');
+              if (bossRadarHint) bossRadarHint.innerText = '✨ 战力已达斩妖标尺！拔剑决战即可荡平妖王破关晋阶！';
+            } else if (isHard) {
+              bossRadarStatus.classList.add('warning');
+              bossRadarStatus.innerText = `势均力敌 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarPanel.classList.remove('ready');
+              if (bossRadarHint) bossRadarHint.innerText = '⚔️ 战力接近斩妖门槛，建议再合成1~2件法宝确保稳操胜券！';
+            } else {
+              bossRadarStatus.classList.add('danger');
+              bossRadarStatus.innerText = `凶险异常 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarPanel.classList.remove('ready');
+              if (bossRadarHint) bossRadarHint.innerText = '💡 打造6槽全紫法宝或提升修为突破，战力达标后再来荡平妖王！';
+            }
+          }
+
+          if (btnBossRadarChallenge) {
+            btnBossRadarChallenge.disabled = false;
+            btnBossRadarChallenge.classList.remove('disabled');
+            btnBossRadarChallenge.innerText = isReady ? '⚔️ 斩灭妖王' : '⚔️ 决战妖王';
+            btnBossRadarChallenge.classList.toggle('pulse-gold', isReady);
+          }
+        } else {
+          // 前 1~12 关递增试炼 (与天机盘横幅严格统一评估目标与数据)
+          if (bossRadarIcon) bossRadarIcon.innerText = info.tier === 'elite' ? '👹' : '🐾';
+          if (bossRadarLabel) bossRadarLabel.innerText = `试炼第${info.stageIndex}关:`;
+          if (bossRadarName) bossRadarName.innerText = info.title;
+          if (bossRadarReqPower) bossRadarReqPower.innerText = `推荐战力 ${reqPower}`;
+
+          if (bossRadarFill) {
+            bossRadarFill.style.width = `${pct}%`;
+            bossRadarFill.classList.toggle('ready', isReady);
+          }
+          if (bossRadarProgressText) {
+            bossRadarProgressText.innerText = `战力达成度: ${pct}% (${curPower} / ${reqPower})`;
+          }
+
+          if (bossRadarStatus) {
+            bossRadarStatus.className = 'boss-radar-status';
+            if (isReady) {
+              bossRadarStatus.classList.add('ready');
+              bossRadarStatus.innerText = '胜券在握 (可斩杀)';
+              bossRadarPanel.classList.add('ready');
+              if (bossRadarHint) bossRadarHint.innerText = `✨ 战力已达标！出鞘迎击可轻松通关第 ${info.stageIndex} 关试炼！`;
+            } else if (isHard) {
+              bossRadarStatus.classList.add('warning');
+              bossRadarStatus.innerText = `势均力敌 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarPanel.classList.remove('ready');
+              if (bossRadarHint) bossRadarHint.innerText = '⚔️ 战力接近本关门槛，精炼法宝或祭出破魔符可一决高下！';
+            } else {
+              bossRadarStatus.classList.add('danger');
+              bossRadarStatus.innerText = `凶险异常 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarPanel.classList.remove('ready');
+              if (bossRadarHint) bossRadarHint.innerText = '💡 敌方灵压高于自身战力！建议回【乾坤袋】一键升阶装备后再战！';
+            }
+          }
+
+          if (btnBossRadarChallenge) {
+            btnBossRadarChallenge.disabled = false;
+            btnBossRadarChallenge.classList.remove('disabled');
+            btnBossRadarChallenge.innerText = isReady ? `⚔️ 拔剑斩妖 (第${info.stageIndex}关)` : `⚔️ 试剑第${info.stageIndex}关`;
+            btnBossRadarChallenge.classList.toggle('pulse-gold', isReady);
+          }
+        }
       }
 
       // 暴露方法到对象与全局
       CharacterUI.renderEquipmentSlots = renderEquipmentSlots;
       CharacterUI.renderBagGrid = renderBagGrid;
+      CharacterUI.renderBossRadarPanel = renderBossRadarPanel;
       CharacterUI.updateBagActionButtons = updateBagActionButtons;
       CharacterUI.updateQuickEquipButtonState = updateQuickEquipButtonState;
       CharacterUI.quickEquipBestGear = quickEquipBestGear;
@@ -765,6 +917,7 @@
       window.getSlotDisplayName = getSlotDisplayName;
       window.renderEquipmentSlots = renderEquipmentSlots;
       window.renderBagGrid = renderBagGrid;
+      window.renderBossRadarPanel = renderBossRadarPanel;
       window.quickEquipBestGear = quickEquipBestGear;
       window.executeBagMerge = executeBagMerge;
       window.playTribulationCeremony = playTribulationCeremony;

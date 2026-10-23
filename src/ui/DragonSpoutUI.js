@@ -1016,8 +1016,10 @@
 
       DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
       DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;
+      DragonSpoutUI.handleActiveTrialChallenge = handleActiveTrialChallenge;
       window.updateSectTrialBanner = updateSectTrialBanner;
       window.collectAllTemporarySlots = collectAllTemporarySlots;
+      window.handleActiveTrialChallenge = handleActiveTrialChallenge;
     }
   };
 
