@@ -621,7 +621,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const pct = Math.min(100, Math.round((cur / max) * 100));
       elWaterTankLiquid.style.height = `${pct}%`;
       if (elWaterTankBadge) {
-        elWaterTankBadge.innerText = state.isWaterTankFull ? '10/10 可引' : `${cur}/${max}`;
+        elWaterTankBadge.innerText = `${cur}/${max}`;
       }
       if (btnSpin) {
         if (state.isWaterTankFull) {
