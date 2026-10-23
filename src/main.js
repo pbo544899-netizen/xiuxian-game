@@ -740,6 +740,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (charPowerText) charPowerText.innerText = state.combatPower;
     if (heroProfileRealm) heroProfileRealm.innerText = state.realm;
     if (heroProfilePower) heroProfilePower.innerText = state.combatPower;
+    const heroProfileTitle = document.getElementById('hero-profile-title');
+    if (heroProfileTitle && gameManager.titleManager) {
+      gameManager.titleManager.checkRealmUnlocks(state.realm);
+      const curTitle = gameManager.titleManager.getEquippedTitleConfig();
+      if (curTitle) {
+        heroProfileTitle.innerText = curTitle.name;
+        heroProfileTitle.style.color = curTitle.color;
+        heroProfileTitle.style.borderColor = `${curTitle.color}88`;
+      }
+    }
     if (charHeroEnergy) charHeroEnergy.innerText = state.energy;
     if (charHeroLevel) charHeroLevel.innerText = `${state.level} 阶`;
     if (charHeroSect) {
@@ -3260,9 +3270,13 @@ window.addEventListener('DOMContentLoaded', () => {
       const isMulti = battleResult.encounter && battleResult.encounter.monsters && battleResult.encounter.monsters.length > 1;
       const bossName = boss ? boss.name : '妖兽';
       const multText = mult > 1 ? `（${mult}倍机缘加持）` : '';
-      victorySubtitle.innerText = isMulti
-        ? `群妖溃败诛灭，天道甘霖倾泻！${multText}`
-        : `${bossName}诛灭，天道甘霖倾泻！${multText}`;
+      if (battleResult && battleResult.isTowerBattle) {
+        victorySubtitle.innerText = `锁妖天关第 ${battleResult.towerFloor} 层荡平大捷！浩然正气激荡！`;
+      } else {
+        victorySubtitle.innerText = isMulti
+          ? `群妖溃败诛灭，天道甘霖倾泻！${multText}`
+          : `${bossName}诛灭，天道甘霖倾泻！${multText}`;
+      }
     }
     if (victoryRewardExp) {
       victoryRewardExp.innerText = `+${rewards.exp || 0}`;
@@ -3330,12 +3344,16 @@ window.addEventListener('DOMContentLoaded', () => {
     // 系统大捷灵犀点评气泡更新
     const victorySystemComment = document.getElementById('victory-system-comment');
     if (victorySystemComment) {
-      const isBoss = battleResult.encounter ? (battleResult.encounter.tier === 'boss') : (battleResult.boss && battleResult.boss.id === 'boss_1');
+      if (battleResult && battleResult.isTowerBattle) {
+        victorySystemComment.innerText = `【镇妖令】恭喜仙友荡平妖氛，成功通关镇妖塔第 ${battleResult.towerFloor} 层！浩气长存！`;
+      } else {
+        const isBoss = battleResult.encounter ? (battleResult.encounter.tier === 'boss') : (battleResult.boss && battleResult.boss.id === 'boss_1');
       if (isBoss) {
         victorySystemComment.innerText = '【系统速报】守关妖王已伏诛！天道机缘大丰收，宗门试炼功德圆满！';
       } else {
         const stageIdx = (gameManager.trialProgress && gameManager.trialProgress.currentStageIndex) || 1;
         victorySystemComment.innerText = `【系统贺报】宿主大展神威，成功荡平第 ${stageIdx} 关强敌！掉落丰厚机缘与极品战利品！`;
+      }
       }
     }
 
@@ -3379,7 +3397,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // 系统惜败战力复盘点评气泡
     const defeatSystemComment = document.getElementById('defeat-system-comment');
     if (defeatSystemComment) {
-      defeatSystemComment.innerText = '【系统复盘】胜败乃修仙常事！妖兽势大，建议先回乾坤袋【一键升阶】打造高品装备，战力达标后再来荡平此獠！';
+      if (battleResult && battleResult.isTowerBattle) {
+        defeatSystemComment.innerText = `【镇妖复盘】第 ${battleResult.towerFloor} 层妖王势大！建议前往【天机盘】炼制高阶法宝，提升战力后再行叩关！`;
+      } else {
+        defeatSystemComment.innerText = '【系统复盘】胜败乃修仙常事！妖兽势大，建议先回乾坤袋【一键升阶】打造高品装备，战力达标后再来荡平此獠！';
+      }
     }
 
     modalBattleDefeat.classList.remove('hidden');
@@ -3493,6 +3515,12 @@ window.addEventListener('DOMContentLoaded', () => {
       // 3. 执行真正的纳宝入囊入库
       const summary = gameManager.claimBattleRewards(curBattle);
 
+      // 镇妖塔战斗胜利额外结算
+      if (curBattle && curBattle.isTowerBattle && gameManager.demonTowerManager) {
+        gameManager.demonTowerManager.onVictory(curBattle.towerFloor);
+        updateCaveView();
+      }
+
       // 4. 若此前处于自动推演状态，战斗结束后无缝切回天机盘并继续维持旋转
       if (gameManager.wasAutoSpinningBeforeBattle) {
         switchTab('slots');
@@ -3563,6 +3591,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // 14. 洞天灵脉业务与交互绑定
+  window.updateCaveView = updateCaveView;
   function updateCaveView() {
     if (!gameManager.caveManager) return;
     const cave = gameManager.caveManager;
@@ -3606,6 +3635,21 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         if (caveRealmBtnAction) caveRealmBtnAction.innerText = '已采撷';
       }
+    }
+
+    // 镇妖塔进度与目标更新
+    if (gameManager.demonTowerManager) {
+      const tower = gameManager.demonTowerManager;
+      const flrCfg = tower.getFloorConfig(tower.currentFloor);
+      const elFloor = document.getElementById('tower-current-floor-tag');
+      const elBoss = document.getElementById('tower-boss-name');
+      const elPower = document.getElementById('tower-req-power');
+      if (elFloor) elFloor.innerText = `平定进度: ${tower.currentFloor - 1}/50 层`;
+      if (elBoss) {
+        elBoss.innerText = `第 ${flrCfg.floor} 层 · ${flrCfg.bossName}`;
+        elBoss.style.color = flrCfg.isBoss ? '#ef4444' : (flrCfg.isMilestone ? '#c084fc' : '#fca5a5');
+      }
+      if (elPower) elPower.innerText = `推荐战力: ${flrCfg.reqPower}`;
     }
 
     // 灵脉气泡角标提示：累积机缘超过 30 或产出丹药时亮起
@@ -3708,6 +3752,144 @@ window.addEventListener('DOMContentLoaded', () => {
       gameManager.collectCaveEarnings();
       if (modalOfflineReward) modalOfflineReward.classList.add('hidden');
       updateCaveView();
+    });
+  }
+
+  // 13.5 修仙尊号阁 (Title Manager UI)
+  const modalTitleSelect = document.getElementById('modal-title-select');
+  const btnCloseTitleModal = document.getElementById('btn-close-title-modal');
+  const titleListContainer = document.getElementById('title-list-container');
+  const heroProfileTitle = document.getElementById('hero-profile-title');
+
+  function renderTitleModal() {
+    if (!titleListContainer || !gameManager.titleManager) return;
+    const tm = gameManager.titleManager;
+    const allTitles = tm.getAllTitles();
+    titleListContainer.innerHTML = '';
+
+    allTitles.forEach(t => {
+      const isUnlocked = tm.isUnlocked(t.id);
+      const isEquipped = tm.equippedTitle === t.id;
+
+      const card = document.createElement('div');
+      card.className = `title-card-item ${isEquipped ? 'is-equipped' : ''} ${!isUnlocked ? 'is-locked' : ''}`;
+      
+      let actionBtn = '';
+      if (isEquipped) {
+        actionBtn = `<span class="btn-title-action btn-equipped-tag">已佩戴</span>`;
+      } else if (isUnlocked) {
+        actionBtn = `<button class="btn-title-action btn-equip" data-id="${t.id}">佩戴</button>`;
+      } else {
+        actionBtn = `<span class="btn-title-action btn-locked-tag" title="${t.unlockCondition}">未解锁</span>`;
+      }
+
+      card.innerHTML = `
+        <div class="title-card-info">
+          <div class="title-card-name" style="color: ${t.color}">${t.name}</div>
+          <div class="title-card-desc">${t.desc}</div>
+          <div class="title-card-power">⚡ 战力 +${t.bonusPower} ${!isUnlocked ? `· <span style="color:#94a3b8">条件: ${t.unlockCondition}</span>` : ''}</div>
+        </div>
+        <div class="title-card-right">
+          ${actionBtn}
+        </div>
+      `;
+      titleListContainer.appendChild(card);
+    });
+
+    titleListContainer.querySelectorAll('.btn-equip').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const titleId = e.currentTarget.getAttribute('data-id');
+        if (titleId && tm.equipTitle(titleId)) {
+          if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+            window.SlotsRPG.SoundEffects.play('LEVEL_UP');
+          }
+          const tCfg = tm.getTitleConfig(titleId);
+          if (renderer && renderer.addFloatingText) {
+            renderer.addFloatingText(`已佩戴称号：${tCfg.name} (战力+${tCfg.bonusPower})`, tCfg.color);
+          }
+          renderTitleModal();
+          gameManager.emitStateChange();
+        }
+      });
+    });
+  }
+
+  if (heroProfileTitle) {
+    heroProfileTitle.addEventListener('click', () => {
+      if (modalTitleSelect) {
+        renderTitleModal();
+        modalTitleSelect.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (btnCloseTitleModal) {
+    btnCloseTitleModal.addEventListener('click', () => {
+      if (modalTitleSelect) modalTitleSelect.classList.add('hidden');
+    });
+  }
+
+  // 13.6 锁妖天关 · 镇妖塔挑战弹窗 (Demon Tower UI)
+  const modalDemonTower = document.getElementById('modal-demon-tower');
+  const btnEnterDemonTower = document.getElementById('btn-enter-demon-tower');
+  const btnCloseTowerModal = document.getElementById('btn-close-tower-modal');
+  const btnStartTowerBattle = document.getElementById('btn-start-tower-battle');
+
+  function openDemonTowerModal() {
+    if (!gameManager.demonTowerManager || !modalDemonTower) return;
+    const tower = gameManager.demonTowerManager;
+    const flrCfg = tower.getFloorConfig(tower.currentFloor);
+    const playerPower = (gameManager.player && gameManager.player.combatPower) || 0;
+
+    const elTitle = document.getElementById('tower-modal-floor-title');
+    const elAvatar = document.getElementById('tower-modal-boss-img');
+    const elPlayerPower = document.getElementById('tower-player-power-val');
+    const elReqPower = document.getElementById('tower-req-power-val');
+    const elRewardsRow = document.getElementById('tower-rewards-row');
+
+    if (elTitle) elTitle.innerText = `第 ${flrCfg.floor} 层 · ${flrCfg.bossName}`;
+    if (elAvatar) elAvatar.src = flrCfg.avatar;
+    if (elPlayerPower) {
+      elPlayerPower.innerText = playerPower;
+      elPlayerPower.style.color = playerPower >= flrCfg.reqPower ? '#38ef7d' : '#f87171';
+    }
+    if (elReqPower) elReqPower.innerText = flrCfg.reqPower;
+
+    if (elRewardsRow) {
+      let rHtml = `
+        <span class="reward-pill-tag">✨ 机缘 +${flrCfg.rewards.energy}</span>
+        <span class="reward-pill-tag">💊 纯阳丹 x${flrCfg.rewards.pills}</span>
+      `;
+      if (flrCfg.rewards.titleName) {
+        rHtml += `<span class="reward-pill-tag" style="border-color:#ffd700; color:#ffd700;">👑 首通尊号 ${flrCfg.rewards.titleName}</span>`;
+      }
+      elRewardsRow.innerHTML = rHtml;
+    }
+
+    modalDemonTower.classList.remove('hidden');
+  }
+
+  if (btnEnterDemonTower) {
+    btnEnterDemonTower.addEventListener('click', openDemonTowerModal);
+  }
+
+  if (btnCloseTowerModal) {
+    btnCloseTowerModal.addEventListener('click', () => {
+      if (modalDemonTower) modalDemonTower.classList.add('hidden');
+    });
+  }
+
+  if (btnStartTowerBattle) {
+    btnStartTowerBattle.addEventListener('click', () => {
+      if (modalDemonTower) modalDemonTower.classList.add('hidden');
+      if (!gameManager.demonTowerManager) return;
+      
+      const battleResult = gameManager.demonTowerManager.startChallenge();
+      if (battleResult && battleResult.success === false) {
+        showGameNotice('无法挑战', battleResult.reason || '挑战条件未达成', '⚠️ 镇妖天关');
+        return;
+      }
+      playBattleSequence(battleResult);
     });
   }
 

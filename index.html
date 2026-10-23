@@ -409,6 +409,7 @@
             <!-- 中间：境界与状态 -->
             <div class="hero-middle-box">
               <div class="hero-status-title">
+                <span id="hero-profile-title" class="hero-title-badge" title="点击更换修仙尊号">🎖️ 【青牛镇散修】</span>
                 <span id="hero-profile-realm" class="hero-realm-tag">凡人境 · 未入道</span>
                 <span id="char-hero-sect" class="hero-title-sub">凡人未入道</span>
               </div>
@@ -654,6 +655,26 @@
           </div>
         </div>
 
+        <!-- 锁妖天关 · 镇妖塔 -->
+        <div class="demon-tower-card" id="demon-tower-card">
+          <div class="demon-tower-glow"></div>
+          <div class="demon-tower-header">
+            <div class="tower-badge">⚡ 战力试剑</div>
+            <div class="tower-title">锁妖天关 · 镇妖塔</div>
+            <div class="tower-floor-tag" id="tower-current-floor-tag">平定进度: 0/50 层</div>
+          </div>
+          <div class="demon-tower-body">
+            <div class="tower-target-info">
+              <span class="tower-target-label">当前迎战:</span>
+              <b class="tower-boss-name" id="tower-boss-name">第 1 层 · 迷雾妖卒</b>
+              <span class="tower-req-power" id="tower-req-power">推荐战力: 300</span>
+            </div>
+            <button id="btn-enter-demon-tower" class="btn-enter-demon-tower" title="主动前往镇妖塔挑战守关妖王">
+              <span>拔剑闯关</span> ➔
+            </button>
+          </div>
+        </div>
+
         <!-- 底部洞天灵泉造化 (每日限 1 次直接采撷，去赌场跑灯化) -->
         <div class="cave-footer-actions">
           <button id="btn-cave-secret-realm" class="btn-cave-secret-realm ready" title="每日采撷洞天灵泉造化，直接获取大额机缘、纯阳金丹、神符与极品神兵">
@@ -769,6 +790,59 @@
         </div>
         <div class="modal-actions">
           <button id="btn-save-filter-settings" class="btn-primary">保存并生效</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 修仙尊号阁 -->
+    <div id="modal-title-select" class="modal-overlay hidden">
+      <div class="modal-card title-select-modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">🎖️ 修仙尊号阁</h2>
+          <button id="btn-close-title-modal" class="btn-close-icon">✕</button>
+        </div>
+        <div class="title-modal-desc">
+          已佩戴尊号将享有全属性战力加成，并彰显道门威名！
+        </div>
+        <div class="title-list-container" id="title-list-container">
+          <!-- 动态填充称号卡片 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 锁妖天关闯关面板 -->
+    <div id="modal-demon-tower" class="modal-overlay hidden">
+      <div class="modal-card demon-tower-modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">⚔️ 锁妖天关 · 降妖试炼</h2>
+          <button id="btn-close-tower-modal" class="btn-close-icon">✕</button>
+        </div>
+        <div class="tower-modal-content">
+          <div class="tower-stage-banner" id="tower-modal-floor-title">第 1 层 · 迷雾妖卒</div>
+          <div class="tower-boss-visual-wrap">
+            <img id="tower-modal-boss-img" src="assets/boss/boss_red_python_vivid.png" class="tower-boss-avatar-preview" alt="妖王立绘" />
+            <div class="tower-power-compare">
+              <div class="power-compare-item">
+                <span class="label">我的战力</span>
+                <b id="tower-player-power-val" class="val player">1200</b>
+              </div>
+              <div class="power-compare-vs">VS</div>
+              <div class="power-compare-item">
+                <span class="label">守关推荐</span>
+                <b id="tower-req-power-val" class="val req">300</b>
+              </div>
+            </div>
+          </div>
+          <div class="tower-rewards-preview">
+            <div class="rewards-preview-title">🎁 首通大捷宝匣预览</div>
+            <div class="rewards-items-row" id="tower-rewards-row">
+              <span class="reward-pill-tag">✨ 机缘 +200</span>
+              <span class="reward-pill-tag">💊 纯阳丹 x2</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-start-tower-battle" class="btn-primary btn-tower-fight">⚡ 破关激战 ➔</button>
         </div>
       </div>
     </div>
@@ -1938,11 +2012,13 @@
   <script src="src/render/SymbolPainter.js"></script>
   <script src="src/render/CanvasRenderer.js"></script>
   <script src="src/character/PlayerModel.js"></script>
+  <script src="src/character/TitleManager.js"></script>
   <script src="src/inventory/ItemModel.js"></script>
   <script src="src/inventory/InventoryManager.js"></script>
   <script src="src/inventory/EquipSynthesizer.js"></script>
   <script src="src/rpg/MonsterConfig.js"></script>
   <script src="src/rpg/BossConfig.js"></script>
+  <script src="src/rpg/DemonTowerManager.js"></script>
   <script src="src/rpg/CombatEngine.js"></script>
   <script src="src/bonus/HoldAndSpinEngine.js"></script>
   <script src="src/cave/CaveManager.js"></script>

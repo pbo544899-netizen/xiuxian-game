@@ -284,7 +284,11 @@ class PlayerModel {
    */
   get combatPower() {
     const stats = this.getTotalStats();
-    return Math.floor(stats.hp * 0.2 + stats.atk * 2.0 + stats.def * 1.5);
+    let power = Math.floor(stats.hp * 0.2 + stats.atk * 2.0 + stats.def * 1.5);
+    if (window.gameManager && window.gameManager.titleManager) {
+      power += window.gameManager.titleManager.getBonusPower();
+    }
+    return power;
   }
 
   /**

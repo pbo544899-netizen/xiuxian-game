@@ -39,6 +39,9 @@ class StorageService {
           bossTicketAttempts: gameManager.bossTicketAttempts || 0,
           sectTrialStage: gameManager.sectTrialStage || 1,
           trialBestDamagePct: gameManager.trialBestDamagePct || 0,
+          demonTowerFloor: (gameManager.demonTowerManager && gameManager.demonTowerManager.currentFloor) || 1,
+          unlockedTitles: (gameManager.titleManager && gameManager.titleManager.unlockedTitles) || ['title_mortal'],
+          equippedTitle: (gameManager.titleManager && gameManager.titleManager.equippedTitle) || 'title_mortal',
           lockedSectBossSnapshot: gameManager.lockedSectBossSnapshot ? Object.assign({}, gameManager.lockedSectBossSnapshot) : null,
           energy: gameManager.energy,
           level: gameManager.level,
@@ -147,6 +150,19 @@ class StorageService {
         gameManager.waterTankProgress = Math.min(gameManager.waterTankMax || 10, Math.max(0, data.waterTankProgress));
       } else {
         gameManager.waterTankProgress = 10; // 新手或首登赠送一次免费引龙吐宝
+      }
+
+      // 1.1 还原锁妖天关爬塔进度与称号
+      if (gameManager.demonTowerManager && typeof data.demonTowerFloor === 'number') {
+        gameManager.demonTowerManager.currentFloor = Math.max(1, Math.min(50, data.demonTowerFloor));
+      }
+      if (gameManager.titleManager) {
+        if (Array.isArray(data.unlockedTitles) && data.unlockedTitles.length > 0) {
+          gameManager.titleManager.unlockedTitles = data.unlockedTitles;
+        }
+        if (typeof data.equippedTitle === 'string') {
+          gameManager.titleManager.equippedTitle = data.equippedTitle;
+        }
       }
 
       // 2. 还原角色 (通过 PlayerModel.deserialize 恢复完整境界与装备)

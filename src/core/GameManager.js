@@ -84,6 +84,12 @@ class GameManager {
     this.inventory = new window.SlotsRPG.InventoryManager(24);
     this.caveManager = new window.SlotsRPG.CaveManager();
     this.holdAndSpinEngine = new window.SlotsRPG.HoldAndSpinEngine();
+    this.titleManager = window.SlotsRPG.TitleManager
+      ? new window.SlotsRPG.TitleManager(this)
+      : null;
+    this.demonTowerManager = window.SlotsRPG.DemonTowerManager
+      ? new window.SlotsRPG.DemonTowerManager(this)
+      : null;
     this.ascensionManager = window.SlotsRPG.AscensionManager
       ? new window.SlotsRPG.AscensionManager(this)
       : null;
