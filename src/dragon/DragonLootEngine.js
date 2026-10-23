@@ -163,7 +163,8 @@ window.SlotsRPG = window.SlotsRPG || {};
             potSubLevel,
             multiplier,
             worldTier,
-            isFrenzyGuaranteed10th
+            isFrenzyGuaranteed10th,
+            isGrandSpin: (options && (options.isGrandSpin || options.isGrandOverride)) || false
           });
         }
       }
@@ -251,7 +252,7 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 生成左柜装备
      */
-    _generateEquipmentLoot({ player, potSubLevel, multiplier, worldTier, isFrenzyGuaranteed10th }) {
+    _generateEquipmentLoot({ player, potSubLevel, multiplier, worldTier, isFrenzyGuaranteed10th, isGrandSpin }) {
       // 1. 部位选择：优先从未装备或战力偏低的部位中选择，确保 6 槽平滑成长
       const allSlots = ['weapon', 'armor', 'ring', 'hat', 'boots', 'belt'];
       const availableSlots = allSlots.filter(s => {
@@ -266,11 +267,14 @@ window.SlotsRPG = window.SlotsRPG || {};
       const matrix = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.EquipQualityMatrix) || null;
       let qualityCode = matrix ? matrix.pickQuality(potSubLevel, Math.random()) : 'Q1';
 
-      // 狂暴第 10 抽神装保底：保底 Q4 (法器·紫) 或更高
-      if (isFrenzyGuaranteed10th) {
+      // 神龙顿悟 · 狂暴大爆：必出 Q5 (仙品·金) ~ Q7 (鸿蒙至宝·红) 极品法宝！
+      if (isFrenzyGuaranteed10th || isGrandSpin) {
+        const grandChoices = ['Q5', 'Q6', 'Q7'];
+        qualityCode = grandChoices[Math.floor(Math.random() * grandChoices.length)];
+      } else if (this.isFrenzyActive) {
         const qRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
         if ((qRanks[qualityCode] || 1) < 4) {
-          qualityCode = Math.random() < 0.25 ? 'Q5' : 'Q4';
+          qualityCode = Math.random() < 0.35 ? 'Q5' : 'Q4';
         }
       }
 

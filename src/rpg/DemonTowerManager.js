@@ -122,8 +122,8 @@
       };
 
       // 利用既有 BattleEngine 预先运算回合脚本
-      if (window.SlotsRPG && window.SlotsRPG.BattleEngine) {
-        const sim = window.SlotsRPG.BattleEngine.simulateBattle(gm.player, [monsterUnit]);
+      if (window.SlotsRPG && window.SlotsRPG.CombatEngine) {
+        const sim = window.SlotsRPG.CombatEngine.simulateEncounter(gm.player, encounter, gm.inventory);
         battleResult.isVictory = sim.isVictory;
         battleResult.timeline = sim.timeline || [];
         battleResult.session = sim.session || null;

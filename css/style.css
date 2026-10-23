@@ -11911,3 +11911,58 @@ body:has(#view-cave.active) .drop-flyer,
   letter-spacing: 1px;
   box-shadow: 0 0 16px rgba(192, 132, 252, 0.5) !important;
 }
+
+/* ========================================================
+   阶段三：四大战斗流派与神龙顿悟暴走视觉特效
+   ======================================================== */
+.archetype-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+/* 龙头狂暴顿悟态高光光环 */
+.dragon-head-frenzy {
+  filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.95)) brightness(1.25) contrast(1.1) !important;
+  animation: dragonFrenzyPulse 0.8s ease-in-out infinite alternate !important;
+}
+
+@keyframes dragonFrenzyPulse {
+  0% {
+    transform: scale(1.0);
+    filter: drop-shadow(0 0 20px #ffd700);
+  }
+  100% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 35px #ff0055) drop-shadow(0 0 20px #ffd700);
+  }
+}
+
+/* 神龙顿悟全屏金光霞光环绕 */
+.frenzy-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 25%, rgba(255, 215, 0, 0.35) 0%, rgba(255, 0, 85, 0.15) 50%, transparent 80%);
+  pointer-events: none;
+  z-index: 99;
+  animation: frenzyScreenFade 1.8s ease-out forwards;
+}
+
+@keyframes frenzyScreenFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.0);
+  }
+}

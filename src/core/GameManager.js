@@ -392,8 +392,8 @@ class GameManager {
       return false;
     }
 
-    // 判断本次是否享受免费大爆（玩家主动点击蓄满的引龙吐宝，或挂机连续推演过程中自然蓄满触发）
-    const isFreeSpin = options.isDragonSpout || isWaterTankFull;
+    // 判断本次是否享受免费大爆（玩家主动点击蓄满的引龙吐宝，或挂机连续推演过程中自然蓄满触发，或十连追加顿悟）
+    const isFreeSpin = options.isFreeOverride || options.isDragonSpout || isWaterTankFull;
     const cost = isFreeSpin ? 0 : 25; // 固定单抽消耗 25 灵机
 
     if (!isFreeSpin && this.energy < cost) {
@@ -421,11 +421,14 @@ class GameManager {
     });
 
     let isGrandSpin = false;
-    if (isFreeSpin) {
+    if (isFreeSpin || options.isGrandOverride) {
       isGrandSpin = true;
       this.waterTankProgress = 0; // 龙皇吐宝后重置水缸
     } else {
       this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 1);
+    }
+    if (this.dragonCabinetManager) {
+      this.dragonCabinetManager.updateRage(Math.min(100, Math.floor((this.waterTankProgress / this.waterTankMax) * 100)));
     }
 
     // 自动推演计数累加
@@ -594,8 +597,20 @@ class GameManager {
     this.addPotExp(10);
     this.addPotSubExp(10);
 
-    // 引龙吐宝蓄能增加 10
-    this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 10);
+    // 方案规范：十连抽如果触发神龙顿悟 (或槽位已有较多奖励)，先一键收纳清空 12 格宝萃，确保大爆空间无虞！
+    if (this.dragonCabinetManager && this.dragonCabinetManager.slots.length > 0) {
+      this.dragonCabinetManager.collectAllToInventory();
+      if (this.renderer) {
+        this.renderer.addFloatingText('📦 宝萃已先行归仓，腾空槽位静待周天十连！', '#38ef7d');
+      }
+    }
+
+    // 引龙吐宝蓄能拉满 10 (触发神龙顿悟)
+    const willTriggerFrenzy = true;
+    this.waterTankProgress = this.waterTankMax;
+    if (this.dragonCabinetManager) {
+      this.dragonCabinetManager.updateRage(100);
+    }
 
     // 隐藏客卿仙印：万通·金玉满堂 (每 10 次返还 100 灵机)
     if (this.ascensionManager && this.ascensionManager.meta && this.ascensionManager.meta.hiddenMarks && this.ascensionManager.meta.hiddenMarks.wantong) {
@@ -688,6 +703,18 @@ class GameManager {
     // 5. 驱动十连聚爆动效：由龙头流星弹道逐颗飞抵槽位时再显露宝物
     if (this.renderer && this.renderer.startTenPullBurst) {
       this.renderer.startTenPullBurst(tenPullSummary, () => {
+        // 无缝追加触发【神龙顿悟 · 狂暴吐宝】峰值大爆轮！
+        if (willTriggerFrenzy) {
+          setTimeout(() => {
+            this.waterTankProgress = 0;
+            if (this.dragonCabinetManager) this.dragonCabinetManager.updateRage(0);
+            if (this.renderer) {
+              this.renderer.addFloatingText('🐉【神龙顿悟 · 狂暴吐宝】天地合鸣！追加免费狂暴大爆！', '#ffd700');
+            }
+            // 执行一次 0 消耗狂暴大爆！
+            this.executeSpin({ isFreeOverride: true, isGrandOverride: true });
+          }, 600);
+        }
         this.emitStateChange();
       });
     } else {

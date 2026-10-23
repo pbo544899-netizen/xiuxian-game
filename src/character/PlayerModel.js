@@ -226,9 +226,12 @@ class PlayerModel {
       rate += 0.05;
     }
 
-    // 叠加装备仙宝暴击词条
+    // 叠加装备流派词条与仙宝暴击词条
     for (let slot in this.equipment) {
       const it = this.equipment[slot];
+      if (it && it.specialStats && it.specialStats.critRate) {
+        rate += it.specialStats.critRate;
+      }
       if (it && Array.isArray(it.affixes)) {
         it.affixes.forEach(af => {
           if (af.critRateBonus) rate += af.critRateBonus;
@@ -236,7 +239,7 @@ class PlayerModel {
       }
     }
 
-    return rate;
+    return Math.min(0.75, rate);
   }
 
   /**
@@ -251,13 +254,56 @@ class PlayerModel {
     }
     for (let slot in this.equipment) {
       const it = this.equipment[slot];
+      if (it && it.specialStats && it.specialStats.lifestealRate) {
+        rate += it.specialStats.lifestealRate;
+      }
       if (it && Array.isArray(it.affixes)) {
         it.affixes.forEach(af => {
           if (af.lifestealRate) rate += af.lifestealRate;
         });
       }
     }
-    return rate;
+    return Math.min(0.50, rate);
+  }
+
+  /**
+   * 获取当前连击率 (基础 5% + 装备流派属性)
+   */
+  get comboRate() {
+    let rate = 0.05;
+    for (let slot in this.equipment) {
+      const it = this.equipment[slot];
+      if (it && it.specialStats && it.specialStats.comboRate) {
+        rate += it.specialStats.comboRate;
+      }
+      if (it && Array.isArray(it.affixes)) {
+        it.affixes.forEach(af => {
+          if (af.comboRateBonus) rate += af.comboRateBonus;
+        });
+      }
+    }
+    return Math.min(0.60, rate);
+  }
+
+  /**
+   * 获取当前反震率 (基础 5% + 装备流派属性 + 反震星罡)
+   */
+  get counterRate() {
+    let rate = 0.05;
+    for (let slot in this.equipment) {
+      const it = this.equipment[slot];
+      if (it && it.specialStats && it.specialStats.counterRate) {
+        rate += it.specialStats.counterRate;
+      }
+      if (it && Array.isArray(it.affixes)) {
+        it.affixes.forEach(af => {
+          if (af.reflectRate || af.counterRateBonus) {
+            rate += (af.reflectRate || af.counterRateBonus);
+          }
+        });
+      }
+    }
+    return Math.min(0.60, rate);
   }
 
   /**
@@ -285,6 +331,8 @@ class PlayerModel {
   get combatPower() {
     const stats = this.getTotalStats();
     let power = Math.floor(stats.hp * 0.2 + stats.atk * 2.0 + stats.def * 1.5);
+    // 四大流派特化属性贡献战力
+    power += Math.floor(this.critRate * 600 + this.comboRate * 800 + this.counterRate * 600 + this.lifestealRate * 700);
     if (window.gameManager && window.gameManager.titleManager) {
       power += window.gameManager.titleManager.getBonusPower();
     }

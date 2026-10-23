@@ -134,6 +134,14 @@ window.SlotsRPG.ItemModel = {
     }
   },
 
+  // 四大战斗流派基础词条配置 (暴击、连击、反震、吸血)
+  ARCHETYPE_AFFIX_TYPES: [
+    { key: 'critRate', name: '暴击', icon: '🎯', color: '#ffd700' },
+    { key: 'comboRate', name: '连击', icon: '⚡', color: '#00e5ff' },
+    { key: 'counterRate', name: '反震', icon: '🛡️', color: '#c084fc' },
+    { key: 'lifestealRate', name: '吸血', icon: '🩸', color: '#f43f5e' }
+  ],
+
   // 仙道专属被动词条池 (通天灵宝 Q6 及以上随机附加)
   IMMORTAL_AFFIXES: [
     { id: 'affix_true_dmg', name: '【真伤破晓】', desc: '攻击附加 20% 真实穿透伤害', atkBonusPct: 0.20 },
@@ -182,6 +190,30 @@ window.SlotsRPG.ItemModel = {
       affixes = shuffled.slice(0, affixCount).map(a => ({ ...a }));
     }
 
+    // 四大流派属性词条生成 (Q2 及以上装备概率附加特化流派词条)
+    const specialStats = {};
+    const archetypeTags = [];
+    const qRank = parseInt(qualityCode.replace(/\D/g, ''), 10) || 1;
+    if (qRank >= 2 && Array.isArray(this.ARCHETYPE_AFFIX_TYPES)) {
+      const count = (qRank >= 5 && Math.random() < 0.5) ? 2 : 1;
+      const shuffledArchetypes = [...this.ARCHETYPE_AFFIX_TYPES].sort(() => 0.5 - Math.random());
+      const selected = shuffledArchetypes.slice(0, count);
+      const minPct = 0.02 + (qRank - 2) * 0.035;
+      const maxPct = minPct + 0.03 + (qRank - 2) * 0.01;
+      selected.forEach(arch => {
+        const val = parseFloat((minPct + Math.random() * (maxPct - minPct)).toFixed(3));
+        specialStats[arch.key] = val;
+        archetypeTags.push({
+          key: arch.key,
+          name: arch.name,
+          icon: arch.icon,
+          color: arch.color,
+          value: val,
+          text: `${arch.icon} ${arch.name} +${Math.round(val * 100)}%`
+        });
+      });
+    }
+
     const item = {
       id: `EQ_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
       type: 'equip',
@@ -197,6 +229,9 @@ window.SlotsRPG.ItemModel = {
       power: itemPower,
       salvageEnergy: quality.salvageEnergy,
       affixes: affixes,
+      specialStats: specialStats,
+      archetypeTags: archetypeTags,
+      archetypeText: archetypeTags.map(t => t.text).join(' · '),
       isImmortal: isImmortalTier,
       isLocked: false,
       isNew: true
@@ -205,6 +240,10 @@ window.SlotsRPG.ItemModel = {
     if (affixes.length > 0) {
       item.affixNames = affixes.map(a => a.name).join(' ');
       item.desc = `仙道专属：${affixes.map(a => a.name + a.desc).join('；')}`;
+    }
+    if (archetypeTags.length > 0) {
+      const archDesc = `流派：${archetypeTags.map(t => t.text).join('，')}`;
+      item.desc = item.desc ? `${item.desc} | ${archDesc}` : archDesc;
     }
 
     return item;

@@ -655,6 +655,21 @@ window.SlotsRPG = window.SlotsRPG || {};
       };
     }
 
+    /**
+     * 将当前 12 格宝萃的所有奖励一键转存入背包与机缘池并清空槽位 (用于十连或神龙顿悟)
+     * @returns {number} 转存的物品数量
+     */
+    collectAllToInventory() {
+      if (!this.slots || this.slots.length === 0) return 0;
+      const count = this.slots.length;
+      const copy = [...this.slots];
+      for (const s of copy) {
+        this._handleOverflow(s);
+      }
+      this.clear();
+      return count;
+    }
+
     clear() {
       if (this.incomingQueue && this.incomingQueue.length > 0) {
         this.incomingQueue.forEach(qItem => {

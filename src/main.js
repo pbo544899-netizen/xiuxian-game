@@ -1551,6 +1551,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // 7. 法宝通鉴弹窗展示与对比
+  window.showEquipDetailModal = showEquipDetailModal;
   function showEquipDetailModal(target) {
     currentModalTarget = target;
     const { item, type, slot, index } = target;
@@ -1593,6 +1594,11 @@ window.addEventListener('DOMContentLoaded', () => {
         <div class="stat-line" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:6px; margin-top:6px;">
           <span class="stat-label">法宝估值战力:</span><span class="stat-value" style="color:#ffaa00; font-weight:bold;">${item.power || 0}</span>
         </div>
+        ${item.archetypeTags && item.archetypeTags.length > 0 ? `
+          <div class="archetype-tags-list" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
+            ${item.archetypeTags.map(t => `<span class="archetype-pill-tag" style="background:${t.color}20; border:1px solid ${t.color}77; color:${t.color}; padding:2px 6px; border-radius:4px; font-size:11px; font-weight:bold;">${t.text}</span>`).join('')}
+          </div>
+        ` : ''}
         ${affixHtml}
         ${descHtml}
       `;
@@ -2878,6 +2884,44 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         if (window.SlotsRPG && window.SlotsRPG.BattleSoundEngine) {
           window.SlotsRPG.BattleSoundEngine.playImpact(true);
+        }
+      } else if (ev.type === 'combo_attack') {
+        const tIdx = ev.targetIndex !== undefined ? ev.targetIndex : 0;
+        const targetRef = monsterCardEls[tIdx];
+        if (targetRef) {
+          targetRef.curHp = ev.monsterHp !== undefined ? ev.monsterHp : Math.max(0, targetRef.curHp - ev.damage);
+          const pct = Math.max(0, Math.min(100, Math.floor((targetRef.curHp / targetRef.maxHp) * 100)));
+          if (targetRef.hpFillEl) targetRef.hpFillEl.style.width = `${pct}%`;
+          if (targetRef.hpTextEl) targetRef.hpTextEl.innerText = `${targetRef.curHp} / ${targetRef.maxHp}`;
+          if (window.SlotsRPG && window.SlotsRPG.BattleJuiceEngine && targetRef.avatarEl) {
+            window.SlotsRPG.BattleJuiceEngine.triggerMonsterHurtFeedback(targetRef.avatarEl, false);
+          }
+        }
+        curBattleBossHp = ev.totalEnemyHp !== undefined ? ev.totalEnemyHp : curBattleBossHp;
+        updateBattleHUD(curBattlePlayerHp, curBattlePlayerMaxHp, curBattleBossHp, curBattleBossMaxHp);
+        if (battleLogText) battleLogText.innerText = ev.text;
+        addBattleFloatingText(`⚡连击 -${ev.damage}`, 'crit');
+        if (window.SlotsRPG && window.SlotsRPG.BattleSoundEngine) {
+          window.SlotsRPG.BattleSoundEngine.playSwordSlash();
+        }
+      } else if (ev.type === 'counter_reflect') {
+        const aIdx = ev.actorIndex !== undefined ? ev.actorIndex : 0;
+        const actorRef = monsterCardEls[aIdx];
+        if (actorRef) {
+          actorRef.curHp = Math.max(0, actorRef.curHp - ev.damage);
+          const pct = Math.max(0, Math.min(100, Math.floor((actorRef.curHp / actorRef.maxHp) * 100)));
+          if (actorRef.hpFillEl) actorRef.hpFillEl.style.width = `${pct}%`;
+          if (actorRef.hpTextEl) actorRef.hpTextEl.innerText = `${actorRef.curHp} / ${actorRef.maxHp}`;
+          if (window.SlotsRPG && window.SlotsRPG.BattleJuiceEngine && actorRef.avatarEl) {
+            window.SlotsRPG.BattleJuiceEngine.triggerMonsterHurtFeedback(actorRef.avatarEl, false);
+          }
+        }
+        curBattleBossHp = ev.totalEnemyHp !== undefined ? ev.totalEnemyHp : curBattleBossHp;
+        updateBattleHUD(curBattlePlayerHp, curBattlePlayerMaxHp, curBattleBossHp, curBattleBossMaxHp);
+        if (battleLogText) battleLogText.innerText = ev.text;
+        addBattleFloatingText(`🛡️反震 -${ev.damage}`, 'crit');
+        if (window.SlotsRPG && window.SlotsRPG.BattleSoundEngine) {
+          window.SlotsRPG.BattleSoundEngine.playImpact(false);
         }
       } else if (ev.type === 'talisman_strike' || ev.actionType === 'talisman') {
         const tIdx = ev.targetIndex !== undefined ? ev.targetIndex : 0;

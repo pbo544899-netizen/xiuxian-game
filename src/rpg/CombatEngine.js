@@ -25,6 +25,9 @@ class CombatSession {
     this.playerAtk = playerStats.atk;
     this.playerDef = playerStats.def;
     this.playerCritRate = player.critRate || 0.08;
+    this.playerComboRate = player.comboRate || 0.05;
+    this.playerCounterRate = player.counterRate || 0.05;
+    this.playerLifestealRate = player.lifestealRate || 0.05;
 
     this.pipeline = (window.SlotsRPG && window.SlotsRPG.SkillPipeline) || (typeof global !== 'undefined' && global.SlotsRPG && global.SlotsRPG.SkillPipeline);
     this.battleState = {
@@ -282,7 +285,7 @@ class CombatSession {
 
       const isPlayerCrit = Math.random() < this.playerCritRate;
       const basePlayerDmg = Math.max(4, Math.floor(this.playerAtk - 0.4 * targetMonster.def));
-      const playerDmg = Math.floor(basePlayerDmg * (isPlayerCrit ? 1.5 : 1.0) * (attackCtx.dmgMultiplier || 1.0)) + (attackCtx.bonusTrueDmg || 0);
+      const playerDmg = Math.floor(basePlayerDmg * (isPlayerCrit ? 1.8 : 1.0) * (attackCtx.dmgMultiplier || 1.0)) + (attackCtx.bonusTrueDmg || 0);
 
       targetMonster.currentHp = Math.max(0, targetMonster.currentHp - playerDmg);
 
@@ -327,11 +330,37 @@ class CombatSession {
         totalEnemyHp: this.getTotalMonsterHp(),
         totalEnemyMaxHp: this.getTotalMonsterMaxHp(),
         text: isPlayerCrit
-          ? `⚔️ 第 ${currentRound} 回合：剑意冲霄！主角施展【万剑归宗】暴击重创【${targetMonster.name}】 -${playerDmg}！`
+          ? `⚔️ 第 ${currentRound} 回合：【纯阳暴击】剑意冲霄！主角施展【万剑归宗】暴击重创【${targetMonster.name}】 -${playerDmg}！`
           : `⚔️ 第 ${currentRound} 回合：飞剑贯日！主角斩击【${targetMonster.name}】 -${playerDmg}！`
       };
       roundEvents.push(atkEv);
       this.timeline.push(atkEv);
+
+      // 迅影连击流判定：主角攻罢概率触发瞬发追击
+      if (targetMonster.currentHp > 0 && Math.random() < this.playerComboRate) {
+        const comboDmg = Math.max(2, Math.floor(playerDmg * 0.70));
+        targetMonster.currentHp = Math.max(0, targetMonster.currentHp - comboDmg);
+        const comboEv = {
+          round: currentRound,
+          turn: 'player',
+          actionType: 'attack',
+          actor: 'player',
+          type: 'combo_attack',
+          targetIndex: tIdx,
+          targetMonster,
+          damage: comboDmg,
+          skillType: 'sword_slash',
+          playerHp: this.playerHp,
+          playerMaxHp: this.playerMaxHp,
+          monsterHp: targetMonster.currentHp,
+          monsterMaxHp: targetMonster.maxHp,
+          totalEnemyHp: this.getTotalMonsterHp(),
+          totalEnemyMaxHp: this.getTotalMonsterMaxHp(),
+          text: `⚡ 第 ${currentRound} 回合：【迅影连击】剑影化虹！主角瞬身追斩【${targetMonster.name}】 -${comboDmg}！`
+        };
+        roundEvents.push(comboEv);
+        this.timeline.push(comboEv);
+      }
 
       if (this.pipeline) {
         this.pipeline.trigger('AFTER_PLAYER_ATTACK', {
@@ -422,6 +451,27 @@ class CombatSession {
       if (monsterDmg > 0) {
         this.playerHp = Math.max(0, this.playerHp - monsterDmg);
         this.battleState.playerHp = this.playerHp;
+
+        // 罡气反震流判定：受击时概率反震敌方
+        if (m.currentHp > 0 && Math.random() < this.playerCounterRate) {
+          const counterDmg = Math.max(2, Math.floor(monsterDmg * 0.50));
+          m.currentHp = Math.max(0, m.currentHp - counterDmg);
+          const counterEv = {
+            round: currentRound,
+            phase: 'mid_battle',
+            type: 'counter_reflect',
+            damage: counterDmg,
+            actorIndex: mIdx,
+            monster: m,
+            playerHp: this.playerHp,
+            playerMaxHp: this.playerMaxHp,
+            totalEnemyHp: this.getTotalMonsterHp(),
+            totalEnemyMaxHp: this.getTotalMonsterMaxHp(),
+            text: `🛡️ 第 ${currentRound} 回合：【罡气反震】周天护体罡气震荡！反弹重创【${m.name}】 -${counterDmg}！`
+          };
+          roundEvents.push(counterEv);
+          this.timeline.push(counterEv);
+        }
       }
 
       // 新手期天道眷顾锁血护脉：当玩家处于凡人或练气初阶 (Lv <= 3) 时，首度遭受致命打击激活护体神光
