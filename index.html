@@ -8,51 +8,43 @@
 </head>
 <body>
   <div id="app-container">
-    <!-- 常驻顶栏 (角色修真视图内置HUD，顶栏默认隐藏) -->
-    <header class="top-hud hidden">
-      <div class="hud-item">
+    <!-- 统一全景常驻顶栏 (角色境界、战力、作弊系统、阵盘图谱与功德瞬发符一站式集成) -->
+    <header class="top-hud">
+      <div class="hud-left-group">
         <span id="val-realm" class="hud-badge">凡人境 · 未入道</span>
+        <div class="hud-item" title="天机盘阶位">
+          <span class="hud-label">天机盘:</span>
+          <span id="val-level" class="hud-val" style="color: #94a3b8;">未激活</span>
+        </div>
+        <div class="hud-item" title="当前总战力">
+          <span class="hud-label">战力:</span>
+          <span id="val-power" class="hud-val" style="color: #ffaa00;">45</span>
+        </div>
       </div>
-      <div class="hud-item">
-        <span class="hud-label">天机盘:</span>
-        <span id="val-level" class="hud-val" style="color: #94a3b8;">未激活</span>
+      <div class="hud-right-group">
+        <div class="merit-ticket-bar" id="merit-ticket-bar" title="瞬发符">
+          <span class="ticket-tag">🎫 <b id="ticket-count-text" style="color:#34e89e;">1</b></span>
+        </div>
+        <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙作弊系统：点击获取神念指引与天机推演机缘">
+          <div class="cheat-system-avatar-mini">
+            <img src="assets/character/cheat_system_spirit.png" alt="作弊系统" />
+          </div>
+          <span class="cheat-system-label">作弊系统</span>
+          <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
+        </button>
+        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜 图谱</button>
+        <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
+          <span class="bubble-icon">✨</span>
+          <span class="bubble-text" id="cave-bubble-text">+0</span>
+        </div>
+        <button id="btn-sound-toggle" class="btn-sound-toggle" title="音效与道韵仙乐开关">🔊</button>
       </div>
-      <div class="hud-item">
-        <span class="hud-label">战力:</span>
-        <span id="val-power" class="hud-val" style="color: #ffaa00;">45</span>
-      </div>
-      <button id="btn-sound-toggle" class="btn-sound-toggle" title="音效与道韵仙乐开关">🔊</button>
     </header>
 
     <!-- 主视口内容区 -->
     <main class="main-viewport">
       <!-- 视图1: 造化聚宝盆主视口 -->
       <section id="view-slots" class="view-panel">
-        <!-- PRD 10.4 & 9.3 节: 仙道功德状态与转盘灵气浮泡 -->
-        <div class="slots-top-bar">
-          <div class="merit-ticket-bar" id="merit-ticket-bar">
-            <span class="ticket-tag">🎫 瞬发符: <b id="ticket-count-text" style="color:#34e89e;">1</b> 张</span>
-          </div>
-          <div class="slots-top-actions">
-            <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙作弊系统：点击获取神念指引与天机推演机缘">
-              <div class="cheat-system-avatar-mini">
-                <img src="assets/character/cheat_system_spirit.png" alt="作弊系统" />
-              </div>
-              <span class="cheat-system-label">作弊系统</span>
-              <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
-            </button>
-            <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜 阵盘图谱</button>
-            <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
-              <span class="bubble-icon">✨</span>
-              <span class="bubble-text" id="cave-bubble-text">灵机 +0</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 周天神龙 · 乾坤吐宝大标题 (书法金字) -->
-        <div class="qimen-header-title-box dragon-header-title-box">
-          <h2 class="qimen-main-title dragon-main-title">周天神龙 · 乾坤吐宝</h2>
-        </div>
 
         <!-- 核心视觉区：天工神龙法相与12格天机宝萃阵 (6x2品阶自动归序) -->
         <div class="dragon-spout-stage" id="dragon-spout-stage">
