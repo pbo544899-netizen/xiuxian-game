@@ -11966,3 +11966,44 @@ body:has(#view-cave.active) .drop-flyer,
     transform: scale(1.0);
   }
 }
+
+/* 角色面板四大战斗流派特化徽标行 */
+.char-archetypes-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 8px;
+  padding: 4px 6px;
+  margin: 6px 0;
+  gap: 4px;
+}
+
+.archetype-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.archetype-badge-item.crit { border-color: rgba(255, 215, 0, 0.3); }
+.archetype-badge-item.crit .arch-label { color: #ffd700; font-weight: 700; }
+.archetype-badge-item.crit .arch-val { color: #fde047; font-weight: 800; }
+
+.archetype-badge-item.combo { border-color: rgba(0, 229, 255, 0.3); }
+.archetype-badge-item.combo .arch-label { color: #00e5ff; font-weight: 700; }
+.archetype-badge-item.combo .arch-val { color: #67e8f9; font-weight: 800; }
+
+.archetype-badge-item.counter { border-color: rgba(192, 132, 252, 0.3); }
+.archetype-badge-item.counter .arch-label { color: #c084fc; font-weight: 700; }
+.archetype-badge-item.counter .arch-val { color: #e9d5ff; font-weight: 800; }
+
+.archetype-badge-item.lifesteal { border-color: rgba(244, 63, 94, 0.3); }
+.archetype-badge-item.lifesteal .arch-label { color: #f43f5e; font-weight: 700; }
+.archetype-badge-item.lifesteal .arch-val { color: #fda4af; font-weight: 800; }

@@ -785,6 +785,19 @@ window.addEventListener('DOMContentLoaded', () => {
     if (statAtk && state.totalStats) statAtk.innerText = state.totalStats.atk;
     if (statDef && state.totalStats) statDef.innerText = state.totalStats.def;
 
+    // 四大流派特化数值实时更新 (暴击、连击、反震、吸血)
+    const elCrit = document.getElementById('arch-val-crit');
+    const elCombo = document.getElementById('arch-val-combo');
+    const elCounter = document.getElementById('arch-val-counter');
+    const elLifesteal = document.getElementById('arch-val-lifesteal');
+    const pModel = gameManager.player;
+    if (pModel) {
+      if (elCrit) elCrit.innerText = `${Math.round(pModel.critRate * 100)}%`;
+      if (elCombo) elCombo.innerText = `${Math.round(pModel.comboRate * 100)}%`;
+      if (elCounter) elCounter.innerText = `${Math.round(pModel.counterRate * 100)}%`;
+      if (elLifesteal) elLifesteal.innerText = `${Math.round(pModel.lifestealRate * 100)}%`;
+    }
+
     // 宗门斩妖试炼 / 守关妖王战力雷达标尺更新 (角色面板：与天机盘试炼横幅严格统一评估目标与标尺)
     if (bossRadarPanel) {
       if (!hasJoinedSect) {
@@ -4328,10 +4341,37 @@ window.addEventListener('DOMContentLoaded', () => {
 
   window.SlotsRPG.EventBus.on('DRAGON_FRENZY_TRIGGERED', (data) => {
     if (renderer && renderer.addFloatingText) {
-      renderer.addFloatingText('🔥【真龙狂暴】降世！极速连喷 10 次！', '#ffd700');
+      renderer.addFloatingText('🔥【神龙顿悟 · 狂暴吐宝】金光耀世！追加免消耗狂暴大爆！', '#ffd700');
     }
     const rageTitle = document.getElementById('dragon-rage-title');
-    if (rageTitle) rageTitle.innerText = '🔥【真龙狂暴】爆发中！免费连喷！';
+    if (rageTitle) rageTitle.innerText = '🔥【神龙顿悟】狂暴大爆中！极品现世！';
+
+    // 1. 龙头高能变色发光光环
+    const headSprite = document.getElementById('dragon-head-sprite');
+    if (headSprite) {
+      headSprite.classList.add('dragon-head-frenzy');
+      setTimeout(() => headSprite.classList.remove('dragon-head-frenzy'), 2800);
+    }
+
+    // 2. 全屏金色与赤霞光环流转动效
+    const oldOverlay = document.querySelector('.frenzy-screen-overlay');
+    if (oldOverlay) oldOverlay.remove();
+    const overlay = document.createElement('div');
+    overlay.className = 'frenzy-screen-overlay';
+    document.body.appendChild(overlay);
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 2200);
+
+    // 3. 画面震颤与大爆音效
+    const viewSlots = document.getElementById('view-slots');
+    if (viewSlots) {
+      viewSlots.classList.remove('view-slots-shake');
+      void viewSlots.offsetWidth;
+      viewSlots.classList.add('view-slots-shake');
+      setTimeout(() => viewSlots.classList.remove('view-slots-shake'), 450);
+    }
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('TREASURE_BURST');
+    }
   });
 
   // 17. 序章凡人剧情与叩问仙门交互绑定
