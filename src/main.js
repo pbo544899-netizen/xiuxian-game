@@ -118,13 +118,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 4. 监听全局状态变更，同步更新 HUD 与角色流派属性
   window.SlotsRPG.EventBus.on('STATE_CHANGE', (state) => {
-    // A. 顶部统一 HUD
+    // A. 顶部统一 HUD 与主推演盘灵机实时同步
     const elEnergy = document.getElementById('val-energy');
+    const elCurrentLingji = document.getElementById('current-lingji-val');
     const elRealm = document.getElementById('val-realm');
     const elLevel = document.getElementById('val-level');
     const elPower = document.getElementById('val-power');
 
     if (elEnergy) elEnergy.innerText = state.energy;
+    if (elCurrentLingji) elCurrentLingji.innerText = state.energy;
     if (elRealm) elRealm.innerText = state.realm;
     if (elLevel) elLevel.innerText = `${state.level} 阶`;
     if (elPower) elPower.innerText = state.combatPower;

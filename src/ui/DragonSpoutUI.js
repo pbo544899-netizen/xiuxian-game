@@ -13,6 +13,10 @@
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
       const EventBus = window.SlotsRPG.EventBus;
       const renderer = gameManager ? gameManager.renderer : null;
+      const elCurrentLingjiInit = document.getElementById('current-lingji-val');
+      if (elCurrentLingjiInit && gameManager) {
+        elCurrentLingjiInit.innerText = gameManager.energy || 0;
+      }
 
     const btnSpin = document.getElementById('btn-spin');
     const btnAutoSpin = document.getElementById('btn-auto');
@@ -573,6 +577,10 @@
   window.SlotsRPG.EventBus.on('SPIN_COST_DEDUCTED', (data = {}) => {
     const cost = data.cost || 0;
     const energy = data.energy;
+    const elCurrentLingji = document.getElementById('current-lingji-val');
+    if (elCurrentLingji && typeof energy === 'number') {
+      elCurrentLingji.innerText = energy;
+    }
     // 1. 灵机减少飘字
     const floatEl = document.getElementById('lingji-cost-float');
     if (floatEl) {

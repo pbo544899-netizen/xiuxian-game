@@ -383,6 +383,7 @@ window.SlotsRPG = window.SlotsRPG || {};
       } else if (overflowItem.type === 'energy') {
         const energyGain = overflowItem.totalEnergy || overflowItem.singleGain || (overflowItem.count ? overflowItem.count * 25 : 25);
         gm.energy += energyGain;
+        gm.emitStateChange();
       }
 
       // 2. 贴心浮字提示，杜绝玩家产生“系统吃奖励/扣收益”的误解与疑虑
