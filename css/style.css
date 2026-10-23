@@ -5113,6 +5113,275 @@ body {
   line-height: 1.2;
 }
 
+/* 战场修仙趣味道法气泡对话 */
+.battle-speech-bubble {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.94);
+  border: 1.5px solid #00e5ff;
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap !important;
+  z-index: 35;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 229, 255, 0.4);
+  animation: bubblePopIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.battle-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 5px 0 5px;
+  border-style: solid;
+  border-color: #00e5ff transparent transparent transparent;
+}
+
+/* 主角正道气泡：赤金流光 */
+.battle-speech-bubble.bubble-hero {
+  top: -36px;
+  border-color: #ffd700;
+  color: #fffbeb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.45);
+}
+
+.battle-speech-bubble.bubble-hero::after {
+  border-color: #ffd700 transparent transparent transparent;
+}
+
+/* 受创/濒死气泡：血煞赤红 */
+.battle-speech-bubble.bubble-hurt {
+  border-color: #f43f5e;
+  color: #fecdd3;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(244, 63, 94, 0.45);
+}
+
+.battle-speech-bubble.bubble-hurt::after {
+  border-color: #f43f5e transparent transparent transparent;
+}
+
+/* 气泡退场 */
+.battle-speech-bubble.bubble-leaving {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px) scale(0.9);
+}
+
+@keyframes bubblePopIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px) scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* ========================================================
+   九重雷劫 · 大境界突破 1.8 秒全屏沉浸仪式演出
+   ======================================================== */
+.tribulation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 18, 0.92);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+/* 苍穹旋转劫云涡流 */
+.tribulation-cloud-vortex {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(59, 130, 246, 0.15) 40%, transparent 75%);
+  animation: cloudVortexSpin 12s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes cloudVortexSpin {
+  from { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+/* 苍穹白炽雷暴闪光 */
+.tribulation-lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tribulation-lightning-flash.flash-active {
+  animation: lightningWhiteout 0.45s ease-out;
+}
+
+@keyframes lightningWhiteout {
+  0% { opacity: 0; }
+  15% { opacity: 0.92; }
+  35% { opacity: 0.4; }
+  60% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* 破空贯顶紫金雷柱 */
+.tribulation-thunder-beam {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #ffffff, #c084fc, #ffd700);
+  box-shadow: 0 0 35px #a855f7, 0 0 70px #ffd700;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tribulation-thunder-beam.beam-active {
+  animation: thunderBeamStrike 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes thunderBeamStrike {
+  0% { opacity: 0; width: 6px; }
+  20% { opacity: 1; width: 28px; }
+  50% { opacity: 0.9; width: 18px; }
+  100% { opacity: 0; width: 4px; }
+}
+
+/* 突破境界主标题 */
+.tribulation-title-wrap {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.tribulation-stage-hint {
+  font-size: 13px;
+  color: #a78bfa;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
+  margin-bottom: 8px;
+}
+
+.tribulation-realm-transition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #f8fafc;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.6);
+}
+
+.tribulation-realm-transition .realm-arrow {
+  color: #ffd700;
+  font-size: 20px;
+  animation: arrowPulse 0.8s ease-in-out infinite alternate;
+}
+
+.tribulation-realm-transition .realm-new {
+  color: #ffd700;
+  text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes arrowPulse {
+  from { transform: translateX(-2px); opacity: 0.7; }
+  to { transform: translateX(3px); opacity: 1; }
+}
+
+/* 破境功成 · 朱红古篆重印 */
+.tribulation-seal {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding: 10px 28px;
+  border: 3px solid #f43f5e;
+  border-radius: 12px;
+  background: rgba(159, 18, 57, 0.45);
+  box-shadow: 0 0 35px rgba(244, 63, 94, 0.6), inset 0 0 20px rgba(244, 63, 94, 0.4);
+  color: #ffe4e6;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: 6px;
+  text-shadow: 0 0 12px #f43f5e;
+  transform: scale(2.2);
+  opacity: 0;
+}
+
+.tribulation-seal.seal-slammed {
+  animation: sealSlam 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes sealSlam {
+  0% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 战力暴涨浮标看板 */
+.tribulation-power-badge {
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #38ef7d;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 239, 125, 0.35);
+  opacity: 0;
+}
+
+.tribulation-power-badge.badge-revealed {
+  animation: badgeSlideUp 0.35s ease-out forwards;
+}
+
+@keyframes badgeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tribulation-skip-hint {
+  position: absolute;
+  bottom: 30px;
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 1px;
+
 /* 怪物尺寸直观区分 (普通 / 精英 / Boss) */
 .battle-boss-avatar.size-normal {
   width: 100px;
@@ -10726,6 +10995,109 @@ body.tier-spirit-realm .reel-frame {
 
 .btn-collect-all-slots .collect-icon {
   font-size: 11px;
+}
+
+/* 过滤设置按钮 */
+.btn-filter-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  padding: 2px 7px;
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filter-settings:hover {
+  border-color: #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+.btn-filter-settings:active {
+  transform: scale(0.95);
+}
+
+/* 过滤设置弹窗卡片 */
+.filter-settings-modal-card {
+  max-width: 360px;
+  width: 90%;
+  background: linear-gradient(180deg, #0f172a 0%, #090d16 100%) !important;
+  border: 1px solid rgba(0, 229, 255, 0.35) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 229, 255, 0.25) !important;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.filter-hint-banner {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px dashed rgba(255, 215, 0, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #fde047;
+  line-height: 1.4;
+  margin: 12px 0 14px 0;
+}
+
+.filter-options-group {
+  margin-bottom: 14px;
+}
+
+.filter-group-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: rgba(30, 41, 59, 0.35);
+  margin-bottom: 6px;
+  transition: background 0.15s ease;
+}
+
+.filter-checkbox-row:hover {
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+  accent-color: #00e5ff;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.filter-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.filter-badge.badge-q1 { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+.filter-badge.badge-q2 { background: rgba(56, 239, 125, 0.15); color: #86efac; border: 1px solid #22c55e; }
+.filter-badge.badge-q3 { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid #0284c7; }
+.filter-badge.badge-upgrade { background: rgba(255, 215, 0, 0.15); color: #fde047; border: 1px solid #eab308; }
+.filter-badge.badge-lesser { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid #e11d48; }
+
+.filter-row-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
 }
 
 /* 5. 引龙吐宝水缸进度条 (直接显示在八卦 icon 上) */

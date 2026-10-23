@@ -87,6 +87,10 @@
                 <span class="showcase-rule-hint">品阶居前 · 满额自动存入乾坤袋</span>
               </div>
               <div class="showcase-actions">
+                <button id="btn-open-filter-settings" class="btn-filter-settings" title="天机智能熔炼与自动分解过滤设置">
+                  <span class="filter-icon">⚙️</span>
+                  <span class="filter-text">过滤</span>
+                </button>
                 <label class="auto-collect-toggle" title="抽奖完成后自动将宝萃收纳至乾坤袋">
                   <input type="checkbox" id="chk-auto-collect" />
                   <span class="auto-collect-slider"></span>
@@ -718,6 +722,53 @@
           <button id="btn-item-primary" class="btn-primary">穿戴</button>
           <button id="btn-item-salvage" class="btn-secondary">分解 (+5机缘)</button>
           <button id="btn-item-close" class="btn-secondary">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 天机智能过滤设置 -->
+    <div id="modal-filter-settings" class="modal-overlay hidden">
+      <div class="modal-card filter-settings-modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">⚙️ 天机熔炼 · 智能过滤</h2>
+          <button id="btn-close-filter-settings" class="btn-close-icon">✕</button>
+        </div>
+        <div class="filter-hint-banner">
+          💡 开启后，推演获得的指定装备将自动熔炼折算为机缘，绝不占背包空间！
+        </div>
+        <div class="filter-options-group">
+          <div class="filter-group-title">自动熔炼品阶设定</div>
+          <label class="filter-checkbox-row">
+            <input type="checkbox" id="chk-filter-q1" checked />
+            <span class="filter-badge badge-q1">凡铁 (Q1 灰白)</span>
+            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+          </label>
+          <label class="filter-checkbox-row">
+            <input type="checkbox" id="chk-filter-q2" />
+            <span class="filter-badge badge-q2">灵器 (Q2 碧绿)</span>
+            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+          </label>
+          <label class="filter-checkbox-row">
+            <input type="checkbox" id="chk-filter-q3" />
+            <span class="filter-badge badge-q3">宝器 (Q3 幽蓝)</span>
+            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+          </label>
+        </div>
+        <div class="filter-options-group">
+          <div class="filter-group-title">智能换装与战力判定</div>
+          <label class="filter-checkbox-row">
+            <input type="checkbox" id="chk-filter-auto-equip" checked />
+            <span class="filter-badge badge-upgrade">战力提升</span>
+            <span class="filter-row-desc">高战力装备自动穿戴替换</span>
+          </label>
+          <label class="filter-checkbox-row">
+            <input type="checkbox" id="chk-filter-smelt-lesser" />
+            <span class="filter-badge badge-lesser">战力落后</span>
+            <span class="filter-row-desc">低于身上战力时自动分解</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-save-filter-settings" class="btn-primary">保存并生效</button>
         </div>
       </div>
     </div>

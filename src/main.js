@@ -1949,7 +1949,76 @@ window.addEventListener('DOMContentLoaded', () => {
     // 抽奖过程只进入展示区槽位，由【一键收纳】或【自动收纳】统一收取飞入背包
   });
 
-  // 10. 突破与爆仓弹窗事件
+  // 10. 突破与九重雷劫破境仪式
+  function playTribulationCeremony(data, onComplete) {
+    const overlay = document.createElement('div');
+    overlay.className = 'tribulation-overlay';
+    overlay.innerHTML = `
+      <div class="tribulation-cloud-vortex"></div>
+      <div class="tribulation-lightning-flash" id="trib-flash"></div>
+      <div class="tribulation-thunder-beam" id="trib-beam"></div>
+      <div class="tribulation-title-wrap">
+        <div class="tribulation-stage-hint">⚡ 九重雷劫 · 破境登天 ⚡</div>
+        <div class="tribulation-realm-transition">
+          <span class="realm-old">${data.oldRealm}</span>
+          <span class="realm-arrow">➔</span>
+          <span class="realm-new">${data.newRealm}</span>
+        </div>
+      </div>
+      <div class="tribulation-seal" id="trib-seal">破境功成</div>
+      <div class="tribulation-power-badge" id="trib-power">⚡ 战力飙升 +${data.powerDiff} ⬆</div>
+      <div class="tribulation-skip-hint">点击屏幕任意位置跳过</div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const flash = overlay.querySelector('#trib-flash');
+    const beam = overlay.querySelector('#trib-beam');
+    const seal = overlay.querySelector('#trib-seal');
+    const power = overlay.querySelector('#trib-power');
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 280);
+      if (typeof onComplete === 'function') onComplete();
+    };
+
+    overlay.onclick = finish;
+
+    // 0.2s: 雷云聚顶，白炽雷暴贯体
+    setTimeout(() => {
+      if (finished) return;
+      if (flash) flash.classList.add('flash-active');
+      if (beam) beam.classList.add('beam-active');
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('TREASURE_BURST');
+      }
+    }, 200);
+
+    // 0.6s: 破境功成朱红大印轰然盖下
+    setTimeout(() => {
+      if (finished) return;
+      if (seal) seal.classList.add('seal-slammed');
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('BREAKTHROUGH');
+      }
+    }, 600);
+
+    // 0.95s: 战力飙升浮标展示
+    setTimeout(() => {
+      if (finished) return;
+      if (power) power.classList.add('badge-revealed');
+    }, 950);
+
+    // 1.85s: 演出平滑结束进入详情面板
+    setTimeout(() => {
+      finish();
+    }, 1850);
+  }
+
   window.SlotsRPG.EventBus.on('PLAYER_LEVEL_UP', (levelUps) => {
     if (!levelUps || levelUps.length === 0) return;
     const first = levelUps[0];
@@ -1986,8 +2055,13 @@ window.addEventListener('DOMContentLoaded', () => {
     if (levelupStatDefNew) levelupStatDefNew.innerText = newStats.def;
     if (levelupStatDefDiff) levelupStatDefDiff.innerText = `(+${defDiff})`;
 
-    if (modalLevelUp) {
-      modalLevelUp.classList.remove('hidden');
+    const isMajorBreakthrough = oldRealm && newRealm && oldRealm !== newRealm;
+    if (isMajorBreakthrough) {
+      playTribulationCeremony({ oldRealm, newRealm, powerDiff }, () => {
+        if (modalLevelUp) modalLevelUp.classList.remove('hidden');
+      });
+    } else {
+      if (modalLevelUp) modalLevelUp.classList.remove('hidden');
     }
   });
 
@@ -2418,6 +2492,25 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    /**
+     * 战场修仙趣味道法气泡对话组件
+     */
+    function showBattleSpeechBubble(targetEl, text, bubbleType = 'monster', duration = 1500) {
+      if (!targetEl) return;
+      const old = targetEl.querySelector('.battle-speech-bubble');
+      if (old) old.remove();
+
+      const bubble = document.createElement('div');
+      bubble.className = `battle-speech-bubble ${bubbleType === 'hero' ? 'bubble-hero' : (bubbleType === 'hurt' ? 'bubble-hurt' : '')}`;
+      bubble.innerText = text;
+      targetEl.appendChild(bubble);
+
+      setTimeout(() => {
+        bubble.classList.add('bubble-leaving');
+        setTimeout(() => bubble.remove(), 280);
+      }, duration);
+    }
+
     // 顶部 HUD 模式：单体妖王展示专属长血条 (boss-mode)；多怪物展示聚焦目标追踪条 (target-mode)
     if (battleBossHud) {
       battleBossHud.classList.remove('hidden');
@@ -2554,6 +2647,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 初始化锁定目标与顶部 HUD
     updateTargetHUD(0);
+
+    // 战场趣味气泡：入场嘲讽台词
+    const MONSTER_TAUNTS = [
+      '区区练气，也敢阻挠本座！',
+      '吼！见识本座利爪！',
+      '留下乾坤袋，饶你不死！',
+      '今日合该饱餐一顿！',
+      '何方宵小，敢扰本王洞府！'
+    ];
+    const BOSS_TAUNTS = [
+      '凡人蝼蚁，惊扰本王长眠！',
+      '万年道行，岂是你能撼动？',
+      '入得此关，唯有一死！',
+      '吾乃万山之主，受死吧！'
+    ];
+    setTimeout(() => {
+      if (monsterCardEls.length > 0 && monsterCardEls[0].isAlive) {
+        const pool = (tier === 'boss' || isSingleBoss) ? BOSS_TAUNTS : MONSTER_TAUNTS;
+        const txt = pool[Math.floor(Math.random() * pool.length)];
+        showBattleSpeechBubble(monsterCardEls[0].cardEl, txt, 'monster', 1800);
+      }
+    }, 450);
 
     const curSect = gameManager.player.currentSect;
     const sectConf = (window.SlotsRPG && window.SlotsRPG.SectConfig && window.SlotsRPG.SectConfig.SECTS && window.SlotsRPG.SectConfig.SECTS[curSect]) || null;
@@ -2739,6 +2854,18 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         if (battleLogText) battleLogText.innerText = ev.text;
         addBattleFloatingText('💀 妖兽伏诛!', 'crit');
+
+        // 战场气泡：伏诛求饶
+        const DEFEAT_SHOUTS = [
+          '道友饶命……啊！',
+          '本座……不甘心啊！',
+          '算你狠……后会有期！',
+          '可恶的剑修……！'
+        ];
+        const dTxt = DEFEAT_SHOUTS[Math.floor(Math.random() * DEFEAT_SHOUTS.length)];
+        if (targetRef && targetRef.cardEl) {
+          showBattleSpeechBubble(targetRef.cardEl, dTxt, 'hurt', 1200);
+        }
         if (window.SlotsRPG && window.SlotsRPG.BattleSoundEngine) {
           window.SlotsRPG.BattleSoundEngine.playImpact(true);
         }
@@ -2866,6 +2993,34 @@ window.addEventListener('DOMContentLoaded', () => {
                 updateBattleHUD(curBattlePlayerHp, curBattlePlayerMaxHp, curBattleBossHp, curBattleBossMaxHp);
                 updateTargetHUD(tIdx);
                 addBattleFloatingText(ev.isCrit ? `💥会心 -${ev.damage}` : `-${ev.damage}`, ev.isCrit ? 'crit' : 'normal');
+
+                // 怪物受创破防喊话 (< 40% HP)
+                if (targetRef && targetRef.isAlive && targetRef.curHp > 0 && targetRef.curHp < targetRef.maxHp * 0.4 && !targetRef.hasShoutedHurt) {
+                  targetRef.hasShoutedHurt = true;
+                  const HURT_SHOUTS = [
+                    '痛煞我也！纳命来！',
+                    '这小辈……剑气怎如此凌厉？！',
+                    '可恶……护体罡气碎了！',
+                    '竟能伤及本王本源？！'
+                  ];
+                  const hTxt = HURT_SHOUTS[Math.floor(Math.random() * HURT_SHOUTS.length)];
+                  showBattleSpeechBubble(targetRef.cardEl, hTxt, 'hurt', 1400);
+                }
+
+                // 主角暴击喊话
+                if (ev.isCrit) {
+                  const HERO_SHOUTS = [
+                    '雕虫小技，安敢造次！',
+                    '一剑光寒，破！',
+                    '斩妖除魔，天道无偏！',
+                    '九霄归一，给本座退下！'
+                  ];
+                  const heroTxt = HERO_SHOUTS[Math.floor(Math.random() * HERO_SHOUTS.length)];
+                  const heroWrap = document.querySelector('.battle-hero-avatar-wrapper') || (battleHeroImg && battleHeroImg.parentElement);
+                  if (heroWrap) {
+                    showBattleSpeechBubble(heroWrap, heroTxt, 'hero', 1400);
+                  }
+                }
               },
               onFlyingSwordHit: () => {
                 const pursuitDmg = Math.max(4, Math.floor(ev.damage * 0.3));
@@ -5042,6 +5197,64 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnCollectAllSlots) {
     btnCollectAllSlots.addEventListener('click', () => {
       collectAllTemporarySlots(false);
+    });
+  }
+
+  // 临时背包智能过滤设置面板
+  const btnOpenFilterSettings = document.getElementById('btn-open-filter-settings');
+  const modalFilterSettings = document.getElementById('modal-filter-settings');
+  const btnCloseFilterSettings = document.getElementById('btn-close-filter-settings');
+  const btnSaveFilterSettings = document.getElementById('btn-save-filter-settings');
+  const chkFilterQ1 = document.getElementById('chk-filter-q1');
+  const chkFilterQ2 = document.getElementById('chk-filter-q2');
+  const chkFilterQ3 = document.getElementById('chk-filter-q3');
+  const chkFilterAutoEquip = document.getElementById('chk-filter-auto-equip');
+  const chkFilterSmeltLesser = document.getElementById('chk-filter-smelt-lesser');
+
+  function syncFilterSettingsUI() {
+    const inv = gameManager && gameManager.inventory;
+    const dcm = gameManager && gameManager.dragonCabinetManager;
+    if (chkFilterQ1 && inv) chkFilterQ1.checked = (inv.autoSalvageQualities || []).includes('Q1');
+    if (chkFilterQ2 && inv) chkFilterQ2.checked = (inv.autoSalvageQualities || []).includes('Q2');
+    if (chkFilterQ3 && inv) chkFilterQ3.checked = (inv.autoSalvageQualities || []).includes('Q3');
+    if (chkFilterAutoEquip && dcm) chkFilterAutoEquip.checked = !!dcm.autoSettings.autoEquipBetter;
+    if (chkFilterSmeltLesser && dcm) chkFilterSmeltLesser.checked = !!dcm.autoSettings.autoSmeltLesser;
+  }
+
+  if (btnOpenFilterSettings && modalFilterSettings) {
+    btnOpenFilterSettings.addEventListener('click', () => {
+      syncFilterSettingsUI();
+      modalFilterSettings.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseFilterSettings && modalFilterSettings) {
+    btnCloseFilterSettings.addEventListener('click', () => {
+      modalFilterSettings.classList.add('hidden');
+    });
+  }
+
+  if (btnSaveFilterSettings && modalFilterSettings) {
+    btnSaveFilterSettings.addEventListener('click', () => {
+      const inv = gameManager && gameManager.inventory;
+      const dcm = gameManager && gameManager.dragonCabinetManager;
+      if (inv) {
+        const qualities = [];
+        if (chkFilterQ1 && chkFilterQ1.checked) qualities.push('Q1');
+        if (chkFilterQ2 && chkFilterQ2.checked) qualities.push('Q2');
+        if (chkFilterQ3 && chkFilterQ3.checked) qualities.push('Q3');
+        inv.autoSalvageQualities = qualities;
+        inv.autoSalvageEnabled = qualities.length > 0;
+      }
+      if (dcm) {
+        if (chkFilterAutoEquip) dcm.autoSettings.autoEquipBetter = chkFilterAutoEquip.checked;
+        if (chkFilterSmeltLesser) dcm.autoSettings.autoSmeltLesser = chkFilterSmeltLesser.checked;
+      }
+      modalFilterSettings.classList.add('hidden');
+      showFloatingNotice('✨ 天机智能熔炼与过滤规则已保存生效！', '#38ef7d');
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(gameManager, true);
+      }
     });
   }
 
