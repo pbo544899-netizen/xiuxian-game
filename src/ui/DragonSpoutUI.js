@@ -179,16 +179,18 @@
   const autoCountLabel = document.getElementById('auto-count-label');
   const countOptBtns = document.querySelectorAll('.count-opt-btn');
 
-  // 初始化已保存的连抽次数设置
-  let currentAutoCount = 50;
-  const savedCount = localStorage.getItem('slots_rpg_auto_count');
-  if (savedCount) {
-    currentAutoCount = savedCount === 'Infinity' ? Infinity : parseInt(savedCount, 10);
+  // 初始化连抽次数设置：默认 10 连抽
+  let currentAutoCount = 10;
+  function applyAutoCount(countVal) {
+    currentAutoCount = countVal === 'Infinity' ? Infinity : parseInt(countVal, 10);
+    if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
+    localStorage.setItem('slots_rpg_auto_count', String(countVal));
+
     if (autoCountLabel) {
       autoCountLabel.innerText = currentAutoCount === Infinity ? '无限' : `${currentAutoCount}次`;
     }
-    countOptBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.count === savedCount);
+    countOptBtns.forEach(b => {
+      b.classList.toggle('active', b.dataset.count === String(countVal));
     });
     const autoBtnTitle = document.getElementById('auto-btn-title');
     if (autoBtnTitle && !gameManager.isAutoSpinning) {
@@ -198,7 +200,17 @@
       btnAutoSpin.classList.toggle('ten-pull-mode', currentAutoCount === 10);
     }
   }
-  if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
+
+  // 默认选中 10 连抽 (若本地已保存有效配置则沿用，否则默认10连)
+  const savedCount = localStorage.getItem('slots_rpg_auto_count');
+  applyAutoCount(savedCount ? savedCount : '10');
+
+  // 玩家激活天机盘 (ARTIFACT_AWAKENED) 时：强制默认选中 10 连抽
+  if (EventBus) {
+    EventBus.on('ARTIFACT_AWAKENED', () => {
+      applyAutoCount('10');
+    });
+  }
 
   if (btnAutoCountToggle && autoCountPopover) {
     btnAutoCountToggle.addEventListener('click', (e) => {
@@ -209,24 +221,7 @@
     countOptBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const countVal = btn.dataset.count;
-        currentAutoCount = countVal === 'Infinity' ? Infinity : parseInt(countVal, 10);
-        if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
-        localStorage.setItem('slots_rpg_auto_count', countVal);
-
-        countOptBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        if (autoCountLabel) {
-          autoCountLabel.innerText = countVal === 'Infinity' ? '无限' : `${currentAutoCount}次`;
-        }
-        const autoBtnTitle = document.getElementById('auto-btn-title');
-        if (autoBtnTitle && !gameManager.isAutoSpinning) {
-          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
-        }
-        if (btnAutoSpin) {
-          btnAutoSpin.classList.toggle('ten-pull-mode', currentAutoCount === 10);
-        }
+        applyAutoCount(btn.dataset.count);
         autoCountPopover.classList.add('hidden');
       });
     });

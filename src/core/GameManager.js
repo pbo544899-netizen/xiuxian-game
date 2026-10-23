@@ -101,7 +101,7 @@ class GameManager {
     this.waterTankMax = 10;
 
     // 自动推演连抽次数设置与当前进度计数
-    this.autoSpinTargetCount = 50;
+    this.autoSpinTargetCount = 10;
     this.autoSpinCompletedCount = 0;
 
     // 默认装配凡人采药破烂装束 (战力 18)
