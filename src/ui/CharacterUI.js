@@ -11,6 +11,10 @@
   const CharacterUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+
+      const storyManager = window.SlotsRPG.StoryManager;
+      const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
+
       const EventBus = window.SlotsRPG.EventBus;
 
     const tabCharacter = document.getElementById('tab-character');
@@ -757,6 +761,7 @@
       CharacterUI.executeBagMerge = executeBagMerge;
       CharacterUI.playTribulationCeremony = playTribulationCeremony;
 
+      window.getSlotDisplayName = getSlotDisplayName;
       window.renderEquipmentSlots = renderEquipmentSlots;
       window.renderBagGrid = renderBagGrid;
       window.quickEquipBestGear = quickEquipBestGear;

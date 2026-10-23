@@ -9,6 +9,12 @@
   const BattleUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+
+      const storyManager = window.SlotsRPG.StoryManager;
+      const updateCaveView = () => window.updateCaveView && window.updateCaveView();
+      const openRewardedAdModal = (t, r, c) => window.openRewardedAdModal && window.openRewardedAdModal(t, r, c);
+      const updateSectTrialBanner = () => window.updateSectTrialBanner && window.updateSectTrialBanner();
+
       const EventBus = window.SlotsRPG.EventBus;
 
     const modalBattleArena = document.getElementById('modal-battle-arena');

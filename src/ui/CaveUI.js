@@ -9,6 +9,10 @@
   const CaveUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+
+      const showFloatingNotice = (m, c) => window.showFloatingNotice && window.showFloatingNotice(m, c);
+      const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
+
       const EventBus = window.SlotsRPG.EventBus;
 
     const tabCave = document.getElementById('tab-cave');

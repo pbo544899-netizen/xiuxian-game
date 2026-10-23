@@ -18,6 +18,25 @@
     const btnAutoSpin = document.getElementById('btn-auto');
     const waterTankBadge = document.getElementById('water-tank-badge');
     const viewSlots = document.getElementById('view-slots');
+
+    const sectTrialBanner = document.getElementById('sect-trial-banner');
+    const trialStageBadge = document.getElementById('trial-stage-badge');
+    const trialDiffTag = document.getElementById('trial-diff-tag');
+    const trialRewardTag = document.getElementById('trial-reward-tag');
+    const trialTargetName = document.getElementById('trial-target-name');
+    const trialTargetDesc = document.getElementById('trial-target-desc');
+    const trialRecPower = document.getElementById('trial-rec-power');
+    const trialPowerStatus = document.getElementById('trial-power-status');
+    const btnActiveTrialChallenge = document.getElementById('btn-active-trial-challenge');
+    const btnBossRadarChallenge = document.getElementById('btn-boss-radar-challenge');
+    const playBattleSequence = (r, c) => window.playBattleSequence && window.playBattleSequence(r, c);
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+
+    const getAutoBtnTitleText = (c) => window.getAutoBtnTitleText && window.getAutoBtnTitleText(c);
+    const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
+    const updateReliefModalUI = () => window.updateReliefModalUI && window.updateReliefModalUI();
+    const waitOtherModalsClosedThen = (cb) => (window.SlotsRPG.UI.ModalsUI && window.SlotsRPG.UI.ModalsUI.waitOtherModalsClosedThen) ? window.SlotsRPG.UI.ModalsUI.waitOtherModalsClosedThen(cb) : cb();
+
     const modalSectInduction = document.getElementById('modal-sect-induction');
 
     const tabCharacter = document.getElementById('tab-character');
@@ -466,6 +485,23 @@
 
     // 3. 画面震颤与大爆音效
     const viewSlots = document.getElementById('view-slots');
+
+    const sectTrialBanner = document.getElementById('sect-trial-banner');
+    const trialStageBadge = document.getElementById('trial-stage-badge');
+    const trialDiffTag = document.getElementById('trial-diff-tag');
+    const trialRewardTag = document.getElementById('trial-reward-tag');
+    const trialTargetName = document.getElementById('trial-target-name');
+    const trialTargetDesc = document.getElementById('trial-target-desc');
+    const trialRecPower = document.getElementById('trial-rec-power');
+    const trialPowerStatus = document.getElementById('trial-power-status');
+    const btnActiveTrialChallenge = document.getElementById('btn-active-trial-challenge');
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+
+    const getAutoBtnTitleText = (c) => window.getAutoBtnTitleText && window.getAutoBtnTitleText(c);
+    const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
+    const updateReliefModalUI = () => window.updateReliefModalUI && window.updateReliefModalUI();
+    const waitOtherModalsClosedThen = (cb) => (window.SlotsRPG.UI.ModalsUI && window.SlotsRPG.UI.ModalsUI.waitOtherModalsClosedThen) ? window.SlotsRPG.UI.ModalsUI.waitOtherModalsClosedThen(cb) : cb();
+
     const modalSectInduction = document.getElementById('modal-sect-induction');
 
     const tabCharacter = document.getElementById('tab-character');
@@ -746,7 +782,202 @@
 
 
       // 暴露方法到对象与全局
+        function updateSectTrialBanner() {
+    if (!sectTrialBanner || !gameManager) return;
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+
+    // 【核心改动 4】：当触发伏妖遭遇战时，下方的挑战横幅临时变更为触发的伏妖挑战
+    if (gameManager.pendingBattleData) {
+      const pData = gameManager.pendingBattleData;
+      sectTrialBanner.classList.remove('hidden');
+      sectTrialBanner.classList.add('battle-triggered-mode');
+      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+
+      if (trialStageBadge) trialStageBadge.innerText = '⚠️ 妖兽突袭';
+      if (trialDiffTag) {
+        trialDiffTag.className = 'trial-diff-tag danger';
+        trialDiffTag.innerText = '紧急迎战';
+      }
+      if (trialRewardTag) trialRewardTag.innerText = '🎁 降妖机缘';
+      if (trialTargetName) trialTargetName.innerText = `${pData.monsterName || '恶兽突袭'}！`;
+      if (trialRecPower) trialRecPower.innerText = (gameManager.player ? gameManager.player.combatPower : 35);
+      if (trialPowerStatus) {
+        trialPowerStatus.className = 'trial-power-status danger';
+        trialPowerStatus.innerText = '临阵对决';
+      }
+      if (btnActiveTrialChallenge) {
+        btnActiveTrialChallenge.classList.remove('disabled');
+        btnActiveTrialChallenge.disabled = false;
+        btnActiveTrialChallenge.classList.add('pulse-gold');
+      }
+      if (trialBtnText) trialBtnText.innerText = '拔剑迎战';
+      return;
+    }
+
+    // 恢复常规宗门试炼横幅样式
+    sectTrialBanner.classList.remove('battle-triggered-mode');
+
+    const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
+
+    if (!hasJoinedSect) {
+      sectTrialBanner.classList.add('hidden');
+      if (prologueSpinGuide) {
+        prologueSpinGuide.classList.remove('hidden');
+      }
+      return;
+    }
+
+    // 已加入宗门：开放挑战入口，神兵必出提示框永久不再显示
+    if (prologueSpinGuide) {
+      prologueSpinGuide.classList.add('hidden');
+    }
+    sectTrialBanner.classList.remove('hidden');
+
+    const info = (typeof gameManager.getCurrentTrialStageInfo === 'function') ? gameManager.getCurrentTrialStageInfo() : null;
+    if (!info || info.isMortal) {
+      sectTrialBanner.classList.add('hidden');
+      return;
+    }
+
+    if (info.isAllCleared) {
+      sectTrialBanner.classList.remove('boss-ready');
+      if (trialStageBadge) trialStageBadge.innerText = '试炼圆满';
+      if (trialDiffTag) {
+        trialDiffTag.className = 'trial-diff-tag';
+        trialDiffTag.innerText = '已通关';
+      }
+      if (trialRewardTag) trialRewardTag.innerText = '✨ 门派妖魔已全灭';
+      if (trialTargetName) trialTargetName.innerText = '本门派试炼与守关妖王已全数荡平！';
+      if (trialRecPower) trialRecPower.innerText = '-';
+      if (trialPowerStatus) {
+        trialPowerStatus.className = 'trial-power-status safe';
+        trialPowerStatus.innerText = '登峰造极';
+      }
+      if (btnActiveTrialChallenge) {
+        btnActiveTrialChallenge.classList.remove('pulse-gold');
+        btnActiveTrialChallenge.classList.add('disabled');
+        btnActiveTrialChallenge.disabled = true;
+      }
+      if (trialBtnText) trialBtnText.innerText = '已通关';
+      return;
+    }
+
+    if (btnActiveTrialChallenge) {
+      btnActiveTrialChallenge.classList.remove('disabled');
+      btnActiveTrialChallenge.disabled = false;
+    }
+
+    if (info.isFinalBoss) {
+      sectTrialBanner.classList.add('boss-ready');
+      if (trialStageBadge) trialStageBadge.innerText = '🔥 守关大妖王';
+      if (trialDiffTag) {
+        trialDiffTag.className = 'trial-diff-tag boss';
+        trialDiffTag.innerText = '妖王';
+      }
+      if (trialRewardTag) trialRewardTag.innerText = '🎁 破关晋阶大礼';
+      if (trialTargetName) trialTargetName.innerText = info.title;
+      if (trialRecPower) trialRecPower.innerText = info.reqPower;
+
+      const isReady = info.playerPower >= info.reqPower;
+      if (trialPowerStatus) {
+        trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
+        trialPowerStatus.innerText = isReady ? '可斩杀' : (info.playerPower >= info.reqPower * 0.85 ? '可试剑' : '凶险');
+      }
+      if (trialBtnText) trialBtnText.innerText = isReady ? '斩灭妖王' : '拔剑试剑';
+      if (btnActiveTrialChallenge) {
+        btnActiveTrialChallenge.classList.toggle('pulse-gold', isReady);
+      }
+    } else {
+      sectTrialBanner.classList.remove('boss-ready');
+      const isSpirit = gameManager.currentWorldTier === 2;
+      if (trialStageBadge) trialStageBadge.innerText = isSpirit ? `仙域天梯 第 ${info.stageIndex}/12 阶` : `试炼 第 ${info.stageIndex}/12 关`;
+      if (trialDiffTag) {
+        trialDiffTag.className = `trial-diff-tag ${info.tier === 'elite' ? 'elite' : ''}`;
+        trialDiffTag.innerText = info.tier === 'elite' ? '精英' : '普通';
+      }
+      if (trialRewardTag) {
+        const rewardEnergy = (info.rewards && info.rewards.energy) || (150 + info.stageIndex * 25);
+        trialRewardTag.innerText = `🎁 奖 ${rewardEnergy} 机缘`;
+      }
+      if (trialTargetName) trialTargetName.innerText = info.title;
+      if (trialRecPower) trialRecPower.innerText = info.reqPower;
+
+      const isReady = info.playerPower >= info.reqPower;
+      if (trialPowerStatus) {
+        trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
+        trialPowerStatus.innerText = isReady ? '可斩杀' : (info.playerPower >= info.reqPower * 0.85 ? '势均力敌' : '凶险');
+      }
+      if (trialBtnText) trialBtnText.innerText = isReady ? '拔剑斩妖' : '拔剑试刀';
+      if (btnActiveTrialChallenge) {
+        btnActiveTrialChallenge.classList.toggle('pulse-gold', isReady);
+      }
+    }
+  }
+
+  // 主动挑战事件发起处理 (零消耗，随时检验换装输出与战力成长)
+  function handleActiveTrialChallenge() {
+    // 【核心改动 4】：若当前有暂存的伏妖遭遇战，点击优先响应拔剑迎战
+    if (gameManager.pendingBattleData) {
+      if (battleCountdownTimer) {
+        clearInterval(battleCountdownTimer);
+        battleCountdownTimer = null;
+      }
+      gameManager.executePendingBattle();
+      return;
+    }
+
+    const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
+    if (!hasJoinedSect) {
+      showFloatingNotice('凡人未入门派，请先叩问仙门拜入宗门！');
+      return;
+    }
+    if (gameManager.isSpinning) {
+      showFloatingNotice('天机盘推演中，请稍候！');
+      return;
+    }
+    const info = (typeof gameManager.getCurrentTrialStageInfo === 'function') ? gameManager.getCurrentTrialStageInfo() : null;
+    if (info && info.isAllCleared) {
+      showFloatingNotice('本门派试炼与守关妖王已全数荡平！');
+      return;
+    }
+
+    // 系统战力检测与灵犀预警
+    if (info && info.playerPower < info.reqPower) {
+      if (window.SlotsRPG && window.SlotsRPG.StoryManager) {
+        window.SlotsRPG.StoryManager.showSystemTip('power_low', {
+          playerPower: info.playerPower,
+          recPower: info.reqPower
+        });
+      }
+    }
+
+    if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
+      window.SlotsRPG.BGMPlayer.setDucking(true);
+    }
+    // 挂起自动旋转，战毕退出后继续维持旋转
+    if (gameManager.isAutoSpinning) {
+      gameManager.suspendAutoSpinForBattle();
+    }
+
+    const battleResult = gameManager.startActiveTrialChallenge();
+    if (battleResult && battleResult.success === false) {
+      showFloatingNotice(battleResult.reason || '无法发起挑战');
+      return;
+    }
+
+    playBattleSequence(battleResult);
+  }
+
+  if (btnActiveTrialChallenge) {
+    btnActiveTrialChallenge.addEventListener('click', handleActiveTrialChallenge);
+  }
+  if (btnBossRadarChallenge) {
+    btnBossRadarChallenge.addEventListener('click', handleActiveTrialChallenge);
+  }
+
       DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
+      DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;
+      window.updateSectTrialBanner = updateSectTrialBanner;
       window.collectAllTemporarySlots = collectAllTemporarySlots;
     }
   };

@@ -9,6 +9,10 @@
   const ModalsUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+
+      const playBattleSequence = (r, c) => window.playBattleSequence && window.playBattleSequence(r, c);
+      const getSlotDisplayName = (s) => window.getSlotDisplayName ? window.getSlotDisplayName(s) : s;
+
       const storyManager = window.SlotsRPG.StoryManager;
       const EventBus = window.SlotsRPG.EventBus;
 
@@ -1755,6 +1759,8 @@
       window.openPaytableRulesModal = openPaytableRulesModal;
       window.closePaytableRulesModal = closePaytableRulesModal;
       window.switchPaytableTab = switchPaytableTab;
+      window.openRewardedAdModal = openRewardedAdModal;
+      window.updateReliefModalUI = updateReliefModalUI;
     }
   };
 
