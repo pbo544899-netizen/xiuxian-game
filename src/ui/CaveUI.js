@@ -9,7 +9,9 @@
   const CaveUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+      const renderer = (gameManager && gameManager.renderer) || window.renderer;
 
+      const storyManager = window.SlotsRPG.StoryManager || window.storyManager;
       const showFloatingNotice = (m, c) => window.showFloatingNotice && window.showFloatingNotice(m, c);
       const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
 

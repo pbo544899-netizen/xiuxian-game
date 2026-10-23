@@ -9,11 +9,13 @@
   const ModalsUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+      const renderer = (gameManager && gameManager.renderer) || window.renderer;
 
       const playBattleSequence = (r, c) => window.playBattleSequence && window.playBattleSequence(r, c);
       const getSlotDisplayName = (s) => window.getSlotDisplayName ? window.getSlotDisplayName(s) : s;
+      const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
 
-      const storyManager = window.SlotsRPG.StoryManager;
+      const storyManager = window.SlotsRPG.StoryManager || window.storyManager;
       const EventBus = window.SlotsRPG.EventBus;
 
     // 装备详情弹窗

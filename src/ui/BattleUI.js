@@ -9,8 +9,9 @@
   const BattleUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+      const renderer = (gameManager && gameManager.renderer) || window.renderer;
 
-      const storyManager = window.SlotsRPG.StoryManager;
+      const storyManager = window.SlotsRPG.StoryManager || window.storyManager;
       const updateCaveView = () => window.updateCaveView && window.updateCaveView();
       const openRewardedAdModal = (t, r, c) => window.openRewardedAdModal && window.openRewardedAdModal(t, r, c);
       const updateSectTrialBanner = () => window.updateSectTrialBanner && window.updateSectTrialBanner();
@@ -1521,9 +1522,8 @@
 
   // 13. 监听转盘触发妖兽与秘境事件
   window.SlotsRPG.EventBus.on('TRIGGER_BATTLE', (data) => {
-    if (battleCountdownTimer) {
-      clearInterval(battleCountdownTimer);
-      battleCountdownTimer = null;
+    if (window.clearBattleCountdownTimer) {
+      window.clearBattleCountdownTimer();
     }
     updateSectTrialBanner();
     if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
@@ -1555,16 +1555,6 @@
 
 
 
-      // 注册全局事件
-      if (EventBus) {
-        EventBus.on('TRIGGER_BATTLE', (data) => {
-          if (showBattleTransitionCutscene) {
-            showBattleTransitionCutscene(data.battleResult, () => {
-              if (playBattleSequence) playBattleSequence(data.battleResult);
-            });
-          }
-        });
-      }
     }
   };
 

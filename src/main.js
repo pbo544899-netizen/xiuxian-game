@@ -14,12 +14,14 @@ window.addEventListener('DOMContentLoaded', () => {
   const renderer = window.SlotsRPG.DragonSpoutRenderer
     ? new window.SlotsRPG.DragonSpoutRenderer(canvas)
     : new window.SlotsRPG.CanvasRenderer(canvas);
+  window.renderer = renderer;
   const gameManager = window.SlotsRPG.GameManager;
   window.gameManager = gameManager;
   gameManager.init(renderer);
 
   // 1.1 初始化剧情系统
   const storyManager = window.SlotsRPG.StoryManager;
+  window.storyManager = storyManager;
   if (storyManager) {
     storyManager.init(gameManager);
   }

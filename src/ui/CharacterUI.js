@@ -11,8 +11,9 @@
   const CharacterUI = {
     init() {
       const gameManager = window.SlotsRPG.GameManager || window.gameManager;
+      const renderer = (gameManager && gameManager.renderer) || window.renderer;
 
-      const storyManager = window.SlotsRPG.StoryManager;
+      const storyManager = window.SlotsRPG.StoryManager || window.storyManager;
       const showGameNotice = (t, c, b) => window.showGameNotice && window.showGameNotice(t, c, b);
 
       const EventBus = window.SlotsRPG.EventBus;

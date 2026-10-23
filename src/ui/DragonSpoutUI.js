@@ -324,6 +324,12 @@
   const btnDragonEngageBattle = document.getElementById('btn-dragon-engage-battle');
   const btnBattleLabel = document.getElementById('btn-battle-label');
   let battleCountdownTimer = null;
+  window.clearBattleCountdownTimer = () => {
+    if (battleCountdownTimer) {
+      clearInterval(battleCountdownTimer);
+      battleCountdownTimer = null;
+    }
+  };
 
   const dragonRageBarFill = document.getElementById('dragon-rage-bar-fill');
   const dragonRageText = document.getElementById('dragon-rage-text');
@@ -770,11 +776,11 @@
 
   // 25. 500抽长线成长事件监听：天机盘升阶与全神装发放下一门派门票
   window.SlotsRPG.EventBus.on('POT_SUB_LEVEL_UP', ({ level, title }) => {
-    if (reelAnnouncement && announcementText) {
-      announcementText.innerHTML = `✨ <b>天机盘进阶！</b> 突破至 Lv.${level}【${title}】，高阶法宝爆率大幅跃迁！`;
-      reelAnnouncement.classList.add('visible');
+    if (elAnnouncement && elAnnouncementText) {
+      elAnnouncementText.innerHTML = `✨ <b>天机盘进阶！</b> 突破至 Lv.${level}【${title}】，高阶法宝爆率大幅跃迁！`;
+      elAnnouncement.classList.add('visible');
       setTimeout(() => {
-        reelAnnouncement.classList.remove('visible');
+        elAnnouncement.classList.remove('visible');
       }, 3500);
     }
     showFloatingNotice(`✨ 天机盘进阶至 Lv.${level}【${title}】！`, '#ffd700');
