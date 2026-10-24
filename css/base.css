@@ -908,13 +908,13 @@ body {
   width: 100%;
   box-sizing: border-box;
   margin: 4px 0 6px 0;
-  padding: 8px 12px;
+  padding: 8px 14px;
   background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(15, 23, 42, 0.95));
   border: 1.5px solid #ffd700;
   border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   box-shadow: 0 0 16px rgba(255, 215, 0, 0.35);
   animation: guideGlowPulse 2s infinite ease-in-out;
   z-index: 20;
@@ -935,35 +935,16 @@ body {
   }
 }
 
-.prologue-spin-guide .guide-hand {
-  font-size: 22px;
-  animation: guidePointLeft 1.2s infinite ease-in-out alternate;
-}
-
-@keyframes guidePointLeft {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(4px);
-  }
-}
-
 .prologue-spin-guide .guide-text {
-  flex: 1;
-  font-size: 12.5px;
+  font-size: 13px;
   color: #fef08a;
-  line-height: 1.4;
+  line-height: 1.45;
+  text-align: center;
+  letter-spacing: 0.3px;
 }
 
-.prologue-spin-guide .guide-badge {
-  font-size: 10px;
-  padding: 3px 7px;
-  background: rgba(234, 179, 8, 0.3);
-  border: 1px solid #ffd700;
-  border-radius: 4px;
+.prologue-spin-guide .guide-text b {
   color: #ffd700;
-  font-weight: bold;
-  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 
