@@ -395,8 +395,24 @@ class GameManager {
     // 免费推演判定：
     // 1. 显式追加免费 (options.isFreeOverride，如周天十连追加顿悟)
     // 2. 玩家主动点击八卦唤龙台释放蓄满的引龙吐宝 (options.isDragonSpout && isWaterTankFull)
-    // 普通推演或挂机推演即便水缸已蓄满，也必须消耗 25 灵机，绝不擅自占用引龙吐宝大招
-    const isFreeSpin = !!(options.isFreeOverride || (options.isDragonSpout && isWaterTankFull));
+    // 3. 序章首抽免费特权 (isFTUEMode && prologueSpins === 0)
+    const ftueCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FTUESequence) || null;
+    const isFTUEMode = !this.isPrologueComplete && this.prologueStep === 3 && ftueCfg;
+    const isFirstFTUESpin = isFTUEMode && (this.prologueSpins || 0) === 0;
+    const isFreeSpin = !!(options.isFreeOverride || (options.isDragonSpout && isWaterTankFull) || isFirstFTUESpin);
+
+    // 抽奖启动时：如果是 FTUE，立即记录抽数推进，防止状态广播时误认为仍在未抽状态
+    let ftueScript = null;
+    if (isFTUEMode && (this.prologueSpins || 0) < ftueCfg.targetInductionSpin) {
+      this.prologueSpins = (this.prologueSpins || 0) + 1;
+      ftueScript = ftueCfg.scriptedSpins[this.prologueSpins];
+    }
+
+    // 抽奖启动时确保隐藏新手引导提示与手势
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+    if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
     const cost = isFreeSpin ? 0 : 25; // 固定单抽消耗 25 灵机
 
     if (!isFreeSpin && this.energy < cost) {
@@ -476,15 +492,8 @@ class GameManager {
 
     // 4. 核心计算生成结果 (神龙引宝双柜架构 / 兼容回退)
     let spinData;
-    const ftueCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FTUESequence) || null;
-    const isFTUEMode = !this.isPrologueComplete && this.prologueStep === 3 && ftueCfg;
 
     if (this.dragonLootEngine) {
-      let ftueScript = null;
-      if (isFTUEMode && this.prologueSpins < ftueCfg.targetInductionSpin) {
-        this.prologueSpins = (this.prologueSpins || 0) + 1;
-        ftueScript = ftueCfg.scriptedSpins[this.prologueSpins];
-      }
       spinData = this.dragonLootEngine.spout({
         player: this.player,
         potSubLevel: this.potSubLevel,
@@ -502,9 +511,8 @@ class GameManager {
       if (ftueScript && ftueScript.forceSectInduction) {
         spinData.isSectInductionSpin = true;
       }
-    } else if (isFTUEMode && this.prologueSpins < ftueCfg.targetInductionSpin) {
-      this.prologueSpins = (this.prologueSpins || 0) + 1;
-      const script = ftueCfg.scriptedSpins[this.prologueSpins];
+    } else if (ftueScript) {
+      const script = ftueScript;
 
       if (script && script.forceBattle) {
         // 第 5 抽：触发 3 妖兽伏妖战

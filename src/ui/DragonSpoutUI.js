@@ -136,14 +136,22 @@
   let spinBufferPending = false;
 
   btnSpin.addEventListener('click', () => {
-    const hasJoinedSect = !!(gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal);
-    if (hasJoinedSect) {
-      const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-      if (prologueSpinGuide) {
-        prologueSpinGuide.classList.add('hidden');
-      }
-    }
+    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
+                             gameManager.prologueStep === 3 &&
+                             (gameManager.prologueSpins || 0) === 0);
+
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+    if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
     btnSpin.classList.remove('pulse-anim');
+    if (btnAutoSpin) btnAutoSpin.classList.remove('ftue-highlight');
+
+    // 若处于新手首抽引导期，点击八卦唤龙台直接免费引龙吐宝！
+    if (isFirstSpinFTUE) {
+      gameManager.executeSpin({ isFreeOverride: true });
+      return;
+    }
 
     // 检查水缸灵能是否蓄满
     const isFull = (gameManager.waterTankProgress || 0) >= (gameManager.waterTankMax || 10);
@@ -237,10 +245,34 @@
     });
   }
 
+  
+  // 引导横幅点击直接联动触发首抽推演
+  if (prologueSpinGuide) {
+    prologueSpinGuide.addEventListener('click', () => {
+      if (btnAutoSpin) btnAutoSpin.click();
+    });
+  }
   btnAutoSpin.addEventListener('click', () => {
     if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('CLICK');
     }
+    // 点击后立即隐藏新手引导提示与手势
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+    if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
+    btnAutoSpin.classList.remove('ftue-highlight');
+
+    // 新手首抽引导期：直接放行免费单抽引龙吐宝！
+    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
+                             gameManager.prologueStep === 3 &&
+                             (gameManager.prologueSpins || 0) === 0);
+    if (isFirstSpinFTUE) {
+      if (gameManager.renderer && gameManager.renderer.isSpinning) return;
+      gameManager.executeSpin({ isFreeOverride: true });
+      return;
+    }
+
     if (gameManager.isAutoSpinning) {
       gameManager.stopAutoSpin();
       return;
@@ -861,18 +893,37 @@
 
     const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
 
+    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
+                             gameManager.prologueStep === 3 &&
+                             (gameManager.prologueSpins || 0) === 0);
+
+    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    const autoBtnTitle = document.getElementById('auto-btn-title');
+
+    if (isFirstSpinFTUE) {
+      if (prologueSpinGuide) prologueSpinGuide.classList.remove('hidden');
+      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.remove('hidden');
+      if (btnAutoSpin) btnAutoSpin.classList.add('ftue-highlight');
+      if (autoBtnTitle && !gameManager.isAutoSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
+        autoBtnTitle.innerText = '引龙吐宝';
+      }
+    } else {
+      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
+      if (btnAutoSpin) {
+        btnAutoSpin.classList.remove('ftue-highlight');
+        if (autoBtnTitle && !gameManager.isAutoSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
+          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+        }
+      }
+    }
+
     if (!hasJoinedSect) {
       sectTrialBanner.classList.add('hidden');
-      if (prologueSpinGuide) {
-        prologueSpinGuide.classList.remove('hidden');
-      }
       return;
     }
 
     // 已加入宗门：开放挑战入口，神兵必出提示框永久不再显示
-    if (prologueSpinGuide) {
-      prologueSpinGuide.classList.add('hidden');
-    }
     sectTrialBanner.classList.remove('hidden');
 
     const info = (typeof gameManager.getCurrentTrialStageInfo === 'function') ? gameManager.getCurrentTrialStageInfo() : null;

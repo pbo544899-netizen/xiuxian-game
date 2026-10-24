@@ -835,9 +835,13 @@
       }
     } else if (gameManager.prologueStep === 3) {
       switchTab('slots', true);
+      const isFirst = (gameManager.prologueSpins || 0) === 0 && (gameManager.totalSpins || 0) === 0;
       const spinGuide = document.getElementById('prologue-spin-guide');
-      if (spinGuide) spinGuide.classList.remove('hidden');
-      if (btnSpin) btnSpin.classList.add('pulse-anim');
+      const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+      const btnAutoSpin = document.getElementById('btn-auto');
+      if (spinGuide && isFirst) spinGuide.classList.remove('hidden');
+      if (ftueGuideFingerWrap && isFirst) ftueGuideFingerWrap.classList.remove('hidden');
+      if (btnAutoSpin && isFirst) btnAutoSpin.classList.add('ftue-highlight');
     }
   } else {
     // 已完成序章：读取上次离开时的记忆 Tab，若无记录则默认进入【角色修真】(保障刷新后界面与底部导航栏角色修真严格一致)

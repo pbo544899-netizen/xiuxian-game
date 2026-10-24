@@ -89,6 +89,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (renderer && renderer.updateSize) {
         requestAnimationFrame(() => renderer.updateSize());
       }
+      if (window.updateSectTrialBanner) window.updateSectTrialBanner();
     } else if (tabName === 'character') {
       if (tabCharacter) tabCharacter.classList.add('active');
       if (viewCharacter) viewCharacter.classList.add('active');
@@ -319,6 +320,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 刷新装备、背包与试炼妖王战力雷达
     if (window.renderBossRadarPanel) window.renderBossRadarPanel(state);
+    if (window.updateSectTrialBanner) window.updateSectTrialBanner();
     if (viewCharacter && viewCharacter.classList.contains('active')) {
       if (window.renderEquipmentSlots) window.renderEquipmentSlots(state);
       if (window.renderBagGrid) window.renderBagGrid(state);

@@ -260,7 +260,7 @@
         </div>
 
         <!-- 序章首推专属引导横幅 (凡人未入门派阶段在此处展示神兵必出提示) -->
-        <div id="prologue-spin-guide" class="prologue-spin-guide">
+        <div id="prologue-spin-guide" class="prologue-spin-guide hidden">
           <span class="guide-hand">👉</span>
           <span class="guide-text">天道馈赠：免费体验<b>【引龙吐宝】</b>，首抽必爆强力法宝神兵！</span>
           <span class="guide-badge">免费首抽</span>
@@ -322,7 +322,14 @@
                 <span class="water-tank-badge" id="water-tank-badge">0/10</span>
               </div>
             </button>
-            <div class="auto-spin-group" id="auto-spin-group">
+            <div class="auto-spin-group" id="auto-spin-group" style="position: relative;">
+              <!-- 新手引导手指手势 (指向引龙吐宝推演按钮) -->
+              <div id="ftue-guide-finger-wrap" class="ftue-guide-finger-wrap hidden">
+                <div class="ftue-finger-bounce">
+                  <span class="ftue-finger-pill">点击引龙吐宝</span>
+                  <span class="ftue-finger-icon">👇</span>
+                </div>
+              </div>
               <button id="btn-auto" class="btn-auto ten-pull-mode" title="开启周天十连">
                 <span class="auto-btn-title" id="auto-btn-title">周天十连</span>
                 <span class="auto-btn-progress hidden" id="auto-btn-progress">0/10</span>

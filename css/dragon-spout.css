@@ -1609,3 +1609,92 @@ body:has(#view-cave.active) .drop-flyer,
   height: 32px !important;
   margin-bottom: 0 !important;
 }
+
+/* ========================================================
+   新手首抽引导手指指示与按钮高亮
+   ======================================================== */
+.prologue-spin-guide {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prologue-spin-guide:hover, .prologue-spin-guide:active {
+  transform: scale(1.01);
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.7);
+}
+
+.prologue-spin-guide.hidden {
+  display: none !important;
+}
+
+.ftue-guide-finger-wrap {
+  position: absolute;
+  top: -50px;
+  left: 42%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ftue-guide-finger-wrap.hidden {
+  display: none !important;
+}
+
+.ftue-finger-bounce {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  animation: fingerBounceDown 1s infinite ease-in-out;
+}
+
+@keyframes fingerBounceDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.ftue-finger-icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px #ffd700);
+}
+
+.ftue-finger-pill {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1e1b4b;
+  background: linear-gradient(135deg, #ffd700 0%, #f59e0b 100%);
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.75), 0 0 14px rgba(255, 215, 0, 0.85);
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  text-shadow: none;
+}
+
+/* 引导期间按键高亮呼吸效果 */
+.btn-auto.ftue-highlight {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+  border: 2px solid #ffd700 !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.85), inset 0 0 12px rgba(255, 255, 255, 0.4) !important;
+  animation: ftueButtonPulse 1.2s infinite alternate !important;
+}
+
+@keyframes ftueButtonPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    transform: scale(1.04);
+    box-shadow: 0 0 26px rgba(255, 215, 0, 1), inset 0 0 16px rgba(255, 255, 255, 0.6);
+  }
+}
