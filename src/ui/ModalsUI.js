@@ -640,21 +640,13 @@
       gameManager.triggerArtifactAwakening();
       if (modalAwakening) modalAwakening.classList.add('hidden');
       switchTab('slots');
-
-      const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-      if (prologueSpinGuide) {
-        prologueSpinGuide.classList.remove('hidden');
-      }
+      if (window.updateFTUESpotlight) window.updateFTUESpotlight();
 
       // 触发天机初转引导与作弊器嘲讽天道剧情对白
       if (storyManager) {
         storyManager.triggerChapter('prologue_first_spin');
       } else if (renderer) {
         renderer.addFloatingText('天机盘觉醒！已获 100 灵机，请点击推演天机！', '#ffd700');
-      }
-
-      if (btnSpin) {
-        btnSpin.classList.add('pulse-anim');
       }
     });
   }
@@ -835,13 +827,7 @@
       }
     } else if (gameManager.prologueStep === 3) {
       switchTab('slots', true);
-      const isFirst = (gameManager.prologueSpins || 0) === 0 && (gameManager.totalSpins || 0) === 0;
-      const spinGuide = document.getElementById('prologue-spin-guide');
-      const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
-      const btnAutoSpin = document.getElementById('btn-auto');
-      if (spinGuide && isFirst) spinGuide.classList.remove('hidden');
-      if (ftueGuideFingerWrap && isFirst) ftueGuideFingerWrap.classList.remove('hidden');
-      if (btnAutoSpin && isFirst) btnAutoSpin.classList.add('ftue-highlight');
+      if (window.updateFTUESpotlight) window.updateFTUESpotlight();
     }
   } else {
     // 已完成序章：读取上次离开时的记忆 Tab，若无记录则默认进入【角色修真】(保障刷新后界面与底部导航栏角色修真严格一致)

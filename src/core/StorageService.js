@@ -48,6 +48,7 @@ class StorageService {
           potExp: gameManager.potExp || 0,
           currentBet: gameManager.currentBet || 25,
           waterTankProgress: gameManager.waterTankProgress || 0,
+          hasCompletedFirstDragonSpoutFTUE: !!gameManager.hasCompletedFirstDragonSpoutFTUE,
           defeatStreak: gameManager.defeatStreak,
           freeReliefCount: gameManager.freeReliefCount,
           lastReliefDate: gameManager.lastReliefDate,
@@ -146,10 +147,29 @@ class StorageService {
       } else {
         gameManager.lockedSectBossSnapshot = null;
       }
+      if (typeof data.hasCompletedFirstDragonSpoutFTUE === 'boolean') {
+        gameManager.hasCompletedFirstDragonSpoutFTUE = data.hasCompletedFirstDragonSpoutFTUE;
+      } else {
+        const hasSpunBefore = (data.prologueSpins && data.prologueSpins > 0) ||
+                              data.isPrologueComplete ||
+                              (data.player && data.player.level >= 1) ||
+                              (data.prologueStep && data.prologueStep > 3) ||
+                              (typeof data.energy === 'number' && data.energy > 100);
+        gameManager.hasCompletedFirstDragonSpoutFTUE = !!hasSpunBefore;
+      }
+
       if (typeof data.waterTankProgress === 'number') {
         gameManager.waterTankProgress = Math.min(gameManager.waterTankMax || 10, Math.max(0, data.waterTankProgress));
       } else {
         gameManager.waterTankProgress = 10; // 新手或首登赠送一次免费引龙吐宝
+      }
+
+      // 如果尚未完成首次引龙吐宝新手体验，确保水缸进度为 10/10 满格
+      if (!gameManager.hasCompletedFirstDragonSpoutFTUE &&
+          !gameManager.isPrologueComplete &&
+          gameManager.prologueStep === 3 &&
+          (gameManager.prologueSpins || 0) === 0) {
+        gameManager.waterTankProgress = 10;
       }
 
       // 1.1 还原锁妖天关爬塔进度与称号

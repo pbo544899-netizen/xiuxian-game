@@ -1613,6 +1613,69 @@ body:has(#view-cave.active) .drop-flyer,
 /* ========================================================
    新手首抽引导手指指示与按钮高亮
    ======================================================== */
+.ftue-spotlight-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.78);
+  backdrop-filter: blur(2px);
+  z-index: 9990;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+
+.ftue-spotlight-mask.hidden {
+  display: none !important;
+}
+
+.dragon-spin-btn-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dragon-spin-btn-wrap .ftue-guide-finger-wrap {
+  position: absolute;
+  top: -54px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 9996;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* 激活新手聚光灯引导时：除引龙吐宝与横幅外，其余全屏阻断点击 */
+body.ftue-spotlight-active #prologue-spin-guide {
+  position: relative !important;
+  z-index: 9995 !important;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), 0 0 50px rgba(255, 215, 0, 0.45) !important;
+  animation: ftue-guide-banner-pulse 1.3s infinite alternate ease-in-out !important;
+}
+
+body.ftue-spotlight-active #dragon-spin-btn-wrap {
+  position: relative !important;
+  z-index: 9995 !important;
+}
+
+body.ftue-spotlight-active #btn-spin {
+  position: relative !important;
+  z-index: 9995 !important;
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.6), 0 0 30px #ffd700, 0 0 60px rgba(255, 140, 0, 0.8) !important;
+  animation: tank-full-glow 1s infinite alternate ease-in-out !important;
+}
+
+body.ftue-spotlight-active #ftue-guide-finger-wrap {
+  z-index: 9996 !important;
+}
+
+@keyframes ftue-guide-banner-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+  100% { transform: scale(1.02); box-shadow: 0 0 28px rgba(255, 215, 0, 0.95); }
+}
+
 .prologue-spin-guide {
   cursor: pointer;
   transition: all 0.2s ease;

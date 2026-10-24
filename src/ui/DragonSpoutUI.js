@@ -132,24 +132,127 @@
       // 2. 八卦唤龙台与周天神龙机关控制
 // 15. 快速消耗档位管理已下线，统一采用固定 25 灵机与连抽次数选择器
 
-  // 16. 核心推演交互绑定：【引龙吐宝】改为进度蓄满 (10/10) 才能点击触发免费大爆
+  // 16. 八卦唤龙台水缸进度与按键状态同步 (蓄满10次呈现耀眼金焰状态，支持引龙吐宝)
+  function updateWaterTankUI() {
+    const btnSpinEl = document.getElementById('btn-spin');
+    const waterTankLiquid = document.getElementById('water-tank-liquid');
+    const waterTankBadge = document.getElementById('water-tank-badge');
+    const spinBtnTitle = document.getElementById('spin-btn-title');
+    if (!btnSpinEl || !gameManager) return;
+
+    const max = gameManager.waterTankMax || 10;
+    let cur = gameManager.waterTankProgress || 0;
+
+    // 若处于新手引龙吐宝引导期，强制水缸蓄满 10/10，初始呈现发光就绪态
+    const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
+                         !gameManager.isPrologueComplete &&
+                         gameManager.prologueStep === 3 &&
+                         (gameManager.prologueSpins || 0) === 0;
+
+    if (isFTUEActive) {
+      cur = max;
+      gameManager.waterTankProgress = max;
+    }
+
+    const isFull = cur >= max;
+    const pct = Math.min(100, Math.max(0, Math.round((cur / max) * 100)));
+
+    if (waterTankLiquid) {
+      waterTankLiquid.style.height = `${pct}%`;
+    }
+
+    if (isFull) {
+      btnSpinEl.classList.remove('charging-locked');
+      btnSpinEl.classList.add('tank-full');
+      btnSpinEl.title = '天机已蓄满！点击引龙吐宝！';
+      if (spinBtnTitle) spinBtnTitle.innerText = '引龙吐宝';
+      if (waterTankBadge) waterTankBadge.innerText = '已蓄满';
+    } else {
+      btnSpinEl.classList.remove('tank-full');
+      btnSpinEl.classList.add('charging-locked');
+      btnSpinEl.title = `天机蓄能中 (${cur}/${max})，需蓄满10次灵能方可引龙吐宝`;
+      if (spinBtnTitle) spinBtnTitle.innerText = '蓄能中';
+      if (waterTankBadge) waterTankBadge.innerText = `${cur}/${max}`;
+    }
+  }
+
+  // 16.1 新手引导全局聚光灯遮罩与手势联动 (除引龙吐宝按键外，其余全屏区域遮罩阻断误触)
+  function updateFTUESpotlight() {
+    if (!gameManager) return;
+    const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
+                         !gameManager.isPrologueComplete &&
+                         gameManager.prologueStep === 3 &&
+                         (gameManager.prologueSpins || 0) === 0;
+
+    const ftueMask = document.getElementById('ftue-spotlight-mask');
+    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    const btnSpinEl = document.getElementById('btn-spin');
+
+    if (isFTUEActive) {
+      updateWaterTankUI();
+      document.body.classList.add('ftue-spotlight-active');
+      if (ftueMask) ftueMask.classList.remove('hidden');
+      if (prologueSpinGuide) prologueSpinGuide.classList.remove('hidden');
+      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.remove('hidden');
+      if (btnSpinEl) btnSpinEl.classList.add('pulse-anim');
+    } else {
+      document.body.classList.remove('ftue-spotlight-active');
+      if (ftueMask) ftueMask.classList.add('hidden');
+      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
+      if (btnSpinEl) btnSpinEl.classList.remove('pulse-anim');
+    }
+  }
+
+  // 遮罩点击事件：吸收误触并使目标引龙吐宝按键微震动提醒聚焦
+  const ftueMaskEl = document.getElementById('ftue-spotlight-mask');
+  if (ftueMaskEl) {
+    ftueMaskEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (btnSpin) {
+        btnSpin.classList.remove('pulse-anim');
+        void btnSpin.offsetWidth;
+        btnSpin.classList.add('pulse-anim');
+      }
+    });
+  }
+
+  // 引导横幅点击直接联动触发引龙吐宝
+  const prologueSpinGuideEl = document.getElementById('prologue-spin-guide');
+  if (prologueSpinGuideEl) {
+    prologueSpinGuideEl.addEventListener('click', () => {
+      if (btnSpin) btnSpin.click();
+    });
+  }
+
   let spinBufferPending = false;
 
   btnSpin.addEventListener('click', () => {
-    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
-                             gameManager.prologueStep === 3 &&
-                             (gameManager.prologueSpins || 0) === 0);
+    // 检查是否处于新手引龙吐宝首抽引导期
+    const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
+                         !gameManager.isPrologueComplete &&
+                         gameManager.prologueStep === 3 &&
+                         (gameManager.prologueSpins || 0) === 0;
 
-    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
-    if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
-    if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
-    btnSpin.classList.remove('pulse-anim');
-    if (btnAutoSpin) btnAutoSpin.classList.remove('ftue-highlight');
+    if (isFTUEActive) {
+      gameManager.hasCompletedFirstDragonSpoutFTUE = true;
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(gameManager, true);
+      }
+      // 永久退出遮罩、指引横幅与手指手势
+      document.body.classList.remove('ftue-spotlight-active');
+      const ftueMask = document.getElementById('ftue-spotlight-mask');
+      const prologueSpinGuide = document.getElementById('prologue-spin-guide');
+      const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+      if (ftueMask) ftueMask.classList.add('hidden');
+      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
+      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
+      btnSpin.classList.remove('pulse-anim');
 
-    // 若处于新手首抽引导期，点击八卦唤龙台直接免费引龙吐宝！
-    if (isFirstSpinFTUE) {
-      gameManager.executeSpin({ isFreeOverride: true });
+      // 释放 100% 免费引龙吐宝大招！
+      gameManager.executeSpin({ isDragonSpout: true, isFreeOverride: true });
       return;
     }
 
@@ -246,30 +349,18 @@
   }
 
   
-  // 引导横幅点击直接联动触发首抽推演
-  if (prologueSpinGuide) {
-    prologueSpinGuide.addEventListener('click', () => {
-      if (btnAutoSpin) btnAutoSpin.click();
-    });
-  }
   btnAutoSpin.addEventListener('click', () => {
     if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('CLICK');
     }
-    // 点击后立即隐藏新手引导提示与手势
-    const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
-    if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
-    if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
-    btnAutoSpin.classList.remove('ftue-highlight');
 
-    // 新手首抽引导期：直接放行免费单抽引龙吐宝！
-    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
-                             gameManager.prologueStep === 3 &&
-                             (gameManager.prologueSpins || 0) === 0);
-    if (isFirstSpinFTUE) {
-      if (gameManager.renderer && gameManager.renderer.isSpinning) return;
-      gameManager.executeSpin({ isFreeOverride: true });
+    // 若新手引龙吐宝引导仍未完成，优先聚焦唤龙台【引龙吐宝】
+    const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
+                         !gameManager.isPrologueComplete &&
+                         gameManager.prologueStep === 3 &&
+                         (gameManager.prologueSpins || 0) === 0;
+    if (isFTUEActive) {
+      if (btnSpin) btnSpin.click();
       return;
     }
 
@@ -893,28 +984,15 @@
 
     const hasJoinedSect = !!(gameManager.currentWorldTier === 2 || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal));
 
-    const isFirstSpinFTUE = (!gameManager.isPrologueComplete &&
-                             gameManager.prologueStep === 3 &&
-                             (gameManager.prologueSpins || 0) === 0);
+    // 联动更新水缸蓄水状态与新手全局聚光灯引导
+    updateWaterTankUI();
+    updateFTUESpotlight();
 
-    const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
     const autoBtnTitle = document.getElementById('auto-btn-title');
-
-    if (isFirstSpinFTUE) {
-      if (prologueSpinGuide) prologueSpinGuide.classList.remove('hidden');
-      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.remove('hidden');
-      if (btnAutoSpin) btnAutoSpin.classList.add('ftue-highlight');
+    if (btnAutoSpin) {
+      btnAutoSpin.classList.remove('ftue-highlight');
       if (autoBtnTitle && !gameManager.isAutoSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
-        autoBtnTitle.innerText = '引龙吐宝';
-      }
-    } else {
-      if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
-      if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
-      if (btnAutoSpin) {
-        btnAutoSpin.classList.remove('ftue-highlight');
-        if (autoBtnTitle && !gameManager.isAutoSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
-          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
-        }
+        autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
       }
     }
 
@@ -1068,12 +1146,32 @@
     btnBossRadarChallenge.addEventListener('click', handleActiveTrialChallenge);
   }
 
-      DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
-      DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;
-      DragonSpoutUI.handleActiveTrialChallenge = handleActiveTrialChallenge;
-      window.updateSectTrialBanner = updateSectTrialBanner;
-      window.collectAllTemporarySlots = collectAllTemporarySlots;
-      window.handleActiveTrialChallenge = handleActiveTrialChallenge;
+  // 监听全局状态变更驱动水缸液体与聚光灯更新
+  if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+    window.SlotsRPG.EventBus.on('STATE_CHANGE', () => {
+      updateWaterTankUI();
+      updateFTUESpotlight();
+    });
+    window.SlotsRPG.EventBus.on('SPIN_STOP', () => {
+      updateWaterTankUI();
+      updateFTUESpotlight();
+    });
+  }
+
+  // 初始启动执行一次
+  updateWaterTankUI();
+  updateFTUESpotlight();
+
+  DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
+  DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;
+  DragonSpoutUI.updateWaterTankUI = updateWaterTankUI;
+  DragonSpoutUI.updateFTUESpotlight = updateFTUESpotlight;
+  DragonSpoutUI.handleActiveTrialChallenge = handleActiveTrialChallenge;
+  window.updateSectTrialBanner = updateSectTrialBanner;
+  window.updateWaterTankUI = updateWaterTankUI;
+  window.updateFTUESpotlight = updateFTUESpotlight;
+  window.collectAllTemporarySlots = collectAllTemporarySlots;
+  window.handleActiveTrialChallenge = handleActiveTrialChallenge;
     }
   };
 

@@ -247,15 +247,11 @@
             if (storyManager) {
               storyManager.triggerChapter('prologue_awaken', () => {
                 switchTab('slots');
-                const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-                if (prologueSpinGuide) prologueSpinGuide.classList.remove('hidden');
-                if (btnSpin) btnSpin.classList.add('pulse-anim');
+                if (window.updateFTUESpotlight) window.updateFTUESpotlight();
               });
             } else {
               switchTab('slots');
-              const prologueSpinGuide = document.getElementById('prologue-spin-guide');
-              if (prologueSpinGuide) prologueSpinGuide.classList.remove('hidden');
-              if (btnSpin) btnSpin.classList.add('pulse-anim');
+              if (window.updateFTUESpotlight) window.updateFTUESpotlight();
             }
           };
           bagGrid.appendChild(cell);

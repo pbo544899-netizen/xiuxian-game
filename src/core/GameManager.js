@@ -21,6 +21,7 @@ class GameManager {
     this.isPrologueComplete = false;
     this.prologueStep = 0;         // 0: 凡人未入门, 1: 恶兽对决, 2: 斩猪待认主, 3: 散修初探中, 4: 拜入宗门大成
     this.prologueSpins = 0;        // 散修阶段已推演抽数 (1~6 驱动 FTUESequence)
+    this.hasCompletedFirstDragonSpoutFTUE = false; // 首次免费引龙吐宝引导完成标记
 
     // 快速消耗档位体系 (根据玩家当前拥有灵机自适应开放)
     this.ALL_BET_TIERS = [25, 50, 100, 200, 500, 1000, 2000, 5000];
@@ -408,9 +409,13 @@ class GameManager {
       ftueScript = ftueCfg.scriptedSpins[this.prologueSpins];
     }
 
-    // 抽奖启动时确保隐藏新手引导提示与手势
+    // 抽奖启动时确保隐藏新手引导提示、聚光灯遮罩与手势
+    this.hasCompletedFirstDragonSpoutFTUE = true;
+    document.body.classList.remove('ftue-spotlight-active');
+    const ftueMask = document.getElementById('ftue-spotlight-mask');
     const prologueSpinGuide = document.getElementById('prologue-spin-guide');
     const ftueGuideFingerWrap = document.getElementById('ftue-guide-finger-wrap');
+    if (ftueMask) ftueMask.classList.add('hidden');
     if (prologueSpinGuide) prologueSpinGuide.classList.add('hidden');
     if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
     const cost = isFreeSpin ? 0 : 25; // 固定单抽消耗 25 灵机
@@ -2554,6 +2559,8 @@ class GameManager {
     this.energy += 100; // 赠送启动灵机 100 点
     this.prologueStep = 3; // 开启山野散修初探教学 (前 5 抽小闭环，第 6 抽仙门递牒)
     this.prologueSpins = 0; // 重置已推演抽数
+    this.waterTankProgress = 10; // 首次引龙吐宝专属体验：蓄满 10/10
+    this.hasCompletedFirstDragonSpoutFTUE = false; // 触发新手引龙吐宝专属体验
     if (window.SlotsRPG.StorageService) {
       window.SlotsRPG.StorageService.saveGame(this, true);
     }

@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>修仙作弊器：造化聚宝盆</title>
   <!-- 模块化样式套件 (Modular CSS Suite) -->
-  <link rel="stylesheet" href="css/base.css?v=2.2" />
-  <link rel="stylesheet" href="css/character.css?v=2.2" />
-  <link rel="stylesheet" href="css/battle.css?v=2.2" />
-  <link rel="stylesheet" href="css/cave.css?v=2.2" />
-  <link rel="stylesheet" href="css/story.css?v=2.2" />
-  <link rel="stylesheet" href="css/modals.css?v=2.2" />
-  <link rel="stylesheet" href="css/dragon-spout.css?v=2.2" />
-  <link rel="stylesheet" href="css/responsive.css?v=2.2" />
+  <link rel="stylesheet" href="css/base.css?v=2.3" />
+  <link rel="stylesheet" href="css/character.css?v=2.3" />
+  <link rel="stylesheet" href="css/battle.css?v=2.3" />
+  <link rel="stylesheet" href="css/cave.css?v=2.3" />
+  <link rel="stylesheet" href="css/story.css?v=2.3" />
+  <link rel="stylesheet" href="css/modals.css?v=2.3" />
+  <link rel="stylesheet" href="css/dragon-spout.css?v=2.3" />
+  <link rel="stylesheet" href="css/responsive.css?v=2.3" />
 </head>
 <body>
   <div id="app-container">
@@ -308,28 +308,30 @@
           </div>
 
           <div class="action-buttons">
-            <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin charging-locked" title="天机蓄能中 (需蓄满10次灵能方可引龙吐宝)">
-              <!-- 水缸液体注满进度层 -->
-              <div class="water-tank-wrapper" id="water-tank-wrapper">
-                <div class="water-tank-liquid" id="water-tank-liquid" style="height: 0%;">
-                  <div class="water-wave wave-1"></div>
-                  <div class="water-wave wave-2"></div>
-                </div>
-              </div>
-              <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
-              <div class="spin-btn-text-wrap">
-                <span class="spin-btn-title" id="spin-btn-title">蓄能中</span>
-                <span class="water-tank-badge" id="water-tank-badge">0/10</span>
-              </div>
-            </button>
-            <div class="auto-spin-group" id="auto-spin-group" style="position: relative;">
-              <!-- 新手引导手指手势 (指向引龙吐宝推演按钮) -->
+            <div class="dragon-spin-btn-wrap" id="dragon-spin-btn-wrap" style="position: relative;">
+              <!-- 新手引导手指手势 (精准指向引龙吐宝按键) -->
               <div id="ftue-guide-finger-wrap" class="ftue-guide-finger-wrap hidden">
                 <div class="ftue-finger-bounce">
                   <span class="ftue-finger-pill">点击引龙吐宝</span>
                   <span class="ftue-finger-icon">👇</span>
                 </div>
               </div>
+              <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin charging-locked" title="天机蓄能中 (需蓄满10次灵能方可引龙吐宝)">
+                <!-- 水缸液体注满进度层 -->
+                <div class="water-tank-wrapper" id="water-tank-wrapper">
+                  <div class="water-tank-liquid" id="water-tank-liquid" style="height: 0%;">
+                    <div class="water-wave wave-1"></div>
+                    <div class="water-wave wave-2"></div>
+                  </div>
+                </div>
+                <img src="assets/dragon/bagua_button.png" class="dragon-bagua-icon" alt="八卦" />
+                <div class="spin-btn-text-wrap">
+                  <span class="spin-btn-title" id="spin-btn-title">蓄能中</span>
+                  <span class="water-tank-badge" id="water-tank-badge">0/10</span>
+                </div>
+              </button>
+            </div>
+            <div class="auto-spin-group" id="auto-spin-group" style="position: relative;">
               <button id="btn-auto" class="btn-auto ten-pull-mode" title="开启周天十连">
                 <span class="auto-btn-title" id="auto-btn-title">周天十连</span>
                 <span class="auto-btn-progress hidden" id="auto-btn-progress">0/10</span>
@@ -2104,6 +2106,9 @@
         <div class="system-toast-pointer"></div>
       </div>
     </div>
+
+    <!-- 全局新手引导聚光灯遮罩 (仅高亮引龙吐宝按键，其余区域不可点击) -->
+    <div id="ftue-spotlight-mask" class="ftue-spotlight-mask hidden"></div>
   </div>
 
   <!-- 核心逻辑脚本 (纯前端零外部依赖，严格无跨域障碍) -->
