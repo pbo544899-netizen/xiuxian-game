@@ -401,17 +401,46 @@
           </div>
 
           <div class="hero-main-row">
-            <!-- 左侧：修真者立绘 -->
-            <div class="hero-avatar-box">
+            <!-- 左侧：修真者立绘与朱砂印戳 (可点击查看道相详参) -->
+            <div class="hero-avatar-box" id="hero-avatar-box" title="点击立绘查看道相心性与流派详情">
               <img id="character-main-avatar" src="assets/character/hero_mortal.png" class="hero-avatar-svg" alt="修真者立绘" />
+              <span id="hero-sect-stamp" class="hero-sect-stamp">散修</span>
             </div>
 
-            <!-- 中间：境界与状态 -->
+            <!-- 中间：境界与状态 + 气血可视化血条 + 紧凑攻防徽章 -->
             <div class="hero-middle-box">
               <div class="hero-status-title">
-                <span id="hero-profile-title" class="hero-title-badge" title="点击更换修仙尊号">🎖️ 【青牛镇散修】</span>
                 <span id="hero-profile-realm" class="hero-realm-tag">凡人境 · 未入道</span>
-                <span id="char-hero-sect" class="hero-title-sub">凡人未入道</span>
+                <span id="char-hero-sect" class="hero-title-sub hidden">散修</span>
+                <span id="hero-profile-title" class="hero-title-badge hidden">🎖️ 【青牛镇散修】</span>
+              </div>
+
+              <!-- RPG 沉浸式气血可视化血条 -->
+              <div class="hero-hp-bar-row">
+                <div class="hero-hp-track">
+                  <div id="hero-hp-fill" class="hero-hp-fill" style="width: 100%;"></div>
+                  <div class="hero-hp-text-overlay">
+                    <span class="hp-tag">💚 气血</span>
+                    <span class="hp-nums"><b id="stat-hp">100</b>/<span id="stat-max-hp">100</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 紧凑攻防徽章与道相详参触发 -->
+              <div class="hero-combat-badges-row">
+                <div class="mini-combat-badge atk" title="攻击力">
+                  <span class="mini-badge-icon">⚔️</span>
+                  <span class="mini-badge-label">攻</span>
+                  <b id="stat-atk" class="stat-col-val atk-val">11</b>
+                </div>
+                <div class="mini-combat-badge def" title="防御力">
+                  <span class="mini-badge-icon">🛡️</span>
+                  <span class="mini-badge-label">防</span>
+                  <b id="stat-def" class="stat-col-val def-val">2</b>
+                </div>
+                <button id="btn-hero-profile-detail" class="btn-avatar-tap-hint" title="点击查看道相心性与流派详情">
+                  <span>道相 ➔</span>
+                </button>
               </div>
             </div>
 
@@ -420,42 +449,6 @@
               <span id="stele-progress-badge" class="ascend-progress-pill">0/5</span>
               <span class="ascend-btn-text">飞升</span>
             </button>
-
-            <!-- 最右侧：三维核心战斗属性柱 (气血、攻击、防御) -->
-            <div class="hero-stats-right">
-              <div class="stat-col-item hp">
-                <span class="stat-col-label">气血</span>
-                <b id="stat-hp" class="stat-col-val hp-val">100</b>
-              </div>
-              <div class="stat-col-item atk">
-                <span class="stat-col-label">攻击</span>
-                <b id="stat-atk" class="stat-col-val atk-val">11</b>
-              </div>
-              <div class="stat-col-item def">
-                <span class="stat-col-label">防御</span>
-                <b id="stat-def" class="stat-col-val def-val">2</b>
-              </div>
-            </div>
-          </div>
-
-          <!-- 四大战斗流派特化属性 (暴击、连击、反震、吸血) -->
-          <div class="char-archetypes-row">
-            <div class="archetype-badge-item crit" title="纯阳暴击率：造成 1.8 倍高额斩杀重创">
-              <span class="arch-label">🎯 暴击</span>
-              <b id="arch-val-crit" class="arch-val">8%</b>
-            </div>
-            <div class="archetype-badge-item combo" title="迅影连击率：攻击后瞬身追加连击">
-              <span class="arch-label">⚡ 连击</span>
-              <b id="arch-val-combo" class="arch-val">5%</b>
-            </div>
-            <div class="archetype-badge-item counter" title="罡气反震率：受击时反弹 50% 伤害给敌方">
-              <span class="arch-label">🛡️ 反震</span>
-              <b id="arch-val-counter" class="arch-val">5%</b>
-            </div>
-            <div class="archetype-badge-item lifesteal" title="幽冥嗜血率：攻击伤害转化为气血回复">
-              <span class="arch-label">🩸 吸血</span>
-              <b id="arch-val-lifesteal" class="arch-val">0%</b>
-            </div>
           </div>
 
           <!-- 底部细长修为进度能量条 (紧凑展示在属性正下方) -->
@@ -602,11 +595,14 @@
               <span class="cave-title-icon">🏔️</span>
               <span class="cave-title-text">洞天福地 · 灵脉仙府</span>
             </div>
-            <span id="cave-status-tag" class="cave-status-tag">灵机运化中</span>
+            <div class="cave-header-right">
+              <span id="cave-status-tag" class="cave-status-tag">灵机运化中</span>
+              <button id="btn-cave-info" class="btn-cave-info" title="灵脉真解">ℹ️</button>
+            </div>
           </div>
-          <p class="cave-desc-text">
-            离线亦有乾坤运转，灵脉不歇！每分钟自动吸纳天地灵机凝聚机缘与仙丹。
-          </p>
+          <div id="cave-info-popover" class="cave-info-popover hidden">
+            <span>离线亦有乾坤运转，灵脉不歇！每分钟自动吸纳天地灵机凝聚机缘与仙丹。</span>
+          </div>
         </div>
 
         <!-- 中央核心: 仙灵神鼎与当前蓄积 -->
@@ -731,6 +727,91 @@
         <span id="tab-badge-cave" class="nav-badge hidden">!</span>
       </div>
     </nav>
+
+        <!-- 弹窗: 修真道相 · 灵根心性 (1 级轻量弹窗，点击头像或道相呼出，无多级套娃) -->
+    <div id="modal-hero-profile-detail" class="modal-overlay hidden">
+      <div class="modal-card hero-profile-detail-modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">☯️ 修真道相 · 灵根心性</h2>
+          <button id="btn-close-hero-detail" class="btn-close-icon">✕</button>
+        </div>
+
+        <div class="hero-detail-summary-row">
+          <div class="hero-detail-avatar-wrap">
+            <img id="detail-modal-avatar" src="assets/character/hero_mortal.png" class="detail-avatar-img" alt="道相" />
+            <span id="detail-modal-stamp" class="hero-sect-stamp">散修</span>
+          </div>
+          <div class="hero-detail-meta">
+            <div class="detail-realm-text" id="detail-modal-realm">凡人境 · 未入道</div>
+            <div class="detail-sect-text" id="detail-modal-sect">宗门：散修 (未入道)</div>
+            <div class="detail-title-row">
+              <span class="detail-label">修仙尊号：</span>
+              <button id="btn-open-title-modal-from-detail" class="detail-title-btn" title="点击更换修仙尊号">
+                <span id="detail-modal-title">🎖️ 【青牛镇散修】</span> ➔
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 四大战斗流派专精属性 (暴击/连击/反震/吸血) -->
+        <div class="detail-section-title">四大战斗流派专精</div>
+        <div class="char-archetypes-row detail-archetypes-grid">
+          <div class="archetype-badge-item crit" title="纯阳暴击率：造成 1.8 倍高额斩杀重创">
+            <div class="arch-header">
+              <span class="arch-label">🎯 纯阳暴击</span>
+              <b id="arch-val-crit" class="arch-val">8%</b>
+            </div>
+            <span class="arch-desc">造成 1.8 倍高额斩杀重创</span>
+          </div>
+          <div class="archetype-badge-item combo" title="迅影连击率：攻击后瞬身追加连击">
+            <div class="arch-header">
+              <span class="arch-label">⚡ 迅影连击</span>
+              <b id="arch-val-combo" class="arch-val">5%</b>
+            </div>
+            <span class="arch-desc">攻击后瞬身追加连环追击</span>
+          </div>
+          <div class="archetype-badge-item counter" title="罡气反震率：受击时反弹 50% 伤害给敌方">
+            <div class="arch-header">
+              <span class="arch-label">🛡️ 罡气反震</span>
+              <b id="arch-val-counter" class="arch-val">5%</b>
+            </div>
+            <span class="arch-desc">受创时反弹 50% 罡气震伤</span>
+          </div>
+          <div class="archetype-badge-item lifesteal" title="幽冥嗜血率：攻击伤害转化为气血回复">
+            <div class="arch-header">
+              <span class="arch-label">🩸 幽冥嗜血</span>
+              <b id="arch-val-lifesteal" class="arch-val">0%</b>
+            </div>
+            <span class="arch-desc">攻势入肉化为生机回涌气血</span>
+          </div>
+        </div>
+
+        <!-- 三维基础道基 -->
+        <div class="detail-section-title">三维基础道基</div>
+        <div class="detail-base-stats-grid">
+          <div class="detail-stat-item">
+            <span class="stat-name">💚 最大气血</span>
+            <b id="detail-stat-hp" class="stat-val hp">100</b>
+          </div>
+          <div class="detail-stat-item">
+            <span class="stat-name">⚔️ 基础攻击</span>
+            <b id="detail-stat-atk" class="stat-val atk">11</b>
+          </div>
+          <div class="detail-stat-item">
+            <span class="stat-name">🛡️ 护体防御</span>
+            <b id="detail-stat-def" class="stat-val def">2</b>
+          </div>
+          <div class="detail-stat-item">
+            <span class="stat-name">⚡ 综合战力</span>
+            <b id="detail-stat-power" class="stat-val power">45</b>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-close-hero-detail-bottom" class="btn-primary">返回修真</button>
+        </div>
+      </div>
+    </div>
 
     <!-- 弹窗1: 装备/法宝通鉴详情卡片 -->
     <div id="modal-item-detail" class="modal-overlay hidden">

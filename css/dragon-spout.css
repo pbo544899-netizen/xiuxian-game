@@ -1598,3 +1598,14 @@ body:has(#view-cave.active) .drop-flyer,
   40%, 80% { transform: translateX(4px) rotate(3deg); }
 }
 
+
+/* 移动端图符化: 宝萃格子去除冗余文字, 放大图标 */
+.dragon-reward-slot .slot-item-name {
+  display: none !important;
+}
+
+.dragon-reward-slot .slot-item-icon {
+  width: 32px !important;
+  height: 32px !important;
+  margin-bottom: 0 !important;
+}

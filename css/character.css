@@ -2764,3 +2764,326 @@
 .archetype-badge-item.lifesteal .arch-label { color: #f43f5e; font-weight: 700; }
 .archetype-badge-item.lifesteal .arch-val { color: #fda4af; font-weight: 800; }
 
+
+/* ========================================================
+   移动端视觉减负重构: 朱砂古印、RPG翡翠血条、攻防徽章与道相详参
+   ======================================================== */
+.hero-avatar-box {
+  position: relative !important;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-avatar-box:hover, .hero-avatar-box:active {
+  transform: scale(1.04);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* 朱砂古印戳：方寸篆印覆盖于角色立绘右下角 */
+.hero-sect-stamp {
+  position: absolute;
+  bottom: -3px;
+  right: -5px;
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+  color: #fef08a;
+  border: 1.5px solid #ef4444;
+  outline: 1px dashed rgba(254, 240, 138, 0.5);
+  outline-offset: -2px;
+  border-radius: 3px;
+  font-family: "STKaiti", "KaiTi", "SimSun", serif;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 0.5px 3.5px;
+  line-height: 1.1;
+  transform: rotate(-10deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* RPG 沉浸式翡翠气血能量槽 */
+.hero-hp-bar-row {
+  width: 100%;
+  margin: 2px 0 3px 0;
+}
+
+.hero-hp-track {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(52, 232, 158, 0.35);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hero-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #059669 0%, #10b981 60%, #34d399 100%);
+  border-radius: 7px;
+  transition: width 0.35s ease;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.45);
+}
+
+.hero-hp-text-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.hero-hp-text-overlay .hp-tag {
+  color: #a7f3d0;
+  text-shadow: 0 1px 2px #000;
+  font-size: 9.5px;
+}
+
+.hero-hp-text-overlay .hp-nums {
+  color: #fff;
+  text-shadow: 0 1px 2px #000;
+  font-size: 10px;
+}
+
+.hero-hp-text-overlay b {
+  color: #34d399;
+  font-weight: 800;
+}
+
+/* 紧凑攻防徽章与道相详参触发行 */
+.hero-combat-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.mini-combat-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mini-combat-badge.atk {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.mini-combat-badge.atk .atk-val {
+  color: #f87171;
+  font-weight: bold;
+}
+
+.mini-combat-badge.def {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.mini-combat-badge.def .def-val {
+  color: #60a5fa;
+  font-weight: bold;
+}
+
+.mini-badge-label {
+  color: #94a3b8;
+  font-size: 9px;
+}
+
+.btn-avatar-tap-hint {
+  margin-left: auto;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #ffd700;
+  border-radius: 4px;
+  padding: 1.5px 6px;
+  font-size: 9.5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-avatar-tap-hint:hover, .btn-avatar-tap-hint:active {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: #ffd700;
+  transform: translateY(-1px);
+}
+
+/* 一级道相详参弹窗样式 */
+.hero-profile-detail-modal-card {
+  max-width: 360px;
+  width: 92%;
+  background: linear-gradient(135deg, #131b26 0%, #0d121a 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.hero-detail-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-detail-avatar-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.detail-avatar-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.hero-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-realm-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.detail-sect-text {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.detail-label {
+  font-size: 10px;
+  color: #8fa0b5;
+}
+
+.detail-title-btn {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #fde047;
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.detail-title-btn:hover {
+  background: rgba(212, 175, 55, 0.22);
+  border-color: #ffd700;
+}
+
+.detail-section-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #cbd5e1;
+  margin: 8px 0 4px 0;
+  border-left: 2.5px solid #ffd700;
+  padding-left: 6px;
+  letter-spacing: 0.3px;
+}
+
+.detail-archetypes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 4px 0 8px 0;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.detail-archetypes-grid .archetype-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.detail-archetypes-grid .archetype-badge-item.crit { border-color: rgba(255, 215, 0, 0.3); }
+.detail-archetypes-grid .archetype-badge-item.combo { border-color: rgba(0, 229, 255, 0.3); }
+.detail-archetypes-grid .archetype-badge-item.counter { border-color: rgba(192, 132, 252, 0.3); }
+.detail-archetypes-grid .archetype-badge-item.lifesteal { border-color: rgba(244, 63, 94, 0.3); }
+
+.detail-archetypes-grid .arch-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.detail-archetypes-grid .arch-desc {
+  font-size: 9px;
+  color: #94a3b8;
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.detail-base-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.detail-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.detail-stat-item .stat-name {
+  color: #94a3b8;
+}
+
+.detail-stat-item .stat-val {
+  font-weight: bold;
+}
+
+.detail-stat-item .stat-val.hp { color: #34d399; }
+.detail-stat-item .stat-val.atk { color: #f87171; }
+.detail-stat-item .stat-val.def { color: #60a5fa; }
+.detail-stat-item .stat-val.power { color: #ffd700; }

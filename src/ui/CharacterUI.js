@@ -905,6 +905,51 @@
       }
 
       // 暴露方法到对象与全局
+      
+      // 道相详参轻量一级弹窗绑定 (头像与道相按钮点击呼出，无多级套娃)
+      const heroAvatarBox = document.getElementById('hero-avatar-box');
+      const btnHeroProfileDetail = document.getElementById('btn-hero-profile-detail');
+      const modalHeroProfileDetail = document.getElementById('modal-hero-profile-detail');
+      const btnCloseHeroDetail = document.getElementById('btn-close-hero-detail');
+      const btnCloseHeroDetailBottom = document.getElementById('btn-close-hero-detail-bottom');
+      const btnOpenTitleModalFromDetail = document.getElementById('btn-open-title-modal-from-detail');
+
+      const openHeroDetailModal = () => {
+        if (modalHeroProfileDetail) {
+          if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+            window.SlotsRPG.SoundEffects.play('CLICK');
+          }
+          modalHeroProfileDetail.classList.remove('hidden');
+        }
+      };
+
+      const closeHeroDetailModal = () => {
+        if (modalHeroProfileDetail) {
+          if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+            window.SlotsRPG.SoundEffects.play('MODAL_CLOSE');
+          }
+          modalHeroProfileDetail.classList.add('hidden');
+        }
+      };
+
+      if (heroAvatarBox) heroAvatarBox.addEventListener('click', openHeroDetailModal);
+      if (btnHeroProfileDetail) btnHeroProfileDetail.addEventListener('click', openHeroDetailModal);
+      if (btnCloseHeroDetail) btnCloseHeroDetail.addEventListener('click', closeHeroDetailModal);
+      if (btnCloseHeroDetailBottom) btnCloseHeroDetailBottom.addEventListener('click', closeHeroDetailModal);
+      if (modalHeroProfileDetail) {
+        modalHeroProfileDetail.addEventListener('click', (e) => {
+          if (e.target === modalHeroProfileDetail) closeHeroDetailModal();
+        });
+      }
+
+      if (btnOpenTitleModalFromDetail) {
+        btnOpenTitleModalFromDetail.addEventListener('click', () => {
+          closeHeroDetailModal();
+          const heroProfileTitle = document.getElementById('hero-profile-title');
+          if (heroProfileTitle) heroProfileTitle.click();
+        });
+      }
+
       CharacterUI.renderEquipmentSlots = renderEquipmentSlots;
       CharacterUI.renderBagGrid = renderBagGrid;
       CharacterUI.renderBossRadarPanel = renderBossRadarPanel;

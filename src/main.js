@@ -237,9 +237,72 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    if (statHp && state.totalStats) statHp.innerText = state.totalStats.hp;
-    if (statAtk && state.totalStats) statAtk.innerText = state.totalStats.atk;
-    if (statDef && state.totalStats) statDef.innerText = state.totalStats.def;
+    // 移动端沉浸血条与攻防属性同步
+    const statMaxHp = document.getElementById('stat-max-hp');
+    const heroHpFill = document.getElementById('hero-hp-fill');
+    if (state.totalStats) {
+      const maxHp = state.totalStats.hp || 100;
+      const currentHp = (gameManager.player && gameManager.player.currentHp !== undefined) ? gameManager.player.currentHp : maxHp;
+      if (statHp) statHp.innerText = currentHp;
+      if (statMaxHp) statMaxHp.innerText = maxHp;
+      if (heroHpFill) {
+        const pct = Math.min(100, Math.max(0, Math.round((currentHp / maxHp) * 100)));
+        heroHpFill.style.width = `${pct}%`;
+      }
+      if (statAtk) statAtk.innerText = state.totalStats.atk;
+      if (statDef) statDef.innerText = state.totalStats.def;
+    }
+
+    // 朱砂古印戳动态盖印 (凡人散修 / 门派真传)
+    const heroSectStamp = document.getElementById('hero-sect-stamp');
+    const detailModalStamp = document.getElementById('detail-modal-stamp');
+    let stampText = '散修';
+    if (!gameManager.isPrologueComplete || state.isMortal) {
+      stampText = '散修';
+    } else if (state.currentSect && window.SlotsRPG && window.SlotsRPG.SectConfig) {
+      const sectCfg = window.SlotsRPG.SectConfig.getSect(state.currentSect);
+      stampText = sectCfg ? sectCfg.name.substring(0, 2) : '散修';
+    }
+    if (heroSectStamp) heroSectStamp.innerText = stampText;
+    if (detailModalStamp) detailModalStamp.innerText = stampText;
+
+    // 一级道相详参弹窗数据实时同步
+    const detailModalAvatar = document.getElementById('detail-modal-avatar');
+    const charAvatar = document.getElementById('character-main-avatar');
+    if (detailModalAvatar && charAvatar) detailModalAvatar.src = charAvatar.src;
+
+    const detailModalRealm = document.getElementById('detail-modal-realm');
+    if (detailModalRealm) detailModalRealm.innerText = state.realm || '凡人境 · 未入道';
+
+    const detailModalSect = document.getElementById('detail-modal-sect');
+    if (detailModalSect) {
+      if (!gameManager.isPrologueComplete || state.isMortal) {
+        detailModalSect.innerText = '宗门：凡人未入道';
+      } else if (state.currentSect && window.SlotsRPG && window.SlotsRPG.SectConfig) {
+        const sectCfg = window.SlotsRPG.SectConfig.getSect(state.currentSect);
+        detailModalSect.innerText = sectCfg ? `宗门：${sectCfg.name}真传` : '宗门：江湖散修';
+      } else {
+        detailModalSect.innerText = '宗门：江湖散修';
+      }
+    }
+
+    const detailModalTitle = document.getElementById('detail-modal-title');
+    if (detailModalTitle && gameManager.titleManager) {
+      const curTitle = gameManager.titleManager.getEquippedTitleConfig();
+      if (curTitle) {
+        detailModalTitle.innerText = `🎖️ 【${curTitle.name}】`;
+        detailModalTitle.style.color = curTitle.color;
+      }
+    }
+
+    const detailStatHp = document.getElementById('detail-stat-hp');
+    const detailStatAtk = document.getElementById('detail-stat-atk');
+    const detailStatDef = document.getElementById('detail-stat-def');
+    const detailStatPower = document.getElementById('detail-stat-power');
+    if (detailStatHp && state.totalStats) detailStatHp.innerText = state.totalStats.hp;
+    if (detailStatAtk && state.totalStats) detailStatAtk.innerText = state.totalStats.atk;
+    if (detailStatDef && state.totalStats) detailStatDef.innerText = state.totalStats.def;
+    if (detailStatPower) detailStatPower.innerText = state.combatPower;
 
     // 四大流派特化数值实时更新 (暴击、连击、反震、吸血)
     const elCrit = document.getElementById('arch-val-crit');

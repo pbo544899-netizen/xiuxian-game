@@ -39,6 +39,22 @@
 
 
   // 14. 洞天灵脉业务与交互绑定
+  
+      // 洞天灵脉真解极简提示气泡
+      const btnCaveInfo = document.getElementById('btn-cave-info');
+      const caveInfoPopover = document.getElementById('cave-info-popover');
+      if (btnCaveInfo && caveInfoPopover) {
+        btnCaveInfo.addEventListener('click', (e) => {
+          e.stopPropagation();
+          caveInfoPopover.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!caveInfoPopover.classList.contains('hidden') && !e.target.closest('#btn-cave-info, #cave-info-popover')) {
+            caveInfoPopover.classList.add('hidden');
+          }
+        });
+      }
+
   window.updateCaveView = updateCaveView;
   function updateCaveView() {
     if (!gameManager.caveManager) return;
