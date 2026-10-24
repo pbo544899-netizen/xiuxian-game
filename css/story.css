@@ -681,3 +681,171 @@
   box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
 }
 
+
+/* ========================================================
+   剧情对话移动端全屏响应式舞台 (杜绝绝对定位气泡与标题遮挡)
+   ======================================================== */
+@media (max-width: 600px) {
+  .story-overhead-theatre,
+  .story-theatre-card {
+    height: 92vh !important;
+    max-height: 640px !important;
+    width: 96% !important;
+    max-width: 420px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 10px 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .story-theatre-header,
+  .story-overhead-header {
+    position: relative !important;
+    z-index: 50 !important;
+    flex-shrink: 0 !important;
+    margin: 4px 2px 10px 2px !important;
+    padding: 8px 12px !important;
+  }
+
+  .story-skip-btn,
+  .btn-story-skip {
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    min-height: 30px !important;
+  }
+
+  .story-overhead-stage {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    position: relative !important;
+    width: 100% !important;
+    min-height: 340px !important;
+    padding: 0 4px 16px 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 角色整体单元：消除 transform 对 absolute 气泡的 containing block 约束 */
+  .overhead-actor-wrap,
+  .stage-actor {
+    position: static !important;
+    transform: none !important;
+    width: 42% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    transition: opacity 0.3s ease !important;
+  }
+
+  .stage-actor.active-speaker {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
+  .stage-actor.active-speaker .actor-portrait-frame {
+    transform: scale(1.08) translateY(-4px) !important;
+    filter: brightness(1.2) !important;
+    box-shadow: 0 0 24px rgba(255, 215, 0, 0.8) !important;
+  }
+
+  .stage-actor.active-speaker.actor-player .actor-portrait-frame {
+    box-shadow: 0 0 24px rgba(52, 232, 158, 0.8) !important;
+  }
+
+  .stage-actor:not(.active-speaker) {
+    transform: none !important;
+    filter: none !important;
+    opacity: 0.45 !important;
+  }
+
+  .stage-actor:not(.active-speaker) .actor-portrait-frame {
+    transform: scale(0.92) !important;
+    filter: grayscale(30%) brightness(0.72) !important;
+  }
+
+  /* 居中自适应气泡 (悬浮于舞台上半部分，与顶部标题和底部角色留出安全间距，杜绝遮挡) */
+  .actor-overhead-bubble {
+    position: absolute !important;
+    top: 15px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 94% !important;
+    max-width: 380px !important;
+    max-height: 220px !important;
+    min-height: 64px !important;
+    overflow-y: auto !important;
+    padding: 12px 14px !important;
+    box-sizing: border-box !important;
+    z-index: 25 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .bubble-body-text {
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* 说话者指示尖角精确定位 */
+  .pointer-player {
+    position: absolute !important;
+    bottom: -10px !important;
+    left: 21% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .pointer-system {
+    position: absolute !important;
+    bottom: -10px !important;
+    left: 79% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .actor-portrait-frame {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .actor-portrait-img {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .actor-nameplate {
+    margin-top: 4px !important;
+    padding: 3px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .stage-resonance-fx {
+    width: 16% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .resonance-taiji {
+    font-size: 34px !important;
+  }
+
+  .story-theatre-footer,
+  .story-overhead-footer {
+    position: relative !important;
+    z-index: 30 !important;
+    flex-shrink: 0 !important;
+    padding: 10px 14px !important;
+  }
+
+  .btn-story-next,
+  .btn-bubble-next {
+    padding: 8px 24px !important;
+    font-size: 14px !important;
+    min-height: 40px !important;
+  }
+}

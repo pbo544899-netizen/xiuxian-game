@@ -895,3 +895,132 @@
     font-size: 11px !important;
   }
 }
+
+/* ========================================================
+   移动端响应式覆盖: 保障立绘放大(76px)、背包充盈(54px)与大触控按键
+   ======================================================== */
+@media (max-width: 600px) {
+  #view-character.active {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: calc(100vh - 120px) !important;
+    gap: 8px !important;
+    padding-bottom: 75px !important;
+  }
+
+  .char-hero-profile-unified {
+    padding: 10px 10px !important;
+    gap: 6px !important;
+  }
+
+  .hero-avatar-box {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+  }
+
+  .hero-avatar-svg {
+    width: 66px !important;
+    height: 66px !important;
+  }
+
+  .hero-sect-stamp {
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+    white-space: nowrap !important;
+  }
+
+  .hero-middle-box {
+    height: 76px !important;
+    gap: 4px !important;
+  }
+
+  .hero-hp-track {
+    height: 20px !important;
+  }
+
+  .equip-slot {
+    height: 56px !important;
+    min-height: 56px !important;
+  }
+
+  .bag-section {
+    flex: 1 !important;
+    min-height: 300px !important;
+  }
+
+  .bag-cell {
+    height: 54px !important;
+    min-height: 54px !important;
+  }
+
+  .cell-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  /* 全局按钮触控优化 (Touch targets >= 34px) */
+  .btn-quick-equip {
+    height: 34px !important;
+    font-size: 12.5px !important;
+    padding: 6px 14px !important;
+  }
+
+  .btn-bag-header-sort {
+    height: 32px !important;
+    font-size: 12px !important;
+    padding: 5px 12px !important;
+  }
+
+  .btn-avatar-tap-hint {
+    height: 28px !important;
+    font-size: 12px !important;
+    padding: 3.5px 12px !important;
+  }
+
+  .btn-sound-toggle,
+  .btn-sound-toggle-char {
+    min-width: 34px !important;
+    min-height: 34px !important;
+    font-size: 16px !important;
+  }
+
+  .btn-cave-collect {
+    min-height: 48px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    padding: 8px 22px !important;
+  }
+
+  .btn-facility-upgrade,
+  .btn-enter-demon-tower {
+    min-height: 36px !important;
+    font-size: 12.5px !important;
+    padding: 6px 14px !important;
+  }
+
+  .btn-cave-secret-realm {
+    min-height: 54px !important;
+  }
+
+  .btn-auto {
+    min-height: 52px !important;
+    font-size: 16px !important;
+  }
+
+  .btn-auto-count-toggle {
+    min-height: 52px !important;
+    min-width: 58px !important;
+  }
+
+  .modal-actions button,
+  .btn-primary,
+  .btn-secondary {
+    min-height: 42px !important;
+    font-size: 14px !important;
+  }
+
+  .bottom-nav .nav-item {
+    min-height: 56px !important;
+  }
+}

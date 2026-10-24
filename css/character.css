@@ -3087,3 +3087,280 @@
 .detail-stat-item .stat-val.atk { color: #f87171; }
 .detail-stat-item .stat-val.def { color: #60a5fa; }
 .detail-stat-item .stat-val.power { color: #ffd700; }
+
+/* ========================================================
+   角色修真视觉升级: 76px醒目立绘、全屏铺满乾坤袋、触控大按钮
+   ======================================================== */
+.char-hero-profile-unified {
+  padding: 10px 12px !important;
+  gap: 8px !important;
+}
+
+.hero-main-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 80px !important;
+}
+
+/* 角色立绘大框：从 48px 放大到 76px，彰显修仙者气魄 */
+.hero-avatar-box {
+  width: 76px !important;
+  height: 76px !important;
+  min-width: 76px !important;
+  background: radial-gradient(circle at 50% 35%, rgba(212, 175, 55, 0.22), rgba(12, 16, 24, 0.95)) !important;
+  border: 2px solid rgba(212, 175, 55, 0.55) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  flex-shrink: 0 !important;
+}
+
+.hero-avatar-svg {
+  width: 66px !important;
+  height: 66px !important;
+  object-fit: contain !important;
+}
+
+/* 朱砂古印戳：不折行、清晰贴合立绘右下角 */
+.hero-sect-stamp {
+  position: absolute !important;
+  bottom: -4px !important;
+  right: -6px !important;
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%) !important;
+  color: #fef08a !important;
+  border: 1.5px solid #ef4444 !important;
+  outline: 1px dashed rgba(254, 240, 138, 0.6) !important;
+  outline-offset: -2px !important;
+  border-radius: 4px !important;
+  font-family: "STKaiti", "KaiTi", "SimSun", serif !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  padding: 2px 6px !important;
+  line-height: 1.1 !important;
+  transform: rotate(-10deg) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.85) !important;
+  letter-spacing: 0.5px !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  z-index: 5 !important;
+}
+
+/* 角色信息中间区域：高度对齐 76px 立绘，三行舒展排布 */
+.hero-middle-box {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  height: 76px !important;
+  gap: 4px !important;
+}
+
+.hero-status-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.hero-realm-tag {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  color: #ffd700 !important;
+  background: rgba(212, 175, 55, 0.16) !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 1.5px 8px !important;
+  white-space: nowrap !important;
+}
+
+/* 气血血条加粗至 20px */
+.hero-hp-bar-row {
+  width: 100% !important;
+  margin: 1px 0 !important;
+}
+
+.hero-hp-track {
+  position: relative !important;
+  width: 100% !important;
+  height: 20px !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  border: 1px solid rgba(52, 232, 158, 0.45) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.hero-hp-text-overlay {
+  padding: 0 8px !important;
+  font-size: 11px !important;
+}
+
+/* 攻防徽章与道相按键行：横向舒展排布，杜绝换行 */
+.hero-combat-badges-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  gap: 6px !important;
+}
+
+.mini-combat-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2.5px 8px !important;
+  border-radius: 6px !important;
+  font-size: 11.5px !important;
+}
+
+.mini-combat-badge.atk {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+.mini-combat-badge.atk .atk-val {
+  color: #f87171 !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+}
+
+.mini-combat-badge.def {
+  background: rgba(59, 130, 246, 0.16) !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+.mini-combat-badge.def .def-val {
+  color: #60a5fa !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+}
+
+/* 触控大按钮：道相 ➔ */
+.btn-avatar-tap-hint {
+  padding: 3.5px 12px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #ffd700 !important;
+  border-radius: 6px !important;
+  background: rgba(212, 175, 55, 0.18) !important;
+  border: 1px solid #ffd700 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  height: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-avatar-tap-hint:active {
+  transform: scale(0.96) !important;
+  background: rgba(212, 175, 55, 0.35) !important;
+}
+
+/* 装备栏放大 */
+.equip-section {
+  padding: 10px 10px !important;
+  border-radius: 10px !important;
+  margin-top: 4px !important;
+}
+
+.btn-quick-equip {
+  padding: 5px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  border-radius: 8px !important;
+  height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.equip-slots-grid {
+  gap: 6px !important;
+  grid-template-columns: repeat(6, 1fr) !important;
+}
+
+.equip-slot {
+  height: 56px !important;
+  min-height: 56px !important;
+  border-radius: 8px !important;
+}
+
+.slot-equip-icon {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+.slot-equip-name {
+  font-size: 9.5px !important;
+}
+
+/* 乾坤袋背包放大并填满下半屏 */
+.bag-section {
+  padding: 10px 10px !important;
+  border-radius: 10px !important;
+  margin-top: 4px !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 310px !important;
+}
+
+.bag-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 8px !important;
+}
+
+.bag-title {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+}
+
+.auto-salvage-label {
+  font-size: 12px !important;
+  gap: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.auto-salvage-label input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  accent-color: #ffd700 !important;
+}
+
+.btn-bag-header-sort {
+  padding: 5px 14px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  border-radius: 8px !important;
+  height: 32px !important;
+}
+
+.bag-grid {
+  gap: 6px !important;
+  grid-template-columns: repeat(6, 1fr) !important;
+  flex: 1 !important;
+}
+
+.bag-cell {
+  min-height: 54px !important;
+  height: 54px !important;
+  border-radius: 8px !important;
+}
+
+.cell-icon {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+.cell-name {
+  font-size: 9.5px !important;
+}
