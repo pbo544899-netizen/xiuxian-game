@@ -80,11 +80,12 @@
   let isBattleFastMode = false;
   let activeBattleResult = null;
   let battleStepTimer = null;
+  let battleWatchdog = null;
 
   if (btnBattleSpeed) {
     btnBattleSpeed.addEventListener('click', () => {
       isBattleFastMode = !isBattleFastMode;
-      btnBattleSpeed.innerText = isBattleFastMode ? '⚡ 极速 (2x)' : '⚡ 正常 (1x)';
+      btnBattleSpeed.innerText = isBattleFastMode ? '⚡ 极速' : '⚡ 快速';
       if (isBattleFastMode) {
         btnBattleSpeed.classList.add('active');
       } else {
@@ -354,6 +355,29 @@
       clearTimeout(battleStepTimer);
       battleStepTimer = null;
     }
+    if (battleWatchdog) {
+      clearTimeout(battleWatchdog);
+      battleWatchdog = null;
+    }
+
+    // 强制初始化自动战斗状态为开启，彻底杜绝上一局残留或移动端误触导致战斗停滞
+    isBattleAuto = true;
+    if (btnBattleAutoToggle) {
+      btnBattleAutoToggle.innerText = '自动: 开启';
+      btnBattleAutoToggle.classList.add('active');
+    }
+    if (btnBattleSpeed) {
+      btnBattleSpeed.innerText = isBattleFastMode ? '⚡ 极速' : '⚡ 快速';
+      btnBattleSpeed.classList.toggle('active', isBattleFastMode);
+    }
+    if (battleWaveBadge) {
+      battleWaveBadge.classList.add('hidden');
+      battleWaveBadge.style.display = 'none';
+    }
+    if (battleBossTitle) {
+      battleBossTitle.classList.add('hidden');
+      battleBossTitle.style.display = 'none';
+    }
 
     // 若此前正在自动推演，挂起自动推演以待战斗结束后自动恢复
     if (gameManager && gameManager.isAutoSpinning) {
@@ -409,24 +433,13 @@
     const isMultiMonster = totalMonsters > 1;
 
     if (battleWaveBadge) {
-      if (totalMonsters > 1) {
-        battleWaveBadge.innerText = `敌方阵列·共 ${totalMonsters} 头妖兽`;
-        battleWaveBadge.classList.remove('hidden');
-      } else {
-        battleWaveBadge.classList.add('hidden');
-      }
+      battleWaveBadge.classList.add('hidden');
+      battleWaveBadge.style.display = 'none';
     }
 
     if (battleBossTitle) {
-      if (isPrologue) {
-        battleBossTitle.innerText = monsters[0].name;
-      } else if (tier === 'boss') {
-        battleBossTitle.innerText = `${monsters[0].tierName || '妖王'}·${monsters[0].name}`;
-      } else if (tier === 'elite') {
-        battleBossTitle.innerText = `精英大妖群 (共${totalMonsters}头)`;
-      } else {
-        battleBossTitle.innerText = `凶兽群围攻 (共${totalMonsters}头)`;
-      }
+      battleBossTitle.classList.add('hidden');
+      battleBossTitle.style.display = 'none';
     }
 
     /**
@@ -683,16 +696,49 @@
 
     let stepIndex = 0;
     const timeline = battleResult.timeline;
+    let isStepInProgress = false;
+
+    // 战斗看门狗定时器：若出现任何非预期动画卡死或未推进，3.5秒后自动强制步进恢复
+    function resetBattleWatchdog() {
+      if (battleWatchdog) {
+        clearTimeout(battleWatchdog);
+        battleWatchdog = null;
+      }
+      if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden')) {
+        battleWatchdog = setTimeout(() => {
+          if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden') && !isStepInProgress) {
+            console.warn('[BattleUI] 看门狗介入恢复战斗步进:', stepIndex);
+            executeNextStep();
+          }
+        }, 3500);
+      }
+    }
 
     if (btnBattleAutoToggle) {
       btnBattleAutoToggle.onclick = () => {
         isBattleAuto = !isBattleAuto;
         btnBattleAutoToggle.innerText = isBattleAuto ? '自动: 开启' : '回合: 手动';
         btnBattleAutoToggle.classList.toggle('active', isBattleAuto);
-        if (isBattleAuto && !battleStepTimer && stepIndex < timeline.length) {
+        if (isBattleAuto && !battleStepTimer && !isStepInProgress && stepIndex < timeline.length) {
           executeNextStep();
         }
       };
+    }
+
+    // 手动模式单回合流畅推演：点击御剑攻击后，自动演播完本回合所有连击与怪物反击，并在下一回合主角行动点等待操作
+    async function stepThroughCurrentRound() {
+      if (isStepInProgress) return;
+      const targetRound = (timeline[stepIndex] && timeline[stepIndex].round) || 1;
+      while (stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden')) {
+        await executeNextStep();
+        const nextEv = timeline[stepIndex];
+        if (!nextEv) break;
+        if (nextEv.round !== targetRound && (nextEv.turn === 'player' || nextEv.actionType === 'attack')) {
+          break; // 在下一回合主角出招点平稳挂起，等待玩家指令
+        }
+        const stepDelay = isBattleFastMode ? 140 : 260;
+        await new Promise(r => setTimeout(r, stepDelay));
+      }
     }
 
     if (btnBattleAttack) {
@@ -701,14 +747,7 @@
         : '⚔️ 御剑攻击';
       btnBattleAttack.onclick = () => {
         if (!isBattleAuto) {
-          if (stepIndex < timeline.length) {
-            executeNextStep();
-          } else if (session && !session.isOver) {
-            const res = session.executeRound('attack');
-            timeline.splice(stepIndex);
-            timeline.push(...res.roundEvents);
-            executeNextStep();
-          }
+          stepThroughCurrentRound();
         }
       };
     }
@@ -729,6 +768,7 @@
 
     async function executeNextStep() {
       if (stepIndex >= timeline.length) {
+        if (battleWatchdog) { clearTimeout(battleWatchdog); battleWatchdog = null; }
         battleStepTimer = setTimeout(() => {
           modalBattleArena.classList.add('hidden');
           if (battleArenaEl) {
@@ -756,7 +796,11 @@
         return;
       }
 
-      const ev = timeline[stepIndex++];
+      isStepInProgress = true;
+      resetBattleWatchdog();
+      let ev = null;
+      try {
+        ev = timeline[stepIndex++];
 
       if (ev.type === 'next_monster') {
         curBattleBossHp = ev.bossHp;
@@ -1082,30 +1126,32 @@
         }
       }
 
-      if (isBattleAuto) {
-        const nextEv = timeline[stepIndex];
-        const isRoundTransition = nextEv && (nextEv.round !== ev.round);
+      } catch (err) {
+        console.error('[BattleUI] executeNextStep 步进发生非预期异常，自动推进保障流程:', err);
+      } finally {
+        isStepInProgress = false;
+        if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden')) {
+          const nextEv = timeline[stepIndex];
+          const isRoundTransition = nextEv && (nextEv.round !== (ev ? ev.round : 0));
 
-        let delay;
-        if (isRoundTransition) {
-          // 需求3: 调整战斗的节奏，每回合之间增加一定时间的间隔，比如0.5秒
-          delay = isBattleFastMode ? 260 : 500;
-          if (battleRoundBadge) {
-            battleRoundBadge.classList.remove('pulse');
-            void battleRoundBadge.offsetWidth;
-            battleRoundBadge.classList.add('pulse');
+          let delay;
+          if (isRoundTransition) {
+            delay = isBattleFastMode ? 260 : 500;
+            if (battleRoundBadge) {
+              battleRoundBadge.classList.remove('pulse');
+              void battleRoundBadge.offsetWidth;
+              battleRoundBadge.classList.add('pulse');
+            }
+          } else if (ev && ev.type === 'monster_defeated') {
+            delay = isBattleFastMode ? 180 : 320;
+          } else {
+            delay = isPrologue ? (isBattleFastMode ? 260 : 420) : (isBattleFastMode ? 140 : 280);
           }
-        } else if (ev.type === 'monster_defeated') {
-          // 妖兽伏诛特写与死亡反馈停留
-          delay = isBattleFastMode ? 180 : 320;
-        } else {
-          // 回合内双方出手交锋间隔，节奏分明有呼吸感
-          delay = isPrologue ? (isBattleFastMode ? 260 : 420) : (isBattleFastMode ? 140 : 280);
-        }
 
-        battleStepTimer = setTimeout(executeNextStep, delay);
-      } else {
-        battleStepTimer = null;
+          battleStepTimer = setTimeout(executeNextStep, delay);
+        } else if (!isBattleAuto) {
+          battleStepTimer = null;
+        }
       }
     }
 
@@ -1225,6 +1271,7 @@
   window.showVictoryModal = showVictoryModal;
   window.showDefeatModal = showDefeatModal;
   function showVictoryModal(battleResult) {
+    if (battleWatchdog) { clearTimeout(battleWatchdog); battleWatchdog = null; }
     if (!modalBattleVictory) return;
     activeBattleResult = battleResult;
     const boss = (battleResult.encounter && battleResult.encounter.monsters && battleResult.encounter.monsters[0]) || battleResult.boss;
@@ -1382,6 +1429,7 @@
   }
 
   function showDefeatModal(battleResult) {
+    if (battleWatchdog) { clearTimeout(battleWatchdog); battleWatchdog = null; }
     if (battleResult && battleResult.canRevive) {
       const modalRevive = document.getElementById('modal-revive-prompt');
       const reviveCountText = document.getElementById('revive-remaining-count');

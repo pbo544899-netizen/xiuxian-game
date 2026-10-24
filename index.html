@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>修仙作弊器：造化聚宝盆</title>
   <!-- 模块化样式套件 (Modular CSS Suite) -->
-  <link rel="stylesheet" href="css/base.css?v=2.4" />
-  <link rel="stylesheet" href="css/character.css?v=2.4" />
-  <link rel="stylesheet" href="css/battle.css?v=2.4" />
-  <link rel="stylesheet" href="css/cave.css?v=2.4" />
-  <link rel="stylesheet" href="css/story.css?v=2.4" />
-  <link rel="stylesheet" href="css/modals.css?v=2.4" />
-  <link rel="stylesheet" href="css/dragon-spout.css?v=2.4" />
-  <link rel="stylesheet" href="css/responsive.css?v=2.4" />
+  <link rel="stylesheet" href="css/base.css?v=2.5" />
+  <link rel="stylesheet" href="css/character.css?v=2.5" />
+  <link rel="stylesheet" href="css/battle.css?v=2.5" />
+  <link rel="stylesheet" href="css/cave.css?v=2.5" />
+  <link rel="stylesheet" href="css/story.css?v=2.5" />
+  <link rel="stylesheet" href="css/modals.css?v=2.5" />
+  <link rel="stylesheet" href="css/dragon-spout.css?v=2.5" />
+  <link rel="stylesheet" href="css/responsive.css?v=2.5" />
 </head>
 <body>
   <div id="app-container">
@@ -1169,12 +1169,11 @@
         <div id="battle-bg-layer" class="battle-bg-layer"></div>
         <div class="battle-bg-overlay"></div>
 
-        <!-- 顶部对决状态条 -->
+        <!-- 顶部对决状态条 (大号居中回合展示，精简无冗余) -->
         <div class="battle-top-bar">
           <span id="battle-round-badge" class="battle-round-badge">回合 1/20</span>
-          <span id="battle-wave-badge" class="battle-wave-badge hidden">第 1/3 波</span>
-          <span id="battle-boss-title" class="battle-boss-title">练气境妖王·赤炼蟒</span>
-          <button id="btn-battle-speed" class="btn-battle-speed">⚡ 快速</button>
+          <span id="battle-wave-badge" class="battle-wave-badge hidden" style="display:none !important;"></span>
+          <span id="battle-boss-title" class="battle-boss-title hidden" style="display:none !important;"></span>
         </div>
 
         <!-- 上方 Boss / 妖兽 区域 -->
@@ -1204,9 +1203,10 @@
           <div id="battle-floating-container" class="battle-floating-container"></div>
         </div>
 
-        <!-- 下方 主角修真者区域 -->
+        <!-- 下方 主角修真者区域 (快进倍速按钮置于角色头顶，专为右手单手大拇指舒适交互打造) -->
         <div class="battle-hero-section">
           <div class="battle-hero-avatar-wrapper">
+            <button id="btn-battle-speed" class="btn-battle-speed" title="切换战斗倍速">⚡ 快速</button>
             <img id="battle-hero-img" class="battle-hero-avatar" src="assets/character/hero_mortal.png" alt="主角" />
             <div id="battle-hero-shield" class="hero-shield-effect"></div>
           </div>

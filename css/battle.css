@@ -247,22 +247,27 @@
 
 .battle-top-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  position: relative;
+  z-index: 10;
 }
 
 .battle-round-badge {
-  font-size: 11px;
-  font-weight: 800;
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.15);
-  padding: 2px 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  font-size: 15px;
+  font-weight: 900;
+  color: #fef08a;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+  padding: 5px 22px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(245, 158, 11, 0.7);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(245, 158, 11, 0.25);
+  letter-spacing: 1.5px;
+  text-align: center;
+  display: inline-block;
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
@@ -276,29 +281,36 @@
   100% { transform: scale(1); filter: brightness(1); }
 }
 
-.battle-boss-title {
-  font-size: 13px;
-  font-weight: bold;
-  color: #ff4d4f;
-  text-shadow: 0 0 10px rgba(255, 77, 79, 0.6);
+.battle-boss-title,
+.battle-wave-badge {
+  display: none !important;
 }
 
 .btn-battle-speed {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #e2e8f0;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  color: #fef08a;
   font-size: 11px;
-  font-weight: bold;
-  padding: 2px 8px;
+  font-weight: 800;
+  padding: 3px 10px;
   border-radius: 12px;
   cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), inset 0 0 6px rgba(245, 158, 11, 0.25);
   transition: all 0.2s;
+  touch-action: manipulation;
 }
 
 .btn-battle-speed.active {
-  background: #f59e0b;
-  color: #000;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0f172a;
   border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
 }
 
 /* Boss 区域 */
