@@ -238,6 +238,9 @@
   }
 
   btnAutoSpin.addEventListener('click', () => {
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('CLICK');
+    }
     if (gameManager.isAutoSpinning) {
       gameManager.stopAutoSpin();
       return;

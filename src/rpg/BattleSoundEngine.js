@@ -60,6 +60,7 @@
       this.isPlaying = true;
 
       this._startDrone();
+      this._playPluck(); // 开启时立即拨奏一声古筝五音，给玩家即时声音反馈
       this._scheduleNextPluck();
       this._scheduleNextFlute();
       this._scheduleNextBell();
@@ -121,8 +122,8 @@
       this.droneLfo.connect(lfoGain);
       lfoGain.connect(this.droneFilter.frequency);
 
-      this.droneGain.gain.setValueAtTime(0.01, t);
-      this.droneGain.gain.linearRampToValueAtTime(0.05, t + 2.0);
+      this.droneGain.gain.setValueAtTime(0.02, t);
+      this.droneGain.gain.linearRampToValueAtTime(0.12, t + 1.5);
 
       this.droneOsc1.connect(this.droneFilter);
       this.droneOsc2.connect(this.droneFilter);
@@ -328,27 +329,31 @@
 
     _bindUnlockEvents() {
       const unlock = () => {
+        if (!this.ctx) {
+          this._initContext();
+        }
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume().then(() => {
             this.isUnlocked = true;
-            if (this.bgm && !this.isMuted) {
+            if (this.bgm && !this.isMuted && !this.bgm.isPlaying) {
               this.bgm.start();
             }
           }).catch(() => {});
-        } else {
+        } else if (this.ctx && this.ctx.state === 'running') {
           this.isUnlocked = true;
-          if (this.bgm && !this.isMuted) {
+          if (this.bgm && !this.isMuted && !this.bgm.isPlaying) {
             this.bgm.start();
           }
         }
-        if (typeof document !== 'undefined') {
-          document.removeEventListener('click', unlock);
-          document.removeEventListener('touchstart', unlock);
-        }
       };
+
+      // 在捕获阶段监听（确保即使子元素 stopPropagation 也能触发 AudioContext 解锁）
+      // 特别注意：iOS Safari 仅在 touchend、click 时允许 resume，必须覆盖 touchend
+      const unlockEvents = ['click', 'touchend', 'pointerup', 'keydown'];
       if (typeof document !== 'undefined') {
-        document.addEventListener('click', unlock, { once: true, passive: true });
-        document.addEventListener('touchstart', unlock, { once: true, passive: true });
+        unlockEvents.forEach(evt => {
+          document.addEventListener(evt, unlock, { capture: true, passive: true });
+        });
       }
     }
 
@@ -364,9 +369,17 @@
     }
 
     _ensureActive() {
+      if (!this.ctx) {
+        this._initContext();
+      }
       if (!this.ctx) return false;
       if (this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+        this.ctx.resume().then(() => {
+          this.isUnlocked = true;
+          if (this.bgm && !this.isMuted && !this.bgm.isPlaying) {
+            this.bgm.start();
+          }
+        }).catch(() => {});
       }
       return !this.isMuted;
     }

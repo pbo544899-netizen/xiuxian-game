@@ -80,6 +80,10 @@ window.SlotsRPG = window.SlotsRPG || {};
       this.isSpinning = true;
       this.spoutProjectiles = [];
 
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('REEL_SPIN');
+      }
+
       const headEl = document.getElementById('dragon-head-sprite');
       if (headEl) {
         headEl.classList.add('charging');

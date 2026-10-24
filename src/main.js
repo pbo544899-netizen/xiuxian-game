@@ -260,6 +260,31 @@ window.addEventListener('DOMContentLoaded', () => {
       if (window.renderEquipmentSlots) window.renderEquipmentSlots(state);
       if (window.renderBagGrid) window.renderBagGrid(state);
     }
+
+    // 序章凡人引导卡片联动 (恶兽斩杀后隐藏初战按钮，推进至神盘解封)
+    const prologueSection = document.getElementById('prologue-section');
+    if (prologueSection) {
+      if (!gameManager.isPrologueComplete && gameManager.prologueStep < 3) {
+        prologueSection.classList.remove('hidden');
+        const pIcon = document.getElementById('prologue-icon');
+        const pTitle = document.getElementById('prologue-title');
+        const pDesc = document.getElementById('prologue-desc');
+        const pBtn = document.getElementById('btn-prologue-battle');
+        if (gameManager.prologueStep === 2) {
+          if (pIcon) pIcon.innerText = '✨';
+          if (pTitle) pTitle.innerText = '恶兽已斩 · 获神秘残盘';
+          if (pDesc) pDesc.innerText = '黑鬣猪轰然倒地，从其腹中剖出一块青铜古盘！请点击下方乾坤袋中的【造化天机盘】！';
+          if (pBtn) pBtn.classList.add('hidden');
+        } else {
+          if (pIcon) pIcon.innerText = '🐗';
+          if (pTitle) pTitle.innerText = '后山采药 · 惊现恶兽';
+          if (pDesc) pDesc.innerText = '采药途中忽闻腥风扑鼻，一头凶暴黑鬣猪挡住去路！手无寸铁，唯有一柄防身柴刀...';
+          if (pBtn) pBtn.classList.remove('hidden');
+        }
+      } else {
+        prologueSection.classList.add('hidden');
+      }
+    }
   });
 
   // 5. 全局音效委托与通用弹窗关闭
