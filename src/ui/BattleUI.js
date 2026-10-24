@@ -704,9 +704,9 @@
         clearTimeout(battleWatchdog);
         battleWatchdog = null;
       }
-      if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden')) {
+      if (!modalBattleArena.classList.contains('hidden')) {
         battleWatchdog = setTimeout(() => {
-          if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden') && !isStepInProgress) {
+          if (!modalBattleArena.classList.contains('hidden') && !isStepInProgress) {
             console.warn('[BattleUI] 看门狗介入恢复战斗步进:', stepIndex);
             executeNextStep();
           }
@@ -773,17 +773,6 @@
           modalBattleArena.classList.add('hidden');
           if (battleArenaEl) {
             battleArenaEl.classList.remove('ambient-flash', 'ambient-focus', 'ambient-enrage');
-          }
-          if (battleResult.isPrologueBattle || (battleResult.boss && battleResult.boss.id === 'prologue_boar')) {
-            // 序章首战圆满大捷：正式推进至步骤 2 (恶兽已斩，待解封天机盘)
-            gameManager.prologueStep = 2;
-            if (window.SlotsRPG.StorageService) {
-              window.SlotsRPG.StorageService.saveGame(gameManager, true);
-            }
-            gameManager.emitStateChange();
-
-            if (modalAwakening) modalAwakening.classList.remove('hidden');
-            return;
           }
           const isVic = session ? session.isVictory : battleResult.isVictory;
           if (session) battleResult.isVictory = isVic;
@@ -1130,31 +1119,38 @@
         console.error('[BattleUI] executeNextStep 步进发生非预期异常，自动推进保障流程:', err);
       } finally {
         isStepInProgress = false;
-        if (isBattleAuto && stepIndex < timeline.length && !modalBattleArena.classList.contains('hidden')) {
-          const nextEv = timeline[stepIndex];
-          const isRoundTransition = nextEv && (nextEv.round !== (ev ? ev.round : 0));
+        if (!modalBattleArena.classList.contains('hidden')) {
+          if (stepIndex >= timeline.length) {
+            // 所有回合与死亡反馈全部演播完毕，立即调度终局结算 (无论是自动还是手动)
+            const finishDelay = (ev && ev.type === 'monster_defeated')
+              ? (isBattleFastMode ? 250 : 450)
+              : (isBattleFastMode ? 180 : 350);
+            battleStepTimer = setTimeout(executeNextStep, finishDelay);
+          } else if (isBattleAuto) {
+            const nextEv = timeline[stepIndex];
+            const isRoundTransition = nextEv && (nextEv.round !== (ev ? ev.round : 0));
 
-          let delay;
-          if (isRoundTransition) {
-            delay = isBattleFastMode ? 260 : 500;
-            if (battleRoundBadge) {
-              battleRoundBadge.classList.remove('pulse');
-              void battleRoundBadge.offsetWidth;
-              battleRoundBadge.classList.add('pulse');
+            let delay;
+            if (isRoundTransition) {
+              delay = isBattleFastMode ? 260 : 500;
+              if (battleRoundBadge) {
+                battleRoundBadge.classList.remove('pulse');
+                void battleRoundBadge.offsetWidth;
+                battleRoundBadge.classList.add('pulse');
+              }
+            } else if (ev && ev.type === 'monster_defeated') {
+              delay = isBattleFastMode ? 180 : 320;
+            } else {
+              delay = isPrologue ? (isBattleFastMode ? 260 : 420) : (isBattleFastMode ? 140 : 280);
             }
-          } else if (ev && ev.type === 'monster_defeated') {
-            delay = isBattleFastMode ? 180 : 320;
-          } else {
-            delay = isPrologue ? (isBattleFastMode ? 260 : 420) : (isBattleFastMode ? 140 : 280);
-          }
 
-          battleStepTimer = setTimeout(executeNextStep, delay);
-        } else if (!isBattleAuto) {
-          battleStepTimer = null;
+            battleStepTimer = setTimeout(executeNextStep, delay);
+          } else {
+            battleStepTimer = null;
+          }
         }
       }
     }
-
     // 启动修仙风格战斗过场转场动画 (VS 对决画卷)，展示完毕后再切入战场开启第一回合
     showBattleTransitionCutscene(battleResult, () => {
       modalBattleArena.classList.remove('hidden');
@@ -1284,6 +1280,8 @@
       const multText = mult > 1 ? `（${mult}倍机缘加持）` : '';
       if (battleResult && battleResult.isTowerBattle) {
         victorySubtitle.innerText = `锁妖天关第 ${battleResult.towerFloor} 层荡平大捷！浩然正气激荡！`;
+      } else if (battleResult && battleResult.isPrologueBattle) {
+        victorySubtitle.innerText = '后山恶兽已被斩除，造化天机盘重见天日！';
       } else {
         victorySubtitle.innerText = isMulti
           ? `群妖溃败诛灭，天道甘霖倾泻！${multText}`
@@ -1543,8 +1541,13 @@
           tabCharacter.click();
         }, 550);
       } else if (curBattle && curBattle.isPrologueBattle) {
+        gameManager.prologueStep = 2;
+        if (window.SlotsRPG.StorageService) {
+          window.SlotsRPG.StorageService.saveGame(gameManager, true);
+        }
+        gameManager.emitStateChange();
         setTimeout(() => {
-          switchTab('character');
+          if (modalAwakening) modalAwakening.classList.remove('hidden');
         }, 550);
       }
     });
