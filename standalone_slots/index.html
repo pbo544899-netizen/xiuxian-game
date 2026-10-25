@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>周天奇门阵盘 · 独立老虎机纯享版</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="css/slots.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- 顶部状态栏 HUD -->
+    <header class="slots-header">
+      <div class="hud-group">
+        <div class="hud-item">
+          <span class="hud-label">机缘灵石</span>
+          <span id="val-balance" class="hud-val val-gold">10,000</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">本轮下注</span>
+          <span id="val-bet" class="hud-val val-cyan">25</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">极品纳彩</span>
+          <span id="val-last-win" class="hud-val val-green">0</span>
+        </div>
+      </div>
+      <div class="hud-group">
+        <button id="btn-reset-balance" class="icon-btn" title="充能灵石 (+10,000)">💎</button>
+        <button id="btn-paytable" class="icon-btn" title="阵纹图谱与赔率表">📜</button>
+        <button id="btn-sound" class="icon-btn" title="音效开关">🔊</button>
+      </div>
+    </header>
+
+    <!-- 中部推演舞台 -->
+    <main class="slots-stage-wrapper" id="slots-stage-container" data-mode="reels">
+      <div class="stage-title-bar">
+        <span class="mode-badge" id="mode-label-text">☯️ 天机轮盘</span>
+        <span class="rtp-tracker">实时 RTP: <b id="val-rtp" style="color:#ffd700;">100.0%</b> (已推演 <span id="val-total-spins">0</span> 次)</span>
+      </div>
+
+      <!-- 画布容器 (支持传统轮盘与神龙吐宝无缝切换) -->
+      <div class="canvas-container">
+        <!-- 基础 5x3 轮盘 Canvas -->
+        <canvas id="slots-canvas"></canvas>
+
+        <!-- 神龙吐宝法相图层 -->
+        <div class="dragon-overlay-layer" id="dragon-layer">
+          <canvas id="dragon-canvas"></canvas>
+        </div>
+      </div>
+    </main>
+
+    <!-- 底部控制台 -->
+    <footer class="slots-controller">
+      <!-- 辅助控制行 -->
+      <div class="control-row">
+        <!-- 倍率调节 -->
+        <div class="bet-stepper">
+          <button id="btn-bet-minus" class="step-btn" title="减少倍率">-</button>
+          <span id="val-multiplier" class="bet-display">x1</span>
+          <button id="btn-bet-plus" class="step-btn" title="增加倍率">+</button>
+        </div>
+
+        <!-- 模式切换按键 -->
+        <button id="btn-mode-toggle" class="btn-sub-action" title="切换轮盘/神龙表现形式">
+          <span>🔄 切换表现模式</span>
+        </button>
+
+        <!-- 自动巡航选项按键 -->
+        <button id="btn-auto" class="btn-sub-action" title="配置自动推演">
+          <span>⚡ 自动巡航</span>
+        </button>
+      </div>
+
+      <!-- 核心推演按钮行 -->
+      <div class="control-row">
+        <!-- 十连推演按键 -->
+        <button id="btn-10pull" class="btn-ten-pull" title="一键爆发十连推演">
+          <span>⚡ 十连推演</span>
+          <span class="sub">暴击连出</span>
+        </button>
+
+        <!-- 核心推演大按键 -->
+        <button id="btn-spin" class="btn-spin-master" title="启动单次天机推演">
+          天机推演
+        </button>
+      </div>
+
+      <!-- 自动推演菜单气泡 -->
+      <div id="auto-spin-popover" class="popover-menu hidden">
+        <button class="auto-option-btn" data-count="10">自动 10 次</button>
+        <button class="auto-option-btn" data-count="50">自动 50 次</button>
+        <button class="auto-option-btn" data-count="Infinity">无限循环 (直到手动停止)</button>
+      </div>
+    </footer>
+
+    <!-- 图谱与赔率说明弹窗 -->
+    <div id="modal-paytable" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">📜 周天奇门阵盘 · 阵纹共鸣真解</h3>
+          <button id="btn-close-paytable" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:12px; color:#94a3b8; line-height:1.5;">
+            盘中暗合周天 25 脉阵线，自左向右连续 3 格以上同类阵纹即引动共鸣返还机缘；万应灵珠可百搭替用；妖兽逆鳞与造化秘印可激活专属天机造化！
+          </p>
+          <div id="paytable-symbols-grid" class="paytable-grid">
+            <!-- 由 SlotsUI 动态生成 13 类符号赔率卡片 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 独立模块引入链 (与 RPG 解耦，纯净自洽) -->
+  <script src="src/core/EventBus.js"></script>
+  <script src="src/slots/GameBalanceConfig.js"></script>
+  <script src="src/slots/PaytableConfig.js"></script>
+  <script src="src/slots/PaylinesConfig.js"></script>
+  <script src="src/slots/FlowController.js"></script>
+  <script src="src/slots/SlotsEngine.js"></script>
+  <script src="src/bonus/HoldAndSpinEngine.js"></script>
+  <script src="src/dragon/DragonLootEngine.js"></script>
+  <script src="src/dragon/DragonCabinetManager.js"></script>
+  <script src="src/dragon/DragonSpoutRenderer.js"></script>
+  <script src="src/render/AssetManager.js"></script>
+  <script src="src/render/SymbolPainter.js"></script>
+  <script src="src/render/CanvasRenderer.js"></script>
+  <script src="src/render/DropAnimator.js"></script>
+  <script src="src/audio/SlotsSoundEngine.js"></script>
+  <script src="src/core/SlotsGameManager.js"></script>
+  <script src="src/ui/SlotsUI.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

@@ -1111,8 +1111,6 @@ class GameManager {
     if (!this.pendingBattleData) return;
     const battleData = this.pendingBattleData;
     this.pendingBattleData = null;
-    const promptEl = document.getElementById('dragon-battle-prompt');
-    if (promptEl) promptEl.classList.add('hidden');
     window.SlotsRPG.EventBus.emit('TRIGGER_BATTLE', battleData);
     this.emitStateChange();
   }
@@ -2251,66 +2249,7 @@ class GameManager {
     return result;
   }
 
-  /**
-   * 结算洞天秘境 · 八卦仙光跑灯奖励 (兼容旧接口)
-   * @param {Object} prize 跑灯中奖项
-   */
-  claimMarqueeReward(prize) {
-    if (!prize || !prize.reward) return null;
-    const result = {
-      energy: 0,
-      pills: 0,
-      runes: [],
-      equip: null,
-      itemsGiven: []
-    };
 
-    // 1. 机缘发放
-    if (prize.reward.energy) {
-      result.energy = prize.reward.energy;
-      this.energy += prize.reward.energy;
-    }
-
-    // 2. 丹药发放
-    if (prize.reward.pills) {
-      result.pills = prize.reward.pills;
-      const pillItem = window.SlotsRPG.ItemModel.createPill('exp', prize.reward.pills);
-      this.inventory.addItem(pillItem);
-      result.itemsGiven.push(pillItem);
-    }
-
-    // 3. 符箓发放
-    if (prize.reward.rune) {
-      const runeCount = prize.reward.runeCount || 1;
-      const runeItem = window.SlotsRPG.ItemModel.createTalisman(prize.reward.rune, runeCount);
-      this.inventory.addItem(runeItem);
-      result.runes.push({ name: runeItem.name, count: runeCount });
-      result.itemsGiven.push(runeItem);
-    }
-
-    // 4. 极品装备发放 (包括鸿蒙特等奖或天阶神兵/仙甲)
-    if (prize.reward.equipType || prize.reward.equip) {
-      let part = prize.reward.equipType;
-      if (!part || part === 'random') {
-        const parts = ['weapon', 'armor', 'ring', 'boots'];
-        part = parts[Math.floor(Math.random() * parts.length)];
-      }
-      const qualityCode = prize.isGrand ? 'legendary' : 'epic';
-      const eq = window.SlotsRPG.ItemModel.createEquipment(part, qualityCode);
-      const hasImp = this.player.hasEquipmentImprovement(eq, this.level);
-      eq.isNew = hasImp;
-      this.inventory.addItem(eq);
-      result.equip = eq;
-      result.itemsGiven.push(eq);
-    }
-
-    this.emitStateChange();
-    window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
-    if (window.SlotsRPG.StorageService) {
-      window.SlotsRPG.StorageService.saveGame(this, true);
-    }
-    return result;
-  }
 
   // ==========================================
   // 洞天灵脉挂机放置业务流

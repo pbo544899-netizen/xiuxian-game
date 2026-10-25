@@ -810,20 +810,6 @@
       // ========================================================
       // 步骤 10: 伏妖遭遇战就绪 · 拔剑迎战提示
       // ========================================================
-      const dragonBattlePrompt = document.getElementById('dragon-battle-prompt');
-      if (dragonBattlePrompt && !dragonBattlePrompt.classList.contains('hidden') && dragonBattlePrompt.style.display !== 'none') {
-        const btnEngage = document.getElementById('btn-dragon-engage-battle');
-        if (btnEngage && btnEngage.offsetParent !== null) {
-          this.show({
-            id: 'ftue-dragon-battle-engage',
-            target: btnEngage,
-            text: '天机遭遇！点击拔剑出鞘，迎击妖兽！',
-            direction: 'down'
-          });
-          return;
-        }
-      }
-
       // 若有待决突袭战斗且横幅处于战斗触发态
       if (gm.pendingBattleData) {
         const sectTrialBanner = document.getElementById('sect-trial-banner');

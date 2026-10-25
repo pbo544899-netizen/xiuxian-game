@@ -453,10 +453,6 @@
   const btnGearEquip = document.getElementById('btn-gear-equip');
   const btnGearSmelt = document.getElementById('btn-gear-smelt');
 
-  const dragonBattlePrompt = document.getElementById('dragon-battle-prompt');
-  const battlePromptMonsterName = document.getElementById('battle-prompt-monster-name');
-  const btnDragonEngageBattle = document.getElementById('btn-dragon-engage-battle');
-  const btnBattleLabel = document.getElementById('btn-battle-label');
   let battleCountdownTimer = null;
   window.clearBattleCountdownTimer = () => {
     if (battleCountdownTimer) {
@@ -516,39 +512,23 @@
     if (isAutoSpinning) {
       let secondsLeft = 3;
       if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
-      if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
       battleCountdownTimer = setInterval(() => {
         secondsLeft--;
         if (secondsLeft <= 0) {
           clearInterval(battleCountdownTimer);
           battleCountdownTimer = null;
-          if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
           if (gameManager && gameManager.executePendingBattle) {
             gameManager.executePendingBattle();
           }
         } else {
           if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
-          if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战 (${secondsLeft}s)`;
-        }
+            }
       }, 1000);
     } else {
       if (trialBtnText) trialBtnText.innerText = `拔剑迎战`;
-      if (btnBattleLabel) btnBattleLabel.innerText = `拔剑迎战`;
     }
   });
 
-  if (btnDragonEngageBattle) {
-    btnDragonEngageBattle.addEventListener('click', () => {
-      if (battleCountdownTimer) {
-        clearInterval(battleCountdownTimer);
-        battleCountdownTimer = null;
-      }
-      if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
-      if (gameManager && gameManager.executePendingBattle) {
-        gameManager.executePendingBattle();
-      }
-    });
-  }
 
   window.SlotsRPG.EventBus.on('BATTLE_START', () => {
     if (dragonBattlePrompt) dragonBattlePrompt.classList.add('hidden');
