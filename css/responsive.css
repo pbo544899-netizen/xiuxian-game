@@ -184,9 +184,39 @@
   .sect-ticket-modal-card,
   .stele-modal-card,
   .pantheon-modal-card,
-  .victory-card {
+  .victory-card,
+  .defeat-card {
     padding: 14px 12px !important;
     max-height: 94vh;
+  }
+
+  .defeat-card .modal-title {
+    font-size: 17px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .modal-system-speech-box {
+    padding: 8px 10px !important;
+    margin: 6px 0 8px 0 !important;
+    gap: 8px !important;
+  }
+
+  .modal-system-comment {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .defeat-actions,
+  .victory-actions {
+    margin-top: 8px !important;
+    gap: 6px !important;
+  }
+
+  .btn-defeat,
+  .btn-victory {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: 13.5px !important;
   }
 }
 
@@ -306,6 +336,29 @@
 
   .bag-cell {
     min-height: 38px;
+  }
+
+  .defeat-card,
+  .victory-card {
+    width: 94% !important;
+    padding: 14px 10px 12px 10px !important;
+  }
+
+  .modal-system-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .modal-system-name {
+    font-size: 9px !important;
+  }
+
+  .modal-system-comment {
+    font-size: 11.5px !important;
+  }
+
+  .auto-close-text {
+    font-size: 10px !important;
   }
 }
 

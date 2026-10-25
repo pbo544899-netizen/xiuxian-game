@@ -450,7 +450,7 @@
             id: 'ftue-battle-victory-claim',
             target: btnVictoryClaim,
             text: '伏妖大捷！点击知悉并纳宝入囊！',
-            direction: 'down'
+            direction: 'up'
           });
           return;
         }
@@ -465,7 +465,7 @@
             id: 'ftue-battle-defeat-confirm',
             target: btnDefeatConfirm,
             text: '暂避锋芒！点击凝神整备，强化后再战！',
-            direction: 'down'
+            direction: 'up'
           });
           return;
         }
