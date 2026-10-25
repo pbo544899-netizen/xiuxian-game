@@ -504,6 +504,9 @@
 
     // 变身下方宗门挑战横幅
     updateSectTrialBanner();
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+    }
 
     if (battleCountdownTimer) {
       clearInterval(battleCountdownTimer);
@@ -934,6 +937,9 @@
     waitOtherModalsClosedThen(() => {
       if (modalSectTicketAwarded) {
         modalSectTicketAwarded.classList.remove('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
         if (window.SlotsRPG && window.SlotsRPG.SoundEffects) window.SlotsRPG.SoundEffects.play('MODAL_OPEN');
       }
     });
@@ -943,6 +949,9 @@
   if (btnClaimSectTicket) {
     btnClaimSectTicket.addEventListener('click', () => {
       if (modalSectTicketAwarded) modalSectTicketAwarded.classList.add('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
       if (window.SlotsRPG && window.SlotsRPG.SoundEffects) window.SlotsRPG.SoundEffects.play('MODAL_CLOSE');
       showFloatingNotice('🌟 执掌宗门法令，静待飞升大典！', '#ffd700');
     });

@@ -1368,6 +1368,9 @@
     }
 
     modalBattleVictory.classList.remove('hidden');
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+    }
 
     // 检查并调度结算弹窗自动关闭
     const autoCloseVictory = isBattleAutoCloseEnabled();
@@ -1415,6 +1418,9 @@
     }
 
     modalBattleDefeat.classList.remove('hidden');
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+    }
 
     // 检查并调度结算弹窗自动关闭
     const autoCloseDefeat = isBattleAutoCloseEnabled();
@@ -1437,6 +1443,9 @@
           reviveCountText.innerText = adService.getRemainingQuota('revive');
         }
         modalRevive.classList.remove('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
 
         const btnReviveAd = document.getElementById('btn-revive-watch-ad');
         const btnReviveTicket = document.getElementById('btn-revive-use-ticket');
@@ -1507,6 +1516,9 @@
 
       // 立即隐藏胜利弹窗并恢复背景仙乐
       if (modalBattleVictory) modalBattleVictory.classList.add('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
       if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
         window.SlotsRPG.BGMPlayer.setDucking(false);
       }

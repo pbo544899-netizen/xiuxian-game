@@ -368,16 +368,6 @@
         this.hide();
         return;
       }
-      const victoryModal = document.getElementById('modal-battle-victory');
-      if (victoryModal && !victoryModal.classList.contains('hidden')) {
-        this.hide();
-        return;
-      }
-      const defeatModal = document.getElementById('modal-battle-defeat');
-      if (defeatModal && !defeatModal.classList.contains('hidden')) {
-        this.hide();
-        return;
-      }
       const modalStory = document.getElementById('modal-story');
       if (modalStory && !modalStory.classList.contains('hidden')) {
         this.hide();
@@ -385,8 +375,10 @@
       }
 
       // ========================================================
-      // 弹窗最高优先级 1: 作弊器认主弹窗 · 执掌神物
+      // 弹窗最高优先级队列 (只要任意交互弹窗处于展现状态，聚光灯强制吸附并指引其核心操作按键)
       // ========================================================
+
+      // 1. 作弊器认主弹窗
       const modalAwakening = document.getElementById('modal-awakening');
       if (modalAwakening && !modalAwakening.classList.contains('hidden')) {
         const btnAwakeningAccept = document.getElementById('btn-awakening-accept');
@@ -401,9 +393,7 @@
         }
       }
 
-      // ========================================================
-      // 弹窗最高优先级 2: 叩问仙门弹窗 · 拜入宗门
-      // ========================================================
+      // 2. 叩问仙门弹窗 · 拜入宗门
       const modalSectInduction = document.getElementById('modal-sect-induction');
       if (modalSectInduction && !modalSectInduction.classList.contains('hidden')) {
         const firstJoinBtn = modalSectInduction.querySelector('.btn-join-sect');
@@ -412,6 +402,173 @@
             id: 'ftue-join-sect-btn',
             target: firstJoinBtn,
             text: '点击叩问仙门 · 拜入正统万剑仙宗！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 3. 伏妖大捷胜利结算弹窗
+      const modalBattleVictory = document.getElementById('modal-battle-victory');
+      if (modalBattleVictory && !modalBattleVictory.classList.contains('hidden')) {
+        const btnVictoryClaim = document.getElementById('btn-victory-claim');
+        if (btnVictoryClaim && btnVictoryClaim.offsetParent !== null) {
+          this.show({
+            id: 'ftue-battle-victory-claim',
+            target: btnVictoryClaim,
+            text: '伏妖大捷！点击知悉并纳宝入囊！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 4. 伏妖惜败整备弹窗
+      const modalBattleDefeat = document.getElementById('modal-battle-defeat');
+      if (modalBattleDefeat && !modalBattleDefeat.classList.contains('hidden')) {
+        const btnDefeatConfirm = document.getElementById('btn-defeat-confirm');
+        if (btnDefeatConfirm && btnDefeatConfirm.offsetParent !== null) {
+          this.show({
+            id: 'ftue-battle-defeat-confirm',
+            target: btnDefeatConfirm,
+            text: '暂避锋芒！点击凝神整备，强化后再战！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 5. 乾坤袋爆仓报警弹窗
+      const modalOverflowAlert = document.getElementById('modal-overflow-alert');
+      if (modalOverflowAlert && !modalOverflowAlert.classList.contains('hidden')) {
+        const btnOverflowMerge = document.getElementById('btn-overflow-merge');
+        if (btnOverflowMerge) {
+          this.show({
+            id: 'ftue-overflow-merge',
+            target: btnOverflowMerge,
+            text: '背包爆满！点击一键升阶腾出空格！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 6. 离线挂机收益结算弹窗
+      const modalOfflineExp = document.getElementById('modal-offline-reward') || document.getElementById('modal-offline-exp');
+      if (modalOfflineExp && !modalOfflineExp.classList.contains('hidden')) {
+        const btnClaimOffline = document.getElementById('btn-claim-offline');
+        if (btnClaimOffline && btnClaimOffline.offsetParent !== null) {
+          this.show({
+            id: 'ftue-claim-offline',
+            target: btnClaimOffline,
+            text: '离线修炼大有所成！点击一键收纳进账！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 7. 境界突破喜报弹窗
+      const modalLevelUp = document.getElementById('modal-level-up');
+      if (modalLevelUp && !modalLevelUp.classList.contains('hidden')) {
+        const btnLevelupConfirm = document.getElementById('btn-levelup-confirm');
+        if (btnLevelupConfirm && btnLevelupConfirm.offsetParent !== null) {
+          this.show({
+            id: 'ftue-levelup-confirm',
+            target: btnLevelupConfirm,
+            text: '境界突破！点击凝心聚气，纳气入体！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 8. 斩灭宗门守关妖王法牒掉落弹窗
+      const modalSectTicketDrop = document.getElementById('modal-sect-ticket-awarded') || document.getElementById('modal-sect-ticket-drop');
+      if (modalSectTicketDrop && !modalSectTicketDrop.classList.contains('hidden')) {
+        const btnClaimSectTicket = document.getElementById('btn-claim-sect-ticket');
+        if (btnClaimSectTicket && btnClaimSectTicket.offsetParent !== null) {
+          this.show({
+            id: 'ftue-claim-sect-ticket',
+            target: btnClaimSectTicket,
+            text: '守关妖王伏诛！点击执掌仙门法牒！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 9. 灵机枯竭天道救济弹窗
+      const modalRelief = document.getElementById('modal-relief');
+      if (modalRelief && !modalRelief.classList.contains('hidden')) {
+        const btnClaimRelief = document.getElementById('btn-claim-relief');
+        if (btnClaimRelief && btnClaimRelief.offsetParent !== null) {
+          this.show({
+            id: 'ftue-claim-relief',
+            target: btnClaimRelief,
+            text: '灵机告罄！点击天道纳灵获取机缘！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 10. 锁妖天关挑战弹窗
+      const modalDemonTower = document.getElementById('modal-demon-tower');
+      if (modalDemonTower && !modalDemonTower.classList.contains('hidden')) {
+        const btnTowerFight = document.getElementById('btn-start-tower-battle');
+        if (btnTowerFight && btnTowerFight.offsetParent !== null) {
+          this.show({
+            id: 'ftue-tower-battle-start',
+            target: btnTowerFight,
+            text: '锁妖天关！点击破关激战迎击更高层！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 11. 升仙天碑白日飞升弹窗
+      const modalAscensionStele = document.getElementById('modal-ascension-stele');
+      if (modalAscensionStele && !modalAscensionStele.classList.contains('hidden')) {
+        const btnAscendHeaven = document.getElementById('btn-ascend-heaven');
+        if (btnAscendHeaven && !btnAscendHeaven.disabled && btnAscendHeaven.offsetParent !== null) {
+          this.show({
+            id: 'ftue-ascend-heaven',
+            target: btnAscendHeaven,
+            text: '五卷归一！点击白日飞升，位列仙班！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 12. 九转轮回结算弹窗
+      const modalSamsaraSummary = document.getElementById('modal-samsara-settlement') || document.getElementById('modal-samsara-summary');
+      if (modalSamsaraSummary && !modalSamsaraSummary.classList.contains('hidden')) {
+        const btnSamsaraConfirm = document.getElementById('btn-samsara-confirm');
+        if (btnSamsaraConfirm && btnSamsaraConfirm.offsetParent !== null) {
+          this.show({
+            id: 'ftue-samsara-confirm',
+            target: btnSamsaraConfirm,
+            text: '一世功德圆满！点击破入轮回，开启新世！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 13. 起死回生复活抉择弹窗
+      const modalRevive = document.getElementById('modal-revive-prompt');
+      if (modalRevive && !modalRevive.classList.contains('hidden')) {
+        const btnReviveWatchAd = document.getElementById('btn-revive-watch-ad');
+        const btnReviveGiveUp = document.getElementById('btn-revive-give-up');
+        const targetRevive = (btnReviveWatchAd && btnReviveWatchAd.offsetParent !== null) ? btnReviveWatchAd : btnReviveGiveUp;
+        if (targetRevive && targetRevive.offsetParent !== null) {
+          this.show({
+            id: 'ftue-revive-prompt',
+            target: targetRevive,
+            text: '机缘未尽！点击引动造化起死回生！',
             direction: 'down'
           });
           return;
@@ -647,6 +804,106 @@
             });
             return;
           }
+        }
+      }
+
+      // ========================================================
+      // 步骤 10: 伏妖遭遇战就绪 · 拔剑迎战提示
+      // ========================================================
+      const dragonBattlePrompt = document.getElementById('dragon-battle-prompt');
+      if (dragonBattlePrompt && !dragonBattlePrompt.classList.contains('hidden') && dragonBattlePrompt.style.display !== 'none') {
+        const btnEngage = document.getElementById('btn-dragon-engage-battle');
+        if (btnEngage && btnEngage.offsetParent !== null) {
+          this.show({
+            id: 'ftue-dragon-battle-engage',
+            target: btnEngage,
+            text: '天机遭遇！点击拔剑出鞘，迎击妖兽！',
+            direction: 'down'
+          });
+          return;
+        }
+      }
+
+      // 若有待决突袭战斗且横幅处于战斗触发态
+      if (gm.pendingBattleData) {
+        const sectTrialBanner = document.getElementById('sect-trial-banner');
+        if (sectTrialBanner && !sectTrialBanner.classList.contains('hidden') && sectTrialBanner.offsetParent !== null) {
+          this.show({
+            id: 'ftue-pending-battle-engage',
+            target: sectTrialBanner,
+            text: '妖兽突袭现世！点击横幅拔剑迎战！',
+            direction: 'up'
+          });
+          return;
+        }
+      }
+
+      // ========================================================
+      // 步骤 11: 角色面板法宝可 3合1 升阶
+      // ========================================================
+      if (currentTab === 'character' && !gm.hasCompletedMergeFTUE) {
+        const floatingMergeWrap = document.getElementById('floating-merge-wrap');
+        if (floatingMergeWrap && !floatingMergeWrap.classList.contains('hidden')) {
+          const btnFloatingMerge = document.getElementById('btn-floating-merge');
+          if (btnFloatingMerge && btnFloatingMerge.offsetParent !== null) {
+            this.show({
+              id: 'ftue-floating-merge',
+              target: btnFloatingMerge,
+              text: '发现可合成法宝！点击一键升阶(3合1)！',
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedMergeFTUE = true;
+                if (window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
+            });
+            return;
+          }
+        }
+      }
+
+      // ========================================================
+      // 步骤 12: 洞天灵脉聚灵法阵可升级
+      // ========================================================
+      if (currentTab === 'cave' && !gm.hasCompletedCaveUpgradeFTUE) {
+        const btnUpgradeArray = document.getElementById('btn-upgrade-array');
+        if (btnUpgradeArray && !btnUpgradeArray.disabled && btnUpgradeArray.offsetParent !== null) {
+          this.show({
+            id: 'ftue-cave-upgrade-array',
+            target: btnUpgradeArray,
+            text: '灵机充沛！点击升级聚灵法阵提升产率！',
+            direction: 'down',
+            onClick: () => {
+              gm.hasCompletedCaveUpgradeFTUE = true;
+              if (window.SlotsRPG.StorageService) {
+                window.SlotsRPG.StorageService.saveGame(gm, true);
+              }
+            }
+          });
+          return;
+        }
+      }
+
+      // ========================================================
+      // 步骤 13: 每日灵泉秘境可采撷
+      // ========================================================
+      if (currentTab === 'cave' && !gm.hasCompletedSecretRealmFTUE) {
+        const btnSecretRealm = document.getElementById('btn-cave-secret-realm');
+        if (btnSecretRealm && btnSecretRealm.classList.contains('ready') && !btnSecretRealm.classList.contains('exhausted') && btnSecretRealm.offsetParent !== null) {
+          this.show({
+            id: 'ftue-cave-secret-realm',
+            target: btnSecretRealm,
+            text: '每日造化已备！点击采撷灵泉秘境机缘！',
+            direction: 'down',
+            onClick: () => {
+              gm.hasCompletedSecretRealmFTUE = true;
+              if (window.SlotsRPG.StorageService) {
+                window.SlotsRPG.StorageService.saveGame(gm, true);
+              }
+            }
+          });
+          return;
         }
       }
 

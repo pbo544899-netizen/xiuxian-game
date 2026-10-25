@@ -214,13 +214,21 @@
       if (offlineGainEnergy) offlineGainEnergy.innerText = `+${reward.energyGained}`;
       if (offlineGainPills) offlineGainPills.innerText = `+${reward.pillsGained} 颗`;
       modalOfflineReward.classList.remove('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
     }
   });
 
   if (btnClaimOffline) {
     btnClaimOffline.addEventListener('click', () => {
       gameManager.collectCaveEarnings();
-      if (modalOfflineReward) modalOfflineReward.classList.add('hidden');
+      if (modalOfflineReward) {
+        modalOfflineReward.classList.add('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
+      }
       updateCaveView();
     });
   }

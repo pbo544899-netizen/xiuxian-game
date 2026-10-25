@@ -526,6 +526,9 @@
     }
 
     modalDemonTower.classList.remove('hidden');
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+    }
   }
 
   if (btnEnterDemonTower) {
@@ -534,7 +537,12 @@
 
   if (btnCloseTowerModal) {
     btnCloseTowerModal.addEventListener('click', () => {
-      if (modalDemonTower) modalDemonTower.classList.add('hidden');
+      if (modalDemonTower) {
+      modalDemonTower.classList.add('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
+    }
     });
   }
 
@@ -606,6 +614,9 @@
     if (modalRelief) {
       updateReliefModalUI(data.remainingRelief);
       modalRelief.classList.remove('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
     }
   });
 
@@ -1215,7 +1226,12 @@
   if (btnOpenStele) {
     btnOpenStele.addEventListener('click', () => {
       renderAscensionStele();
-      if (modalAscensionStele) modalAscensionStele.classList.remove('hidden');
+      if (modalAscensionStele) {
+      modalAscensionStele.classList.remove('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
+    }
     });
   }
 
@@ -1503,6 +1519,9 @@
     }
 
     modalSamsaraSettlement.classList.remove('hidden');
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+    }
   });
 
   if (btnSamsaraConfirm) {

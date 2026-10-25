@@ -335,6 +335,9 @@
     if (floatingMergeWrap) {
       if (canMerge) {
         floatingMergeWrap.classList.remove('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
       } else {
         floatingMergeWrap.classList.add('hidden');
       }
@@ -716,6 +719,9 @@
   window.SlotsRPG.EventBus.on('INVENTORY_OVERFLOW_FULL', () => {
     if (modalOverflowAlert) {
       modalOverflowAlert.classList.remove('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      }
     }
   });
 
@@ -749,6 +755,9 @@
                 </div>
               `;
               modalLevelUp.classList.remove('hidden');
+              if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+                window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+              }
             }
           });
         });
