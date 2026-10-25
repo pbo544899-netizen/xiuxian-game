@@ -77,6 +77,15 @@
         document.body.appendChild(indicator);
       }
       this.indicatorEl = indicator;
+
+      // 允许点击指示器手势与文字气泡直接触发目标操作 (极大增强触控手感与容错)
+      this.indicatorEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.currentTargetEl && typeof this.currentTargetEl.click === 'function') {
+          this.currentTargetEl.click();
+        }
+      });
     },
 
     /**
@@ -202,13 +211,27 @@
         modalAncestor.classList.add('spotlight-elevated-modal');
       }
 
-      // 检查目标是否有 bottom-nav 祖先，若有则提升底部导航栏层级并确保完全在可视区
+      // 检查目标是否有 bottom-nav 祖先，若有则提升底部导航栏层级
       const navAncestor = target.closest('.bottom-nav');
       if (navAncestor) {
         navAncestor.classList.add('spotlight-elevated-nav');
-        if (typeof target.scrollIntoView === 'function') {
-          target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+
+      // 遍历目标的所有祖先容器，对具有独立局部层叠上下文 (z-index 或 sticky/fixed) 的祖先动态提权，击穿遮罩层级隔离
+      let ancestor = target.parentElement;
+      while (ancestor && ancestor !== document.body && ancestor !== document.documentElement) {
+        const cs = window.getComputedStyle(ancestor);
+        const hasZIndex = cs.zIndex !== 'auto' && parseInt(cs.zIndex, 10) < 9990;
+        const isStickyOrFixed = cs.position === 'sticky' || cs.position === 'fixed';
+        if (hasZIndex || isStickyOrFixed) {
+          ancestor.classList.add('spotlight-elevated-ancestor');
         }
+        ancestor = ancestor.parentElement;
+      }
+
+      // 确保目标在可见视口区内
+      if (typeof target.scrollIntoView === 'function') {
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       }
 
       // 2. 唤醒聚光灯遮罩
@@ -272,6 +295,9 @@
       document.querySelectorAll('.spotlight-elevated-nav').forEach(n => {
         n.classList.remove('spotlight-elevated-nav');
       });
+      document.querySelectorAll('.spotlight-elevated-ancestor').forEach(a => {
+        a.classList.remove('spotlight-elevated-ancestor');
+      });
 
       this.currentTargetEl = null;
       this.currentConfig = null;
@@ -293,6 +319,9 @@
       });
       document.querySelectorAll('.spotlight-elevated-modal').forEach(m => {
         m.classList.remove('spotlight-elevated-modal');
+      });
+      document.querySelectorAll('.spotlight-elevated-ancestor').forEach(a => {
+        a.classList.remove('spotlight-elevated-ancestor');
       });
     },
 

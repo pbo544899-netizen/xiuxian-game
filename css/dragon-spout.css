@@ -1674,11 +1674,22 @@ body:has(#view-cave.active) .drop-flyer,
   z-index: 9995 !important;
 }
 
+/* 当高亮目标处于具有独立层叠上下文的祖先内部时，对祖先动态提权以突破遮罩层级隔离 */
+.spotlight-elevated-ancestor {
+  z-index: 9993 !important;
+}
+
+.floating-merge-wrap.spotlight-elevated-ancestor {
+  z-index: 9993 !important;
+  pointer-events: auto !important;
+}
+
 /* 全局手势指示器悬浮容器 */
 .spotlight-guide-indicator {
   position: fixed;
   z-index: 9996;
-  pointer-events: none;
+  pointer-events: auto; /* 允许点击气泡或手指直接执行操作 */
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
