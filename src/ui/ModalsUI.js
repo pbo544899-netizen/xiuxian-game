@@ -812,6 +812,9 @@
   // 序章引导状态初始化与断点全场景恢复
   if (!gameManager.isPrologueComplete) {
     if (gameManager.prologueStep === 0) {
+      if (storyManager) {
+        storyManager.isDialogActive = true;
+      }
       switchTab('character', true);
       if (prologueSection) prologueSection.classList.remove('hidden');
       // 凡人初入开局：自动唤起背景故事对话 (林凡身世与后山遭遇)
@@ -819,7 +822,7 @@
         if (storyManager) {
           storyManager.triggerChapter('prologue_mortal_intro');
         }
-      }, 400);
+      }, 350);
     } else if (gameManager.prologueStep === 1) {
       switchTab('character', true);
       if (prologueSection) prologueSection.classList.remove('hidden');

@@ -1652,6 +1652,28 @@ body:has(#view-cave.active) .drop-flyer,
   z-index: 9993 !important;
 }
 
+/* 当高亮目标处于底部导航栏内部时提升导航栏层级 */
+.bottom-nav.spotlight-elevated-nav {
+  z-index: 9993 !important;
+  position: relative !important;
+}
+
+/* 底部导航栏提权时，仅高亮选中的 Tab，其余 Tab 降低不透明度并禁用点击以防误触 */
+.bottom-nav.spotlight-elevated-nav .nav-item:not(.spotlight-active-target) {
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+}
+
+/* 被聚光灯聚焦的 Tab 激活样式与提权光彩 */
+.bottom-nav .nav-item.spotlight-active-target {
+  opacity: 1 !important;
+  filter: none !important;
+  transform: scale(1.08) !important;
+  background: rgba(255, 215, 0, 0.16) !important;
+  border-radius: 8px;
+  z-index: 9995 !important;
+}
+
 /* 全局手势指示器悬浮容器 */
 .spotlight-guide-indicator {
   position: fixed;
@@ -1778,23 +1800,14 @@ body:has(#view-cave.active) .drop-flyer,
   white-space: nowrap;
 }
 
-body.ftue-spotlight-active #prologue-spin-guide {
-  position: relative !important;
-  z-index: 9995 !important;
+#btn-spin.spotlight-active-target {
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.7), 0 0 30px #ffd700, 0 0 60px rgba(255, 140, 0, 0.85) !important;
+  animation: tank-full-glow 1s infinite alternate ease-in-out !important;
+}
+
+#prologue-spin-guide.spotlight-active-target {
   box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), 0 0 50px rgba(255, 215, 0, 0.45) !important;
   animation: ftue-guide-banner-pulse 1.3s infinite alternate ease-in-out !important;
-}
-
-body.ftue-spotlight-active #dragon-spin-btn-wrap {
-  position: relative !important;
-  z-index: 9995 !important;
-}
-
-body.ftue-spotlight-active #btn-spin {
-  position: relative !important;
-  z-index: 9995 !important;
-  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.6), 0 0 30px #ffd700, 0 0 60px rgba(255, 140, 0, 0.8) !important;
-  animation: tank-full-glow 1s infinite alternate ease-in-out !important;
 }
 
 @keyframes ftue-guide-banner-pulse {

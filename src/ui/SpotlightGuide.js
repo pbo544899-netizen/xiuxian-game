@@ -113,6 +113,9 @@
         window.SlotsRPG.EventBus.on('SHOW_SECT_INDUCTION', () => {
           setTimeout(() => this.checkAndTriggerFTUE(), 300);
         });
+        window.SlotsRPG.EventBus.on('STORY_DIALOG_END', () => {
+          setTimeout(() => this.checkAndTriggerFTUE(), 150);
+        });
       }
     },
 
@@ -189,6 +192,15 @@
         modalAncestor.classList.add('spotlight-elevated-modal');
       }
 
+      // 检查目标是否有 bottom-nav 祖先，若有则提升底部导航栏层级并确保完全在可视区
+      const navAncestor = target.closest('.bottom-nav');
+      if (navAncestor) {
+        navAncestor.classList.add('spotlight-elevated-nav');
+        if (typeof target.scrollIntoView === 'function') {
+          target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+      }
+
       // 2. 唤醒聚光灯遮罩
       document.body.classList.add('ftue-spotlight-active');
       if (this.maskEl) {
@@ -247,6 +259,9 @@
       document.querySelectorAll('.spotlight-elevated-modal').forEach(m => {
         m.classList.remove('spotlight-elevated-modal');
       });
+      document.querySelectorAll('.spotlight-elevated-nav').forEach(n => {
+        n.classList.remove('spotlight-elevated-nav');
+      });
 
       this.currentTargetEl = null;
       this.currentConfig = null;
@@ -263,6 +278,12 @@
           this.targetClickListener = null;
         }
       }
+      document.querySelectorAll('.spotlight-elevated-nav').forEach(n => {
+        n.classList.remove('spotlight-elevated-nav');
+      });
+      document.querySelectorAll('.spotlight-elevated-modal').forEach(m => {
+        m.classList.remove('spotlight-elevated-modal');
+      });
     },
 
     /**
@@ -368,8 +389,10 @@
         this.hide();
         return;
       }
-      const modalStory = document.getElementById('modal-story');
-      if (modalStory && !modalStory.classList.contains('hidden')) {
+      const modalStoryDialog = document.getElementById('modal-story-dialog') || document.getElementById('modal-story');
+      const isStoryActive = (modalStoryDialog && !modalStoryDialog.classList.contains('hidden')) ||
+                            (window.storyManager && (window.storyManager.isDialogActive || (window.storyManager.activeStory && window.storyManager.activeStory.isOpen)));
+      if (isStoryActive) {
         this.hide();
         return;
       }
@@ -590,7 +613,7 @@
               id: 'ftue-nav-char-prologue',
               target: tabChar,
               text: '后山惊现恶兽！点击前往角色面板',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -621,7 +644,7 @@
               id: 'ftue-nav-char-awaken',
               target: tabChar,
               text: '斩获神秘古物！点击前往乾坤袋',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -660,7 +683,7 @@
               id: 'ftue-nav-slots-spout',
               target: tabSlots,
               text: '天机已启！点击进入神龙吐宝',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -701,7 +724,7 @@
               id: 'ftue-nav-char-equip',
               target: tabChar,
               text: '爆出绝世神兵！点击前往角色换装',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -730,7 +753,7 @@
               id: 'ftue-nav-slots-continue',
               target: tabSlots,
               text: '神兵已佩！点击前往神龙继续推演',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -761,7 +784,7 @@
               id: 'ftue-nav-slots-trial',
               target: tabSlots,
               text: '仙门已立！点击前往神龙试炼',
-              direction: 'up'
+              direction: 'down'
             });
             return;
           }
@@ -790,7 +813,7 @@
             id: 'ftue-nav-cave-collect',
             target: tabCave,
             text: '洞天灵脉充盈！点击前往引灵',
-            direction: 'up'
+            direction: 'down'
           });
           return;
         } else {

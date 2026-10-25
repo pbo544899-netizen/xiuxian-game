@@ -43,6 +43,7 @@
         onComplete: null,
         isOpen: false
       };
+      this.isDialogActive = false;
     }
 
     /**
@@ -429,6 +430,12 @@
 
       this.hideSystemTip();
 
+      // 开启剧情对话时，立即隐藏聚光灯引导遮罩，防止抢跑穿透
+      if (global.SlotsRPG && global.SlotsRPG.SpotlightGuide) {
+        global.SlotsRPG.SpotlightGuide.hide();
+      }
+      this.isDialogActive = true;
+
       // 1. 规范化剧情对白序列
       let dialogue = [];
       if (Array.isArray(dialogData.dialogue) && dialogue.length === 0 && dialogData.dialogue.length > 0) {
@@ -627,9 +634,10 @@
      * 关闭剧情弹窗
      */
     closeStoryDialog(isSkipped = false) {
-      if (!this.activeStory.isOpen) return;
+      if (!this.activeStory.isOpen && !this.isDialogActive) return;
 
       this.activeStory.isOpen = false;
+      this.isDialogActive = false;
       if (this.dom.modalStoryDialog) {
         this.dom.modalStoryDialog.classList.add('hidden');
       }
@@ -638,6 +646,16 @@
       this.activeStory.onComplete = null;
       if (typeof cb === 'function') {
         cb(isSkipped);
+      }
+
+      if (global.SlotsRPG && global.SlotsRPG.EventBus) {
+        global.SlotsRPG.EventBus.emit('STORY_DIALOG_END', { isSkipped });
+      }
+
+      if (global.SlotsRPG && global.SlotsRPG.SpotlightGuide) {
+        setTimeout(() => {
+          global.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }, 120);
       }
     }
 
