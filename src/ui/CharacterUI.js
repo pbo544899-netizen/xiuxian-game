@@ -233,6 +233,7 @@
 
       if (item) {
         if (item.isArtifactPlate) {
+          cell.id = 'item-tianji-pan';
           cell.className = 'bag-cell occupied artifact-plate-slot';
           cell.style.borderColor = '#ffd700';
           cell.innerHTML = `
@@ -242,16 +243,13 @@
             <span class="cell-badge cell-quality-badge" style="color:#ffd700; background:rgba(255,215,0,0.25);">神物</span>
           `;
           cell.onclick = () => {
-            // 点击天机盘：在乾坤袋中解封认主，触发序章神盘认主剧情对话
-            gameManager.awakenTianjiPlateFromBag(item);
-            if (storyManager) {
-              storyManager.triggerChapter('prologue_awaken', () => {
-                switchTab('slots');
-                if (window.updateFTUESpotlight) window.updateFTUESpotlight();
-              });
-            } else {
-              switchTab('slots');
-              if (window.updateFTUESpotlight) window.updateFTUESpotlight();
+            // 点击天机盘：在乾坤袋中解封认主，唤起作弊器认主弹窗
+            const modalAwakening = document.getElementById('modal-awakening');
+            if (modalAwakening) {
+              modalAwakening.classList.remove('hidden');
+            }
+            if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+              window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
             }
           };
           bagGrid.appendChild(cell);

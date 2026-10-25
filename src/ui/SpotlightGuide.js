@@ -126,6 +126,16 @@
       return !!(this.currentTargetEl && this.indicatorEl && !this.indicatorEl.classList.contains('hidden'));
     },
 
+    get currentTarget() {
+      return this.currentTargetEl;
+    },
+    get currentStepId() {
+      return this.currentConfig ? this.currentConfig.id : null;
+    },
+    get currentStep() {
+      return this.currentConfig;
+    },
+
     /**
      * 晃动手势与文字气泡（用于玩家点击遮罩阻断时的趣味反馈）
      */
@@ -416,9 +426,9 @@
         }
       }
 
-      // 2. 叩问仙门弹窗 · 拜入宗门
+      // 2. 叩问仙门弹窗 · 拜入宗门 (仅在未完成序章时引导，防止回切时残留)
       const modalSectInduction = document.getElementById('modal-sect-induction');
-      if (modalSectInduction && !modalSectInduction.classList.contains('hidden')) {
+      if (!gm.isPrologueComplete && modalSectInduction && !modalSectInduction.classList.contains('hidden')) {
         const firstJoinBtn = modalSectInduction.querySelector('.btn-join-sect');
         if (firstJoinBtn) {
           this.show({
@@ -650,14 +660,16 @@
           }
         } else {
           // 在乾坤袋背包网格中寻找【造化天机盘】
-          const bagCells = document.querySelectorAll('.bag-cell');
-          let plateCell = null;
-          bagCells.forEach(cell => {
-            const txt = cell.innerText || '';
-            if (txt.includes('造化天机盘') || txt.includes('天机盘')) {
-              plateCell = cell;
-            }
-          });
+          let plateCell = document.getElementById('item-tianji-pan') || document.querySelector('.artifact-plate-slot');
+          if (!plateCell) {
+            const bagCells = document.querySelectorAll('.bag-cell');
+            bagCells.forEach(cell => {
+              const txt = cell.innerText || '';
+              if (txt.includes('造化天机盘') || txt.includes('天机盘')) {
+                plateCell = cell;
+              }
+            });
+          }
           if (plateCell) {
             this.show({
               id: 'ftue-awaken-plate',
@@ -723,7 +735,7 @@
             this.show({
               id: 'ftue-nav-char-equip',
               target: tabChar,
-              text: '爆出绝世神兵！点击前往角色换装',
+              text: '爆出绝世神兵！点击底部的【角色修真】',
               direction: 'down'
             });
             return;
@@ -743,7 +755,7 @@
       }
 
       // ========================================================
-      // 步骤 6: 散修探寻中 · 继续引龙推演 (spins 1 ~ 5 && hasCompletedEquipFTUE)
+      // 步骤 6: 散修探寻中 · 引导切回神龙推演 (仅在处于角色面板时单次引导回切，切回后自由推演，不再重复引导抽奖)
       // ========================================================
       if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE) {
         if (currentTab !== 'slots') {
@@ -753,17 +765,6 @@
               id: 'ftue-nav-slots-continue',
               target: tabSlots,
               text: '神兵已佩！点击前往神龙继续推演',
-              direction: 'down'
-            });
-            return;
-          }
-        } else {
-          const btnSpin = document.getElementById('btn-spin');
-          if (btnSpin) {
-            this.show({
-              id: 'ftue-dragon-spin-continue',
-              target: btnSpin,
-              text: '点击引龙吐宝，探寻周天机缘！',
               direction: 'down'
             });
             return;
@@ -872,27 +873,6 @@
         }
       }
 
-      // ========================================================
-      // 步骤 12: 洞天灵脉聚灵法阵可升级
-      // ========================================================
-      if (currentTab === 'cave' && !gm.hasCompletedCaveUpgradeFTUE) {
-        const btnUpgradeArray = document.getElementById('btn-upgrade-array');
-        if (btnUpgradeArray && !btnUpgradeArray.disabled && btnUpgradeArray.offsetParent !== null) {
-          this.show({
-            id: 'ftue-cave-upgrade-array',
-            target: btnUpgradeArray,
-            text: '灵机充沛！点击升级聚灵法阵提升产率！',
-            direction: 'down',
-            onClick: () => {
-              gm.hasCompletedCaveUpgradeFTUE = true;
-              if (window.SlotsRPG.StorageService) {
-                window.SlotsRPG.StorageService.saveGame(gm, true);
-              }
-            }
-          });
-          return;
-        }
-      }
 
       // ========================================================
       // 步骤 13: 每日灵泉秘境可采撷

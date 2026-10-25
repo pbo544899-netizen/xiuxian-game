@@ -25,6 +25,7 @@ class GameManager {
     this.hasCompletedEquipFTUE = false;            // 首次神兵穿戴引导完成标记
     this.hasCompletedTrialFTUE = false;            // 首次妖王试炼引导完成标记
     this.hasCompletedCaveFTUE = false;             // 首次洞天引灵引导完成标记
+    this.hasTriggeredSectInduction = false;        // 叩问仙门法牒序列单次防重标记
 
     // 快速消耗档位体系 (根据玩家当前拥有灵机自适应开放)
     this.ALL_BET_TIERS = [25, 50, 100, 200, 500, 1000, 2000, 5000];
@@ -1028,9 +1029,10 @@ class GameManager {
       }
     }
 
-    // 叩问仙门判定：散修初探至第 6 抽爆出 3 枚宗门法牒后触发时序队列 (普通奖励 -> 掉落通知 -> 门票符号高光 -> 加入门派弹窗)
-    const isSectInduction = spinData.isSectInductionSpin || (!this.isPrologueComplete && this.prologueStep === 3 && this.prologueSpins >= 6);
+    // 叩问仙门判定：散修初探至第 6 抽爆出 3 枚宗门法牒后触发时序队列 (单次防重保护)
+    const isSectInduction = (spinData.isSectInductionSpin || (!this.isPrologueComplete && this.prologueStep === 3 && this.prologueSpins >= 6)) && !this.hasTriggeredSectInduction;
     if (isSectInduction) {
+      this.hasTriggeredSectInduction = true;
       this.stopAutoSpin();
       // 解析中奖法牒/门票格子坐标: l.coords 为每列命中行索引数组 [rowCol0, rowCol1, ...]
       let ticketCoords = [];
@@ -1652,8 +1654,9 @@ class GameManager {
 
   /**
    * 玩家主动发起试炼挑战 (零消耗，随时检验新装备伤害输出与推关进度)
+   * @param {Object} [options={}]
    */
-  startActiveTrialChallenge() {
+  startActiveTrialChallenge(options = {}) {
     if (this.player && this.player.isMortal) {
       return { success: false, reason: '凡人尚未入道，请先拜入仙宗门派！' };
     }
@@ -1664,8 +1667,8 @@ class GameManager {
     const curSect = (this.currentWorldTier === 2) ? 'spirit_realm' : ((this.player && this.player.currentSect) || 'wanjian');
     const samsara = (this.ascensionManager && this.ascensionManager.meta && this.ascensionManager.meta.samsaraCount) || 1;
 
-    // 广播试炼开启事件 (触发剧情里程碑检测与战前对白)
-    if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+    // 广播试炼开启事件 (若未在 UI 层提前拦截对白，则广播以防漏判)
+    if (!options.skipStoryEmit && window.SlotsRPG && window.SlotsRPG.EventBus) {
       window.SlotsRPG.EventBus.emit('TRIAL_STAGE_START', {
         stage: this.sectTrialStage,
         sectId: curSect,
@@ -2724,6 +2727,7 @@ class GameManager {
    * @param {string} sectId - 宗门 ID
    */
   completeSectInduction(sectId) {
+    this.hasTriggeredSectInduction = true;
     this.player.promoteToCultivator(sectId);
     this.isPrologueComplete = true;
     this.prologueStep = 4;

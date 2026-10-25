@@ -298,8 +298,8 @@
   const autoCountLabel = document.getElementById('auto-count-label');
   const countOptBtns = document.querySelectorAll('.count-opt-btn');
 
-  // 初始化连抽次数设置：默认 10 连抽
-  let currentAutoCount = 10;
+  // 初始化连抽次数设置：默认 1 次单抽推演
+  let currentAutoCount = 1;
   function applyAutoCount(countVal) {
     currentAutoCount = countVal === 'Infinity' ? Infinity : parseInt(countVal, 10);
     if (gameManager) gameManager.autoSpinTargetCount = currentAutoCount;
@@ -320,14 +320,15 @@
     }
   }
 
-  // 默认选中 10 连抽 (若本地已保存有效配置则沿用，否则默认10连)
+  // 默认选中 1 次单抽 (若本地已保存有效配置则沿用，否则默认单抽1次，避免灵机过度消耗)
   const savedCount = localStorage.getItem('slots_rpg_auto_count');
-  applyAutoCount(savedCount ? savedCount : '10');
+  applyAutoCount(savedCount ? savedCount : '1');
 
-  // 玩家激活天机盘 (ARTIFACT_AWAKENED) 时：强制默认选中 10 连抽
+  // 玩家激活天机盘 (ARTIFACT_AWAKENED) 时：保持默认 1 次单抽
   if (EventBus) {
     EventBus.on('ARTIFACT_AWAKENED', () => {
-      applyAutoCount('10');
+      const currentSaved = localStorage.getItem('slots_rpg_auto_count');
+      applyAutoCount(currentSaved ? currentSaved : '1');
     });
   }
 
@@ -1129,13 +1130,32 @@
       gameManager.suspendAutoSpinForBattle();
     }
 
-    const battleResult = gameManager.startActiveTrialChallenge();
-    if (battleResult && battleResult.success === false) {
-      showFloatingNotice(battleResult.reason || '无法发起挑战');
-      return;
-    }
+    const curSect = (gameManager.currentWorldTier === 2) ? 'spirit_realm' : ((gameManager.player && gameManager.player.currentSect) || 'wanjian');
+    const stage = gameManager.sectTrialStage || 1;
+    const wTier = gameManager.currentWorldTier || 1;
+    const storyConfig = window.SlotsRPG && window.SlotsRPG.StoryConfig;
+    const storyManager = window.storyManager || (window.SlotsRPG && window.SlotsRPG.StoryManager);
+    const chapterId = (storyConfig && typeof storyConfig.getMilestoneChapter === 'function')
+      ? storyConfig.getMilestoneChapter(curSect, stage, 'start', wTier)
+      : null;
 
-    playBattleSequence(battleResult);
+    const executeTrialBattle = () => {
+      const battleResult = gameManager.startActiveTrialChallenge({ skipStoryEmit: true });
+      if (battleResult && battleResult.success === false) {
+        showFloatingNotice(battleResult.reason || '无法发起挑战');
+        return;
+      }
+      playBattleSequence(battleResult);
+    };
+
+    // 若有战前剧情对白，严格先展示完剧情对白，待关闭后再启动战斗，杜绝战斗提前抢跑打断剧情沉浸
+    if (chapterId && storyManager) {
+      storyManager.triggerChapter(chapterId, () => {
+        executeTrialBattle();
+      });
+    } else {
+      executeTrialBattle();
+    }
   }
 
   if (btnActiveTrialChallenge) {

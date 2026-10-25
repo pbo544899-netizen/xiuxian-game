@@ -731,6 +731,11 @@
   // 监听叩问仙门自选引荐事件 (Phase 4)
   window.SlotsRPG.EventBus.on('SHOW_SECT_INDUCTION', (data) => {
     if (!modalSectInduction || !inductionSectsContainer) return;
+    // 安全防线：若玩家已完成序章或已拥有门派，严禁再次展现拜入门派弹窗
+    if (gameManager.isPrologueComplete || (gameManager.player && gameManager.player.currentSect && !gameManager.player.isMortal)) {
+      modalSectInduction.classList.add('hidden');
+      return;
+    }
     if (btnSpin) btnSpin.classList.add('disabled');
     inductionSectsContainer.innerHTML = '';
 
@@ -786,6 +791,7 @@
           }
           gameManager.completeSectInduction(sect.id);
           modalSectInduction.classList.add('hidden');
+          inductionSectsContainer.innerHTML = '';
           if (btnSpin) btnSpin.classList.remove('disabled');
           showGameNotice(
             `踏入仙途 · 拜入【${sect.name}】`,

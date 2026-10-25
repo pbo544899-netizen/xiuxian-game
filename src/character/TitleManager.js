@@ -85,6 +85,16 @@
       reqFloor: 30,
       unlockCondition: '平定锁妖天关第 30 层'
     },
+    title_tower_40: {
+      id: 'title_tower_40',
+      name: '【万劫诛邪神君】',
+      color: '#f43f5e',
+      desc: '诛灭太古雷龙，万劫不磨',
+      bonusPower: 1600,
+      unlockType: 'tower',
+      reqFloor: 40,
+      unlockCondition: '平定锁妖天关第 40 层'
+    },
     title_tower_50: {
       id: 'title_tower_50',
       name: '【九天锁妖至尊】',
