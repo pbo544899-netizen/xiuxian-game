@@ -1548,6 +1548,9 @@
         gameManager.emitStateChange();
         setTimeout(() => {
           if (modalAwakening) modalAwakening.classList.remove('hidden');
+          if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+            window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+          }
         }, 550);
       }
     });

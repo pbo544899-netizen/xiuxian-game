@@ -111,6 +111,13 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       localStorage.setItem('SLOTS_RPG_ACTIVE_TAB', tabName);
     } catch (e) {}
+
+    if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+      window.SlotsRPG.EventBus.emit('TAB_CHANGED', { tab: tabName });
+    }
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      setTimeout(() => window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE(), 150);
+    }
   }
 
   /**

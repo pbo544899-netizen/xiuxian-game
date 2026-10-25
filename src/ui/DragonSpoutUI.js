@@ -178,6 +178,10 @@
 
   // 16.1 新手引导全局聚光灯遮罩与手势联动 (除引龙吐宝按键外，其余全屏区域遮罩阻断误触)
   function updateFTUESpotlight() {
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+      return;
+    }
     if (!gameManager) return;
     const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
                          !gameManager.isPrologueComplete &&
@@ -1087,6 +1091,12 @@
 
   // 主动挑战事件发起处理 (零消耗，随时检验换装输出与战力成长)
   function handleActiveTrialChallenge() {
+    if (gameManager) {
+      gameManager.hasCompletedTrialFTUE = true;
+      if (window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(gameManager, true);
+      }
+    }
     // 【核心改动 4】：若当前有暂存的伏妖遭遇战，点击优先响应拔剑迎战
     if (gameManager.pendingBattleData) {
       if (battleCountdownTimer) {

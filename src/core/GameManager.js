@@ -22,6 +22,9 @@ class GameManager {
     this.prologueStep = 0;         // 0: 凡人未入门, 1: 恶兽对决, 2: 斩猪待认主, 3: 散修初探中, 4: 拜入宗门大成
     this.prologueSpins = 0;        // 散修阶段已推演抽数 (1~6 驱动 FTUESequence)
     this.hasCompletedFirstDragonSpoutFTUE = false; // 首次免费引龙吐宝引导完成标记
+    this.hasCompletedEquipFTUE = false;            // 首次神兵穿戴引导完成标记
+    this.hasCompletedTrialFTUE = false;            // 首次妖王试炼引导完成标记
+    this.hasCompletedCaveFTUE = false;             // 首次洞天引灵引导完成标记
 
     // 快速消耗档位体系 (根据玩家当前拥有灵机自适应开放)
     this.ALL_BET_TIERS = [25, 50, 100, 200, 500, 1000, 2000, 5000];
@@ -411,6 +414,9 @@ class GameManager {
 
     // 抽奖启动时确保隐藏新手引导提示、聚光灯遮罩与手势
     this.hasCompletedFirstDragonSpoutFTUE = true;
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.hide();
+    }
     document.body.classList.remove('ftue-spotlight-active');
     const ftueMask = document.getElementById('ftue-spotlight-mask');
     const prologueSpinGuide = document.getElementById('prologue-spin-guide');
@@ -485,15 +491,15 @@ class GameManager {
     this.addPotExp(1 * multiplier);
     this.addPotSubExp(1 * multiplier);
 
-    this.emitStateChange();
-
-    // 3. 启动转轮动效
+    // 3. 启动转轮动效 (先置位 isSpinning 防止状态广播时误触发下一阶段指引)
     if (this.renderer) {
       this.renderer.startSpin({ cost, multiplier, isGrandSpin });
       if (isGrandSpin) {
         this.renderer.addFloatingText('✨ 龙皇吐宝：满缸极品天机大爆！', '#ffd700');
       }
     }
+
+    this.emitStateChange();
 
     // 4. 核心计算生成结果 (神龙引宝双柜架构 / 兼容回退)
     let spinData;
@@ -1169,6 +1175,7 @@ class GameManager {
       }
     }
 
+    this.hasCompletedEquipFTUE = true;
     this.emitStateChange();
     window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
     return { equipped: item, unequipped: oldItem, statDiff };

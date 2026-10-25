@@ -131,6 +131,12 @@
 
   if (btnCaveCollect) {
     btnCaveCollect.addEventListener('click', () => {
+      if (gameManager) {
+        gameManager.hasCompletedCaveFTUE = true;
+        if (window.SlotsRPG.StorageService) {
+          window.SlotsRPG.StorageService.saveGame(gameManager, true);
+        }
+      }
       const res = gameManager.collectCaveEarnings();
       if (res && (res.energy > 0 || res.pills > 0)) {
         if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
