@@ -299,6 +299,24 @@ window.SlotsRPG.ItemModel = {
   },
 
   /**
+   * 获取品质名称
+   */
+  getQualityName(code) {
+    if (!code) return '凡铁';
+    const c = String(code).toUpperCase();
+    return (this.QUALITIES[c] && this.QUALITIES[c].name) || '凡铁';
+  },
+
+  /**
+   * 获取品质对应主色调
+   */
+  getQualityColor(code) {
+    if (!code) return '#8c8c8c';
+    const c = String(code).toUpperCase();
+    return (this.QUALITIES[c] && this.QUALITIES[c].color) || '#8c8c8c';
+  },
+
+  /**
    * 获取下一品质阶级代码
    */
   getNextQuality(currentCode) {

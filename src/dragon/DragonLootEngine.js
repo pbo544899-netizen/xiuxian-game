@@ -280,6 +280,7 @@ window.SlotsRPG = window.SlotsRPG || {};
 
       // 3. 气运跃阶判定 (龙目金光赐福 / 高倍暴击)
       let isLuckyBurst = false;
+      const origQualityCode = qualityCode;
       const burstChance = Math.min(0.50, 0.08 + (multiplier - 1) * 0.05);
       if (Math.random() < burstChance) {
         const nextQ = window.SlotsRPG.ItemModel.getNextQuality(qualityCode);
@@ -311,10 +312,16 @@ window.SlotsRPG = window.SlotsRPG || {};
         }
       }
 
+      const prevQualityName = window.SlotsRPG.ItemModel.getQualityName ? window.SlotsRPG.ItemModel.getQualityName(origQualityCode) : origQualityCode;
+      const prevQualityColor = window.SlotsRPG.ItemModel.getQualityColor ? window.SlotsRPG.ItemModel.getQualityColor(origQualityCode) : '#8c8c8c';
+
       return {
         type: 'equip',
         item: newEquip,
-        isLuckyBurst: isLuckyBurst
+        isLuckyBurst: isLuckyBurst,
+        prevQualityCode: isLuckyBurst ? origQualityCode : null,
+        prevQualityName: isLuckyBurst ? prevQualityName : null,
+        prevQualityColor: isLuckyBurst ? prevQualityColor : null
       };
     }
 

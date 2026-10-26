@@ -141,6 +141,207 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 出货分析：判定本次掉落中是否存在高光极品 (用于驱动戏剧性刹车与蓄能变奏)
      */
+    /**
+     * 判定当前推演的气运品阶与天象异象 (用于驱动前摇变色与悬念停顿)
+     * RED: Q6+ 鸿蒙至宝 / 太初神兵 / 守关妖王
+     * GOLD: Q5 仙品·道器 / 龙皇满缸吐宝 / 狂暴第10抽
+     * PURPLE: Q4 灵品·法器 / 遭遇精英大妖 / 极品材料暴击
+     * LUCKY: 气运升阶裂变
+     * NORMAL: 常规天机流转 (Q1~Q3)
+     */
+    _getSpinOmen(spinResult) {
+      if (!spinResult) return { tier: 'NORMAL', color: '#00e5ff', title: null, dramaPause: 0 };
+      const left = spinResult.leftCabinet;
+      const right = spinResult.rightCabinet;
+
+      // 1. 检查是否 Q6+ 或 妖王
+      if (left) {
+        if (left.type === 'battle' && left.battleConfig && left.battleConfig.tier === 'boss') {
+          return { tier: 'RED', color: '#ff4d4f', title: '【天道动荡 · 守关妖王降世！】', dramaPause: 460 };
+        }
+        if (left.type === 'equip' && left.item) {
+          const q = (left.item.quality || left.item.qualityCode || 'Q1').toUpperCase();
+          if (['Q6', 'Q7', 'Q8'].includes(q)) {
+            return { tier: 'RED', color: '#ff4d4f', title: '【鸿蒙初辟 · 赤霄至宝降世！】', dramaPause: 460 };
+          }
+        }
+      }
+
+      // 2. 检查是否 Q5 金品 或 满缸大爆 或 狂暴第10抽
+      if (spinResult.isGrandSpin) {
+        return { tier: 'GOLD', color: '#ffd700', title: '【真龙开眼 · 满缸神能大爆！】', dramaPause: 380 };
+      }
+      if (left) {
+        if (left.type === 'battle' && left.battleConfig && left.battleConfig.tier === 'elite') {
+          return { tier: 'PURPLE', color: '#c084fc', title: '【妖煞蔽日 · 精英大妖袭来！】', dramaPause: 280 };
+        }
+        if (left.type === 'equip' && left.item) {
+          const q = (left.item.quality || left.item.qualityCode || 'Q1').toUpperCase();
+          if (q === 'Q5') {
+            return { tier: 'GOLD', color: '#ffd700', title: '【天道神芒 · 仙品玄兵现世！】', dramaPause: 380 };
+          }
+          if (left.isLuckyBurst) {
+            return { tier: 'LUCKY', color: '#ffd700', title: '【气运激荡 · 天道顿悟逆转！】', dramaPause: 320 };
+          }
+          if (q === 'Q4') {
+            return { tier: 'PURPLE', color: '#c084fc', title: '【紫气东来 · 灵品法宝出世！】', dramaPause: 260 };
+          }
+        }
+      }
+
+      // 3. 检查右柜是否有暴击金品材料
+      if (right && (right.isCrit || (right.quality && ['Q4', 'Q5', 'Q6'].includes(String(right.quality).toUpperCase())))) {
+        return { tier: 'PURPLE', color: '#c084fc', title: '【灵材共鸣 · 极品天道资粮！】', dramaPause: 250 };
+      }
+
+      return { tier: 'NORMAL', color: '#00e5ff', title: null, dramaPause: 0 };
+    }
+
+    /**
+     * 激活前摇变色神光、天机异象浮标与背景气场
+     */
+    _applyOmenEffects(omen) {
+      if (!omen || omen.tier === 'NORMAL') return;
+      this._clearOmenEffects();
+
+      const t = omen.tier.toLowerCase();
+      const headEl = document.getElementById('dragon-head-sprite');
+      const haloEl = document.getElementById('dragon-celestial-halo');
+      const rageAuraEl = document.getElementById('dragon-rage-aura');
+      const breathGlowEl = document.getElementById('dragon-breath-glow');
+      const omenBanner = document.getElementById('dragon-omen-banner');
+
+      if (headEl) headEl.classList.add('anticipation-' + t);
+      if (haloEl) haloEl.classList.add('halo-' + t);
+      if (rageAuraEl) rageAuraEl.classList.add('aura-' + t);
+      if (breathGlowEl) breathGlowEl.classList.add('breath-' + t);
+
+      if (omenBanner && omen.title) {
+        omenBanner.innerText = omen.title;
+        omenBanner.className = 'dragon-omen-banner banner-' + t;
+        omenBanner.classList.remove('hidden');
+      }
+
+      this._spawnAnticipationParticles(omen);
+
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        if (omen.tier === 'RED' || omen.tier === 'GOLD' || omen.tier === 'LUCKY') {
+          window.SlotsRPG.SoundEffects.play('NEAR_MISS', 1);
+        } else {
+          window.SlotsRPG.SoundEffects.play('REEL_SPIN');
+        }
+      }
+    }
+
+    _hideOmenBanner() {
+      const omenBanner = document.getElementById('dragon-omen-banner');
+      if (omenBanner) {
+        omenBanner.classList.add('hidden');
+      }
+    }
+
+    _clearOmenEffects() {
+      const headEl = document.getElementById('dragon-head-sprite');
+      const haloEl = document.getElementById('dragon-celestial-halo');
+      const rageAuraEl = document.getElementById('dragon-rage-aura');
+      const breathGlowEl = document.getElementById('dragon-breath-glow');
+      const omenBanner = document.getElementById('dragon-omen-banner');
+
+      const tiers = ['red', 'gold', 'purple', 'lucky'];
+      tiers.forEach(t => {
+        if (headEl) headEl.classList.remove('anticipation-' + t);
+        if (haloEl) haloEl.classList.remove('halo-' + t);
+        if (rageAuraEl) rageAuraEl.classList.remove('aura-' + t);
+        if (breathGlowEl) breathGlowEl.classList.remove('breath-' + t);
+      });
+      if (omenBanner) omenBanner.classList.add('hidden');
+    }
+
+    _spawnAnticipationParticles(omen) {
+      const mouthX = this.dragonMouth.x;
+      const mouthY = this.dragonMouth.y;
+
+      if (omen.tier === 'RED') {
+        for (let i = 0; i < 32; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 50 + Math.random() * 45;
+          this.particles.push({
+            x: mouthX + Math.cos(angle) * dist,
+            y: mouthY + Math.sin(angle) * dist,
+            vx: -Math.cos(angle) * 4.5,
+            vy: -Math.sin(angle) * 4.5,
+            life: 0.9,
+            decay: 0.04,
+            color: Math.random() < 0.65 ? '#ff4d4f' : '#ffd700',
+            size: 3.5 + Math.random() * 3.5
+          });
+        }
+      } else if (omen.tier === 'GOLD') {
+        for (let i = 0; i < 30; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 45 + Math.random() * 45;
+          this.particles.push({
+            x: mouthX + Math.cos(angle) * dist,
+            y: mouthY + Math.sin(angle) * dist,
+            vx: -Math.cos(angle) * 4.0,
+            vy: -Math.sin(angle) * 4.0,
+            life: 0.85,
+            decay: 0.045,
+            color: Math.random() < 0.7 ? '#ffd700' : '#ffffff',
+            size: 3.0 + Math.random() * 3.5
+          });
+        }
+      } else if (omen.tier === 'PURPLE') {
+        for (let i = 0; i < 24; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 35 + Math.random() * 35;
+          this.particles.push({
+            x: mouthX + Math.cos(angle) * dist,
+            y: mouthY + Math.sin(angle) * dist,
+            vx: -Math.cos(angle) * 3.2,
+            vy: -Math.sin(angle) * 3.2,
+            life: 0.8,
+            decay: 0.05,
+            color: Math.random() < 0.7 ? '#c084fc' : '#a855f7',
+            size: 2.8 + Math.random() * 3.0
+          });
+        }
+      } else if (omen.tier === 'LUCKY') {
+        for (let i = 0; i < 28; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 40 + Math.random() * 40;
+          this.particles.push({
+            x: mouthX + Math.cos(angle) * dist,
+            y: mouthY + Math.sin(angle) * dist,
+            vx: -Math.cos(angle) * 3.8,
+            vy: -Math.sin(angle) * 3.8,
+            life: 0.85,
+            decay: 0.045,
+            color: Math.random() < 0.5 ? '#38ef7d' : '#ffd700',
+            size: 3.0 + Math.random() * 3.0
+          });
+        }
+      }
+    }
+
+    spawnFissionParticles(slotId, color = '#ffd700') {
+      const coord = this._getSlotCoordinates(slotId, { x: this.width * 0.5, y: this.height * 0.65 });
+      for (let i = 0; i < 40; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 3.5 + Math.random() * 6.0;
+        this.particles.push({
+          x: coord.x,
+          y: coord.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.5,
+          life: 1.0,
+          decay: 0.035 + Math.random() * 0.03,
+          color: Math.random() < 0.6 ? color : (Math.random() < 0.5 ? '#ffffff' : '#a855f7'),
+          size: 3.5 + Math.random() * 4.0
+        });
+      }
+    }
+
     _analyzeSpinLoot(spinResult) {
       if (!spinResult) return { hasEpic: false, epicItem: null, epicSide: null };
       const left = spinResult.leftCabinet;
@@ -195,6 +396,23 @@ window.SlotsRPG = window.SlotsRPG || {};
      * 2. 极品出货：常规物先落，随后流水线突然刹车停顿 350ms 聚灵充能 (Drama Pause)，再轰出高能金芒重音砸地 (总耗时 ~1150ms)
      */
     stopSpin(spinResult, callback) {
+      const omen = this._getSpinOmen(spinResult);
+      const isOmenSpecial = omen.tier !== 'NORMAL';
+      const anticipationDelay = isOmenSpecial ? (omen.dramaPause || 300) : 0;
+
+      if (isOmenSpecial) {
+        this._applyOmenEffects(omen);
+      } else if (window.gameManager && (window.gameManager.waterTankProgress || 0) >= 8) {
+        this.addFloatingText(`天机蓄能 (${window.gameManager.waterTankProgress}/10)：龙皇灵能即将蓄满！`, '#00e5ff');
+      }
+
+      setTimeout(() => {
+        this._hideOmenBanner();
+        this._executeSpoutSequence(spinResult, omen, callback);
+      }, anticipationDelay);
+    }
+
+    _executeSpoutSequence(spinResult, omen, callback) {
       const headEl = document.getElementById('dragon-head-sprite');
       const { hasEpic, epicItem, epicSide } = this._analyzeSpinLoot(spinResult);
 
@@ -300,6 +518,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         const totalDuration = shotDelay + shotDuration + 160;
         setTimeout(() => {
           this.isSpinning = false;
+          this._clearOmenEffects();
           window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SPOUT_ALL_REVEALED', spinResult);
           if (typeof callback === 'function') callback(spinResult);
         }, totalDuration);
@@ -443,6 +662,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         const totalDuration = epicImpactTime + 370;
         setTimeout(() => {
           this.isSpinning = false;
+          this._clearOmenEffects();
           window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SPOUT_ALL_REVEALED', spinResult);
           if (typeof callback === 'function') callback(spinResult);
         }, totalDuration);
@@ -460,6 +680,21 @@ window.SlotsRPG = window.SlotsRPG || {};
       const headEl = document.getElementById('dragon-head-sprite');
       const hasEpic = !!summary.hasEpic;
 
+      // 检查十连中的最高气运异象
+      let tenPullTier = 'GOLD';
+      let tenPullTitle = '【周天十连 · 气运冲霄！】';
+      if (summary.allLootItems) {
+        for (const item of summary.allLootItems) {
+          const q = (item.quality || (item.item && (item.item.quality || item.item.qualityCode)) || 'Q1').toUpperCase();
+          if (['Q6', 'Q7', 'Q8'].includes(q) || item.type === 'battle') {
+            tenPullTier = 'RED';
+            tenPullTitle = '【周天十连 · 鸿蒙动荡！】';
+            break;
+          }
+        }
+      }
+      this._applyOmenEffects({ tier: tenPullTier, title: tenPullTitle });
+
       // 1. 龙头高能蓄力充能
       if (headEl) {
         headEl.classList.remove('spouting');
@@ -473,6 +708,7 @@ window.SlotsRPG = window.SlotsRPG || {};
       const volleyCount = Math.min(12, summary.itemsCount || 10);
 
       setTimeout(() => {
+        this._hideOmenBanner();
         if (headEl) {
           headEl.classList.remove('charging', 'epic-charging');
           headEl.classList.add('spouting');
@@ -582,6 +818,7 @@ window.SlotsRPG = window.SlotsRPG || {};
           }
 
           // 触发全部揭晓完成事件
+          this._clearOmenEffects();
           window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('DRAGON_SPOUT_ALL_REVEALED', summary);
 
           if (typeof callback === 'function') callback();
@@ -662,7 +899,8 @@ window.SlotsRPG = window.SlotsRPG || {};
         // 3. 构造飞行动画 DOM 宝物元素，挂载至 view-slots 内部专属层中，确保切面板时自动隐藏
         const flyerLayer = document.getElementById('dragon-spout-flyer-layer') || viewSlotsNow;
         const flyer = document.createElement('div');
-        flyer.className = `dragon-spout-flyer ${isEpic ? 'epic' : ''}`;
+        const isLucky = !!item.isLuckyBurst;
+        flyer.className = `dragon-spout-flyer ${isEpic ? 'epic' : ''} ${isLucky ? 'lucky-burst-flyer' : ''}`;
 
         let iconSrc = 'assets/symbols/SYM_06.png';
         let qColor = isEpic ? '#ffd700' : '#00e5ff';
@@ -672,11 +910,18 @@ window.SlotsRPG = window.SlotsRPG || {};
         else if (item.type === 'battle') iconSrc = 'assets/symbols/SYM_12.png';
         else if (item.type === 'pill') iconSrc = 'assets/symbols/SYM_07.png';
 
-        if (item.qualityColor) qColor = item.qualityColor;
-        else if (item.item && item.item.qualityColor) qColor = item.item.qualityColor;
+        if (isLucky && item.prevQualityColor) {
+          qColor = item.prevQualityColor;
+        } else if (item.qualityColor) {
+          qColor = item.qualityColor;
+        } else if (item.item && item.item.qualityColor) {
+          qColor = item.item.qualityColor;
+        }
 
         flyer.style.borderColor = qColor;
-        flyer.style.boxShadow = `0 0 16px ${qColor}, inset 0 0 8px rgba(255, 255, 255, 0.4)`;
+        flyer.style.boxShadow = isLucky 
+          ? `0 0 20px ${qColor}, 0 0 35px #ffd700, inset 0 0 10px rgba(255, 255, 255, 0.6)`
+          : `0 0 16px ${qColor}, inset 0 0 8px rgba(255, 255, 255, 0.4)`;
 
         const img = document.createElement('img');
         img.src = iconSrc;

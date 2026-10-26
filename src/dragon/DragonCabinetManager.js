@@ -248,11 +248,16 @@ window.SlotsRPG = window.SlotsRPG || {};
           quality: (item.quality || item.qualityCode || 'Q1').toUpperCase(),
           qualityRank: QUALITY_RANK[(item.quality || item.qualityCode || 'Q1').toUpperCase()] || 1,
           qualityColor: item.qualityColor || '#94a3b8',
+          qualityName: item.qualityName || (window.SlotsRPG.ItemModel.getQualityName && window.SlotsRPG.ItemModel.getQualityName(item.qualityCode)) || '宝器',
           gainText: gainText,
           isUpgrade: isUpgrade,
           powerDiff: diff,
           count: 1,
-          dropTimestamp: ++this.dropCounter
+          dropTimestamp: ++this.dropCounter,
+          isLuckyBurst: !!rawData.isLuckyBurst,
+          prevQualityCode: rawData.prevQualityCode || null,
+          prevQualityName: rawData.prevQualityName || null,
+          prevQualityColor: rawData.prevQualityColor || null
         };
 
         if (!options.silentFloating && isUpgrade && diff > 0 && this.gameManager && this.gameManager.renderer && this.gameManager.renderer.addFloatingText) {
@@ -479,11 +484,19 @@ window.SlotsRPG = window.SlotsRPG || {};
      * @param {number} slotIndex 槽位索引
      * @param {boolean} isEpic 是否极品
      */
-    revealSlotImpact(slotIndex, isEpic = false) {
+    revealSlotImpact(slotIndex, isEpic = false, options = {}) {
       const slotEl = document.getElementById(`dragon-slot-${slotIndex}`);
       if (!slotEl) return;
       slotEl.classList.remove('slot-pending-flyer');
-      slotEl.classList.remove('slot-epic-burst', 'slot-inserted-burst');
+      slotEl.classList.remove('slot-epic-burst', 'slot-inserted-burst', 'slot-fission-cracking', 'slot-fission-burst');
+
+      const data = this.slots[slotIndex];
+      const isLucky = options.isLuckyBurst || (data && data.isLuckyBurst);
+      if (isLucky) {
+        this._playLuckyBurstFission(slotIndex, data);
+        return;
+      }
+
       void slotEl.offsetWidth;
       slotEl.classList.add(isEpic ? 'slot-epic-burst' : 'slot-inserted-burst');
       const badgeEl = slotEl.querySelector('.slot-item-badge');
@@ -492,6 +505,84 @@ window.SlotsRPG = window.SlotsRPG || {};
         void badgeEl.offsetWidth;
         badgeEl.classList.add('bump-active');
       }
+    }
+
+    /**
+     * 播放气运升阶裂变逆转演出 (Lucky Burst Fission)
+     * 1. 槽位卡片进入剧烈高频震颤与裂变光痕 (slot-fission-cracking, 240ms)
+     * 2. 悬念音效迸发，并在 240ms 处如天雷破壳般轰然炸裂 (slot-fission-burst)
+     * 3. 释放 360 度环形绚烂星火粒子，震屏，飘字与悬浮徽章，多巴胺达到顶峰！
+     */
+    _playLuckyBurstFission(slotIndex, data) {
+      const slotEl = document.getElementById(`dragon-slot-${slotIndex}`);
+      if (!slotEl) return;
+
+      // 阶段 1：天机裂变蓄势 (悬念震颤)
+      slotEl.classList.remove('slot-pending-flyer', 'slot-epic-burst', 'slot-inserted-burst', 'slot-fission-burst');
+      void slotEl.offsetWidth;
+      slotEl.classList.add('slot-fission-cracking');
+
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('NEAR_MISS', 1);
+      }
+
+      // 阶段 2：破壳蜕变大爆
+      setTimeout(() => {
+        slotEl.classList.remove('slot-fission-cracking');
+        void slotEl.offsetWidth;
+        slotEl.classList.add('slot-fission-burst');
+
+        // 音效升级
+        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('BREAKTHROUGH');
+        }
+
+        // 视窗微震
+        const viewSlots = document.getElementById('view-slots');
+        if (viewSlots) {
+          viewSlots.classList.remove('view-slots-shake');
+          void viewSlots.offsetWidth;
+          viewSlots.classList.add('view-slots-shake');
+          setTimeout(() => viewSlots.classList.remove('view-slots-shake'), 300);
+        }
+
+        // 粒子迸发
+        const renderer = this.gameManager ? this.gameManager.renderer : null;
+        if (renderer && renderer.spawnFissionParticles) {
+          renderer.spawnFissionParticles(`dragon-slot-${slotIndex}`, data.qualityColor || '#ffd700');
+        }
+
+        // 浮字宣告
+        const origName = data.prevQualityName || '凡宝';
+        const newName = data.qualityName || (data.item && data.item.qualityName) || '灵品';
+        if (renderer && renderer.addFloatingText) {
+          renderer.addFloatingText(`⚡【天道顿悟 · 气运升阶！】${origName} ➜ 突破升级 ➜ ${newName}！`, '#ffd700');
+        }
+
+        // 槽位正上方悬浮徽章弹出动效
+        let fissionBadge = slotEl.querySelector('.slot-fission-badge');
+        if (!fissionBadge) {
+          fissionBadge = document.createElement('div');
+          fissionBadge.className = 'slot-fission-badge';
+          slotEl.appendChild(fissionBadge);
+        }
+        fissionBadge.innerText = '⚡ 气运升阶！';
+        fissionBadge.classList.remove('badge-animate');
+        void fissionBadge.offsetWidth;
+        fissionBadge.classList.add('badge-animate');
+        setTimeout(() => {
+          if (fissionBadge && fissionBadge.parentNode) {
+            fissionBadge.remove();
+          }
+        }, 1200);
+
+        const badgeEl = slotEl.querySelector('.slot-item-badge');
+        if (badgeEl) {
+          badgeEl.classList.remove('bump-active');
+          void badgeEl.offsetWidth;
+          badgeEl.classList.add('bump-active');
+        }
+      }, 240);
     }
 
     /**
