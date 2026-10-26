@@ -1271,11 +1271,11 @@
   100% { transform: scale(1); }
 }
 
-/* 4. 乾坤袋网格物品红点提示 (装备置于右上角边缘，消耗品置于左上角边缘，绝不遮挡数量角标与图标) */
+/* 4. 乾坤袋网格物品红点提示 (向内同心偏移4px，绝不被8px圆角遮挡裁剪；装备置于右上角，消耗品置于左上角) */
 .item-red-dot {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: 4px;
+  right: 4px;
   width: 8px;
   height: 8px;
   background-color: #ff3b30;
@@ -1288,7 +1288,8 @@
 }
 
 .item-red-dot.left-corner {
-  left: -2px;
+  top: 4px;
+  left: 4px;
   right: auto;
 }
 
@@ -1303,11 +1304,11 @@
   }
 }
 
-/* 5. 装备栏槽位右上角红点提示 (可穿戴或可替换到更高阶法宝) */
+/* 5. 装备栏槽位右上角红点提示 (可穿戴或可替换到更高阶法宝，向内微调防圆角裁剪) */
 .equip-slot-red-dot {
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: 4px;
+  right: 4px;
   width: 9px;
   height: 9px;
   background-color: #ff3b30;
@@ -1870,8 +1871,8 @@
 .equip-slot.has-upgrade::after {
   content: '';
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: 4px;
+  right: 4px;
   width: 8px;
   height: 8px;
   background: #ef4444;

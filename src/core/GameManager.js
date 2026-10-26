@@ -1976,6 +1976,16 @@ class GameManager {
     // 2. 发放装备与丹药实物 (优先发放，确保妖王掉落的最后一件神装即刻入库)
     if (battleResult.rewardItems && battleResult.rewardItems.length > 0) {
       battleResult.rewardItems.forEach(item => {
+        // 如果是天机盘古宝，且主角已觉醒认主或背包已存在，切勿重复发放
+        if (item.isArtifactPlate || item.id === 'ITEM_TIANJI_PLATE' || (item.name && item.name.includes('造化天机盘'))) {
+          if (this.prologueStep >= 3 || this.isPrologueComplete) {
+            return;
+          }
+          const alreadyHasPlate = this.inventory && this.inventory.slots.some(s => s && (s.id === 'ITEM_TIANJI_PLATE' || s.isArtifactPlate));
+          if (alreadyHasPlate) {
+            return;
+          }
+        }
         if (item.type === 'equip') {
           const hasImp = this.player.hasEquipmentImprovement(item, this.level);
           item.isNew = hasImp;
@@ -2499,11 +2509,12 @@ class GameManager {
    * @param {Object} [item]
    */
   awakenTianjiPlateFromBag(item) {
-    if (this.inventory) {
-      const itemId = (item && item.id) ? item.id : 'ITEM_TIANJI_PLATE';
-      const slotIndex = this.inventory.slots.findIndex(s => s && s.id === itemId);
-      if (slotIndex >= 0) {
-        this.inventory.slots[slotIndex] = null;
+    if (this.inventory && Array.isArray(this.inventory.slots)) {
+      for (let i = 0; i < this.inventory.slots.length; i++) {
+        const s = this.inventory.slots[i];
+        if (s && (s.id === 'ITEM_TIANJI_PLATE' || s.isArtifactPlate || (s.name && s.name.includes('造化天机盘')))) {
+          this.inventory.slots[i] = null;
+        }
       }
     }
     this.energy += 100; // 赠送启动灵机 100 点
@@ -2516,6 +2527,7 @@ class GameManager {
       window.SlotsRPG.StorageService.saveGame(this, true);
     }
     this.emitStateChange();
+    window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
     window.SlotsRPG.EventBus.emit('ARTIFACT_AWAKENED', { energyGained: 100 });
     return { energyGained: 100 };
   }

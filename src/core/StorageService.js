@@ -253,6 +253,16 @@ class StorageService {
               inv.slots[i] = item;
             }
           });
+
+          // 纠偏：若作弊器天机盘已觉醒融于识海 (prologueStep >= 3 或 isPrologueComplete)，清除乾坤袋中残留的造化天机盘道具
+          if (gameManager.prologueStep >= 3 || gameManager.isPrologueComplete) {
+            inv.slots = inv.slots.map(s => {
+              if (s && (s.id === 'ITEM_TIANJI_PLATE' || s.isArtifactPlate || (s.name && s.name.includes('造化天机盘')))) {
+                return null;
+              }
+              return s;
+            });
+          }
         }
       }
 

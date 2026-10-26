@@ -36,7 +36,7 @@
     const btnQuickEquip = document.getElementById('btn-quick-equip');
     const btnSpin = document.getElementById('btn-spin');
 
-    const bagCapText = document.getElementById('bag-capacity-text');
+    const bagCapText = document.getElementById('bag-cap-text') || document.getElementById('bag-capacity-text');
     const bagGrid = document.getElementById('bag-grid');
     const chkAutoSalvage = document.getElementById('chk-auto-salvage');
     const btnBagSortHeader = document.getElementById('btn-bag-sort-header');
@@ -212,6 +212,17 @@
 
   // 6. 渲染乾坤袋 24 格网格 (支持红点提示与拖拽发起)
   function renderBagGrid(state = {}) {
+    const isAwakened = gameManager && (gameManager.prologueStep >= 3 || gameManager.isPrologueComplete);
+    // 若作弊器已激活，预先清理背包中残留的造化天机盘
+    if (isAwakened && gameManager && gameManager.inventory && Array.isArray(gameManager.inventory.slots)) {
+      for (let sIdx = 0; sIdx < gameManager.inventory.slots.length; sIdx++) {
+        const it = gameManager.inventory.slots[sIdx];
+        if (it && (it.isArtifactPlate || it.id === 'ITEM_TIANJI_PLATE' || (it.name && it.name.includes('造化天机盘')))) {
+          gameManager.inventory.slots[sIdx] = null;
+        }
+      }
+    }
+
     const items = (state && state.inventorySlots) || (gameManager && gameManager.inventory ? gameManager.inventory.slots : []);
     const capacity = (state && state.inventoryCapacity) || (gameManager && gameManager.inventory ? gameManager.inventory.capacity : 24);
     const occupied = items.filter(it => it !== null).length;
@@ -232,7 +243,11 @@
       const cell = document.createElement('div');
 
       if (item) {
-        if (item.isArtifactPlate) {
+        if (item.isArtifactPlate || item.id === 'ITEM_TIANJI_PLATE' || (item.name && item.name.includes('造化天机盘'))) {
+          // 若天机盘已认主激活 (prologueStep >= 3 或序章已完成)，神物已融于识海神魂，背包中绝不残留展示
+          if (isAwakened) {
+            continue;
+          }
           cell.id = 'item-tianji-pan';
           cell.className = 'bag-cell occupied artifact-plate-slot';
           cell.style.borderColor = '#ffd700';
