@@ -194,7 +194,7 @@
     if (!destiny) return;
 
     if (slotTagEl) {
-      slotTagEl.innerText = `【${destiny.slotName}】`;
+      slotTagEl.innerText = destiny.isAllMax ? '【六道圆满】' : `【${destiny.slotName}】`;
     }
     if (descEl) {
       descEl.innerText = destiny.desc;
@@ -644,7 +644,7 @@
 
     if (isAutoSpinning) {
       let secondsLeft = 3;
-      if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
+      if (trialBtnText) trialBtnText.innerText = `迎战 (${secondsLeft}s)`;
       battleCountdownTimer = setInterval(() => {
         secondsLeft--;
         if (secondsLeft <= 0) {
@@ -654,11 +654,11 @@
             gameManager.executePendingBattle();
           }
         } else {
-          if (trialBtnText) trialBtnText.innerText = `拔剑迎战 (${secondsLeft}s)`;
+          if (trialBtnText) trialBtnText.innerText = `迎战 (${secondsLeft}s)`;
             }
       }, 1000);
     } else {
-      if (trialBtnText) trialBtnText.innerText = `拔剑迎战`;
+      if (trialBtnText) trialBtnText.innerText = `迎战`;
     }
   });
 
@@ -1220,19 +1220,19 @@
         trialDiffTag.className = 'trial-diff-tag danger';
         trialDiffTag.innerText = '紧急迎战';
       }
-      if (trialRewardTag) trialRewardTag.innerText = '🎁 降妖机缘';
+      if (trialRewardTag) trialRewardTag.innerText = '🎁 降妖';
       if (trialTargetName) trialTargetName.innerText = `${pData.monsterName || '恶兽突袭'}！`;
       if (trialRecPower) trialRecPower.innerText = (gameManager.player ? gameManager.player.combatPower : 35);
       if (trialPowerStatus) {
         trialPowerStatus.className = 'trial-power-status danger';
-        trialPowerStatus.innerText = '临阵对决';
+        trialPowerStatus.innerText = '对决';
       }
       if (btnActiveTrialChallenge) {
         btnActiveTrialChallenge.classList.remove('disabled');
         btnActiveTrialChallenge.disabled = false;
         btnActiveTrialChallenge.classList.add('pulse-gold');
       }
-      if (trialBtnText) trialBtnText.innerText = '拔剑迎战';
+      if (trialBtnText) trialBtnText.innerText = '迎战';
       return;
     }
 
@@ -1297,21 +1297,21 @@
 
     if (info.isFinalBoss) {
       sectTrialBanner.classList.add('boss-ready');
-      if (trialStageBadge) trialStageBadge.innerText = '🔥 守关大妖王';
+      if (trialStageBadge) trialStageBadge.innerText = '🔥 妖王关';
       if (trialDiffTag) {
         trialDiffTag.className = 'trial-diff-tag boss';
         trialDiffTag.innerText = '妖王';
       }
-      if (trialRewardTag) trialRewardTag.innerText = '🎁 破关晋阶大礼';
+      if (trialRewardTag) trialRewardTag.innerText = '🎁 破关礼';
       if (trialTargetName) trialTargetName.innerText = info.title;
       if (trialRecPower) trialRecPower.innerText = info.reqPower;
 
       const isReady = info.playerPower >= info.reqPower;
       if (trialPowerStatus) {
         trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
-        trialPowerStatus.innerText = isReady ? '战力碾压！斩妖立领灵机' : (info.playerPower >= info.reqPower * 0.85 ? '可试剑' : '凶险');
+        trialPowerStatus.innerText = isReady ? '碾压' : (info.playerPower >= info.reqPower * 0.85 ? '可试剑' : '凶险');
       }
-      if (trialBtnText) trialBtnText.innerText = isReady ? '斩灭妖王' : '拔剑试剑';
+      if (trialBtnText) trialBtnText.innerText = isReady ? '斩妖王' : '试剑';
       if (btnActiveTrialChallenge) {
         btnActiveTrialChallenge.classList.toggle('pulse-gold', !isReady && info.playerPower >= info.reqPower * 0.85);
         btnActiveTrialChallenge.classList.toggle('crush-ready', isReady);
@@ -1319,14 +1319,14 @@
     } else {
       sectTrialBanner.classList.remove('boss-ready');
       const isSpirit = gameManager.currentWorldTier === 2;
-      if (trialStageBadge) trialStageBadge.innerText = isSpirit ? `仙域天梯 第 ${info.stageIndex}/12 阶` : `试炼 第 ${info.stageIndex}/12 关`;
+      if (trialStageBadge) trialStageBadge.innerText = isSpirit ? `天梯 ${info.stageIndex}/12阶` : `${info.stageIndex}/12关`;
       if (trialDiffTag) {
         trialDiffTag.className = `trial-diff-tag ${info.tier === 'elite' ? 'elite' : ''}`;
         trialDiffTag.innerText = info.tier === 'elite' ? '精英' : '普通';
       }
       if (trialRewardTag) {
         const rewardEnergy = (info.rewards && info.rewards.energy) || (150 + info.stageIndex * 25);
-        trialRewardTag.innerText = `🎁 奖 ${rewardEnergy} 机缘`;
+        trialRewardTag.innerText = `🎁+${rewardEnergy}`;
       }
       if (trialTargetName) trialTargetName.innerText = info.title;
       if (trialRecPower) trialRecPower.innerText = info.reqPower;
@@ -1334,9 +1334,9 @@
       const isReady = info.playerPower >= info.reqPower;
       if (trialPowerStatus) {
         trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
-        trialPowerStatus.innerText = isReady ? '战力碾压！斩妖立领灵机' : (info.playerPower >= info.reqPower * 0.85 ? '势均力敌' : '凶险');
+        trialPowerStatus.innerText = isReady ? '碾压' : (info.playerPower >= info.reqPower * 0.85 ? '势均' : '凶险');
       }
-      if (trialBtnText) trialBtnText.innerText = isReady ? '拔剑斩妖' : '拔剑试刀';
+      if (trialBtnText) trialBtnText.innerText = isReady ? '斩妖' : '试刀';
       if (btnActiveTrialChallenge) {
         btnActiveTrialChallenge.classList.toggle('pulse-gold', !isReady && info.playerPower >= info.reqPower * 0.85);
         btnActiveTrialChallenge.classList.toggle('crush-ready', isReady);

@@ -21,11 +21,11 @@
       <div class="hud-left-group">
         <span id="val-realm" class="hud-badge">凡人境 · 未入道</span>
         <div class="hud-item" title="天机盘阶位">
-          <span class="hud-label">天机盘:</span>
+          <span class="hud-icon" style="font-size:13px; margin-right:2px;">🏺</span>
           <span id="val-level" class="hud-val" style="color: #94a3b8;">未激活</span>
         </div>
         <div class="hud-item" title="当前总战力">
-          <span class="hud-label">战力:</span>
+          <span class="hud-icon" style="font-size:13px; margin-right:2px;">⚡</span>
           <span id="val-power" class="hud-val" style="color: #ffaa00;">45</span>
         </div>
       </div>
@@ -37,10 +37,10 @@
           <div class="cheat-system-avatar-mini">
             <img src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
           </div>
-          <span class="cheat-system-label">修仙系统</span>
+          <span class="cheat-system-label">系统</span>
           <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
         </button>
-        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜 图谱</button>
+        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜</button>
         <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
           <span class="bubble-icon">✨</span>
           <span class="bubble-text" id="cave-bubble-text">+0</span>
@@ -84,7 +84,7 @@
           <div class="dragon-destiny-radar" id="dragon-destiny-radar" title="天命缺口雷达：实时感应战力最短板，气运聚顶时必降该部位极品法宝">
             <div class="radar-pulse-ring"></div>
             <span class="radar-icon">🎯</span>
-            <span class="radar-title">天命感应:</span>
+            <span class="radar-title">天命:</span>
             <span class="radar-slot-tag" id="radar-slot-tag">【神兵】</span>
             <span class="radar-desc" id="radar-desc">短板感应中</span>
             <span class="radar-burst-flag hidden" id="radar-burst-flag">⚡ 气运聚顶</span>
@@ -102,7 +102,7 @@
               <div class="showcase-actions">
                 <button id="btn-open-filter-settings" class="btn-filter-settings locked" title="天道造化熔炉未激活：需全身6件法宝皆达灵品（紫装）">
                   <span class="filter-icon">🔒</span>
-                  <span class="filter-text">熔炉 (0/6)</span>
+                  <span class="filter-text">熔炉 0/6</span>
                 </button>
                 <label class="auto-collect-toggle" title="抽奖完成后自动将宝萃收纳至乾坤袋">
                   <input type="checkbox" id="chk-auto-collect" />
@@ -269,21 +269,21 @@
         <div class="sect-trial-banner hidden" id="sect-trial-banner">
           <div class="trial-left-info">
             <div class="trial-badge-row">
-              <span class="trial-stage-badge" id="trial-stage-badge">试炼 第 1/12 关</span>
+              <span class="trial-stage-badge" id="trial-stage-badge">1/12关</span>
+              <span class="trial-target-name" id="trial-target-name">荒村鸡犬</span>
               <span class="trial-diff-tag" id="trial-diff-tag">普通</span>
-              <span class="trial-reward-tag" id="trial-reward-tag">🎁 奖 200 机缘</span>
             </div>
-            <div class="trial-target-name" id="trial-target-name">荒村鸡犬 · 恶犬精</div>
             <div class="trial-power-info">
-              <span class="trial-power-label">推荐战力:</span>
+              <span class="trial-power-label">⚡</span>
               <b id="trial-rec-power" class="trial-rec-power">35</b>
-              <span id="trial-power-status" class="trial-power-status safe">可斩杀</span>
+              <span id="trial-power-status" class="trial-power-status safe">碾压</span>
+              <span class="trial-reward-tag" id="trial-reward-tag" style="margin-left:6px;">🎁+200</span>
             </div>
           </div>
           <div class="trial-right-action">
             <button id="btn-active-trial-challenge" class="btn-active-trial" title="主动出鞘迎击妖兽试炼">
               <span class="trial-sword-icon">⚔️</span>
-              <span class="trial-btn-text" id="trial-btn-text">拔剑斩妖</span>
+              <span class="trial-btn-text" id="trial-btn-text">斩妖</span>
             </button>
           </div>
         </div>
@@ -300,9 +300,9 @@
             </div>
             <!-- 固定单抽消耗标识 (删除旧倍率调节) -->
             <div class="spin-cost-fixed-badge" id="spin-cost-fixed-badge" title="每次推演消耗 25 灵机">
-              <span class="cost-badge-label">推演消耗:</span>
+              <span class="cost-badge-label">💧</span>
               <b class="cost-badge-val">25</b>
-              <span class="cost-badge-unit">灵机/次</span>
+              <span class="cost-badge-unit">/次</span>
             </div>
           </div>
 
@@ -497,7 +497,7 @@
         <!-- 6大装备槽位区 (法宝佩戴：紧邻角色信息正下方！) -->
         <div class="equip-section">
           <div class="equip-section-header">
-            <span class="equip-section-title">法宝佩戴 (点击可查看或卸下)</span>
+            <span class="equip-section-title">法宝佩戴</span>
             <button id="btn-quick-equip" class="btn-quick-equip disabled" disabled title="乾坤袋中暂无可替换的更优法宝">
               <span class="quick-equip-icon">⚡</span>一键装备
             </button>
@@ -565,7 +565,7 @@
             <span id="bag-cap-text" class="bag-title">乾坤袋 (0/24)</span>
             <label class="auto-salvage-label">
               <input type="checkbox" id="chk-auto-salvage" />
-              <span>自动分解凡铁/凡器</span>
+              <span>自动分解凡品</span>
             </label>
             <button id="btn-bag-sort-header" class="btn-bag-header-sort" title="一键整理乾坤袋">
               <span>📦 整理</span>
@@ -581,7 +581,7 @@
           <div id="floating-merge-wrap" class="floating-merge-wrap hidden">
             <button id="btn-floating-merge" class="btn-floating-merge" title="点击一键融合升阶所有可合成法宝">
               <span class="action-icon">✨</span>
-              <span class="btn-floating-merge-text">可合成更高阶灵装 · 一键升阶</span>
+              <span class="btn-floating-merge-text">✨ 一键升阶 (可合成)</span>
             </button>
           </div>
 
@@ -601,7 +601,7 @@
           <div class="cave-card-header">
             <div class="cave-title-wrap">
               <span class="cave-title-icon">🏔️</span>
-              <span class="cave-title-text">洞天福地 · 灵脉仙府</span>
+              <span class="cave-title-text">洞天福地</span>
             </div>
             <div class="cave-header-right">
               <span id="cave-status-tag" class="cave-status-tag">灵机运化中</span>
@@ -634,7 +634,7 @@
               <span class="storage-label">温养金丹</span>
               <div class="storage-val-wrap">
                 <span id="cave-accumulated-pills" class="storage-val pill">0</span>
-                <span class="storage-max">颗 (修为丹)</span>
+                <span class="storage-max">颗</span>
               </div>
             </div>
           </div>
@@ -642,7 +642,7 @@
           <!-- 一键引灵按钮 -->
           <button id="btn-cave-collect" class="btn-cave-collect">
             <span class="collect-icon">✨</span>
-            <span class="collect-text">一键引灵 (纳宝入体)</span>
+            <span class="collect-text">一键引灵</span>
           </button>
         </div>
 
@@ -659,7 +659,7 @@
             </div>
             <div class="facility-action">
               <button id="btn-upgrade-array" class="btn-facility-upgrade">
-                升阶阵法 (<span id="spirit-array-cost">300</span>机缘)
+                升阶 (<span id="spirit-array-cost">300</span>)
               </button>
             </div>
           </div>
@@ -1098,7 +1098,7 @@
         </p>
         <div class="modal-actions">
           <button id="btn-overflow-salvage" class="btn-primary">一键分解低阶</button>
-          <button id="btn-overflow-merge" class="btn-secondary">一键升阶(融3合1)</button>
+          <button id="btn-overflow-merge" class="btn-secondary">一键升阶</button>
           <button id="btn-overflow-goto-bag" class="btn-secondary">前往乾坤袋</button>
         </div>
       </div>

@@ -683,12 +683,12 @@
     if (res.mergedGroupsCount > 0) {
       const names = res.upgradedItems.map(i => `<span style="color:${i.qualityColor || '#ffd700'};">${i.name}</span>`).join('、');
       showGameNotice(
-        '造化熔炉·3合1升阶成功',
+        '造化熔炉·一键升阶成功',
         `共融合 <b>${res.mergedGroupsCount}</b> 组同阶法宝，释放 <b>${res.freedSlots}</b> 个背包空格！<br><br><b>凝练获得全新仙家法宝：</b><br>${names}`,
         '✨ 熔炉神铸'
       );
       if (renderer && renderer.addFloatingText) {
-        renderer.addFloatingText(`3合1融合成功 +${res.mergedGroupsCount}组!`, '#ffd700');
+        renderer.addFloatingText(`一键升阶成功 +${res.mergedGroupsCount}组!`, '#ffd700');
       }
       if (storyManager) {
         storyManager.triggerChatter('equip_merge');

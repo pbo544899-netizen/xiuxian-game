@@ -617,7 +617,7 @@ class PlayerModel {
         targetQualityName: curLevelTarget.name,
         isMissing: true,
         isAllMax: false,
-        desc: target.name + '空缺 · 虚位以待'
+        desc: '虚位以待'
       };
     }
 
@@ -648,8 +648,8 @@ class PlayerModel {
         isMissing: false,
         isAllMax: true,
         desc: lvl < 6 
-          ? `✨ 当前阶位已臻圆满 · 待天机盘晋升`
-          : `✨ 六道极境 · 天道大成`
+          ? `待天机盘晋升`
+          : `天道大成`
       };
     }
 
@@ -674,7 +674,7 @@ class PlayerModel {
       targetQualityName: nextQName,
       isMissing: false,
       isAllMax: false,
-      desc: chosen.name + '短板(' + curQName + ') · 亟待' + nextQName
+      desc: '亟待' + nextQName
     };
   }
 

@@ -2377,16 +2377,26 @@ class GameManager {
       isGrand: false
     };
 
-    // 1. 机缘与金丹：有 12% 概率触发出水祥瑞大爆，其余获得丰厚资粮
-    const isJackpot = Math.random() < 0.12;
+    // 1. 机缘与金丹：严格锚定天机盘作弊器阶位，有 10% 概率出水祥瑞暴击，杜绝新手期灵机海啸膨胀
+    const isJackpot = Math.random() < 0.10;
     result.isGrand = isJackpot;
+
+    const potLvl = this.potSubLevel || 1;
+    const realmSpringBase = {
+      1: { pool: [50, 75, 100], jackpot: 150 },     // Lv.1: 2~4 次推演，绝不泛滥
+      2: { pool: [100, 125, 150], jackpot: 250 },   // Lv.2: 4~6 次推演
+      3: { pool: [150, 200, 250], jackpot: 400 },   // Lv.3: 6~10 次推演
+      4: { pool: [250, 300, 350], jackpot: 600 },   // Lv.4: 10~14 次推演
+      5: { pool: [350, 450, 550], jackpot: 900 },   // Lv.5: 14~22 次推演
+      6: { pool: [500, 700, 900], jackpot: 1500 }   // Lv.6: 20~36 次推演
+    };
+    const tierCfg = realmSpringBase[potLvl] || realmSpringBase[1];
     if (isJackpot) {
-      result.energy = 8888;
-      result.pills = 10;
+      result.energy = tierCfg.jackpot;
+      result.pills = 3;
     } else {
-      const energyPool = [666, 888, 1288, 1888, 2688];
-      result.energy = energyPool[Math.floor(Math.random() * energyPool.length)];
-      result.pills = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 颗纯阳金丹
+      result.energy = tierCfg.pool[Math.floor(Math.random() * tierCfg.pool.length)];
+      result.pills = Math.floor(Math.random() * 2) + 1; // 1 ~ 2 颗纯阳金丹
     }
     this.energy += result.energy;
 

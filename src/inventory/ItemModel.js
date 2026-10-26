@@ -8,14 +8,14 @@ window.SlotsRPG = window.SlotsRPG || {};
 window.SlotsRPG.ItemModel = {
   // 8 阶品质规格表 (人界凡铁~道器 + 灵界通天灵宝/鸿蒙至宝/太初神兵)
   QUALITIES: {
-    Q1: { code: 'Q1', name: '凡铁', color: '#8c8c8c', multiplier: 1.0, variance: 0, salvageEnergy: 5 },
-    Q2: { code: 'Q2', name: '灵器', color: '#52c41a', multiplier: 1.8, variance: 0.05, salvageEnergy: 15 },
-    Q3: { code: 'Q3', name: '宝器', color: '#1890ff', multiplier: 3.2, variance: 0.08, salvageEnergy: 50 },
-    Q4: { code: 'Q4', name: '法器', color: '#722ed1', multiplier: 5.8, variance: 0.10, salvageEnergy: 150 },
-    Q5: { code: 'Q5', name: '道器', color: '#fa8c16', multiplier: 12.0, variance: 0.12, salvageEnergy: 400 },
-    Q6: { code: 'Q6', name: '通天灵宝', color: '#f5222d', multiplier: 30.0, variance: 0.15, salvageEnergy: 1200 },
-    Q7: { code: 'Q7', name: '鸿蒙至宝', color: '#fadb14', multiplier: 65.0, variance: 0.20, salvageEnergy: 3500 },
-    Q8: { code: 'Q8', name: '太初神兵', color: '#e056fd', multiplier: 130.0, variance: 0.25, salvageEnergy: 10000 }
+    Q1: { code: 'Q1', name: '凡铁', color: '#8c8c8c', multiplier: 1.0, variance: 0, salvageEnergy: 2 },
+    Q2: { code: 'Q2', name: '灵器', color: '#52c41a', multiplier: 1.8, variance: 0.05, salvageEnergy: 5 },
+    Q3: { code: 'Q3', name: '宝器', color: '#1890ff', multiplier: 3.2, variance: 0.08, salvageEnergy: 10 },
+    Q4: { code: 'Q4', name: '法器', color: '#722ed1', multiplier: 5.8, variance: 0.10, salvageEnergy: 25 },
+    Q5: { code: 'Q5', name: '道器', color: '#fa8c16', multiplier: 12.0, variance: 0.12, salvageEnergy: 50 },
+    Q6: { code: 'Q6', name: '通天灵宝', color: '#f5222d', multiplier: 30.0, variance: 0.15, salvageEnergy: 100 },
+    Q7: { code: 'Q7', name: '鸿蒙至宝', color: '#fadb14', multiplier: 65.0, variance: 0.20, salvageEnergy: 250 },
+    Q8: { code: 'Q8', name: '太初神兵', color: '#e056fd', multiplier: 130.0, variance: 0.25, salvageEnergy: 500 }
   },
 
   // 1. 人界 6 大装备部位基准设定 (WorldTier 1)

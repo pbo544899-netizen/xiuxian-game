@@ -319,6 +319,11 @@ class StorageService {
         window.SlotsRPG.AdService.deserialize(data.adState);
       }
 
+      // 经济防通胀净化：对新手期 (Lv.1~2) 历史存档异常膨胀的超额灵机实施软性平抑
+      if (gameManager.isPrologueComplete && (gameManager.potSubLevel || 1) <= 2 && gameManager.energy > 400) {
+        gameManager.energy = 300;
+      }
+
       console.log('[StorageService] 成功恢复游戏存档，最后游玩时间:', new Date(data.timestamp).toLocaleString());
       return true;
     } catch (err) {

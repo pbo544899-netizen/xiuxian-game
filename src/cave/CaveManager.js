@@ -16,11 +16,11 @@ class CaveManager {
 
     // 人界洞天福地配置 (Tier 1) - 正统放置挂机产出调优
     this.ARRAY_CONFIGS = {
-      1: { name: '一阶·凡木聚灵阵', ratePerMin: 5, maxCapacity: 300, upgradeCost: 300 },
-      2: { name: '二阶·玄铁聚灵阵', ratePerMin: 12, maxCapacity: 720, upgradeCost: 800 },
-      3: { name: '三阶·紫铜聚灵阵', ratePerMin: 25, maxCapacity: 1500, upgradeCost: 2000 },
-      4: { name: '四阶·赤阳聚灵阵', ratePerMin: 50, maxCapacity: 3000, upgradeCost: 5000 },
-      5: { name: '五阶·造化通天阵', ratePerMin: 100, maxCapacity: 6000, upgradeCost: null }
+      1: { name: '一阶·凡木聚灵阵', ratePerMin: 2, maxCapacity: 120, upgradeCost: 150 },
+      2: { name: '二阶·玄铁聚灵阵', ratePerMin: 4, maxCapacity: 240, upgradeCost: 400 },
+      3: { name: '三阶·紫铜聚灵阵', ratePerMin: 8, maxCapacity: 480, upgradeCost: 1000 },
+      4: { name: '四阶·赤阳聚灵阵', ratePerMin: 15, maxCapacity: 900, upgradeCost: 2500 },
+      5: { name: '五阶·造化通天阵', ratePerMin: 25, maxCapacity: 1500, upgradeCost: null }
     };
 
     // 灵界鸿蒙浮岛·星天仙阙配置 (Tier 2, PRD 4.3 节)

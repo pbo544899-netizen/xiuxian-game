@@ -144,6 +144,28 @@
             this.currentTargetEl.click();
           }
         });
+
+        // 全局物理防点击穿透拦截器 (Capturing Event Interceptor)
+        // 彻底杜绝玩家在聚光灯开启期间点击屏幕其它任意按钮、关闭图标或背景
+        const blockPenetration = (e) => {
+          if (!this.isActive() || !this.currentTargetEl) return;
+          const target = this.currentTargetEl;
+          const indicator = this.indicatorEl;
+          // 若点击发生在目标元素内部或手势指示器内部，合法放行
+          if (e.target === target || target.contains(e.target) || (indicator && indicator.contains(e.target))) {
+            return;
+          }
+          // 其它任何视口区域的点击/触摸全部就地强行截断，防止误触导致弹窗提前关闭或状态脱节
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          this.shakeIndicator();
+        };
+
+        window.addEventListener('click', blockPenetration, { capture: true, passive: false });
+        window.addEventListener('pointerdown', blockPenetration, { capture: true, passive: false });
+        window.addEventListener('touchstart', blockPenetration, { capture: true, passive: false });
+        window.addEventListener('touchend', blockPenetration, { capture: true, passive: false });
       }
     },
 
@@ -476,6 +498,11 @@
      */
     reposition() {
       if (!this.currentTargetEl || !this.currentConfig) return;
+      // 安全校验：若目标元素已被从 DOM 移除、或处于隐藏状态 (offsetParent === null 或具有 hidden 祖先)，立即自动隐退！
+      if (!this.currentTargetEl.isConnected || this.currentTargetEl.offsetParent === null || this.currentTargetEl.closest('.hidden')) {
+        this.hide();
+        return;
+      }
       this.renderCutout(this.currentTargetEl);
       this.positionIndicator(
         this.currentTargetEl,
@@ -591,6 +618,38 @@
       const isStoryActive = (modalStoryDialog && !modalStoryDialog.classList.contains('hidden')) ||
                             (window.storyManager && (window.storyManager.isDialogActive || (window.storyManager.activeStory && window.storyManager.activeStory.isOpen)));
       if (isStoryActive) {
+        this.hide();
+        return;
+      }
+
+      // 0.05 模态弹窗排他性检测：只要有任何全屏弹窗展现 (如仙道通告 modal-action-notice、法宝详情等)
+      // 除新手专属弹窗 (如 modal-awakening 或 modal-sect-induction) 外，严禁任何背景引导透出！
+      const activeModal = document.querySelector('.modal-overlay:not(.hidden), .battle-transition-overlay:not(.hidden)');
+      if (activeModal) {
+        if (activeModal.id === 'modal-awakening') {
+          const btn = document.getElementById('btn-awakening-accept');
+          if (btn && btn.offsetParent !== null) {
+            this.show({
+              id: 'ftue-awakening-accept',
+              target: btn,
+              text: '绑定修仙系统 · 前往初测仙缘！',
+              direction: 'down'
+            });
+            return;
+          }
+        } else if (activeModal.id === 'modal-sect-induction' && !gm.isPrologueComplete) {
+          const btn = activeModal.querySelector('.btn-join-sect');
+          if (btn && btn.offsetParent !== null) {
+            this.show({
+              id: 'ftue-join-sect-btn',
+              target: btn,
+              text: '点击叩问仙门 · 拜入正统万剑仙宗！',
+              direction: 'down'
+            });
+            return;
+          }
+        }
+        // 其它任何弹窗存在时，聚光灯必须完全隐蔽，严禁悬挂于弹窗上方！
         this.hide();
         return;
       }
@@ -1116,41 +1175,23 @@
       }
 
       // ========================================================
-      // 步骤 10: 伏妖遭遇战就绪 · 拔剑迎战提示
-      // ========================================================
-      // 若有待决突袭战斗且横幅处于战斗触发态
-      if (gm.pendingBattleData) {
-        const sectTrialBanner = document.getElementById('sect-trial-banner');
-        if (sectTrialBanner && !sectTrialBanner.classList.contains('hidden') && sectTrialBanner.offsetParent !== null) {
-          this.show({
-            id: 'ftue-pending-battle-engage',
-            target: sectTrialBanner,
-            text: '妖兽突袭现世！点击横幅拔剑迎战！',
-            direction: 'up'
-          });
-          return;
-        }
-      }
-
-      // ========================================================
-      // 步骤 11: 角色面板法宝可 3合1 升阶
+      // 步骤 11: 角色面板法宝可升阶 (绝对单次呈现：触发时即刻标记完成并持久化)
       // ========================================================
       if (currentTab === 'character' && !gm.hasCompletedMergeFTUE) {
         const floatingMergeWrap = document.getElementById('floating-merge-wrap');
         if (floatingMergeWrap && !floatingMergeWrap.classList.contains('hidden')) {
           const btnFloatingMerge = document.getElementById('btn-floating-merge');
           if (btnFloatingMerge && btnFloatingMerge.offsetParent !== null) {
+            // 立即标记为已完成并持久化，保证该手指头提示在整个游戏生命周期内绝对只出现一次！
+            gm.hasCompletedMergeFTUE = true;
+            if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+              window.SlotsRPG.StorageService.saveGame(gm, true);
+            }
             this.show({
               id: 'ftue-floating-merge',
               target: btnFloatingMerge,
-              text: '发现可合成法宝！点击一键升阶(3合1)！',
-              direction: 'down',
-              onClick: () => {
-                gm.hasCompletedMergeFTUE = true;
-                if (window.SlotsRPG.StorageService) {
-                  window.SlotsRPG.StorageService.saveGame(gm, true);
-                }
-              }
+              text: '发现可合成法宝！点击一键升阶！',
+              direction: 'down'
             });
             return;
           }
@@ -1164,17 +1205,15 @@
       if (currentTab === 'cave' && !gm.hasCompletedSecretRealmFTUE) {
         const btnSecretRealm = document.getElementById('btn-cave-secret-realm');
         if (btnSecretRealm && btnSecretRealm.classList.contains('ready') && !btnSecretRealm.classList.contains('exhausted') && btnSecretRealm.offsetParent !== null) {
+          gm.hasCompletedSecretRealmFTUE = true;
+          if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+            window.SlotsRPG.StorageService.saveGame(gm, true);
+          }
           this.show({
             id: 'ftue-cave-secret-realm',
             target: btnSecretRealm,
-            text: '每日造化已备！点击采撷灵泉秘境机缘！',
-            direction: 'down',
-            onClick: () => {
-              gm.hasCompletedSecretRealmFTUE = true;
-              if (window.SlotsRPG.StorageService) {
-                window.SlotsRPG.StorageService.saveGame(gm, true);
-              }
-            }
+            text: '每日造化已备！点击采撷洞天灵泉！',
+            direction: 'down'
           });
           return;
         }
