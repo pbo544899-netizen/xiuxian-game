@@ -838,20 +838,29 @@ window.SlotsRPG = window.SlotsRPG || {};
 
     /**
      * 将当前 12 格宝萃的所有奖励一键转存入背包与机缘池并清空槽位 (用于十连或神龙顿悟)
-     * @returns {number} 转存的物品数量
+     * @param {Array<number>} [targetIndices=null] 指定收纳的槽位索引列表；若为 null 则收纳全部
+     * @returns {Object} { collectedCount, remainingCount, collectedIndices }
      */
-    collectAllToInventory() {
-      if (!this.slots || this.slots.length === 0) return 0;
+    collectAllToInventory(targetIndices = null) {
+      if (!this.slots || this.slots.length === 0) {
+        return { collectedCount: 0, remainingCount: 0, collectedIndices: [] };
+      }
       const remainingSlots = [];
+      const collectedIndices = [];
       let collectedCount = 0;
 
-      for (const s of this.slots) {
-        const success = this._handleOverflow(s);
-        if (success !== false) {
-          collectedCount++;
-        } else {
-          remainingSlots.push(s);
+      for (let i = 0; i < this.slots.length; i++) {
+        const s = this.slots[i];
+        const shouldCollect = targetIndices === null || targetIndices.includes(i);
+        if (shouldCollect) {
+          const success = this._handleOverflow(s);
+          if (success !== false) {
+            collectedCount++;
+            collectedIndices.push(i);
+            continue;
+          }
         }
+        remainingSlots.push(s);
       }
 
       this.slots = remainingSlots;
@@ -868,7 +877,16 @@ window.SlotsRPG = window.SlotsRPG || {};
         }
       }
 
-      return collectedCount;
+      window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('TEMPORARY_SLOTS_COLLECTED', {
+        collectedCount,
+        remainingCount: remainingSlots.length
+      });
+
+      return {
+        collectedCount,
+        remainingCount: remainingSlots.length,
+        collectedIndices
+      };
     }
 
     clear() {

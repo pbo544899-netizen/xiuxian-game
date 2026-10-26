@@ -852,8 +852,39 @@
   let isCollectingSlots = false;
 
   /**
+   * 刷新【一键收纳】按钮的视觉状态与背包容量感知
+   */
+  function updateCollectButtonState() {
+    const btnCollect = document.getElementById('btn-collect-all-slots');
+    if (!btnCollect) return;
+    const dcm = gameManager && gameManager.dragonCabinetManager;
+    const slotsCount = (dcm && dcm.slots) ? dcm.slots.length : 0;
+    const freeSlots = (gameManager && gameManager.inventory) ? gameManager.inventory.getFreeSlotsCount() : 24;
+
+    if (slotsCount === 0) {
+      btnCollect.innerHTML = '<span class="collect-icon">🗳️</span><span id="collect-btn-text">一键收纳</span>';
+      btnCollect.classList.remove('btn-bag-full');
+      btnCollect.style.opacity = '0.7';
+      return;
+    }
+
+    btnCollect.style.opacity = '1';
+
+    // 检查展架上是否有物品需要背包格子
+    const hasBagItems = dcm.slots.some(s => s.type === 'equip' || s.type === 'pill' || s.type === 'rune');
+
+    if (freeSlots <= 0 && hasBagItems) {
+      btnCollect.innerHTML = '<span class="collect-icon">⚠️</span><span id="collect-btn-text">背包已满</span>';
+      btnCollect.classList.add('btn-bag-full');
+    } else {
+      btnCollect.innerHTML = `<span class="collect-icon">🗳️</span><span id="collect-btn-text">一键收纳 (${slotsCount})</span>`;
+      btnCollect.classList.remove('btn-bag-full');
+    }
+  }
+
+  /**
    * 临时背包【一键收纳】与【自动收纳】通用执行函数
-   * 将 12 格天机宝萃中的宝物以优雅抛物线依次飞入底部【角色修真】乾坤袋，伴随果冻回弹与红点累加
+   * 精确容量预判：仅飞行动画真实可收纳的法宝；背包已满时绝对不播放伪飞行动画
    * @param {boolean} isAuto - 是否由自动收纳静默唤起
    */
   function collectAllTemporarySlots(isAuto = false) {
@@ -868,12 +899,41 @@
       return;
     }
     if (isCollectingSlots) return;
-    isCollectingSlots = true;
 
-    const totalCount = dcm.slots.length;
-    const itemsToFly = [];
+    const freeSlots = (gameManager && gameManager.inventory) ? gameManager.inventory.getFreeSlotsCount() : 999;
+    let usedSlots = 0;
+    const transferrableIndices = [];
+    const blockedIndices = [];
 
     dcm.slots.forEach((s, idx) => {
+      const requiresBag = (s.type === 'equip' || s.type === 'pill' || s.type === 'rune');
+      if (requiresBag) {
+        if (usedSlots < freeSlots) {
+          usedSlots++;
+          transferrableIndices.push(idx);
+        } else {
+          blockedIndices.push(idx);
+        }
+      } else {
+        transferrableIndices.push(idx); // 灵机等不占背包空间
+      }
+    });
+
+    // 若没有任何一件物品可以收纳 (背包彻底爆满且全部为实物法宝)
+    if (transferrableIndices.length === 0) {
+      updateCollectButtonState();
+      if (!isAuto) {
+        showFloatingNotice('⚠️ 乾坤袋已满（24/24），无法收纳！请前往【角色修真】熔炼法宝清理背包', '#ff6b6b');
+      }
+      return;
+    }
+
+    isCollectingSlots = true;
+
+    const itemsToFly = [];
+    transferrableIndices.forEach((idx) => {
+      const s = dcm.slots[idx];
+      if (!s) return;
       const slotEl = document.getElementById(`dragon-slot-${idx}`);
       let iconSrc = 'assets/symbols/SYM_06.png';
       if (s.icon) iconSrc = s.icon;
@@ -892,33 +952,39 @@
       });
     });
 
-    // 播放纳宝入袋音效
-    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+    // 仅当确实有物品收纳起飞时，才播放掉落入袋音效
+    if (itemsToFly.length > 0 && window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('REWARD_DROP');
     }
 
-    // 执行飞入底部【角色修真】乾坤袋的优雅抛物线动画
-    if (window.SlotsRPG && window.SlotsRPG.DropAnimator && tabCharacter) {
+    // 执行飞入底部【角色修真】乾坤袋的优雅抛物线动画 (仅飞入真实收纳的物品)
+    if (itemsToFly.length > 0 && window.SlotsRPG && window.SlotsRPG.DropAnimator && tabCharacter) {
       window.SlotsRPG.DropAnimator.playDropAnimationFromElements(
         itemsToFly,
         tabCharacter,
         (arrivedItem) => {
-          if (window.incrementNotificationBadge) window.incrementNotificationBadge((arrivedItem && arrivedItem.count) ? arrivedItem.count : 1);
+          if (window.incrementNotificationBadge) {
+            window.incrementNotificationBadge((arrivedItem && arrivedItem.count) ? arrivedItem.count : 1);
+          }
         }
       );
-    } else {
-      if (window.incrementNotificationBadge) window.incrementNotificationBadge(totalCount);
     }
 
     // 延时清空展示区槽位，让飞行动画有清晰的离位起飞感
     setTimeout(() => {
-      dcm.collectAllToInventory();
+      const result = dcm.collectAllToInventory(transferrableIndices);
       isCollectingSlots = false;
+      updateCollectButtonState();
+
       if (!isAuto) {
-        showFloatingNotice(`✨ 一键收纳成功！${totalCount} 份天机宝萃已归入乾坤袋`, '#38ef7d');
-      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-        window.SlotsRPG.SpotlightGuide.scheduleCheck(600);
-      }
+        if (blockedIndices.length > 0) {
+          showFloatingNotice(`⚠️ 乾坤袋已满！已收纳 ${result.collectedCount} 份宝萃，剩余 ${blockedIndices.length} 份保留在展架上，请前往熔炼清理背包！`, '#f59e0b');
+        } else {
+          showFloatingNotice(`✨ 一键收纳成功！${result.collectedCount} 份天机宝萃已全数归入乾坤袋`, '#38ef7d');
+        }
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.scheduleCheck(600);
+        }
       }
     }, 120);
   }
@@ -1358,6 +1424,13 @@
       updateCaveBubbleUI();
       updateMeditateButtonUI();
       updateSectTrialBanner();
+      updateCollectButtonState();
+    });
+    window.SlotsRPG.EventBus.on('INVENTORY_CHANGE', () => {
+      updateCollectButtonState();
+    });
+    window.SlotsRPG.EventBus.on('TEMPORARY_SLOTS_COLLECTED', () => {
+      updateCollectButtonState();
     });
     window.SlotsRPG.EventBus.on('SPIN_STOP', (spinData) => {
       updateWaterTankUI();

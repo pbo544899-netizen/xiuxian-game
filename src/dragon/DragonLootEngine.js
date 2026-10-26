@@ -77,14 +77,15 @@ window.SlotsRPG = window.SlotsRPG || {};
       }
 
       // ==========================================
-      // 1. 左柜判定：【造化玄兵】 / 【奇遇事件】
+      // 1. 唯一单抽奖励判定：严格控制每次抽奖仅产出 1 个奖励 (装备 / 奇遇 / 灵材)
       // ==========================================
-      let leftCabinet = null;
+      let singleReward = null;
+      let cabinetSide = 'left'; // 'left' 为装备/奇遇，'right' 为日常资粮
 
-      // (1) 新手散修初探 (FTUE) 强脚本保护
+      // (1) 新手散修初探 (FTUE) 强脚本保护 (单次只掉落对应指引道具)
       if (ftueScript) {
         if (ftueScript.forceBattle) {
-          leftCabinet = {
+          singleReward = {
             type: 'battle',
             name: '龙息引煞 · 山间幼兽',
             battleConfig: {
@@ -94,27 +95,38 @@ window.SlotsRPG = window.SlotsRPG || {};
               isFTUEDemo: true
             }
           };
+          cabinetSide = 'left';
         } else if (ftueScript.forceSectInduction) {
-          leftCabinet = {
+          singleReward = {
             type: 'sect',
             name: '仙门法牒 · 叩问仙门'
           };
+          cabinetSide = 'left';
         } else if (ftueScript.forceLine && ftueScript.forceLine.symbol === 'SYM_06') {
           // FTUE 必出初始玄铁剑
           const initSword = window.SlotsRPG.ItemModel.createEquipment('weapon', 'Q1', worldTier);
           initSword.baseName = '玄铁剑';
           initSword.name = '凡铁·玄铁剑';
-          leftCabinet = {
+          singleReward = {
             type: 'equip',
             item: initSword,
             isLuckyBurst: false
           };
+          cabinetSide = 'left';
+        } else if (ftueScript.forceLine && ftueScript.forceLine.symbol === 'SYM_05') {
+          // FTUE 纯阳修为丹
+          singleReward = this._generateMaterialLoot({ multiplier, worldTier, ftueScript });
+          cabinetSide = 'right';
+        } else if (ftueScript.forceLine && (ftueScript.forceLine.symbol === 'SYM_01' || ftueScript.forceLine.symbol === 'SYM_02')) {
+          // FTUE 聚灵符 / 凝神符
+          singleReward = this._generateMaterialLoot({ multiplier, worldTier, ftueScript });
+          cabinetSide = 'right';
         }
       }
 
       // (2) 突破卡点 Boss 战或强指定 Boss
-      if (!leftCabinet && (options.forceBoss || isBreakthroughReady)) {
-        leftCabinet = {
+      if (!singleReward && (options.forceBoss || isBreakthroughReady)) {
+        singleReward = {
           type: 'battle',
           name: '天道雷劫 · 守关大妖王',
           battleConfig: {
@@ -124,11 +136,12 @@ window.SlotsRPG = window.SlotsRPG || {};
             betMultiplier: multiplier
           }
         };
+        cabinetSide = 'left';
       }
 
       // (3) 强指定遭遇妖兽
-      if (!leftCabinet && options.forceMonster) {
-        leftCabinet = {
+      if (!singleReward && options.forceMonster) {
+        singleReward = {
           type: 'battle',
           name: '龙息引煞 · 妖兽突袭',
           battleConfig: {
@@ -138,13 +151,12 @@ window.SlotsRPG = window.SlotsRPG || {};
             betMultiplier: multiplier
           }
         };
+        cabinetSide = 'left';
       }
 
-      // (4) 常规随机生成：妖兽遭遇(~6%)、或者装备掉落(~94%)，彻底移除秘境与跑马灯触发
-      if (!leftCabinet) {
+      // (4) 常规单抽掉落生成：妖兽遭遇(~1.5%)、装备掉落(~85%)、或资粮丹药(~15%)
+      if (!singleReward) {
         const randEvent = Math.random();
-        
-        // 狂暴状态下第 10 抽必定爆神品装备，不出战斗打断
         const isFrenzyGuaranteed10th = isFrenzy && this.frenzySpinsLeft === 0;
         const encounterRate = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig && typeof window.SlotsRPG.GameBalanceConfig.FeatureConfig.encounterRate === 'number')
           ? window.SlotsRPG.GameBalanceConfig.FeatureConfig.encounterRate
@@ -155,7 +167,7 @@ window.SlotsRPG = window.SlotsRPG || {};
           this.pityPurplePulls++;
           this.pityGoldPulls++;
           const isElite = Math.random() < 0.25;
-          leftCabinet = {
+          singleReward = {
             type: 'battle',
             name: isElite ? '龙息引煞 · 精英大妖' : '龙息引煞 · 巡山群妖',
             battleConfig: {
@@ -165,36 +177,51 @@ window.SlotsRPG = window.SlotsRPG || {};
               betMultiplier: multiplier
             }
           };
+          cabinetSide = 'left';
         } else {
-          // 装备掉落 (开箱流核心，取消推演过程中的跑马灯附属玩法打断)
-          leftCabinet = this._generateEquipmentLoot({
-            player,
-            potSubLevel,
-            multiplier,
-            worldTier,
-            isFrenzyGuaranteed10th,
-            isGrandSpin: (options && (options.isGrandSpin || options.isGrandOverride)) || false,
-            isClimaxBurst: (options && options.isClimaxBurst) || false
-          });
+          // 检查天道保底与大爆发状态：保底期必出装备，确保心流反馈与阶梯极品出货
+          const isPityDue = this.pityPurplePulls >= 15 || this.pityGoldPulls >= 45;
+          const isGrandBurst = isFrenzyGuaranteed10th || (options && (options.isGrandSpin || options.isGrandOverride || options.isClimaxBurst));
+
+          // 核心开箱流：85% 产出各部位法宝装备，15% 产出修真资粮 (丹药/灵符/纯灵机)
+          const rollEquip = (isPityDue || isGrandBurst) ? true : (Math.random() < 0.85);
+
+          if (rollEquip) {
+            singleReward = this._generateEquipmentLoot({
+              player,
+              potSubLevel,
+              multiplier,
+              worldTier,
+              isFrenzyGuaranteed10th,
+              isGrandSpin: (options && (options.isGrandSpin || options.isGrandOverride)) || false,
+              isClimaxBurst: (options && options.isClimaxBurst) || false
+            });
+            cabinetSide = 'left';
+          } else {
+            // 未出装备产出资粮，推进天道保底阶梯
+            this.pityPurplePulls++;
+            this.pityGoldPulls++;
+            singleReward = this._generateMaterialLoot({
+              multiplier,
+              worldTier,
+              ftueScript
+            });
+            cabinetSide = 'right';
+          }
         }
       }
 
-      // ==========================================
-      // 2. 右柜判定：【天道灵材】 (资粮保底与 RTP 返还)
-      // ==========================================
-      let rightCabinet = this._generateMaterialLoot({
-        multiplier,
-        worldTier,
-        ftueScript
-      });
+      // 互斥映射：每次抽奖仅产出 1 个非空柜位，彻底解决多重掉落泛滥
+      const leftCabinet = cabinetSide === 'left' ? singleReward : null;
+      const rightCabinet = cabinetSide === 'right' ? singleReward : null;
 
       // ==========================================
-      // 3. 构建聚合评估结构 (兼容 GameManager 结算流)
+      // 2. 构建单奖评估结构 (兼容 GameManager 结算流)
       // ==========================================
       const itemsWon = [];
-      let totalPayout = rightCabinet.energyGain || 0;
+      let totalPayout = (rightCabinet && rightCabinet.energyGain) || 0;
 
-      if (leftCabinet.type === 'equip' && leftCabinet.item) {
+      if (leftCabinet && leftCabinet.type === 'equip' && leftCabinet.item) {
         itemsWon.push({
           type: 'equip',
           item: leftCabinet.item,
@@ -208,7 +235,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         });
       }
 
-      if (rightCabinet.type === 'pill' && rightCabinet.item) {
+      if (rightCabinet && rightCabinet.type === 'pill' && rightCabinet.item) {
         itemsWon.push({
           type: 'pill',
           item: rightCabinet.item,
@@ -221,7 +248,7 @@ window.SlotsRPG = window.SlotsRPG || {};
           row: 1,
           col: 3
         });
-      } else if (rightCabinet.type === 'rune' && rightCabinet.item) {
+      } else if (rightCabinet && rightCabinet.type === 'rune' && rightCabinet.item) {
         itemsWon.push({
           type: 'rune',
           item: rightCabinet.item,
@@ -238,11 +265,11 @@ window.SlotsRPG = window.SlotsRPG || {};
       const evaluation = {
         totalPayout: totalPayout,
         itemsWon: itemsWon,
-        hasTriggeredBattle: leftCabinet.type === 'battle',
-        battleConfig: leftCabinet.battleConfig || null,
+        hasTriggeredBattle: !!(leftCabinet && leftCabinet.type === 'battle'),
+        battleConfig: (leftCabinet && leftCabinet.battleConfig) || null,
         hasTriggeredBonus: false,
         bonusCount: 0,
-        scatterCount: leftCabinet.type === 'battle' ? (leftCabinet.battleConfig?.scatterCount || 3) : 0,
+        scatterCount: (leftCabinet && leftCabinet.type === 'battle') ? (leftCabinet.battleConfig?.scatterCount || 3) : 0,
         winningLines: totalPayout > 0 ? [{ payout: totalPayout, coords: [1, 1, 1] }] : []
       };
 
