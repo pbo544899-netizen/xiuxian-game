@@ -208,6 +208,21 @@
   transform: scale(0.95);
 }
 
+.btn-quick-equip.spotlight-active-target,
+#btn-quick-equip.spotlight-active-target {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #ffd700 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  filter: none !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 3px #ffd700, 0 0 20px rgba(255, 215, 0, 0.95), 0 0 35px rgba(255, 140, 0, 0.7) !important;
+  animation: spotlightTargetPulse 1.1s infinite alternate ease-in-out !important;
+  z-index: 9995 !important;
+}
+
 @keyframes quickEquipGlow {
   0% {
     box-shadow: 0 0 4px rgba(52, 211, 153, 0.4);

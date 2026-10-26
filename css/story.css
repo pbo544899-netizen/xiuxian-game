@@ -15,6 +15,12 @@
   z-index: 9998;
 }
 
+.story-dialog-overlay.hidden {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
 /* 沉浸式对白全屏舞台容器 (告别呆板弹窗框，融入游戏场景) */
 .story-overhead-theatre,
 .story-theatre-card,

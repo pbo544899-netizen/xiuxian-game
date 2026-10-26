@@ -786,6 +786,11 @@
   box-sizing: border-box !important;
 }
 
+.dragon-rewards-showcase.spotlight-elevated-ancestor {
+  z-index: 9993 !important;
+  pointer-events: none !important;
+}
+
 /* 一键收纳所在顶行专属保全：绝对禁止被挤压，高度锁定28px */
 .rewards-showcase-header {
   height: 28px !important;
@@ -881,6 +886,19 @@
 .btn-collect-all-slots:hover {
   transform: scale(1.04) !important;
   box-shadow: 0 0 16px rgba(56, 189, 248, 0.85) !important;
+}
+
+.btn-collect-all-slots.spotlight-active-target,
+#btn-collect-all-slots.spotlight-active-target,
+.btn-quick-equip.spotlight-active-target,
+#btn-quick-equip.spotlight-active-target {
+  box-shadow: 0 0 0 3px #ffd700, 0 0 20px rgba(255, 215, 0, 0.95), 0 0 35px rgba(255, 140, 0, 0.7) !important;
+  border-color: #ffd700 !important;
+  animation: spotlightTargetPulse 1.1s infinite alternate ease-in-out !important;
+  z-index: 9995 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 /* 12格物品网格自适应 */

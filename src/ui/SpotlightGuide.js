@@ -239,7 +239,8 @@
         const cs = window.getComputedStyle(ancestor);
         const hasZIndex = cs.zIndex !== 'auto' && parseInt(cs.zIndex, 10) < 9990;
         const isStickyOrFixed = cs.position === 'sticky' || cs.position === 'fixed';
-        if (hasZIndex || isStickyOrFixed) {
+        const isShowcase = ancestor.id === 'dragon-rewards-showcase' || ancestor.classList.contains('dragon-rewards-showcase');
+        if (hasZIndex || isStickyOrFixed || isShowcase) {
           ancestor.classList.add('spotlight-elevated-ancestor');
         }
         ancestor = ancestor.parentElement;
@@ -329,6 +330,10 @@
           this.targetClickListener = null;
         }
       }
+      if (this.indicatorEl) {
+        const fingerEl = this.indicatorEl.querySelector('#spotlight-guide-finger');
+        if (fingerEl) fingerEl.style.transform = '';
+      }
       document.querySelectorAll('.spotlight-elevated-nav').forEach(n => {
         n.classList.remove('spotlight-elevated-nav');
       });
@@ -417,6 +422,18 @@
         else if (resolvedDir === 'up') fingerEl.innerText = '👆';
         else if (resolvedDir === 'left') fingerEl.innerText = '👈';
         else if (resolvedDir === 'right') fingerEl.innerText = '👉';
+
+        // 视口边缘夹取时，动态偏移手指，确保手指指尖恒久精准正对目标中心
+        if (resolvedDir === 'down' || resolvedDir === 'up') {
+          const targetCenterX = rect.left + (rect.width / 2);
+          const indicatorCenterX = left + (indWidth / 2);
+          const fingerDiffX = targetCenterX - indicatorCenterX;
+          const maxFingerOffset = Math.max(0, (indWidth / 2) - 20);
+          const clampedOffset = Math.max(-maxFingerOffset, Math.min(maxFingerOffset, fingerDiffX));
+          fingerEl.style.transform = `translateX(${Math.round(clampedOffset)}px)`;
+        } else {
+          fingerEl.style.transform = '';
+        }
       }
     },
 
@@ -862,6 +879,8 @@
 
           const btnQuickEquip = document.getElementById('btn-quick-equip');
           if (btnQuickEquip) {
+            btnQuickEquip.disabled = false;
+            btnQuickEquip.classList.remove('disabled');
             this.show({
               id: 'ftue-quick-equip',
               target: btnQuickEquip,
