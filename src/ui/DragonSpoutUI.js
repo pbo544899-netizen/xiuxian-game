@@ -752,6 +752,9 @@
    * @param {boolean} isAuto - 是否由自动收纳静默唤起
    */
   function collectAllTemporarySlots(isAuto = false) {
+    if (gameManager) {
+      gameManager.hasCompletedCollectFTUE = true;
+    }
     const dcm = gameManager && gameManager.dragonCabinetManager;
     if (!dcm || !dcm.slots || dcm.slots.length === 0) {
       if (!isAuto) {
@@ -804,17 +807,21 @@
 
     // 延时清空展示区槽位，让飞行动画有清晰的离位起飞感
     setTimeout(() => {
-      dcm.clear();
+      dcm.collectAllToInventory();
       isCollectingSlots = false;
       if (!isAuto) {
         showFloatingNotice(`✨ 一键收纳成功！${totalCount} 份天机宝萃已归入乾坤袋`, '#38ef7d');
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.scheduleCheck(600);
+      }
       }
     }, 120);
   }
 
   // 监听龙头吐宝完全展示完毕：若开启自动收纳，则触发顺畅收纳入袋动效
   window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', (spinResult) => {
-    if (chkAutoCollect && chkAutoCollect.checked) {
+    const isFirstFTUESpin = gameManager && !gameManager.isPrologueComplete && gameManager.prologueStep === 3 && gameManager.prologueSpins === 1 && !gameManager.hasCompletedCollectFTUE;
+    if (chkAutoCollect && chkAutoCollect.checked && !isFirstFTUESpin) {
       setTimeout(() => {
         collectAllTemporarySlots(true);
       }, 200);

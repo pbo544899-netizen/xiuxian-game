@@ -608,9 +608,20 @@
         if (window.SlotsRPG.SoundEffects) {
           window.SlotsRPG.SoundEffects.play('LEVEL_UP');
         }
+        // 战力暴涨全过程展示无需用新手引导呈现，常规展示战力跃升
         if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE(true);
+          window.SlotsRPG.SpotlightGuide.hide();
         }
+        clearTimeout(window._powerGainModalTimer);
+        window._powerGainModalTimer = setTimeout(() => {
+          if (modalPowerGain && !modalPowerGain.classList.contains('hidden')) {
+            modalPowerGain.classList.add('hidden');
+            if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+              window.SlotsRPG.SpotlightGuide.lastGuideDismissTime = Date.now();
+              window.SlotsRPG.SpotlightGuide.scheduleCheck(800);
+            }
+          }
+        }, 3600);
       } else {
         // 非新手首抽：常规动效胶囊直接展现
         showCombatPowerGainNotice(displayPowerGain, upgradedCount);
@@ -635,13 +646,14 @@
 
   if (btnPowerGainConfirm) {
     btnPowerGainConfirm.addEventListener('click', () => {
+      clearTimeout(window._powerGainModalTimer);
       if (modalPowerGain) modalPowerGain.classList.add('hidden');
       if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
         window.SlotsRPG.SoundEffects.play('MODAL_CLOSE');
       }
       if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
         window.SlotsRPG.SpotlightGuide.lastGuideDismissTime = Date.now();
-        window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
+        window.SlotsRPG.SpotlightGuide.scheduleCheck(800);
       }
     });
   }

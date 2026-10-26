@@ -128,7 +128,12 @@
         window.SlotsRPG.EventBus.on('STATE_CHANGE', () => this.scheduleCheck(1000));
         window.SlotsRPG.EventBus.on('SPIN_STOP', () => this.scheduleCheck(1200));
         window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', () => this.scheduleCheck(1200));
-        window.SlotsRPG.EventBus.on('TAB_CHANGED', () => this.scheduleCheck(1000));
+        window.SlotsRPG.EventBus.on('TAB_CHANGED', (data) => {
+          if (data && data.tab === 'character') {
+            this.characterTabEnterTime = Date.now();
+          }
+          this.scheduleCheck(1000);
+        });
         window.SlotsRPG.EventBus.on('PROLOGUE_COMPLETED', () => this.scheduleCheck(1200));
         window.SlotsRPG.EventBus.on('SECT_JOINED', () => this.scheduleCheck(1200));
         window.SlotsRPG.EventBus.on('SHOW_SECT_INDUCTION', () => this.scheduleCheck(1000));
@@ -276,7 +281,7 @@
         this.lastGuideDismissTime = Date.now();
         this.hide();
         // 战斗发起或推演启动时无需调度，由战斗结束或停轮事件 (DRAGON_SPOUT_ALL_REVEALED) 驱动
-        if (target.id !== 'btn-spin' && target.id !== 'btn-prologue-battle') {
+        if (target.id !== 'btn-spin' && target.id !== 'btn-prologue-battle' && target.id !== 'btn-quick-equip') {
           this.scheduleCheck(1200);
         }
       };
@@ -472,19 +477,11 @@
         }
       }
 
-      // 1.5 战力暴涨庆典展示弹窗 (等待玩家查看完战力提升后点击知悉，严禁跳步抢跑)
+      // 1.5 战力暴涨庆典展示弹窗 (常规游戏流程展示，无需用新手引导呈现，弹窗期间保持隐藏)
       const modalPowerGain = document.getElementById('modal-power-gain');
       if (modalPowerGain && !modalPowerGain.classList.contains('hidden')) {
-        const btnPowerGainConfirm = document.getElementById('btn-power-gain-confirm');
-        if (btnPowerGainConfirm && btnPowerGainConfirm.offsetParent !== null) {
-          this.show({
-            id: 'ftue-power-gain-confirm',
-            target: btnPowerGainConfirm,
-            text: '神兵认主，实力大增！点击知悉！',
-            direction: 'up'
-          });
-          return;
-        }
+        this.hide();
+        return;
       }
 
       // 2. 叩问仙门弹窗 · 拜入宗门 (仅在未完成序章时引导，防止回切时残留)
@@ -775,9 +772,52 @@
       }
 
       // ========================================================
-      // 步骤 5: 首抽爆神兵 · 一键穿戴换装 (spins === 1)
+      // 步骤 4.5: 首抽掉落神兵 · 引导一键收纳 (spins === 1 && !hasCompletedCollectFTUE)
       // ========================================================
-      if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins === 1 && !gm.hasCompletedEquipFTUE) {
+      if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins === 1 && !gm.hasCompletedCollectFTUE) {
+        // 自动判定：若临时背包已无物品且背包已有神兵，则标记完成
+        const hasTemporaryItems = gm.dragonCabinetManager && gm.dragonCabinetManager.slots.length > 0;
+        if (!hasTemporaryItems) {
+          gm.hasCompletedCollectFTUE = true;
+          this.scheduleCheck(400);
+          return;
+        }
+
+        if (currentTab !== 'slots') {
+          const tabSlots = document.getElementById('tab-slots');
+          if (tabSlots) {
+            this.show({
+              id: 'ftue-nav-slots-spout',
+              target: tabSlots,
+              text: '天机已启！点击进入神龙吐宝',
+              direction: 'down'
+            });
+            return;
+          }
+        } else {
+          const btnCollect = document.getElementById('btn-collect-all-slots');
+          if (btnCollect) {
+            this.show({
+              id: 'ftue-collect-all-slots',
+              target: btnCollect,
+              text: '天降神物！点击【一键收纳】存入乾坤袋',
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedCollectFTUE = true;
+                if (window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
+            });
+            return;
+          }
+        }
+      }
+
+      // ========================================================
+      // 步骤 5: 神兵已入袋 · 引导前往角色修真与一键换装 (spins === 1 && hasCompletedCollectFTUE)
+      // ========================================================
+      if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins === 1 && gm.hasCompletedCollectFTUE && !gm.hasCompletedEquipFTUE) {
         // 自动判定：如果玩家已经穿戴上了新爆出的神兵 (非初始凡铁柴刀)，标记完成并推进
         const equippedWeapon = gm.player && gm.player.equipment && gm.player.equipment.weapon;
         const hasEquippedNewWeapon = equippedWeapon && equippedWeapon.id !== 'MORTAL_WEAPON';
@@ -786,31 +826,50 @@
           if (window.SlotsRPG.StorageService) {
             window.SlotsRPG.StorageService.saveGame(gm, true);
           }
-          this.scheduleCheck(1200);
+          this.scheduleCheck(800);
           return;
         }
 
         if (currentTab !== 'character') {
+          this.characterTabEnterTime = 0;
           const tabChar = document.getElementById('tab-character');
           if (tabChar) {
             this.show({
               id: 'ftue-nav-char-equip',
               target: tabChar,
-              text: '爆出绝世神兵！点击底部的【角色修真】',
-              direction: 'down'
+              text: '神兵已入袋！点击底部的【角色修真】前往佩戴',
+              direction: 'down',
+              onClick: () => {
+                this.characterTabEnterTime = Date.now();
+                this.lastGuideDismissTime = Date.now();
+                this.hide();
+                this.scheduleCheck(1200);
+              }
             });
             return;
           }
         } else {
+          // 已经处于角色修真界面：给玩家一定的反应时间 (1000ms)，让玩家了解角色界面
+          if (!this.characterTabEnterTime) {
+            this.characterTabEnterTime = Date.now();
+          }
+          const timeOnCharTab = Date.now() - this.characterTabEnterTime;
+          if (timeOnCharTab < 1000) {
+            this.hide();
+            this.scheduleCheck(1000 - timeOnCharTab + 50);
+            return;
+          }
+
           const btnQuickEquip = document.getElementById('btn-quick-equip');
           if (btnQuickEquip) {
             this.show({
               id: 'ftue-quick-equip',
               target: btnQuickEquip,
-              text: '点击一键装备，战力立涨！',
+              text: '点击【一键装备】，神兵入鞘！',
               direction: 'down',
               onClick: () => {
                 gm.hasCompletedEquipFTUE = true;
+                this.hide();
                 if (window.SlotsRPG.StorageService) {
                   window.SlotsRPG.StorageService.saveGame(gm, true);
                 }
@@ -825,9 +884,10 @@
       // 步骤 6: 散修探寻中 · 引导切回神龙推演 (绝对单次引导：玩家点击或切回后永久锁死不再弹出)
       // ========================================================
       if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE && !gm.hasCompletedSlotsReturnFTUE) {
-        // 安全前置：若战力暴涨弹窗仍处于展现状态，必须等待玩家知悉关闭后再行引导
+        // 安全前置：若战力暴涨弹窗仍处于展现状态，必须等待动画与弹窗彻底关闭后再行引导
         const isPowerGainActive = modalPowerGain && !modalPowerGain.classList.contains('hidden');
         if (isPowerGainActive) {
+          this.hide();
           return;
         }
         if (currentTab !== 'slots') {
@@ -836,7 +896,7 @@
             this.show({
               id: 'ftue-nav-slots-continue',
               target: tabSlots,
-              text: '神兵已佩！点击前往神龙继续推演',
+              text: '神兵已佩，实力大增！点击前往【神龙吐宝】继续推演',
               direction: 'down',
               onClick: () => {
                 gm.hasCompletedSlotsReturnFTUE = true;

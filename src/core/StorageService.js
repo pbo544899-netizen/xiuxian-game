@@ -49,6 +49,7 @@ class StorageService {
           currentBet: gameManager.currentBet || 25,
           waterTankProgress: gameManager.waterTankProgress || 0,
           hasCompletedFirstDragonSpoutFTUE: !!gameManager.hasCompletedFirstDragonSpoutFTUE,
+          hasCompletedCollectFTUE: !!gameManager.hasCompletedCollectFTUE,
           hasCompletedEquipFTUE: !!gameManager.hasCompletedEquipFTUE,
           hasCompletedSlotsReturnFTUE: !!gameManager.hasCompletedSlotsReturnFTUE,
           hasCompletedTrialFTUE: !!gameManager.hasCompletedTrialFTUE,
@@ -162,6 +163,11 @@ class StorageService {
         gameManager.hasCompletedFirstDragonSpoutFTUE = !!hasSpunBefore;
       }
 
+      if (typeof data.hasCompletedCollectFTUE === 'boolean') {
+        gameManager.hasCompletedCollectFTUE = data.hasCompletedCollectFTUE;
+      } else {
+        gameManager.hasCompletedCollectFTUE = !!((data.prologueSpins && data.prologueSpins > 1) || data.isPrologueComplete || hasSpunBefore);
+      }
       if (typeof data.hasCompletedEquipFTUE === 'boolean') {
         gameManager.hasCompletedEquipFTUE = data.hasCompletedEquipFTUE;
       }
