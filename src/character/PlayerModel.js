@@ -563,6 +563,118 @@ class PlayerModel {
   }
 
   /**
+   * 天命缺口雷达：精准感应角色当前最急需补强的最短板部位与目标品质
+   * @param {number} potLevel - 聚宝盆阶位
+   * @returns {Object}
+   */
+  getDestinyRadarTarget(potLevel = 1) {
+    const SLOTS_META = [
+      { part: 'weapon', name: '神兵', priority: 1 },
+      { part: 'armor',  name: '宝甲', priority: 2 },
+      { part: 'boots',  name: '仙履', priority: 3 },
+      { part: 'hat',    name: '法冠', priority: 4 },
+      { part: 'ring',   name: '灵戒', priority: 5 },
+      { part: 'belt',   name: '宝带', priority: 6 }
+    ];
+    const qualityRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
+
+    // 筛选已解锁部位
+    const unlockedSlots = SLOTS_META.filter(s => this.isSlotUnlocked(s.part, potLevel));
+    if (unlockedSlots.length === 0) {
+      return {
+        part: 'weapon',
+        slotName: '神兵',
+        currentQuality: null,
+        targetQuality: 'Q1',
+        targetQualityName: '凡铁',
+        isMissing: true,
+        isAllMax: false,
+        desc: '天命未启 · 初始神兵'
+      };
+    }
+
+    // 1. 优先找尚未装备的空缺部位 (按优先级)
+    const missingSlots = unlockedSlots.filter(s => !this.equipment[s.part]);
+    if (missingSlots.length > 0) {
+      const target = missingSlots[0];
+      return {
+        part: target.part,
+        slotName: target.name,
+        currentQuality: null,
+        targetQuality: 'Q3',
+        targetQualityName: '宝器',
+        isMissing: true,
+        isAllMax: false,
+        desc: target.name + '空缺 · 虚位以待'
+      };
+    }
+
+    // 2. 6 槽皆有装备时，寻找品质等级最低 (最短板) 的部位
+    let minRank = 99;
+    let minCandidates = [];
+
+    unlockedSlots.forEach(s => {
+      const eq = this.equipment[s.part];
+      const qCode = (eq.qualityCode || eq.quality || 'Q1').toUpperCase();
+      const rk = qualityRanks[qCode] || 1;
+      if (rk < minRank) {
+        minRank = rk;
+        minCandidates = [{ ...s, eq, rk, power: eq.power || 0 }];
+      } else if (rk === minRank) {
+        minCandidates.push({ ...s, eq, rk, power: eq.power || 0 });
+      }
+    });
+
+    // 若全部达到最高神品 Q6 及以上
+    if (minRank >= 6) {
+      return {
+        part: 'weapon',
+        slotName: '六道',
+        currentQuality: 'Q6',
+        targetQuality: 'Q7',
+        targetQualityName: '混沌',
+        isMissing: false,
+        isAllMax: true,
+        desc: '✨ 六道极境 · 天道大成'
+      };
+    }
+
+    // 相同品质下，战力最低者为第一缺口
+    minCandidates.sort((a, b) => a.power - b.power);
+    const chosen = minCandidates[0];
+
+    // 目标品质升级推算
+    let nextQ = 'Q4';
+    let nextQName = '极品';
+    if (chosen.rk < 3) {
+      nextQ = 'Q3';
+      nextQName = '宝器';
+    } else if (chosen.rk === 3) {
+      nextQ = 'Q4';
+      nextQName = '极品';
+    } else if (chosen.rk === 4) {
+      nextQ = 'Q5';
+      nextQName = '仙品';
+    } else if (chosen.rk === 5) {
+      nextQ = 'Q6';
+      nextQName = '神品';
+    }
+
+    const curQName = chosen.eq.qualityName || '凡铁';
+
+    return {
+      part: chosen.part,
+      slotName: chosen.name,
+      currentQuality: chosen.eq.qualityCode || 'Q1',
+      targetQuality: nextQ,
+      targetQualityName: nextQName,
+      isMissing: false,
+      isAllMax: false,
+      desc: chosen.name + '短板(' + curQName + ') · 亟待' + nextQName
+    };
+  }
+
+  /**
    * 获取6神装全套共鸣属性加成
    * 6槽全满即激活【道基圆满·神装共鸣】：全属性 +15%
    * 若达成毕业品质(Q4紫装及以上)加成提升至 +25%

@@ -512,9 +512,10 @@ class GameManager {
     });
 
     let isGrandSpin = false;
-    if (isFreeSpin || options.isGrandOverride) {
+    const isClimaxBurst = isFreeSpin || options.isGrandOverride || ((this.waterTankProgress || 0) >= (this.waterTankMax || 10));
+    if (isClimaxBurst) {
       isGrandSpin = true;
-      this.waterTankProgress = 0; // 龙皇吐宝后重置水缸
+      this.waterTankProgress = 0; // 气运聚顶/龙皇吐宝后重置水缸
     } else {
       this.waterTankProgress = Math.min(this.waterTankMax, (this.waterTankProgress || 0) + 1);
     }
@@ -571,12 +572,16 @@ class GameManager {
         options: {
           forceBoss: this.isPotBreakthroughReady(),
           forceMonster: false,
-          forceBonus: false
+          forceBonus: false,
+          isGrandSpin: isGrandSpin,
+          isClimaxBurst: isClimaxBurst
         },
         ftueScript: ftueScript,
         isBreakthroughReady: this.isPotBreakthroughReady(),
         hasJoinedSect: !this.player.isMortal
       });
+      spinData.isGrandSpin = isGrandSpin;
+      spinData.isClimaxBurst = isClimaxBurst;
       if (ftueScript && ftueScript.forceSectInduction) {
         spinData.isSectInductionSpin = true;
       }
@@ -720,6 +725,7 @@ class GameManager {
     for (let i = 0; i < 10; i++) {
       let spinData = null;
       if (this.dragonLootEngine) {
+        const isTenPullFinalBurst = (i === 9);
         spinData = this.dragonLootEngine.spout({
           player: this.player,
           potSubLevel: this.potSubLevel,
@@ -728,10 +734,14 @@ class GameManager {
           options: {
             forceBoss: false,
             forceMonster: false,
-            forceBonus: false
+            forceBonus: false,
+            isClimaxBurst: isTenPullFinalBurst
           },
           hasJoinedSect: !this.player.isMortal
         });
+        if (isTenPullFinalBurst) {
+          spinData.isClimaxBurst = true;
+        }
       } else {
         spinData = this.slotsEngine.spin(this.level, 1);
       }

@@ -167,9 +167,10 @@ window.SlotsRPG = window.SlotsRPG || {};
         }
       }
 
-      // 2. 检查是否 Q5 金品 或 满缸大爆 或 狂暴第10抽
-      if (spinResult.isGrandSpin) {
-        return { tier: 'GOLD', color: '#ffd700', title: '【真龙开眼 · 满缸神能大爆！】', dramaPause: 380 };
+      // 2. 检查是否天命聚顶大爆发 / 满缸大爆 / 缺口精准降世
+      if (spinResult.isGrandSpin || spinResult.isClimaxBurst || (left && left.isDestinyHit && left.isDestinyDirected)) {
+        const targetName = (left && left.destinyTarget) ? `【${left.destinyTarget.slotName}】` : '极品';
+        return { tier: 'GOLD', color: '#ffd700', title: `【天命聚顶 · 降世${targetName}！】`, dramaPause: 380 };
       }
       if (left) {
         if (left.type === 'battle' && left.battleConfig && left.battleConfig.tier === 'elite') {

@@ -2306,3 +2306,145 @@ body:has(#view-cave.active) .drop-flyer,
   margin-top: 6px;
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
+
+
+/* ==========================================================================
+   🎯 天命缺口雷达 (Set Target Radar) & 气运聚顶 (Climax Burst) 样式规范
+   ========================================================================== */
+.dragon-destiny-radar {
+  position: absolute;
+  top: 168px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 396px;
+  height: 28px;
+  background: rgba(4, 14, 26, 0.88);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  z-index: 15;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.65), inset 0 0 12px rgba(0, 229, 255, 0.12);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.dragon-destiny-radar:hover {
+  border-color: rgba(0, 229, 255, 0.8);
+  box-shadow: 0 4px 14px rgba(0, 229, 255, 0.3), inset 0 0 14px rgba(0, 229, 255, 0.25);
+}
+
+.dragon-destiny-radar .radar-pulse-ring {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 8px #00e5ff;
+  animation: radarPulse 1.8s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.5; }
+}
+
+.dragon-destiny-radar .radar-icon {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dragon-destiny-radar .radar-title {
+  font-size: 11px;
+  color: #7dd3fc;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.dragon-destiny-radar .radar-slot-tag {
+  font-size: 11px;
+  color: #38ef7d;
+  font-weight: bold;
+  background: rgba(56, 239, 125, 0.12);
+  border: 1px solid rgba(56, 239, 125, 0.3);
+  padding: 1px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.dragon-destiny-radar .radar-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.dragon-destiny-radar .radar-burst-flag {
+  font-size: 10px;
+  color: #111;
+  background: linear-gradient(90deg, #ffd700, #ff9100);
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+  animation: burstFlagPulse 1s infinite alternate;
+  flex-shrink: 0;
+}
+
+@keyframes burstFlagPulse {
+  0% { transform: scale(0.95); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.25); }
+}
+
+/* 气运聚顶爆发态 (Burst Ready) */
+.dragon-destiny-radar.burst-ready {
+  border-color: rgba(255, 215, 0, 0.9);
+  background: linear-gradient(90deg, rgba(30, 20, 5, 0.95) 0%, rgba(20, 12, 35, 0.95) 100%);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 14px rgba(255, 215, 0, 0.25);
+  animation: radarGoldenAura 2s infinite ease-in-out;
+}
+
+@keyframes radarGoldenAura {
+  0%, 100% { border-color: rgba(255, 215, 0, 0.85); box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
+  50% { border-color: #ff3d00; box-shadow: 0 0 20px rgba(255, 61, 0, 0.7); }
+}
+
+.dragon-destiny-radar.burst-ready .radar-pulse-ring {
+  background: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+}
+
+.dragon-destiny-radar.burst-ready .radar-title {
+  color: #ffd700;
+}
+
+.dragon-destiny-radar.burst-ready .radar-slot-tag {
+  color: #fff;
+  background: rgba(255, 215, 0, 0.25);
+  border-color: #ffd700;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+}
+
+/* 命中补全爆发冲击波 */
+.dragon-destiny-radar.radar-target-hit {
+  animation: radarHitShock 0.8s ease-out forwards;
+}
+
+@keyframes radarHitShock {
+  0% { transform: translateX(-50%) scale(1); filter: brightness(1); }
+  35% { transform: translateX(-50%) scale(1.08); filter: brightness(1.8); border-color: #38ef7d; box-shadow: 0 0 24px rgba(56, 239, 125, 0.9); }
+  100% { transform: translateX(-50%) scale(1); filter: brightness(1); }
+}

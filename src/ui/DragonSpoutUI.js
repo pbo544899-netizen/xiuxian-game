@@ -174,6 +174,67 @@
       if (spinBtnTitle) spinBtnTitle.innerText = '蓄能中';
       if (waterTankBadge) waterTankBadge.innerText = `${cur}/${max}`;
     }
+    updateDestinyRadarUI();
+  }
+
+  // 16.2 天命缺口雷达 (Set Target Radar) 与气运聚顶状态管理
+  function updateDestinyRadarUI() {
+    const radarEl = document.getElementById('dragon-destiny-radar');
+    const slotTagEl = document.getElementById('radar-slot-tag');
+    const descEl = document.getElementById('radar-desc');
+    const burstFlagEl = document.getElementById('radar-burst-flag');
+    if (!radarEl || !gameManager || !gameManager.player) return;
+
+    const potSubLevel = gameManager.potSubLevel || 1;
+    const destiny = gameManager.player.getDestinyRadarTarget 
+      ? gameManager.player.getDestinyRadarTarget(potSubLevel) 
+      : null;
+
+    if (!destiny) return;
+
+    if (slotTagEl) {
+      slotTagEl.innerText = `【${destiny.slotName}】`;
+    }
+    if (descEl) {
+      descEl.innerText = destiny.desc;
+    }
+
+    const cur = gameManager.waterTankProgress || 0;
+    const max = gameManager.waterTankMax || 10;
+    const isBurstReady = cur >= max;
+
+    if (isBurstReady) {
+      radarEl.classList.add('burst-ready');
+      if (burstFlagEl) {
+        burstFlagEl.classList.remove('hidden');
+        burstFlagEl.innerText = '⚡ 气运聚顶 (下发必中)';
+      }
+      radarEl.title = `🔥 气运聚顶已激活！下一次推演将精准降下【${destiny.slotName}】极品法宝！`;
+    } else {
+      radarEl.classList.remove('burst-ready');
+      if (burstFlagEl) {
+        burstFlagEl.classList.add('hidden');
+      }
+      radarEl.title = `🎯 天命缺口雷达 [气运 ${cur}/${max}]：当前战力最短板为【${destiny.slotName}】，蓄满将定向降下极品！`;
+    }
+  }
+
+  const radarEl = document.getElementById('dragon-destiny-radar');
+  if (radarEl) {
+    radarEl.addEventListener('click', () => {
+      const potSubLevel = gameManager ? (gameManager.potSubLevel || 1) : 1;
+      const destiny = gameManager && gameManager.player && gameManager.player.getDestinyRadarTarget
+        ? gameManager.player.getDestinyRadarTarget(potSubLevel)
+        : null;
+      if (!destiny) return;
+      const cur = gameManager ? (gameManager.waterTankProgress || 0) : 0;
+      const max = gameManager ? (gameManager.waterTankMax || 10) : 10;
+      if (cur >= max) {
+        showFloatingNotice(`🔥【气运聚顶】天道感应已满！下一次推演必定向降下【${destiny.slotName}】极品法宝！`, '#ffd700');
+      } else {
+        showFloatingNotice(`🎯【天命缺口雷达】感应到最短板为【${destiny.slotName}】(${destiny.desc})，当前气运蓄力 ${cur}/${max}。`, '#00e5ff');
+      }
+    });
   }
 
   // 16.1 新手引导全局聚光灯遮罩与手势联动 (除引龙吐宝按键外，其余全屏区域遮罩阻断误触)
@@ -1236,29 +1297,51 @@
     btnBossRadarChallenge.addEventListener('click', handleActiveTrialChallenge);
   }
 
-  // 监听全局状态变更驱动水缸液体与聚光灯更新
+  // 监听全局状态变更驱动水缸液体、天命雷达与聚光灯更新
   if (window.SlotsRPG && window.SlotsRPG.EventBus) {
     window.SlotsRPG.EventBus.on('STATE_CHANGE', () => {
       updateWaterTankUI();
+      updateDestinyRadarUI();
       updateFTUESpotlight();
     });
-    window.SlotsRPG.EventBus.on('SPIN_STOP', () => {
+    window.SlotsRPG.EventBus.on('SPIN_STOP', (spinData) => {
       updateWaterTankUI();
+      updateDestinyRadarUI();
       updateFTUESpotlight();
+
+      if (spinData && spinData.leftCabinet && spinData.leftCabinet.isDestinyHit) {
+        const radarElement = document.getElementById('dragon-destiny-radar');
+        if (radarElement) {
+          radarElement.classList.remove('radar-target-hit');
+          void radarElement.offsetWidth;
+          radarElement.classList.add('radar-target-hit');
+        }
+        if (renderer && renderer.addFloatingText) {
+          const slotName = spinData.leftCabinet.destinyTarget ? spinData.leftCabinet.destinyTarget.slotName : '极品';
+          renderer.addFloatingText(`🎯【天命补全】最短板【${slotName}】出世！战力飙升！`, '#38ef7d');
+        }
+      }
+    });
+    window.SlotsRPG.EventBus.on('ITEM_EQUIPPED', () => {
+      updateDestinyRadarUI();
+      if (typeof updateSmeltButtonState === 'function') updateSmeltButtonState();
     });
   }
 
   // 初始启动执行一次
   updateWaterTankUI();
+  updateDestinyRadarUI();
   updateFTUESpotlight();
 
   DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
   DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;
   DragonSpoutUI.updateWaterTankUI = updateWaterTankUI;
+  DragonSpoutUI.updateDestinyRadarUI = updateDestinyRadarUI;
   DragonSpoutUI.updateFTUESpotlight = updateFTUESpotlight;
   DragonSpoutUI.handleActiveTrialChallenge = handleActiveTrialChallenge;
   window.updateSectTrialBanner = updateSectTrialBanner;
   window.updateWaterTankUI = updateWaterTankUI;
+  window.updateDestinyRadarUI = updateDestinyRadarUI;
   window.updateFTUESpotlight = updateFTUESpotlight;
   window.collectAllTemporarySlots = collectAllTemporarySlots;
   window.handleActiveTrialChallenge = handleActiveTrialChallenge;

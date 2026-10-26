@@ -164,7 +164,8 @@ window.SlotsRPG = window.SlotsRPG || {};
             multiplier,
             worldTier,
             isFrenzyGuaranteed10th,
-            isGrandSpin: (options && (options.isGrandSpin || options.isGrandOverride)) || false
+            isGrandSpin: (options && (options.isGrandSpin || options.isGrandOverride)) || false,
+            isClimaxBurst: (options && options.isClimaxBurst) || false
           });
         }
       }
@@ -252,25 +253,45 @@ window.SlotsRPG = window.SlotsRPG || {};
     /**
      * 生成左柜装备
      */
-    _generateEquipmentLoot({ player, potSubLevel, multiplier, worldTier, isFrenzyGuaranteed10th, isGrandSpin }) {
-      // 1. 部位选择：优先从未装备或战力偏低的部位中选择，确保 6 槽平滑成长
+    _generateEquipmentLoot({ player, potSubLevel, multiplier, worldTier, isFrenzyGuaranteed10th, isGrandSpin, isClimaxBurst }) {
+      // 1. 部位选择：优先结合【天命缺口雷达】引导，确保 6 槽平衡成长与大爆发精准补强
       const allSlots = ['weapon', 'armor', 'ring', 'hat', 'boots', 'belt'];
       const availableSlots = allSlots.filter(s => {
         if (!player) return true;
         return player.isSlotUnlocked ? player.isSlotUnlocked(s, potSubLevel) : true;
       });
-      const chosenSlot = availableSlots.length > 0 
-        ? availableSlots[Math.floor(Math.random() * availableSlots.length)]
-        : 'weapon';
+
+      const destiny = player && player.getDestinyRadarTarget ? player.getDestinyRadarTarget(potSubLevel) : null;
+      let chosenSlot = 'weapon';
+      let isDestinyDirected = false;
+
+      // 气运聚顶大爆发或龙皇吐宝：85% 极大概率精准锁定天命缺口部位！
+      if ((isClimaxBurst || isGrandSpin || isFrenzyGuaranteed10th) && destiny && !destiny.isAllMax && availableSlots.includes(destiny.part)) {
+        if (Math.random() < 0.85) {
+          chosenSlot = destiny.part;
+          isDestinyDirected = true;
+        } else {
+          chosenSlot = availableSlots.length > 0 
+            ? availableSlots[Math.floor(Math.random() * availableSlots.length)]
+            : 'weapon';
+        }
+      } else {
+        chosenSlot = availableSlots.length > 0 
+          ? availableSlots[Math.floor(Math.random() * availableSlots.length)]
+          : 'weapon';
+      }
 
       // 2. 品质矩阵计算
       const matrix = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.EquipQualityMatrix) || null;
       let qualityCode = matrix ? matrix.pickQuality(potSubLevel, Math.random()) : 'Q1';
 
-      // 神龙顿悟 · 狂暴大爆：必出 Q5 (仙品·金) ~ Q7 (鸿蒙至宝·红) 极品法宝！
-      if (isFrenzyGuaranteed10th || isGrandSpin) {
-        const grandChoices = ['Q5', 'Q6', 'Q7'];
-        qualityCode = grandChoices[Math.floor(Math.random() * grandChoices.length)];
+      // 气运聚顶大爆发 / 龙皇吐宝：根据天命目标品质保底极品紫(Q4)或仙品金(Q5)！
+      if (isClimaxBurst || isGrandSpin || isFrenzyGuaranteed10th) {
+        if (destiny && destiny.targetQuality && ['Q5', 'Q6'].includes(destiny.targetQuality)) {
+          qualityCode = Math.random() < 0.65 ? 'Q5' : 'Q6';
+        } else {
+          qualityCode = Math.random() < 0.40 ? 'Q5' : 'Q4';
+        }
       } else if (this.isFrenzyActive) {
         const qRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
         if ((qRanks[qualityCode] || 1) < 4) {
@@ -315,10 +336,15 @@ window.SlotsRPG = window.SlotsRPG || {};
       const prevQualityName = window.SlotsRPG.ItemModel.getQualityName ? window.SlotsRPG.ItemModel.getQualityName(origQualityCode) : origQualityCode;
       const prevQualityColor = window.SlotsRPG.ItemModel.getQualityColor ? window.SlotsRPG.ItemModel.getQualityColor(origQualityCode) : '#8c8c8c';
 
+      const isDestinyHit = !!(destiny && chosenSlot === destiny.part);
+
       return {
         type: 'equip',
         item: newEquip,
         isLuckyBurst: isLuckyBurst,
+        isDestinyDirected: isDestinyDirected,
+        isDestinyHit: isDestinyHit,
+        destinyTarget: destiny,
         prevQualityCode: isLuckyBurst ? origQualityCode : null,
         prevQualityName: isLuckyBurst ? prevQualityName : null,
         prevQualityColor: isLuckyBurst ? prevQualityColor : null
