@@ -28,7 +28,11 @@
     currentTargetEl: null,
     currentConfig: null,
     maskEl: null,
+    svgEl: null,
+    pathEl: null,
+    ringEl: null,
     indicatorEl: null,
+    domBound: false,
     targetClickListener: null,
     isInitialized: false,
     pendingTimer: null,
@@ -66,7 +70,7 @@
     },
 
     /**
-     * 确保遮罩层与手势指示器存在于 DOM 中
+     * 确保遮罩层与手势指示器存在于 DOM 中 (SVG 镂空视窗引擎)
      */
     ensureDOM() {
       let mask = document.getElementById('ftue-spotlight-mask');
@@ -75,53 +79,154 @@
         mask.id = 'ftue-spotlight-mask';
         mask.className = 'ftue-spotlight-mask hidden';
         document.body.appendChild(mask);
+      } else if (mask.parentElement !== document.body) {
+        document.body.appendChild(mask);
       }
       this.maskEl = mask;
 
-      // 点击遮罩空白区域：拦截误触并轻微晃动手势以提醒玩家
-      this.maskEl.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.shakeIndicator();
-      });
-
-      let indicator = document.getElementById('spotlight-guide-indicator');
-      if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'spotlight-guide-indicator';
-        indicator.className = 'spotlight-guide-indicator hidden';
-        indicator.innerHTML = `
-          <div class="spotlight-bounce-container">
-            <span class="spotlight-text-pill" id="spotlight-guide-text">请遵照指引操作</span>
-            <span class="spotlight-finger-icon" id="spotlight-guide-finger">👇</span>
-          </div>
+      let svg = mask.querySelector('#ftue-spotlight-svg');
+      let path = mask.querySelector('#ftue-spotlight-path');
+      let ring = mask.querySelector('#spotlight-cutout-ring');
+      if (!svg || !path || !ring) {
+        mask.innerHTML = `
+          <svg id="ftue-spotlight-svg" class="ftue-spotlight-svg" xmlns="http://www.w3.org/2000/svg">
+            <path id="ftue-spotlight-path" class="spotlight-svg-path" fill-rule="evenodd"></path>
+          </svg>
+          <div id="spotlight-cutout-ring" class="spotlight-cutout-ring"></div>
         `;
-        document.body.appendChild(indicator);
+        svg = mask.querySelector('#ftue-spotlight-svg');
+        path = mask.querySelector('#ftue-spotlight-path');
+        ring = mask.querySelector('#spotlight-cutout-ring');
       }
-      this.indicatorEl = indicator;
+      this.svgEl = svg;
+      this.pathEl = path;
+      this.ringEl = ring;
 
-      // 允许点击指示器手势与文字气泡直接触发目标操作 (极大增强触控手感与容错)
-      this.indicatorEl.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (this.currentTargetEl && typeof this.currentTargetEl.click === 'function') {
-          this.currentTargetEl.click();
+      if (!this.domBound) {
+        this.domBound = true;
+
+        // 点击遮罩暗色空白区域：拦截误触并轻微晃动手势以提醒玩家
+        if (this.pathEl) {
+          this.pathEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.shakeIndicator();
+          });
+          this.pathEl.addEventListener('touchstart', (e) => {
+            if (e.target === this.pathEl) {
+              e.preventDefault();
+            }
+          }, { passive: false });
         }
-      });
+
+        let indicator = document.getElementById('spotlight-guide-indicator');
+        if (!indicator) {
+          indicator = document.createElement('div');
+          indicator.id = 'spotlight-guide-indicator';
+          indicator.className = 'spotlight-guide-indicator hidden';
+          indicator.innerHTML = `
+            <div class="spotlight-bounce-container">
+              <span class="spotlight-text-pill" id="spotlight-guide-text">请遵照指引操作</span>
+              <span class="spotlight-finger-icon" id="spotlight-guide-finger">👇</span>
+            </div>
+          `;
+          document.body.appendChild(indicator);
+        } else if (indicator.parentElement !== document.body) {
+          document.body.appendChild(indicator);
+        }
+        this.indicatorEl = indicator;
+
+        // 允许点击指示器手势与文字气泡直接触发目标操作 (极大增强触控手感与容错)
+        this.indicatorEl.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (this.currentTargetEl && typeof this.currentTargetEl.click === 'function') {
+            this.currentTargetEl.click();
+          }
+        });
+      }
+    },
+
+    /**
+     * 计算并渲染 SVG 镂空视窗与仙道金光光环 (彻底突破移动端 WebKit 层叠上下文阻断)
+     * @param {HTMLElement} targetEl 目标元素
+     */
+    renderCutout(targetEl) {
+      if (!targetEl || !this.pathEl || !this.ringEl) return;
+      const rect = targetEl.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const pad = 4;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+
+      // 目标完全滑出视口之外时的保护
+      if (rect.bottom < 0 || rect.top > H || rect.right < 0 || rect.left > W) {
+        this.pathEl.setAttribute('d', `M 0 0 h ${W} v ${H} h -${W} Z`);
+        this.ringEl.style.display = 'none';
+        return;
+      }
+
+      const x = Math.max(0, rect.left - pad);
+      const y = Math.max(0, rect.top - pad);
+      const w = Math.min(W - x, rect.width + pad * 2);
+      const h = Math.min(H - y, rect.height + pad * 2);
+
+      // 计算元素的圆角弧度，使镂空孔与外框完美贴合元素形状
+      let r = 8;
+      try {
+        const cs = window.getComputedStyle(targetEl);
+        const br = parseFloat(cs.borderRadius);
+        if (!isNaN(br) && br > 0) {
+          r = Math.min(br + pad, w / 2, h / 2);
+        }
+      } catch (_) {
+        r = 8;
+      }
+      r = Math.max(0, Math.min(r, Math.max(0, (w - 2) / 2), Math.max(0, (h - 2) / 2)));
+
+      // 构造 SVG Evenodd 镂空复合路径 (外矩形顺时针 + 内圆角矩形顺时针实现物理透明开孔)
+      const pathD = `M 0 0 h ${W} v ${H} h -${W} Z ` +
+                    `M ${x + r} ${y} ` +
+                    `h ${Math.max(0, w - 2 * r)} ` +
+                    `a ${r} ${r} 0 0 1 ${r} ${r} ` +
+                    `v ${Math.max(0, h - 2 * r)} ` +
+                    `a ${r} ${r} 0 0 1 -${r} ${r} ` +
+                    `h -${Math.max(0, w - 2 * r)} ` +
+                    `a ${r} ${r} 0 0 1 -${r} -${r} ` +
+                    `v -${Math.max(0, h - 2 * r)} ` +
+                    `a ${r} ${r} 0 0 1 ${r} -${r} Z`;
+
+      this.pathEl.setAttribute('d', pathD);
+
+      // 独立视口定位的仙道金光脉冲光环 (位于 z-index: 9992 顶级视口层)
+      this.ringEl.style.display = 'block';
+      this.ringEl.style.top = `${Math.round(y)}px`;
+      this.ringEl.style.left = `${Math.round(x)}px`;
+      this.ringEl.style.width = `${Math.round(w)}px`;
+      this.ringEl.style.height = `${Math.round(h)}px`;
+      this.ringEl.style.borderRadius = `${Math.round(r)}px`;
     },
 
     /**
      * 绑定全局事件监听以自适应刷新高亮
      */
     bindGlobalEvents() {
-      // 窗口尺寸或滚动发生变化时重新矫正指示器绝对视口位置
+      // 窗口尺寸、横竖屏旋转或任意容器滚动时重新矫正指示器与镂空视窗绝对视口位置
       window.addEventListener('resize', () => {
         if (this.isActive()) this.reposition();
       }, { passive: true });
 
+      window.addEventListener('orientationchange', () => {
+        if (this.isActive()) {
+          setTimeout(() => this.reposition(), 100);
+        }
+      }, { passive: true });
+
+      // 使用 capture: true 捕获全局以及所有可滚动容器 (如 character / main-viewport) 的滚动事件
       window.addEventListener('scroll', () => {
         if (this.isActive()) this.reposition();
-      }, { passive: true });
+      }, { capture: true, passive: true });
 
       // 监听全局状态变更与核心驱动事件 (统一采用调度器 scheduleCheck 缓冲防抖)
       if (window.SlotsRPG && window.SlotsRPG.EventBus) {
@@ -257,6 +362,9 @@
         this.maskEl.classList.remove('hidden');
       }
 
+      // 2.1 立即渲染物理 SVG 镂空孔与仙道金光光环
+      this.renderCutout(target);
+
       // 3. 填充指示器文字与手势
       const textEl = this.indicatorEl.querySelector('#spotlight-guide-text');
       const fingerEl = this.indicatorEl.querySelector('#spotlight-guide-finger');
@@ -273,6 +381,18 @@
       // 4. 定位指示器
       this.indicatorEl.classList.remove('hidden');
       this.positionIndicator(target, dir, options.offset || 10);
+
+      // 4.1 双重微延迟校准：应对移动端视口平滑滚动或弹窗淡入完成后的坐标微偏
+      requestAnimationFrame(() => {
+        if (this.isActive() && this.currentTargetEl === target) {
+          this.reposition();
+        }
+      });
+      setTimeout(() => {
+        if (this.isActive() && this.currentTargetEl === target) {
+          this.reposition();
+        }
+      }, 120);
 
       // 5. 绑定目标点击事件 (点击后自动收束引导，并调度下一步检查)
       this.targetClickListener = (e) => {
@@ -297,6 +417,12 @@
     hide() {
       this.cleanupCurrentTarget();
 
+      if (this.pathEl) {
+        this.pathEl.setAttribute('d', '');
+      }
+      if (this.ringEl) {
+        this.ringEl.style.display = 'none';
+      }
       if (this.maskEl) {
         this.maskEl.classList.add('hidden');
       }
@@ -346,10 +472,11 @@
     },
 
     /**
-     * 矫正当前指示器坐标
+     * 矫正当前指示器与镂空视窗坐标
      */
     reposition() {
       if (!this.currentTargetEl || !this.currentConfig) return;
+      this.renderCutout(this.currentTargetEl);
       this.positionIndicator(
         this.currentTargetEl,
         this.currentConfig.direction || 'down',

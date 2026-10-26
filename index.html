@@ -2183,13 +2183,19 @@
       </div>
     </div>
 
-    <!-- 全局新手引导聚光灯遮罩 (仅高亮引龙吐宝按键，其余区域不可点击) -->
-    <div id="ftue-spotlight-mask" class="ftue-spotlight-mask hidden"></div>
-    <div id="spotlight-guide-indicator" class="spotlight-guide-indicator hidden">
-      <div class="spotlight-bounce-container">
-        <span class="spotlight-text-pill" id="spotlight-guide-text">请遵照指引操作</span>
-        <span class="spotlight-finger-icon" id="spotlight-guide-finger">👇</span>
-      </div>
+    </div>
+
+  <!-- 全局新手引导聚光灯遮罩与手势指示器 (SVG Cutout Mask Engine: 镂空透视，全端无视层叠上下文阻断) -->
+  <div id="ftue-spotlight-mask" class="ftue-spotlight-mask hidden">
+    <svg id="ftue-spotlight-svg" class="ftue-spotlight-svg" xmlns="http://www.w3.org/2000/svg">
+      <path id="ftue-spotlight-path" class="spotlight-svg-path" fill-rule="evenodd"></path>
+    </svg>
+    <div id="spotlight-cutout-ring" class="spotlight-cutout-ring"></div>
+  </div>
+  <div id="spotlight-guide-indicator" class="spotlight-guide-indicator hidden">
+    <div class="spotlight-bounce-container">
+      <span class="spotlight-text-pill" id="spotlight-guide-text">请遵照指引操作</span>
+      <span class="spotlight-finger-icon" id="spotlight-guide-finger">👇</span>
     </div>
   </div>
 
