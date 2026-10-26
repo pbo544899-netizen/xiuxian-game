@@ -1010,6 +1010,45 @@
       </div>
     </div>
 
+    <!-- 弹窗2B: 神兵换装·战力暴涨庆典展示弹窗 (展示战斗力提升全过程) -->
+    <div id="modal-power-gain" class="modal-overlay hidden">
+      <div class="modal-card modal-breakthrough-card modal-power-gain-card">
+        <div class="breakthrough-glow">⚡</div>
+        <div class="power-gain-badge">⚡ 神兵入鞘 · 实力大涨</div>
+        <h2 id="power-gain-title" class="breakthrough-title" style="color:#ffd700; margin-bottom: 8px;">战力大幅提升！</h2>
+
+        <!-- 神兵法宝展示条 -->
+        <div class="power-gain-item-row" id="power-gain-item-row">
+          <img id="power-gain-item-icon" src="assets/symbols/SYM_03.png" alt="法宝" class="power-gain-item-icon" />
+          <div class="power-gain-item-texts">
+            <div id="power-gain-item-name" class="power-gain-item-name">【宝器 · 玄铁剑】</div>
+            <div id="power-gain-item-desc" class="power-gain-item-desc">武器槽位已装备 · 锋芒初露</div>
+          </div>
+        </div>
+
+        <!-- 综合战力跃升卡片 -->
+        <div class="breakthrough-power-card">
+          <div class="power-card-title">综合战力跃升</div>
+          <div class="power-compare-wrap">
+            <span id="power-gain-old" class="power-val old">45</span>
+            <span class="power-arrow">➔</span>
+            <span id="power-gain-new" class="power-val new">185</span>
+            <span id="power-gain-diff" class="power-diff-tag">+140 🔺</span>
+          </div>
+        </div>
+
+        <!-- 基础属性精进说明条目 -->
+        <div class="breakthrough-comparison-grid" id="power-gain-stats-grid">
+          <!-- 动态装填 -->
+        </div>
+
+        <!-- 底部确认按钮容器 -->
+        <div class="breakthrough-actions" style="margin-top: 8px; width: 100%;">
+          <button id="btn-power-gain-confirm" class="btn-primary" style="width: 100%; height: 42px; font-size: 15px; font-weight: bold; letter-spacing: 2px;">实力大增 · 知 悉</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 弹窗3: 乾坤袋爆仓报警引导弹窗 -->
     <div id="modal-overflow-alert" class="modal-overlay hidden">
       <div class="modal-card">

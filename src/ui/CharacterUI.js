@@ -79,6 +79,44 @@
     const btnOverflowMerge = document.getElementById('btn-overflow-merge');
     const btnOverflowSalvage = document.getElementById('btn-overflow-salvage');
 
+    // 战力暴涨庆典展示弹窗 DOM
+    const modalPowerGain = document.getElementById('modal-power-gain');
+    const btnPowerGainConfirm = document.getElementById('btn-power-gain-confirm');
+    const powerGainOld = document.getElementById('power-gain-old');
+    const powerGainNew = document.getElementById('power-gain-new');
+    const powerGainDiff = document.getElementById('power-gain-diff');
+    const powerGainItemName = document.getElementById('power-gain-item-name');
+    const powerGainItemIcon = document.getElementById('power-gain-item-icon');
+    const powerGainItemDesc = document.getElementById('power-gain-item-desc');
+    const powerGainStatsGrid = document.getElementById('power-gain-stats-grid');
+
+    /**
+     * 数值动态滚动递增动画 (easeOutCubic 曲线)
+     */
+    function animateCountUp(el, startVal, endVal, durationMs = 1000, prefix = '', suffix = '') {
+      if (!el) return;
+      const start = parseInt(startVal, 10) || 0;
+      const end = parseInt(endVal, 10) || 0;
+      if (start === end) {
+        el.innerText = `${prefix}${end}${suffix}`;
+        return;
+      }
+      const startTime = performance.now();
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(1, elapsed / durationMs);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.round(start + (end - start) * ease);
+        el.innerText = `${prefix}${currentVal}${suffix}`;
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.innerText = `${prefix}${end}${suffix}`;
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
 
       const switchTab = (tab, skipSound) => window.switchTab && window.switchTab(tab, skipSound);
       const showFloatingNotice = (msg, clr) => window.showFloatingNotice && window.showFloatingNotice(msg, clr);
@@ -427,6 +465,9 @@
     }
 
     const initialCombatPower = gameManager.player.combatPower;
+    const initialHp = gameManager.player.maxHp || 0;
+    const initialAtk = gameManager.player.attack || 0;
+    const initialDef = gameManager.player.defense || 0;
     let upgradedCount = 0;
     let totalPowerGain = 0;
     const upgradedDetails = [];
@@ -475,7 +516,8 @@
             upgradedDetails.push({
               slotName: res.equipped.slotName || getSlotDisplayName(slotName),
               name: res.equipped.name,
-              color: res.equipped.qualityColor || '#ffd700'
+              color: res.equipped.qualityColor || '#ffd700',
+              icon: res.equipped.icon
             });
           }
         }
@@ -490,11 +532,88 @@
         window.SlotsRPG.SoundEffects.play('QUICK_EQUIP');
       }
 
-      // 直接显示加了多少战斗力 (取缔阻断弹窗，直接动效呈现)
-      showCombatPowerGainNotice(displayPowerGain, upgradedCount);
+      // 1. 战力数值动态滚动跃升展示
+      animateCountUp(heroProfilePower, initialCombatPower, gameManager.player.combatPower, 1000);
+      animateCountUp(charPowerText, initialCombatPower, gameManager.player.combatPower, 1000);
 
-      if (renderer && renderer.addFloatingText) {
-        renderer.addFloatingText(`⚡ 战力提升 +${displayPowerGain}`, '#38ef7d');
+      // 2. 检查是否在 FTUE 首次穿戴神兵或有战力大幅跃升
+      const isFTUEFirstEquip = !gameManager.isPrologueComplete && gameManager.prologueStep === 3 && gameManager.prologueSpins === 1;
+
+      if (isFTUEFirstEquip && modalPowerGain) {
+        // 展示战力暴涨庆典弹窗，给玩家充分感受战力数值飙升的震撼正反馈
+        const firstEquip = upgradedDetails[0] || {};
+        if (powerGainItemName) {
+          powerGainItemName.innerText = firstEquip.name || '绝世神兵';
+          if (firstEquip.color) powerGainItemName.style.color = firstEquip.color;
+        }
+        if (powerGainItemIcon && firstEquip.icon) powerGainItemIcon.src = firstEquip.icon;
+        if (powerGainItemDesc) powerGainItemDesc.innerText = `${firstEquip.slotName || '武器'}槽位已装备 · 威能显赫`;
+
+        if (powerGainOld) powerGainOld.innerText = initialCombatPower;
+        if (powerGainDiff) powerGainDiff.innerText = `+${displayPowerGain} 🔺`;
+        if (powerGainNew) {
+          powerGainNew.innerText = initialCombatPower;
+          animateCountUp(powerGainNew, initialCombatPower, gameManager.player.combatPower, 1000);
+        }
+
+        // 基础四维属性精进对比条目装填
+        if (powerGainStatsGrid) {
+          const diffAtk = (gameManager.player.attack || 0) - initialAtk;
+          const diffDef = (gameManager.player.defense || 0) - initialDef;
+          const diffHp = (gameManager.player.maxHp || 0) - initialHp;
+          let statsHtml = '';
+          if (diffAtk > 0) {
+            statsHtml += `
+              <div class="stat-compare-row">
+                <span class="stat-label">⚔️ 攻击威能</span>
+                <div class="stat-values">
+                  <span class="stat-old">${initialAtk}</span>
+                  <span class="stat-arrow">➔</span>
+                  <span class="stat-new">${gameManager.player.attack}</span>
+                  <span class="stat-diff" style="color:#34e89e; font-weight:bold;">(+${diffAtk})</span>
+                </div>
+              </div>
+            `;
+          }
+          if (diffDef > 0) {
+            statsHtml += `
+              <div class="stat-compare-row">
+                <span class="stat-label">🛡️ 护体防御</span>
+                <div class="stat-values">
+                  <span class="stat-old">${initialDef}</span>
+                  <span class="stat-arrow">➔</span>
+                  <span class="stat-new">${gameManager.player.defense}</span>
+                  <span class="stat-diff" style="color:#34e89e; font-weight:bold;">(+${diffDef})</span>
+                </div>
+              </div>
+            `;
+          }
+          if (diffHp > 0) {
+            statsHtml += `
+              <div class="stat-compare-row">
+                <span class="stat-label">💚 气血上限</span>
+                <div class="stat-values">
+                  <span class="stat-old">${initialHp}</span>
+                  <span class="stat-arrow">➔</span>
+                  <span class="stat-new">${gameManager.player.maxHp}</span>
+                  <span class="stat-diff" style="color:#34e89e; font-weight:bold;">(+${diffHp})</span>
+                </div>
+              </div>
+            `;
+          }
+          powerGainStatsGrid.innerHTML = statsHtml;
+        }
+
+        modalPowerGain.classList.remove('hidden');
+        if (window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('LEVEL_UP');
+        }
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE(true);
+        }
+      } else {
+        // 非新手首抽：常规动效胶囊直接展现
+        showCombatPowerGainNotice(displayPowerGain, upgradedCount);
       }
     } else {
       showFloatingNotice('当前佩戴已是最佳法宝组合，无需更换', '#94a3b8');
@@ -511,6 +630,19 @@
   if (btnQuickEquip) {
     btnQuickEquip.addEventListener('click', () => {
       quickEquipBestGear();
+    });
+  }
+
+  if (btnPowerGainConfirm) {
+    btnPowerGainConfirm.addEventListener('click', () => {
+      if (modalPowerGain) modalPowerGain.classList.add('hidden');
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('MODAL_CLOSE');
+      }
+      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+        window.SlotsRPG.SpotlightGuide.lastGuideDismissTime = Date.now();
+        window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
+      }
     });
   }
 

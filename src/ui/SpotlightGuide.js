@@ -472,6 +472,21 @@
         }
       }
 
+      // 1.5 战力暴涨庆典展示弹窗 (等待玩家查看完战力提升后点击知悉，严禁跳步抢跑)
+      const modalPowerGain = document.getElementById('modal-power-gain');
+      if (modalPowerGain && !modalPowerGain.classList.contains('hidden')) {
+        const btnPowerGainConfirm = document.getElementById('btn-power-gain-confirm');
+        if (btnPowerGainConfirm && btnPowerGainConfirm.offsetParent !== null) {
+          this.show({
+            id: 'ftue-power-gain-confirm',
+            target: btnPowerGainConfirm,
+            text: '神兵认主，实力大增！点击知悉！',
+            direction: 'up'
+          });
+          return;
+        }
+      }
+
       // 2. 叩问仙门弹窗 · 拜入宗门 (仅在未完成序章时引导，防止回切时残留)
       const modalSectInduction = document.getElementById('modal-sect-induction');
       if (!gm.isPrologueComplete && modalSectInduction && !modalSectInduction.classList.contains('hidden')) {
@@ -810,6 +825,11 @@
       // 步骤 6: 散修探寻中 · 引导切回神龙推演 (绝对单次引导：玩家点击或切回后永久锁死不再弹出)
       // ========================================================
       if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE && !gm.hasCompletedSlotsReturnFTUE) {
+        // 安全前置：若战力暴涨弹窗仍处于展现状态，必须等待玩家知悉关闭后再行引导
+        const isPowerGainActive = modalPowerGain && !modalPowerGain.classList.contains('hidden');
+        if (isPowerGainActive) {
+          return;
+        }
         if (currentTab !== 'slots') {
           const tabSlots = document.getElementById('tab-slots');
           if (tabSlots) {

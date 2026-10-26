@@ -1133,6 +1133,69 @@
   font-size: 14px;
 }
 
+/* ==========================================================
+   神兵换装·战力暴涨庆典展示弹窗专属样式
+   ========================================================== */
+.modal-power-gain-card {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 45px rgba(255, 215, 0, 0.55), 0 12px 35px rgba(0, 0, 0, 0.95) !important;
+}
+
+.power-gain-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  color: #ffd700;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 4px 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
+  letter-spacing: 0.5px;
+}
+
+.power-gain-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.power-gain-item-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px #ffd700);
+}
+
+.power-gain-item-texts {
+  text-align: left;
+}
+
+.power-gain-item-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 2px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.power-gain-item-desc {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
 .stat-diff {
   color: #34e89e;
   font-weight: bold;
