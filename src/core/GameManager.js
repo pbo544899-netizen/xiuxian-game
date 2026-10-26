@@ -27,6 +27,7 @@ class GameManager {
     this.hasCompletedSlotsReturnFTUE = false;      // 首次穿戴神兵后引导切回神龙推演完成标记
     this.hasCompletedTrialFTUE = false;            // 首次妖王试炼引导完成标记
     this.hasCompletedCaveFTUE = false;             // 首次洞天引灵引导完成标记
+    this.hasUnlockedAutoSmelt = false;             // 全身6件全紫(Q4+)后解锁天道造化熔炉以抽养抽
     this.hasTriggeredSectInduction = false;        // 叩问仙门法牒序列单次防重标记
 
     // 快速消耗档位体系 (根据玩家当前拥有灵机自适应开放)
@@ -194,6 +195,60 @@ class GameManager {
       window.SlotsRPG.EventBus.emit('FULL_SET_SECT_TICKET_AWARDED', { ticket });
     }
     return ticket;
+  }
+
+  /**
+   * 检查并触发【天道造化熔炉】觉醒 (解锁条件：全身6大装备齐备且全部达 Q4 灵品及以上)
+   */
+  checkAutoSmeltUnlock(silent = false) {
+    if (this.hasUnlockedAutoSmelt) return true;
+    if (!this.player || !this.player.checkFullSetEquipped) return false;
+
+    const fullSet = this.player.checkFullSetEquipped('Q4');
+    if (fullSet.isGraduated) {
+      this.hasUnlockedAutoSmelt = true;
+      if (this.inventory) {
+        if (!this.inventory.autoSalvageQualities || !this.inventory.autoSalvageQualities.includes('Q3')) {
+          this.inventory.autoSalvageQualities = ['Q1', 'Q2', 'Q3'];
+        }
+        this.inventory.autoSalvageEnabled = true;
+      }
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(this, true);
+      }
+      if (!silent) {
+        this.triggerAutoSmeltAwakeningModal();
+      }
+      window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('AUTO_SMELT_UNLOCKED', {
+        purpleCount: fullSet.purpleCount || 6,
+        totalSlots: 6
+      });
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 弹出天道造化熔炉觉醒仪式弹窗
+   */
+  triggerAutoSmeltAwakeningModal() {
+    const modal = document.getElementById('modal-smelt-awakened');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('BREAKTHROUGH');
+    }
+    const viewSlots = document.getElementById('view-slots');
+    if (viewSlots) {
+      viewSlots.classList.remove('view-slots-shake');
+      void viewSlots.offsetWidth;
+      viewSlots.classList.add('view-slots-shake');
+    }
+    window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('SHOW_TOAST', {
+      message: '🔥【天道造化 · 神通觉醒！】乾坤造化熔炉开启，以抽养抽！',
+      type: 'gold'
+    });
   }
 
   /**
@@ -1159,6 +1214,9 @@ class GameManager {
       def: newStats.def - oldStats.def,
       hp: newStats.hp - oldStats.hp
     };
+
+    // 检查是否激活天道造化熔炉 (全身全紫 Q4+)
+    this.checkAutoSmeltUnlock();
 
     // 检查是否达成【六道道基大圆满】(6槽全满 Q4 法器及以上) 与 【击败当前守关妖王】
     const fullSetStatus = this.player.checkFullSetEquipped('Q4');

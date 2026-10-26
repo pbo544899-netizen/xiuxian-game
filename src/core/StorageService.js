@@ -54,6 +54,7 @@ class StorageService {
           hasCompletedSlotsReturnFTUE: !!gameManager.hasCompletedSlotsReturnFTUE,
           hasCompletedTrialFTUE: !!gameManager.hasCompletedTrialFTUE,
           hasCompletedCaveFTUE: !!gameManager.hasCompletedCaveFTUE,
+          hasUnlockedAutoSmelt: !!gameManager.hasUnlockedAutoSmelt,
           defeatStreak: gameManager.defeatStreak,
           freeReliefCount: gameManager.freeReliefCount,
           lastReliefDate: gameManager.lastReliefDate,
@@ -181,6 +182,9 @@ class StorageService {
       }
       if (typeof data.hasCompletedCaveFTUE === 'boolean') {
         gameManager.hasCompletedCaveFTUE = data.hasCompletedCaveFTUE;
+      }
+      if (typeof data.hasUnlockedAutoSmelt === 'boolean') {
+        gameManager.hasUnlockedAutoSmelt = data.hasUnlockedAutoSmelt;
       }
 
       if (typeof data.waterTankProgress === 'number') {

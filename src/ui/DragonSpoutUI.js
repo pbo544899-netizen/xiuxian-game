@@ -847,22 +847,80 @@
   const chkFilterAutoEquip = document.getElementById('chk-filter-auto-equip');
   const chkFilterSmeltLesser = document.getElementById('chk-filter-smelt-lesser');
 
+  function updateSmeltButtonState() {
+    const btn = document.getElementById('btn-open-filter-settings');
+    if (!btn || !gameManager || !gameManager.player) return;
+
+    const fullSet = gameManager.player.checkFullSetEquipped('Q4');
+    const isUnlocked = !!gameManager.hasUnlockedAutoSmelt || fullSet.isGraduated;
+
+    const iconSpan = btn.querySelector('.filter-icon');
+    const textSpan = btn.querySelector('.filter-text');
+
+    if (!isUnlocked) {
+      btn.classList.remove('unlocked');
+      btn.classList.add('locked');
+      const cur = fullSet.purpleCount || 0;
+      if (iconSpan) iconSpan.innerText = '🔒';
+      if (textSpan) textSpan.innerText = `熔炉 (${cur}/6)`;
+      btn.title = `【天道造化熔炉】未激活：需全身 6 大法宝齐备且皆达【灵品（紫）】(当前 ${cur}/6)`;
+    } else {
+      btn.classList.remove('locked');
+      btn.classList.add('unlocked');
+      if (iconSpan) iconSpan.innerText = '🔥';
+      if (textSpan) textSpan.innerText = '智能熔炉';
+      btn.title = '【天道造化熔炉】已觉醒：点击配置以抽养抽智能过滤规则';
+    }
+  }
+
   function syncFilterSettingsUI() {
     const inv = gameManager && gameManager.inventory;
     const dcm = gameManager && gameManager.dragonCabinetManager;
-    if (chkFilterQ1 && inv) chkFilterQ1.checked = (inv.autoSalvageQualities || []).includes('Q1');
-    if (chkFilterQ2 && inv) chkFilterQ2.checked = (inv.autoSalvageQualities || []).includes('Q2');
-    if (chkFilterQ3 && inv) chkFilterQ3.checked = (inv.autoSalvageQualities || []).includes('Q3');
-    if (chkFilterAutoEquip && dcm) chkFilterAutoEquip.checked = !!dcm.autoSettings.autoEquipBetter;
-    if (chkFilterSmeltLesser && dcm) chkFilterSmeltLesser.checked = !!dcm.autoSettings.autoSmeltLesser;
+    // 默认启用 Q1, Q2, Q3 熔炼
+    const qualities = inv ? (inv.autoSalvageQualities || ['Q1', 'Q2', 'Q3']) : ['Q1', 'Q2', 'Q3'];
+    if (chkFilterQ1) chkFilterQ1.checked = qualities.includes('Q1');
+    if (chkFilterQ2) chkFilterQ2.checked = qualities.includes('Q2');
+    if (chkFilterQ3) chkFilterQ3.checked = qualities.includes('Q3');
+    if (chkFilterAutoEquip && dcm) chkFilterAutoEquip.checked = (dcm.autoSettings.autoEquipBetter !== false);
+    if (chkFilterSmeltLesser && dcm) chkFilterSmeltLesser.checked = (dcm.autoSettings.autoSmeltLesser !== false);
   }
 
   if (btnOpenFilterSettings && modalFilterSettings) {
     btnOpenFilterSettings.addEventListener('click', () => {
+      const fullSet = gameManager && gameManager.player && gameManager.player.checkFullSetEquipped('Q4');
+      const isUnlocked = !!(gameManager && gameManager.hasUnlockedAutoSmelt) || (fullSet && fullSet.isGraduated);
+
+      if (!isUnlocked) {
+        const cur = (fullSet && fullSet.purpleCount) || 0;
+        showFloatingNotice(`【天道造化熔炉】尚未激活：需全身 6 大法宝齐备且皆达【灵品（紫）】(当前 ${cur}/6) 方可觉醒！`, '#ffd700');
+        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('CLICK');
+        }
+        return;
+      }
+
       syncFilterSettingsUI();
       modalFilterSettings.classList.remove('hidden');
     });
   }
+
+  const btnConfirmSmeltAwakened = document.getElementById('btn-confirm-smelt-awakened');
+  const modalSmeltAwakened = document.getElementById('modal-smelt-awakened');
+  if (btnConfirmSmeltAwakened && modalSmeltAwakened) {
+    btnConfirmSmeltAwakened.addEventListener('click', () => {
+      modalSmeltAwakened.classList.add('hidden');
+      updateSmeltButtonState();
+      if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('CLICK');
+      }
+    });
+  }
+
+  if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+    window.SlotsRPG.EventBus.on('PLAYER_EQUIPMENT_CHANGED', () => updateSmeltButtonState());
+    window.SlotsRPG.EventBus.on('AUTO_SMELT_UNLOCKED', () => updateSmeltButtonState());
+  }
+  setTimeout(() => updateSmeltButtonState(), 100);
 
   if (btnCloseFilterSettings && modalFilterSettings) {
     btnCloseFilterSettings.addEventListener('click', () => {

@@ -522,10 +522,11 @@ class PlayerModel {
    */
   checkFullSetEquipped(minQuality = 'Q4') {
     const allSlots = ['weapon', 'armor', 'ring', 'hat', 'boots', 'belt'];
-    const qualityRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7 };
+    const qualityRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
     const targetRank = qualityRanks[minQuality] || 4;
 
     let count = 0;
+    let purpleCount = 0;
     let minRankFound = 99;
     let lowestQuality = 'Q1';
     const equippedSlots = {};
@@ -535,10 +536,14 @@ class PlayerModel {
       if (eq) {
         count++;
         equippedSlots[slot] = eq;
-        const rk = qualityRanks[eq.qualityCode] || 1;
+        const qCode = (eq.qualityCode || eq.quality || 'Q1').toUpperCase();
+        const rk = qualityRanks[qCode] || 1;
+        if (rk >= targetRank) {
+          purpleCount++;
+        }
         if (rk < minRankFound) {
           minRankFound = rk;
-          lowestQuality = eq.qualityCode;
+          lowestQuality = qCode;
         }
       }
     });
@@ -550,6 +555,7 @@ class PlayerModel {
       isFullSet,
       isGraduated,
       count,
+      purpleCount,
       total: allSlots.length,
       equippedSlots,
       lowestQuality: isFullSet ? lowestQuality : null

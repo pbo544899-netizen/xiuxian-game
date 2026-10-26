@@ -13,9 +13,9 @@ class InventoryManager {
     this.overflowBuffer = [];        // 6 格溢出造化暂存槽
     this.maxOverflow = 6;
 
-    // 自动分解开关 (默认开启凡铁/灵器自动分解，保障连推心流)
+    // 自动分解开关 (默认开启凡铁/灵器/宝器自动分解，保障连推心流)
     this.autoSalvageEnabled = false; 
-    this.autoSalvageQualities = ['Q1', 'Q2']; 
+    this.autoSalvageQualities = ['Q1', 'Q2', 'Q3']; 
 
     // 历史已获得物品集合 (用于判断是否是首次获得的新物品图鉴)
     this.discoveredItemKeys = new Set();

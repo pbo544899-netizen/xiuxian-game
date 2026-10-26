@@ -89,9 +89,9 @@
                 <span class="showcase-rule-hint">品阶居前 · 满额自动存入乾坤袋</span>
               </div>
               <div class="showcase-actions">
-                <button id="btn-open-filter-settings" class="btn-filter-settings" title="天机智能熔炼与自动分解过滤设置">
-                  <span class="filter-icon">⚙️</span>
-                  <span class="filter-text">过滤</span>
+                <button id="btn-open-filter-settings" class="btn-filter-settings locked" title="天道造化熔炉未激活：需全身6件法宝皆达灵品（紫装）">
+                  <span class="filter-icon">🔒</span>
+                  <span class="filter-text">熔炉 (0/6)</span>
                 </button>
                 <label class="auto-collect-toggle" title="抽奖完成后自动将宝萃收纳至乾坤袋">
                   <input type="checkbox" id="chk-auto-collect" />
@@ -850,27 +850,27 @@
       <div class="modal-card filter-settings-modal-card">
         <button id="btn-close-filter-settings" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
-          <h2 class="modal-title">⚙️ 天机熔炼 · 智能过滤</h2>
+          <h2 class="modal-title">🔥 天道造化熔炉 · 智能以抽养抽</h2>
         </div>
         <div class="filter-hint-banner">
-          💡 开启后，推演获得的指定装备将自动熔炼折算为机缘，绝不占背包空间！
+          💡 开启后，推演获得的指定装备将即时熔炼为灵机，绝不占背包，永动以抽养抽！
         </div>
         <div class="filter-options-group">
-          <div class="filter-group-title">自动熔炼品阶设定</div>
+          <div class="filter-group-title">自动熔炼品阶设定 (推演即炼化为灵机)</div>
           <label class="filter-checkbox-row">
             <input type="checkbox" id="chk-filter-q1" checked />
             <span class="filter-badge badge-q1">凡铁 (Q1 灰白)</span>
-            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+            <span class="filter-row-desc">每件熔炼返还 +5 灵机</span>
           </label>
           <label class="filter-checkbox-row">
-            <input type="checkbox" id="chk-filter-q2" />
+            <input type="checkbox" id="chk-filter-q2" checked />
             <span class="filter-badge badge-q2">灵器 (Q2 碧绿)</span>
-            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+            <span class="filter-row-desc">每件熔炼返还 +15 灵机</span>
           </label>
           <label class="filter-checkbox-row">
-            <input type="checkbox" id="chk-filter-q3" />
+            <input type="checkbox" id="chk-filter-q3" checked />
             <span class="filter-badge badge-q3">宝器 (Q3 幽蓝)</span>
-            <span class="filter-row-desc">产出即熔炼折算机缘</span>
+            <span class="filter-row-desc">每件熔炼返还 +25 灵机 (再来一抽！)</span>
           </label>
         </div>
         <div class="filter-options-group">
@@ -888,6 +888,31 @@
         </div>
         <div class="modal-actions">
           <button id="btn-save-filter-settings" class="btn-primary">保存并生效</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗: 天道造化熔炉觉醒仪式 -->
+    <div id="modal-smelt-awakened" class="modal-overlay hidden">
+      <div class="modal-card smelt-awakened-modal-card">
+        <div class="modal-awakened-burst-glow"></div>
+        <div class="modal-header">
+          <h2 class="modal-title">🔥 天道造化 · 神通觉醒！</h2>
+        </div>
+        <div class="modal-awakened-icon-wrap">
+          <div class="furnace-flame-icon">🏺</div>
+          <div class="furnace-sparks"></div>
+        </div>
+        <div class="modal-awakened-headline">
+          【灵品大圆满 · 乾坤造化炉】
+        </div>
+        <div class="modal-awakened-desc">
+          检测到宿主全身六大本命法宝皆达【灵品（紫装）大圆满】！<br/>
+          修仙系统专属神通【天道造化熔炉】正式觉醒！<br/>
+          <span class="highlight-gold">凡铁、灵器、宝器推演即熔炼，直接返还天道灵机！</span>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-confirm-smelt-awakened" class="btn-primary">领悟神通 (开启以抽养抽)</button>
         </div>
       </div>
     </div>

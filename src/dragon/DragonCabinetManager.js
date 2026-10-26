@@ -114,6 +114,37 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     /**
+     * 判定装备是否应被【天道造化熔炉】智能即时熔炼以抽养抽
+     * 核心规则：
+     * 1. 必须已达成【全身全紫 Q4+】大圆满解锁条件 (hasUnlockedAutoSmelt === true)
+     * 2. 战力提升装备绝不熔炼！
+     * 3. 凡铁(Q1)、灵器(Q2)、宝器(Q3) 默认即时回炉返还灵机，永动以抽养抽
+     */
+    shouldAutoSmeltItem(item) {
+      if (!item) return false;
+      if (!this.gameManager || !this.gameManager.hasUnlockedAutoSmelt) return false;
+
+      // 战力提升装备绝不熔炼
+      const comp = this._calculateComparison(item);
+      if (comp && comp.isUpgrade) return false;
+
+      const qCode = (item.qualityCode || item.quality || 'Q1').toUpperCase();
+      const autoQualities = (this.gameManager.inventory && this.gameManager.inventory.autoSalvageQualities && this.gameManager.inventory.autoSalvageQualities.length > 0)
+        ? this.gameManager.inventory.autoSalvageQualities
+        : ['Q1', 'Q2', 'Q3'];
+
+      if (autoQualities.includes(qCode)) {
+        return true;
+      }
+
+      if (this.autoSettings && this.autoSettings.autoSmeltLesser && ['Q1', 'Q2', 'Q3', 'Q4'].includes(qCode)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    /**
      * 预测奖励飞向的目标槽位索引 (在实际落地插入前用于弹道计算，避免提前修改 DOM 槽位)
      * @param {'left'|'right'|Object} target
      * @returns {number} 0 ~ 11
@@ -125,6 +156,10 @@ window.SlotsRPG = window.SlotsRPG || {};
         rawData = queueItem ? queueItem.data : null;
       }
       if (!rawData) return Math.min(11, this.slots.length);
+
+      if (rawData.type === 'equip' && rawData.item && this.shouldAutoSmeltItem(rawData.item)) {
+        return -1; // 熔炉炼化目标 (指向下方灵机/控制台)
+      }
 
       let stackKey = null;
       if (rawData.type === 'energy') stackKey = 'energy';
@@ -230,6 +265,46 @@ window.SlotsRPG = window.SlotsRPG || {};
 
       if (rawData.type === 'equip' && rawData.item) {
         const item = rawData.item;
+
+        // 判定是否激活天道造化熔炉即时以抽养抽
+        if (this.shouldAutoSmeltItem(item)) {
+          const mult = (this.gameManager && this.gameManager.betMultiplier) || 1;
+          const qCode = (item.qualityCode || item.quality || 'Q1').toUpperCase();
+          let refundEnergy = (item.salvageEnergy || 5) * mult;
+          if (qCode === 'Q1') refundEnergy = 5 * mult;
+          else if (qCode === 'Q2') refundEnergy = 15 * mult;
+          else if (qCode === 'Q3') refundEnergy = 25 * mult;
+          else if (qCode === 'Q4') refundEnergy = 50 * mult;
+
+          this.gameManager.energy += refundEnergy;
+
+          const elLingji = document.getElementById('current-lingji-val');
+          if (elLingji) {
+            elLingji.innerText = this.gameManager.energy;
+            elLingji.classList.remove('lingji-gain-pulse');
+            void elLingji.offsetWidth;
+            elLingji.classList.add('lingji-gain-pulse');
+          }
+
+          if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+            window.SlotsRPG.SoundEffects.play('SALVAGE');
+          }
+
+          const renderer = this.gameManager ? this.gameManager.renderer : null;
+          if (renderer && renderer.addFloatingText && !options.silentFloating) {
+            renderer.addFloatingText(`♻️【造化熔炼】${item.name} 炼化为 +${refundEnergy} 灵机！`, '#ffd700');
+          }
+
+          window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ITEM_SALVAGED', {
+            item: item,
+            energy: refundEnergy,
+            autoSmelt: true
+          });
+
+          this.gameManager.emitStateChange();
+          return -1; // 不占 12 格宝萃展架
+        }
+
         this.pendingEquip = item;
         this.comparisonData = this._calculateComparison(item);
 
@@ -695,6 +770,10 @@ window.SlotsRPG = window.SlotsRPG || {};
       });
 
       this.gameManager.emitStateChange();
+
+      if (this.gameManager && this.gameManager.checkAutoSmeltUnlock) {
+        this.gameManager.checkAutoSmeltUnlock();
+      }
 
       const powerDiff = this.comparisonData ? this.comparisonData.powerDiff : 0;
       this.pendingEquip = null;

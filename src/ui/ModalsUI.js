@@ -1635,6 +1635,9 @@
 
   if (btnOpenFilterSettings && modalFilterSettings) {
     btnOpenFilterSettings.addEventListener('click', () => {
+      const fullSet = gameManager && gameManager.player && gameManager.player.checkFullSetEquipped('Q4');
+      const isUnlocked = !!(gameManager && gameManager.hasUnlockedAutoSmelt) || (fullSet && fullSet.isGraduated);
+      if (!isUnlocked) return;
       syncFilterSettingsUI();
       modalFilterSettings.classList.remove('hidden');
     });

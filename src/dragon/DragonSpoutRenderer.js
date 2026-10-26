@@ -324,6 +324,30 @@ window.SlotsRPG = window.SlotsRPG || {};
       }
     }
 
+    _triggerLingjiImpact() {
+      const coord = this._getSlotCoordinates('current-lingji-val', { x: (this.width || 360) * 0.5, y: (this.height || 400) * 0.88 });
+      for (let i = 0; i < 22; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2.5 + Math.random() * 4.0;
+        this.particles.push({
+          x: coord.x,
+          y: coord.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.5,
+          life: 0.8,
+          decay: 0.045,
+          color: Math.random() < 0.6 ? '#ffd700' : '#00e5ff',
+          size: 2.5 + Math.random() * 3.0
+        });
+      }
+      const elLingji = document.getElementById('current-lingji-val');
+      if (elLingji) {
+        elLingji.classList.remove('lingji-gain-pulse');
+        void elLingji.offsetWidth;
+        elLingji.classList.add('lingji-gain-pulse');
+      }
+    }
+
     spawnFissionParticles(slotId, color = '#ffd700') {
       const coord = this._getSlotCoordinates(slotId, { x: this.width * 0.5, y: this.height * 0.65 });
       for (let i = 0; i < 40; i++) {
@@ -477,8 +501,11 @@ window.SlotsRPG = window.SlotsRPG || {};
           if (window.gameManager && window.gameManager.dragonCabinetManager) {
             predictedIdx2 = window.gameManager.dragonCabinetManager.predictTargetSlotIndex('left');
           }
-          const targetSlot2 = `dragon-slot-${predictedIdx2}`;
-          const targetCoord2 = this._getSlotCoordinates(targetSlot2, targetCoordA);
+          const isSmelted = predictedIdx2 === -1;
+          const targetSlot2 = isSmelted ? 'current-lingji-val' : `dragon-slot-${predictedIdx2}`;
+          const targetCoord2 = isSmelted 
+            ? this._getSlotCoordinates('current-lingji-val', { x: (this.width || 360) * 0.5, y: (this.height || 400) * 0.88 })
+            : this._getSlotCoordinates(targetSlot2, targetCoordA);
 
           const proj2 = {
             startX: this.dragonMouth.x - 12,
@@ -489,7 +516,7 @@ window.SlotsRPG = window.SlotsRPG || {};
             controlY: this.dragonMouth.y + 35,
             startTime: performance.now(),
             duration: shotDuration,
-            color: '#00e5ff',
+            color: isSmelted ? '#ffd700' : '#00e5ff',
             targetSlotId: targetSlot2,
             impactFired: false
           };
@@ -498,16 +525,22 @@ window.SlotsRPG = window.SlotsRPG || {};
           // 实体宝物飞行动画
           this._spawnSpoutFlyer(spinResult.leftCabinet, targetSlot2, shotDuration, 0, false);
 
-          // 第2发落地瞬间：才真正将宝物揭晓放入临时背包
+          // 第2发落地瞬间：才真正将宝物揭晓放入临时背包或熔炼入灵池
           setTimeout(() => {
             let actualIdx2 = predictedIdx2;
             if (window.gameManager && window.gameManager.dragonCabinetManager) {
               actualIdx2 = window.gameManager.dragonCabinetManager.revealSlot('left', { isBump: true });
-              window.gameManager.dragonCabinetManager.revealSlotImpact(actualIdx2, false);
             }
-            this._triggerSlotImpact(`dragon-slot-${actualIdx2}`, '#00e5ff');
+            if (actualIdx2 === -1) {
+              this._triggerLingjiImpact();
+            } else {
+              if (window.gameManager && window.gameManager.dragonCabinetManager) {
+                window.gameManager.dragonCabinetManager.revealSlotImpact(actualIdx2, false);
+              }
+              this._triggerSlotImpact(`dragon-slot-${actualIdx2}`, '#00e5ff');
+            }
             if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
-              window.SlotsRPG.SoundEffects.play('REEL_STOP');
+              window.SlotsRPG.SoundEffects.play(actualIdx2 === -1 ? 'SALVAGE' : 'REEL_STOP');
             }
           }, shotDuration);
         }, shotDelay);
@@ -719,6 +752,8 @@ window.SlotsRPG = window.SlotsRPG || {};
         const flightDuration = 260;
         const stagger = 40; // 每发间隔 40ms，节奏紧凑更具冲击力
         const insertedItemsSet = new Set();
+        let totalSmeltedCount = 0;
+        let totalSmeltedEnergy = 0;
 
         for (let i = 0; i < volleyCount; i++) {
           const delay = i * stagger;
@@ -762,8 +797,19 @@ window.SlotsRPG = window.SlotsRPG || {};
                   isTenPull: true,
                   isEpic: isItemEpic
                 });
-                insertedItemsSet.add(i);
-                this._triggerSlotImpact(`dragon-slot-${insertedIdx}`, orbColor, isItemEpic);
+                if (insertedIdx === -1) {
+                  totalSmeltedCount++;
+                  const qCode = (rawItem.quality || (rawItem.item && (rawItem.item.qualityCode || rawItem.item.quality)) || 'Q1').toUpperCase();
+                  let rEnergy = 5;
+                  if (qCode === 'Q2') rEnergy = 15;
+                  else if (qCode === 'Q3') rEnergy = 25;
+                  else if (qCode === 'Q4') rEnergy = 50;
+                  totalSmeltedEnergy += rEnergy;
+                  this._triggerLingjiImpact();
+                } else {
+                  insertedItemsSet.add(i);
+                  this._triggerSlotImpact(`dragon-slot-${insertedIdx}`, orbColor, isItemEpic);
+                }
               } else {
                 this._triggerSlotImpact(targetSlotId, orbColor, isItemEpic);
               }
@@ -808,6 +854,9 @@ window.SlotsRPG = window.SlotsRPG || {};
           }
 
           // 飘字汇总看板
+          if (totalSmeltedCount > 0) {
+            this.addFloatingText(`♻️ 乾坤熔炉炼化凡阶 ${totalSmeltedCount} 件，回血 +${totalSmeltedEnergy} 灵机！`, '#ffd700');
+          }
           if (summary.bestEquip && summary.maxPowerDiff > 0) {
             this.addFloatingText(`⚡ 周天十连大爆！斩获【${summary.bestEquip.name}】！`, '#ffd700');
             this.addFloatingText(`⚡ 战力飙升 +${summary.maxPowerDiff} ⬆`, '#38ef7d');
