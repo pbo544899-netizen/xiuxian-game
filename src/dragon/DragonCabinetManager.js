@@ -416,7 +416,11 @@ window.SlotsRPG = window.SlotsRPG || {};
 
       while (this.slots.length > this.maxSlots) {
         const overflow = this.slots.pop();
-        this._handleOverflow(overflow);
+        const success = this._handleOverflow(overflow);
+        if (success === false) {
+          this.slots.push(overflow);
+          break;
+        }
       }
 
       const isEpic = options.isEpic !== undefined ? options.isEpic : !!(normalized && (
@@ -439,26 +443,31 @@ window.SlotsRPG = window.SlotsRPG || {};
     }
 
     _handleOverflow(overflowItem) {
-      if (!overflowItem) return;
+      if (!overflowItem) return true;
       const gm = this.gameManager;
-      if (!gm) return;
+      if (!gm) return true;
 
       const itemName = overflowItem.name || (overflowItem.item && overflowItem.item.name) || '天机宝萃';
 
-      // 1. 真实物品妥善转存入玩家乾坤袋，杜绝任何资源丢失
+      // 1. 真实物品转存入乾坤袋 (方案1: 背包满时安全拦截，不丢件不黑盒)
       if (overflowItem.type === 'equip' && overflowItem.item) {
         if (gm.inventory) {
-          gm.inventory.addItem(overflowItem.item);
+          const res = gm.inventory.addItem(overflowItem.item);
+          if (!res.success) {
+            return false;
+          }
         }
       } else if (overflowItem.type === 'pill' || (overflowItem.item && overflowItem.item.type === 'pill')) {
         const item = overflowItem.item || (window.SlotsRPG && window.SlotsRPG.ItemModel && window.SlotsRPG.ItemModel.createPill(overflowItem.subType || 'exp', overflowItem.count || 1));
         if (item && gm.inventory) {
-          gm.inventory.addItem(item);
+          const res = gm.inventory.addItem(item);
+          if (!res.success) return false;
         }
       } else if (overflowItem.type === 'rune' || (overflowItem.item && overflowItem.item.type === 'rune')) {
         const item = overflowItem.item || (window.SlotsRPG && window.SlotsRPG.ItemModel && window.SlotsRPG.ItemModel.createTalisman(overflowItem.symbolId || 'SYM_01', overflowItem.count || 1));
         if (item && gm.inventory) {
-          gm.inventory.addItem(item);
+          const res = gm.inventory.addItem(item);
+          if (!res.success) return false;
         }
       } else if (overflowItem.type === 'energy') {
         const energyGain = overflowItem.totalEnergy || overflowItem.singleGain || (overflowItem.count ? overflowItem.count * 25 : 25);
@@ -466,7 +475,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         gm.emitStateChange();
       }
 
-      // 2. 贴心浮字提示，杜绝玩家产生“系统吃奖励/扣收益”的误解与疑虑
+      // 2. 贴心浮字提示
       if (gm.renderer && gm.renderer.addFloatingText) {
         gm.renderer.addFloatingText(`📦 宝萃已满，【${itemName}】已自动存入乾坤袋`, '#38ef7d');
       }
@@ -474,6 +483,7 @@ window.SlotsRPG = window.SlotsRPG || {};
       // 3. 触发背包红点增加与全局通知
       window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
       window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('REWARD_OVERFLOW_SAVED', { item: overflowItem });
+      return true;
     }
 
     /**
@@ -832,13 +842,33 @@ window.SlotsRPG = window.SlotsRPG || {};
      */
     collectAllToInventory() {
       if (!this.slots || this.slots.length === 0) return 0;
-      const count = this.slots.length;
-      const copy = [...this.slots];
-      for (const s of copy) {
-        this._handleOverflow(s);
+      const remainingSlots = [];
+      let collectedCount = 0;
+
+      for (const s of this.slots) {
+        const success = this._handleOverflow(s);
+        if (success !== false) {
+          collectedCount++;
+        } else {
+          remainingSlots.push(s);
+        }
       }
-      this.clear();
-      return count;
+
+      this.slots = remainingSlots;
+      this.renderSlots();
+
+      const gm = this.gameManager;
+      if (remainingSlots.length > 0) {
+        if (gm && gm.renderer && gm.renderer.addFloatingText) {
+          gm.renderer.addFloatingText(`⚠️ 乾坤袋已满，未能收纳的 ${remainingSlots.length} 件法宝保留在展架上！`, '#ff9800');
+        }
+      } else {
+        if (gm && gm.renderer && gm.renderer.addFloatingText) {
+          gm.renderer.addFloatingText('📦 天机宝萃已全数收纳归仓！', '#38ef7d');
+        }
+      }
+
+      return collectedCount;
     }
 
     clear() {

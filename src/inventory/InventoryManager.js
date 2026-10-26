@@ -10,8 +10,8 @@ class InventoryManager {
     this.capacity = initialCapacity; // 基础 24 格
     this.maxCapacity = 64;           // 扩容上限 64 格
     this.slots = new Array(this.capacity).fill(null); // 24 格槽位
-    this.overflowBuffer = [];        // 6 格溢出造化暂存槽
-    this.maxOverflow = 6;
+    this.overflowBuffer = [];        // 兼容字段已废弃 (遵循方案1: 无黑盒暂存槽)
+    this.maxOverflow = 0;
 
     // 自动分解开关 (默认开启凡铁/灵器/宝器自动分解，保障连推心流)
     this.autoSalvageEnabled = false; 
@@ -222,20 +222,10 @@ class InventoryManager {
       return { success: true, slotIndex: freeIndex, item };
     }
 
-    // 4. 第二道防线：造化暂存槽 (溢出缓冲 6 格)
-    if (this.overflowBuffer.length < this.maxOverflow) {
-      this.overflowBuffer.push(item);
-      return {
-        success: true,
-        buffered: true,
-        bufferCount: this.overflowBuffer.length,
-        item
-      };
-    }
-
-    // 5. 暂存槽也已满，必须阻断并告警
+    // 4. 方案 1: 无黑盒暂存槽，背包满时直接返回失败并标识 isBagFull
     return {
       success: false,
+      isBagFull: true,
       overflowFull: true,
       item
     };
@@ -377,13 +367,15 @@ class InventoryManager {
    * 尝试将暂存槽中的物品移入空格
    */
   flushOverflowBuffer() {
-    while (this.overflowBuffer.length > 0 && this.getFreeSlotsCount() > 0) {
-      const item = this.overflowBuffer.shift();
-      const freeIdx = this.slots.findIndex(s => s === null);
-      if (freeIdx !== -1) {
-        this.slots[freeIdx] = item;
-      }
-    }
+    // 兼容空实现 (方案1取缔黑盒暂存槽)
+  }
+
+  getFreeSlotsCount() {
+    return this.slots.filter(s => s === null).length;
+  }
+
+  isFull() {
+    return this.getFreeSlotsCount() === 0;
   }
 
   /**

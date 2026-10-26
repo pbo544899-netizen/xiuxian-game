@@ -349,6 +349,10 @@
   window.playBattleSequence = playBattleSequence;
   function playBattleSequence(battleResult) {
     if (!modalBattleArena) return;
+    if (window.gameManager && window.gameManager.isAllStorageFull && window.gameManager.isAllStorageFull()) {
+      window.gameManager.showStorageFullAlert('battle');
+      return;
+    }
     activeBattleResult = battleResult;
 
     if (battleStepTimer) {

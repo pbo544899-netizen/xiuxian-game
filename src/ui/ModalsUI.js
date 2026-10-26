@@ -536,6 +536,11 @@
     if (e) {
       e.stopPropagation();
     }
+    if (gameManager && gameManager.isAllStorageFull && gameManager.isAllStorageFull()) {
+      if (modalDemonTower) modalDemonTower.classList.add('hidden');
+      gameManager.showStorageFullAlert('battle');
+      return;
+    }
     if (modalDemonTower) modalDemonTower.classList.add('hidden');
     if (!gameManager.demonTowerManager) return;
 

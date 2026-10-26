@@ -885,12 +885,35 @@
   btnOverflowMerge.addEventListener('click', () => {
     gameManager.mergeEquipment();
     modalOverflowAlert.classList.add('hidden');
+    if (gameManager.dragonCabinetManager && gameManager.dragonCabinetManager.collectAllToInventory) {
+      gameManager.dragonCabinetManager.collectAllToInventory();
+    }
   });
 
   btnOverflowSalvage.addEventListener('click', () => {
-    gameManager.bulkSalvageEquipment(['Q1', 'Q2']);
+    gameManager.bulkSalvageEquipment(['Q1', 'Q2', 'Q3']);
     modalOverflowAlert.classList.add('hidden');
+    if (gameManager.dragonCabinetManager && gameManager.dragonCabinetManager.collectAllToInventory) {
+      gameManager.dragonCabinetManager.collectAllToInventory();
+    }
   });
+
+  const btnCloseOverflowX = document.getElementById('btn-close-overflow-x');
+  if (btnCloseOverflowX && modalOverflowAlert) {
+    btnCloseOverflowX.addEventListener('click', () => {
+      modalOverflowAlert.classList.add('hidden');
+    });
+  }
+
+  const btnOverflowGotoBag = document.getElementById('btn-overflow-goto-bag');
+  if (btnOverflowGotoBag && modalOverflowAlert) {
+    btnOverflowGotoBag.addEventListener('click', () => {
+      modalOverflowAlert.classList.add('hidden');
+      if (window.switchTab) {
+        window.switchTab('character');
+      }
+    });
+  }
 
 
 

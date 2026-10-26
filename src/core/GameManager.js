@@ -435,8 +435,51 @@ class GameManager {
   /**
    * 执行一次推演天机 (Spin)
    */
+  /**
+   * 判定乾坤袋 (24格) 与天机宝萃展架 (12格) 是否皆已彻底爆满 (方案1双满判定)
+   * @returns {boolean}
+   */
+  isAllStorageFull() {
+    const isBagFull = !this.inventory || (this.inventory.isFull ? this.inventory.isFull() : false);
+    const isCabinetFull = !this.dragonCabinetManager || (this.dragonCabinetManager.slots ? this.dragonCabinetManager.slots.length >= this.dragonCabinetManager.maxSlots : false);
+    return isBagFull && isCabinetFull;
+  }
+
+  /**
+   * 弹出双满爆仓阻断警报弹窗
+   * @param {'spin'|'battle'} source 触发来源 ('spin' 抽奖或 'battle' 挑战怪物)
+   */
+  showStorageFullAlert(source = 'spin') {
+    const modal = document.getElementById('modal-overflow-alert');
+    const descEl = document.getElementById('overflow-alert-desc');
+    if (!modal) return;
+
+    if (descEl) {
+      if (source === 'battle') {
+        descEl.innerHTML = '乾坤袋与天机宝萃展架皆已满溢，斩妖战利品将无法容纳！<br />请先进行【一键分解】或【一键升阶】腾出空间后再出鞘迎战。';
+      } else {
+        descEl.innerHTML = '乾坤袋与天机宝萃展架皆已满溢，无法容纳新的推演机缘！<br />请先进行【一键分解】或【一键升阶】腾出空间后再行推演。';
+      }
+    }
+
+    modal.classList.remove('hidden');
+    if (this.renderer && this.renderer.addFloatingText) {
+      this.renderer.addFloatingText('⚠️ 空间已满，无法容纳新奖励！', '#ff416c');
+    }
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('LEVEL_UP');
+    }
+  }
+
   executeSpin(options = {}) {
     if (this.renderer && this.renderer.isSpinning) return;
+
+    // 空间双满 (背包与展架皆满) 强阻断
+    if (this.isAllStorageFull()) {
+      this.stopAutoSpin();
+      this.showStorageFullAlert('spin');
+      return false;
+    }
 
     // 序章阶段未获神物认主时禁止转盘推演
     if (!this.isPrologueComplete && this.prologueStep < 3) {
@@ -644,6 +687,13 @@ class GameManager {
    */
   executeTenPull() {
     if (this.renderer && this.renderer.isSpinning) return false;
+
+    // 空间双满强阻断
+    if (this.isAllStorageFull()) {
+      this.stopAutoSpin();
+      this.showStorageFullAlert('spin');
+      return false;
+    }
 
     // 序章阶段未获神物认主时禁止转盘推演
     if (!this.isPrologueComplete && this.prologueStep < 3) {
@@ -1178,6 +1228,10 @@ class GameManager {
    */
   executePendingBattle() {
     if (!this.pendingBattleData) return;
+    if (this.isAllStorageFull()) {
+      this.showStorageFullAlert('battle');
+      return;
+    }
     const battleData = this.pendingBattleData;
     this.pendingBattleData = null;
     window.SlotsRPG.EventBus.emit('TRIGGER_BATTLE', battleData);

@@ -295,6 +295,12 @@
   let spinBufferPending = false;
 
   btnSpin.addEventListener('click', () => {
+    // 空间双满 (背包与展架皆满) 强阻断，引导整理
+    if (gameManager && gameManager.isAllStorageFull && gameManager.isAllStorageFull()) {
+      gameManager.showStorageFullAlert('spin');
+      return;
+    }
+
     // 检查是否处于新手系统推演首抽引导期
     const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
                          !gameManager.isPrologueComplete &&
@@ -418,6 +424,12 @@
   btnAutoSpin.addEventListener('click', () => {
     if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
       window.SlotsRPG.SoundEffects.play('CLICK');
+    }
+
+    // 空间双满强阻断
+    if (gameManager && gameManager.isAllStorageFull && gameManager.isAllStorageFull()) {
+      gameManager.showStorageFullAlert('spin');
+      return;
     }
 
     // 若新手系统推演引导仍未完成，优先聚焦唤龙台【引龙吐宝】
@@ -1213,6 +1225,11 @@
 
   // 主动挑战事件发起处理 (零消耗，随时检验换装输出与战力成长)
   function handleActiveTrialChallenge() {
+    // 空间双满强阻断 (避免战利品无法容纳)
+    if (gameManager && gameManager.isAllStorageFull && gameManager.isAllStorageFull()) {
+      gameManager.showStorageFullAlert('battle');
+      return;
+    }
     if (gameManager) {
       gameManager.hasCompletedTrialFTUE = true;
       if (window.SlotsRPG.StorageService) {

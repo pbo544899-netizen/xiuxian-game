@@ -1086,17 +1086,19 @@
       </div>
     </div>
 
-    <!-- 弹窗3: 乾坤袋爆仓报警引导弹窗 -->
+    <!-- 弹窗3: 空间已满爆仓报警引导弹窗 (双满强阻断) -->
     <div id="modal-overflow-alert" class="modal-overlay hidden">
       <div class="modal-card">
-        <h3 class="modal-title" style="color: #ff416c;">乾坤袋已满！</h3>
-        <p class="modal-desc">
-          背包与造化暂存槽（6/6）皆已占满，无法收纳更多机缘宝物！<br />
-          推演已自动暂停，请立即使用【一键升阶】或【一键分解】腾出空格。
+        <button id="btn-close-overflow-x" class="modal-close-x" aria-label="关闭">&times;</button>
+        <h3 class="modal-title" style="color: #ff416c;">📦 宝物空间已占满！</h3>
+        <p class="modal-desc" id="overflow-alert-desc">
+          乾坤袋与天机宝萃展架皆已满溢，无法容纳新的战利品与机缘法宝！<br />
+          请先进行【一键分解】或【一键升阶】腾出空间后再行推演或斩妖。
         </p>
         <div class="modal-actions">
-          <button id="btn-overflow-merge" class="btn-primary">一键升阶(融3合1)</button>
-          <button id="btn-overflow-salvage" class="btn-secondary">一键分解低阶</button>
+          <button id="btn-overflow-salvage" class="btn-primary">一键分解低阶</button>
+          <button id="btn-overflow-merge" class="btn-secondary">一键升阶(融3合1)</button>
+          <button id="btn-overflow-goto-bag" class="btn-secondary">前往乾坤袋</button>
         </div>
       </div>
     </div>
