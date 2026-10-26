@@ -804,7 +804,7 @@
           <div><b>心法【${skill1Name}】</b>: ${skill1Desc}</div>
           ${skill2 ? `<div style="margin-top:4px; color:#93c5fd;"><b>绝技【${skill2Name}】</b>: ${skill2Desc}</div>` : ''}
         </div>
-        <button class="btn-join-sect" data-sect-id="${sect.id}">叩问仙门 · 拜入【${sect.name}】</button>
+        <button class="btn-join-sect" data-sect-id="${sect.id}">拜入【${sect.name}】</button>
       `;
 
       const btnJoin = card.querySelector('.btn-join-sect');

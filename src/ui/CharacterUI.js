@@ -1009,14 +1009,14 @@
           if (bossRadarIcon) bossRadarIcon.innerText = '🔥';
           if (bossRadarLabel) bossRadarLabel.innerText = '守关妖王:';
           if (bossRadarName) bossRadarName.innerText = info.title;
-          if (bossRadarReqPower) bossRadarReqPower.innerText = `推荐战力 ${reqPower}`;
+          if (bossRadarReqPower) bossRadarReqPower.innerText = `⚡ ${reqPower}`;
 
           if (bossRadarFill) {
             bossRadarFill.style.width = `${pct}%`;
             bossRadarFill.classList.toggle('ready', isReady);
           }
           if (bossRadarProgressText) {
-            bossRadarProgressText.innerText = `战力达成度: ${pct}% (${curPower} / ${reqPower})`;
+            bossRadarProgressText.innerText = `达成度: ${pct}% (${curPower}/${reqPower})`;
           }
 
           if (bossRadarStatus) {
@@ -1050,14 +1050,14 @@
           if (bossRadarIcon) bossRadarIcon.innerText = info.tier === 'elite' ? '👹' : '🐾';
           if (bossRadarLabel) bossRadarLabel.innerText = `试炼第${info.stageIndex}关:`;
           if (bossRadarName) bossRadarName.innerText = info.title;
-          if (bossRadarReqPower) bossRadarReqPower.innerText = `推荐战力 ${reqPower}`;
+          if (bossRadarReqPower) bossRadarReqPower.innerText = `⚡ ${reqPower}`;
 
           if (bossRadarFill) {
             bossRadarFill.style.width = `${pct}%`;
             bossRadarFill.classList.toggle('ready', isReady);
           }
           if (bossRadarProgressText) {
-            bossRadarProgressText.innerText = `战力达成度: ${pct}% (${curPower} / ${reqPower})`;
+            bossRadarProgressText.innerText = `达成度: ${pct}% (${curPower}/${reqPower})`;
           }
 
           if (bossRadarStatus) {
@@ -1083,7 +1083,7 @@
           if (btnBossRadarChallenge) {
             btnBossRadarChallenge.disabled = false;
             btnBossRadarChallenge.classList.remove('disabled');
-            btnBossRadarChallenge.innerText = isReady ? `⚔️ 拔剑斩妖 (第${info.stageIndex}关)` : `⚔️ 试剑第${info.stageIndex}关`;
+            btnBossRadarChallenge.innerText = isReady ? `⚔️ 斩妖 (${info.stageIndex}关)` : `⚔️ 试剑 (${info.stageIndex}关)`;
             btnBossRadarChallenge.classList.toggle('pulse-gold', isReady);
           }
         }

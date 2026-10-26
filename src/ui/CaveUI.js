@@ -86,15 +86,15 @@
         btnCaveSecretRealm.classList.add('ready');
         btnCaveSecretRealm.classList.remove('exhausted');
         if (caveRealmDailyBadge) {
-          caveRealmDailyBadge.innerHTML = '✨ 灵泉圆满 · 今日可采撷 (1/1)';
+          caveRealmDailyBadge.innerHTML = '✨ 今日可采 (1/1)';
           caveRealmDailyBadge.style.color = '#38bdf8';
         }
-        if (caveRealmBtnAction) caveRealmBtnAction.innerText = '采撷造化 ➔';
+        if (caveRealmBtnAction) caveRealmBtnAction.innerText = '采撷 ➔';
       } else {
         btnCaveSecretRealm.classList.remove('ready');
         btnCaveSecretRealm.classList.add('exhausted');
         if (caveRealmDailyBadge) {
-          caveRealmDailyBadge.innerHTML = '⌛ 灵泉凝结中 · 明日辰时复苏 (0/1)';
+          caveRealmDailyBadge.innerHTML = '⌛ 凝结中 · 明日复苏 (0/1)';
           caveRealmDailyBadge.style.color = '#94a3b8';
         }
         if (caveRealmBtnAction) caveRealmBtnAction.innerText = '已采撷';
@@ -108,12 +108,12 @@
       const elFloor = document.getElementById('tower-current-floor-tag');
       const elBoss = document.getElementById('tower-boss-name');
       const elPower = document.getElementById('tower-req-power');
-      if (elFloor) elFloor.innerText = `平定进度: ${tower.currentFloor - 1}/50 层`;
+      if (elFloor) elFloor.innerText = `${tower.currentFloor - 1}/50层`;
       if (elBoss) {
         elBoss.innerText = `第 ${flrCfg.floor} 层 · ${flrCfg.bossName}`;
         elBoss.style.color = flrCfg.isBoss ? '#ef4444' : (flrCfg.isMilestone ? '#c084fc' : '#fca5a5');
       }
-      if (elPower) elPower.innerText = `推荐战力: ${flrCfg.reqPower}`;
+      if (elPower) elPower.innerText = `⚡ ${flrCfg.reqPower}`;
     }
 
     // 灵脉气泡角标提示：累积机缘超过 30 或产出丹药时亮起
