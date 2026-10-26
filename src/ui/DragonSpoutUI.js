@@ -132,7 +132,7 @@
       // 2. 八卦唤龙台与周天神龙机关控制
 // 15. 快速消耗档位管理已下线，统一采用固定 25 灵机与连抽次数选择器
 
-  // 16. 八卦唤龙台水缸进度与按键状态同步 (蓄满10次呈现耀眼金焰状态，支持引龙吐宝)
+  // 16. 八卦唤龙台水缸进度与按键状态同步 (蓄满10次呈现耀眼金焰状态，支持启动系统推演)
   function updateWaterTankUI() {
     const btnSpinEl = document.getElementById('btn-spin');
     const waterTankLiquid = document.getElementById('water-tank-liquid');
@@ -143,7 +143,7 @@
     const max = gameManager.waterTankMax || 10;
     let cur = gameManager.waterTankProgress || 0;
 
-    // 若处于新手引龙吐宝引导期，强制水缸蓄满 10/10，初始呈现发光就绪态
+    // 若处于新手系统推演引导期，强制水缸蓄满 10/10，初始呈现发光就绪态
     const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
                          !gameManager.isPrologueComplete &&
                          gameManager.prologueStep === 3 &&
@@ -164,13 +164,13 @@
     if (isFull) {
       btnSpinEl.classList.remove('charging-locked');
       btnSpinEl.classList.add('tank-full');
-      btnSpinEl.title = '天机已蓄满！点击引龙吐宝！';
-      if (spinBtnTitle) spinBtnTitle.innerText = '引龙吐宝';
+      btnSpinEl.title = '系统灵能已蓄满！点击启动系统推演！';
+      if (spinBtnTitle) spinBtnTitle.innerText = '系统推演';
       if (waterTankBadge) waterTankBadge.innerText = '已蓄满';
     } else {
       btnSpinEl.classList.remove('tank-full');
       btnSpinEl.classList.add('charging-locked');
-      btnSpinEl.title = `天机蓄能中 (${cur}/${max})，需蓄满10次灵能方可引龙吐宝`;
+      btnSpinEl.title = `天机蓄能中 (${cur}/${max})，需蓄满10次灵能方可启动系统推演`;
       if (spinBtnTitle) spinBtnTitle.innerText = '蓄能中';
       if (waterTankBadge) waterTankBadge.innerText = `${cur}/${max}`;
     }
@@ -223,7 +223,7 @@
     });
   }
 
-  // 引导横幅点击直接联动触发引龙吐宝
+  // 引导横幅点击直接联动触发系统推演
   const prologueSpinGuideEl = document.getElementById('prologue-spin-guide');
   if (prologueSpinGuideEl) {
     prologueSpinGuideEl.addEventListener('click', () => {
@@ -234,7 +234,7 @@
   let spinBufferPending = false;
 
   btnSpin.addEventListener('click', () => {
-    // 检查是否处于新手引龙吐宝首抽引导期
+    // 检查是否处于新手系统推演首抽引导期
     const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
                          !gameManager.isPrologueComplete &&
                          gameManager.prologueStep === 3 &&
@@ -255,7 +255,7 @@
       if (ftueGuideFingerWrap) ftueGuideFingerWrap.classList.add('hidden');
       btnSpin.classList.remove('pulse-anim');
 
-      // 释放 100% 免费引龙吐宝大招！
+      // 释放 100% 免费系统推演大招！
       gameManager.executeSpin({ isDragonSpout: true, isFreeOverride: true });
       return;
     }
@@ -359,7 +359,7 @@
       window.SlotsRPG.SoundEffects.play('CLICK');
     }
 
-    // 若新手引龙吐宝引导仍未完成，优先聚焦唤龙台【引龙吐宝】
+    // 若新手系统推演引导仍未完成，优先聚焦唤龙台【引龙吐宝】
     const isFTUEActive = !gameManager.hasCompletedFirstDragonSpoutFTUE &&
                          !gameManager.isPrologueComplete &&
                          gameManager.prologueStep === 3 &&
@@ -618,10 +618,10 @@
 
   window.SlotsRPG.EventBus.on('DRAGON_FRENZY_TRIGGERED', (data) => {
     if (renderer && renderer.addFloatingText) {
-      renderer.addFloatingText('🔥【神龙顿悟 · 狂暴吐宝】金光耀世！追加免消耗狂暴大爆！', '#ffd700');
+      renderer.addFloatingText('⚡【系统顿悟 · 狂暴推演】金光耀世！追加免消耗狂暴大爆！', '#ffd700');
     }
     const rageTitle = document.getElementById('dragon-rage-title');
-    if (rageTitle) rageTitle.innerText = '🔥【神龙顿悟】狂暴大爆中！极品现世！';
+    if (rageTitle) rageTitle.innerText = '⚡【系统顿悟】狂暴推演中！极品现世！';
 
     // 1. 龙头高能变色发光光环
     const headSprite = document.getElementById('dragon-head-sprite');
@@ -758,7 +758,7 @@
     const dcm = gameManager && gameManager.dragonCabinetManager;
     if (!dcm || !dcm.slots || dcm.slots.length === 0) {
       if (!isAuto) {
-        showFloatingNotice('临时背包空空如也，快引龙吐宝吧！', '#94a3b8');
+        showFloatingNotice('临时背包空空如也，快启动系统推演吧！', '#94a3b8');
       }
       return;
     }

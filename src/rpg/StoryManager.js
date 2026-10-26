@@ -1,6 +1,6 @@
 /**
  * StoryManager.js
- * 《修仙作弊器：造化聚宝盆》剧情驱动引擎与网文弹幕调度器
+ * 《我有一个修仙系统》剧情驱动引擎与网文弹幕调度器
  * 核心职责：
  * 1. 驱动主视口顶部作弊器神念对话气泡 (#cheat-dialog) 的实时响应与水墨淡入淡出动画
  * 2. 挂载 12 秒空闲待机神念轮播定时器，保持界面鲜活灵动
@@ -65,7 +65,7 @@
         } else if (this.gameManager.prologueStep === 2) {
           this.setCheatDialog('【林凡】：“恶兽已除，偶获上古残盘！快去乾坤袋看看...”', '林凡');
         } else if (this.gameManager.prologueStep === 3) {
-          this.setCheatDialog('【天机作弊器】：“神盘已认主！速速推演天机，本作弊器保你首抽必出顶级仙门法牒！”', '作弊器');
+          this.setCheatDialog('【修仙系统】：“系统已成功绑定！速速启动系统推演，本系统保你首抽必出顶级仙门神装！”', '系统');
         } else {
           this.getRandomChatter('idle');
         }
@@ -220,7 +220,7 @@
 
       // 作弊器觉醒认主
       bus.on('ARTIFACT_AWAKENED', () => {
-        this.setCheatDialog('【天机作弊器】：“神盘已认主！速速推演天机，本作弊器保你首抽必出顶级仙门法牒！”');
+        this.setCheatDialog('【修仙系统】：“系统已成功绑定！速速启动系统推演，本系统保你首抽必出顶级仙门神装！”');
       });
 
       // 2. 聚宝盆升阶击败妖王，截获新宗门门票 (方案 A 关键主线)
@@ -229,7 +229,7 @@
         const targetSectName = data.ticket.sectName || '未知仙门';
         
         // 立即更新顶栏气泡
-        this.setCheatDialog(`【天机作弊器】：“叮！已为宿主窃取到一枚【${targetSectName}】真传法牒！通关后可至【升仙天碑】兵解转世！”`);
+        this.setCheatDialog(`【修仙系统】：“叮！已为宿主截获一枚【${targetSectName}】真传法牒！通关后可至【升仙天碑】兵解转世！”`);
 
         // 弹出聊天软件式剧情对话框
         this.triggerChapter('pot_promoted_ticket', null, { sectName: targetSectName });
@@ -243,7 +243,7 @@
         if (breakConfig) {
           this.setCheatDialog(`【${breakConfig.speaker}】：${breakConfig.quote}`);
         } else {
-          this.setCheatDialog(`【天机作弊器】：“突破了！道行精进，本作弊器能为你薅来更丰厚的天道机缘！”`);
+          this.setCheatDialog(`【修仙系统】：“突破了！道行精进，本系统能为你推演更丰厚的天道机缘！”`);
         }
       });
 
@@ -259,7 +259,7 @@
       // 5. 兵解轮回完成
       bus.on('SAMSARA_COMPLETED', (data) => {
         const sectName = (data && data.sectName) || '新仙门';
-        this.setCheatDialog(`【天机作弊器】：“九世宿慧觉醒！20%先天道基与神装已继承，入驻【${sectName}】！”`);
+        this.setCheatDialog(`【修仙系统】：“九世宿慧觉醒！20%先天道基与神装已继承，入驻【${sectName}】！”`);
       });
 
       // 6. 白日飞升完成
@@ -308,7 +308,7 @@
             this.triggerChapter(chapterId);
           }, 400);
         } else {
-          this.setCheatDialog(`【天机作弊器】：“第 ${stage} 关妖兽荡平！宿主战力狂飙，速速挺进下一重天梯！”`);
+          this.setCheatDialog(`【修仙系统】：“第 ${stage} 关妖兽荡平！宿主战力狂飙，速速挺进下一重天梯！”`);
         }
       });
     }
@@ -318,7 +318,7 @@
      * @param {string} text - 对话文本
      * @param {string} avatarLabel - 头像标签 (默认 '作弊器')
      */
-    setCheatDialog(text, avatarLabel = '作弊器') {
+    setCheatDialog(text, avatarLabel = '系统') {
       if (!this.dom.cheatDialog) return;
 
       if (this.dom.cheatAvatar) {
@@ -475,7 +475,7 @@
       }
 
       if (this.dom.storySpeakerBadge) {
-        this.dom.storySpeakerBadge.innerText = `【天道作弊系统】· 灵识通讯`;
+        this.dom.storySpeakerBadge.innerText = `【修仙系统】· 灵识通讯`;
       }
 
       if (this.dom.storyAvatarImg) {
@@ -522,7 +522,7 @@
         avatarSrc = isSystem ? 'assets/character/cheat_system_spirit.png' : 'assets/character/hero_mortal.png';
       }
 
-      const senderName = msg.name || (isSystem ? '作弊系统' : '宿主 (林凡)');
+      const senderName = msg.name || (isSystem ? '修仙系统' : '宿主 (林凡)');
 
       // 1. 头顶聊天气泡模式：聚焦切换与头顶气泡文本动态装填
       if (this.dom.actorPlayer && this.dom.actorCheat) {
@@ -531,10 +531,10 @@
         
         if (!isSystemAwakened) {
           this.dom.actorCheat.classList.add('actor-dormant');
-          if (this.dom.actorCheatName) this.dom.actorCheatName.innerText = '作弊器 (沉眠待唤醒)';
+          if (this.dom.actorCheatName) this.dom.actorCheatName.innerText = '修仙系统 (待唤醒)';
         } else {
           this.dom.actorCheat.classList.remove('actor-dormant');
-          if (this.dom.actorCheatName) this.dom.actorCheatName.innerText = '⚡ 作弊系统';
+          if (this.dom.actorCheatName) this.dom.actorCheatName.innerText = '⚡ 修仙系统';
         }
 
         if (isSystem) {
@@ -794,9 +794,9 @@
 
       // 6. 常规状态：作弊系统高维神念指引
       const normalSystemQuotes = [
-        '“叮！修仙作弊系统运转正常！当前天机盘气运旺盛，速速推演天机，大爆神装！”',
-        '“本作弊系统已为宿主锁定天道漏洞，连续推演将大幅增加【洞天共鸣】与伏妖概率！”',
-        '“检测到宿主根骨精奇，通过推演积累修为，本作弊系统助你早日突破瓶颈、叩开仙门！”',
+        '“叮！修仙系统运转正常！当前系统气运旺盛，速速推演天机，大爆神装！”',
+        '“本系统已为宿主锁定天道机缘，连续推演将大幅增加【洞天共鸣】与伏妖概率！”',
+        '“检测到宿主根骨精奇，通过推演积累修为，本系统助你早日突破瓶颈、叩开仙门！”',
         '“宿主切记：天机推演中获得的极品符箓，可在伏妖战中作为瞬发底牌逆转乾坤！”'
       ];
       const quote = normalSystemQuotes[Math.floor(Math.random() * normalSystemQuotes.length)];

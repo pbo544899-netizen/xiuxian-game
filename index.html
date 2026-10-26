@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>修仙作弊器：造化聚宝盆</title>
+  <title>我有一个修仙系统</title>
   <!-- 模块化样式套件 (Modular CSS Suite) -->
   <link rel="stylesheet" href="css/base.css?v=2.7" />
   <link rel="stylesheet" href="css/character.css?v=2.7" />
@@ -33,11 +33,11 @@
         <div class="merit-ticket-bar" id="merit-ticket-bar" title="瞬发符">
           <span class="ticket-tag">🎫 <b id="ticket-count-text" style="color:#34e89e;">1</b></span>
         </div>
-        <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙作弊系统：点击获取神念指引与天机推演机缘">
+        <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙系统：点击获取系统指引与天道推演机缘">
           <div class="cheat-system-avatar-mini">
-            <img src="assets/character/cheat_system_spirit.png" alt="作弊系统" />
+            <img src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
           </div>
-          <span class="cheat-system-label">作弊系统</span>
+          <span class="cheat-system-label">修仙系统</span>
           <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
         </button>
         <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜 图谱</button>
@@ -62,7 +62,7 @@
             <div class="dragon-celestial-halo" id="dragon-celestial-halo"></div>
             <!-- 龙威气场色彩流转 (Calm碧蓝 -> Warm灿金 -> Blazing烈焰 -> Frenzy暴怒) -->
             <div class="dragon-rage-aura rage-calm" id="dragon-rage-aura"></div>
-            <img src="assets/dragon/dragon_head.png" alt="天工神龙" class="dragon-head-sprite" id="dragon-head-sprite" />
+            <img src="assets/dragon/dragon_head.png" alt="系统真灵法相" class="dragon-head-sprite" id="dragon-head-sprite" />
             <div class="dragon-breath-glow" id="dragon-breath-glow"></div>
             <!-- 前景：仙道瑞气祥云遮挡 (前后景深遮挡，消除下颔生硬截断感) -->
             <div class="dragon-mist-veil" id="dragon-mist-veil">
@@ -249,7 +249,7 @@
 
         <!-- 序章首推专属引导横幅 (凡人未入门派阶段在此处展示神兵必出提示) -->
         <div id="prologue-spin-guide" class="prologue-spin-guide hidden">
-          <span class="guide-text">天道馈赠：免费体验<b>【引龙吐宝】</b>，首抽必爆强力法宝神兵！</span>
+          <span class="guide-text">天道馈赠：免费体验<b>【系统推演】</b>，首抽必爆强力法宝神兵！</span>
         </div>
 
         <!-- 宗门斩妖试炼横幅 (主动挑战 1~12 关 + 守关大妖王，入宗门后开放并取代神兵必出横幅) -->
@@ -298,11 +298,11 @@
               <!-- 新手引导手指手势 (精准指向引龙吐宝按键) -->
               <div id="ftue-guide-finger-wrap" class="ftue-guide-finger-wrap hidden">
                 <div class="ftue-finger-bounce">
-                  <span class="ftue-finger-pill">点击引龙吐宝</span>
+                  <span class="ftue-finger-pill">点击系统推演</span>
                   <span class="ftue-finger-icon">👇</span>
                 </div>
               </div>
-              <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin charging-locked" title="天机蓄能中 (需蓄满10次灵能方可引龙吐宝)">
+              <button id="btn-spin" class="btn-spin btn-dragon-bagua-spin charging-locked" title="系统蓄能中 (需蓄满10次灵能方可启动系统推演)">
                 <!-- 水缸液体注满进度层 -->
                 <div class="water-tank-wrapper" id="water-tank-wrapper">
                   <div class="water-tank-liquid" id="water-tank-liquid" style="height: 0%;">
@@ -707,7 +707,7 @@
     <nav class="bottom-nav">
       <div id="tab-slots" class="nav-item tab-locked">
         <img class="nav-icon-img icon-locked" src="assets/ui/tab_locked.png" alt="未解锁" />
-        <span class="nav-label">神龙吐宝</span>
+        <span class="nav-label">修仙系统</span>
         <span class="nav-lock-tag">🔒</span>
       </div>
       <div id="tab-character" class="nav-item active">
@@ -1071,7 +1071,7 @@
         <h3 class="modal-title">灵机已竭</h3>
         <p class="modal-desc" id="relief-desc">
           当前机缘不足以驱动阵盘！<br />
-          作弊器感应天地灵涌，可引渡游离灵气补充。<br />
+          修仙系统感应天地灵涌，可引渡游离灵气补充。<br />
           （今日剩余神念灌顶: <b id="relief-count" style="color:#ffd700;">3</b> 次）
         </p>
         <div class="modal-actions">
@@ -1314,8 +1314,8 @@
         <!-- 系统通关大捷灵动点评气泡 -->
         <div class="modal-system-speech-box victory-system-box">
           <div class="modal-system-avatar-wrap">
-            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="作弊系统" />
-            <span class="modal-system-name">作弊系统</span>
+            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
+            <span class="modal-system-name">修仙系统</span>
           </div>
           <div class="modal-system-bubble">
             <p id="victory-system-comment" class="modal-system-comment">
@@ -1357,8 +1357,8 @@
         <!-- 系统战力复盘指导对白泡泡 -->
         <div class="modal-system-speech-box defeat-system-box">
           <div class="modal-system-avatar-wrap">
-            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="作弊系统" />
-            <span class="modal-system-name">作弊系统</span>
+            <img class="modal-system-avatar" src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
+            <span class="modal-system-name">修仙系统</span>
           </div>
           <div class="modal-system-bubble">
             <p id="defeat-system-comment" class="modal-system-comment">
@@ -1414,10 +1414,10 @@
         <div class="awakening-halo-wrap">
           <div class="awakening-ring-anim">☯</div>
         </div>
-        <h2 class="awakening-title">造化天机 · 作弊器认主！</h2>
+        <h2 class="awakening-title">天道造化 · 修仙系统绑定！</h2>
         <div class="awakening-lore-box">
-          <p class="awakening-lore-line">“检测到宿主凡躯逆境斩凶，上古禁忌神物【造化聚宝天机盘】觉醒认主！”</p>
-          <p class="awakening-lore-sub">夺天地之造化，侵日月之玄机。凡人无灵根又如何？以天机盘推演万法，今日方知我是我！</p>
+          <p class="awakening-lore-line">“检测到宿主凡躯逆境斩凶，无上【天道修仙系统】觉醒绑定！”</p>
+          <p class="awakening-lore-sub">夺天地之造化，侵日月之玄机。凡人无灵根又如何？得修仙系统推演万法，今日方知我是我！</p>
         </div>
         <div class="awakening-reward-box">
           <div class="reward-pill">
@@ -1430,7 +1430,7 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button id="btn-awakening-accept" class="btn-primary btn-gold pulse-anim">执掌神物 · 前往初测仙缘</button>
+          <button id="btn-awakening-accept" class="btn-primary btn-gold pulse-anim">绑定系统 · 前往初测仙缘</button>
         </div>
       </div>
     </div>
@@ -1905,7 +1905,7 @@
       <div class="modal-card samsara-settlement-card">
         <div class="samsara-reincarnate-halo">⚡</div>
         <h2 class="samsara-title" id="samsara-preview-title">兵解转世 · 踏入新宗</h2>
-        <p class="samsara-subtitle" id="samsara-preview-subtitle">天机作弊器破壁引渡，神魂无损跨门派重修！</p>
+        <p class="samsara-subtitle" id="samsara-preview-subtitle">修仙系统破壁引渡，神魂无损跨门派重修！</p>
         
         <div class="samsara-summary-grid">
           <div class="samsara-summary-item full-width">
@@ -2080,7 +2080,7 @@
                 <span id="system-bubble-speaker-tag" class="bubble-speaker-tag">⚡ 系统 (天道阵灵)</span>
               </div>
               <div class="bubble-body-text" id="system-bubble-text">
-                叮！修仙作弊系统正式苏醒！本系统保你逆天改命！
+                叮！修仙系统正式绑定！本系统保宿主逆天改命！
               </div>
               <div class="bubble-down-pointer pointer-system"></div>
             </div>
@@ -2092,7 +2092,7 @@
             </div>
             <div class="actor-nameplate cheat-tag">
               <span class="actor-icon">⚡</span>
-              <span id="actor-cheat-name" class="actor-label">作弊系统</span>
+              <span id="actor-cheat-name" class="actor-label">修仙系统</span>
             </div>
           </div>
         </div>

@@ -10,8 +10,8 @@
  * 5. 全局自动化 FTUE 状态机调度：
  *    - 步骤 1: 凡人遇兽 · 拔刀斩凶 (#btn-prologue-battle)
  *    - 步骤 2: 恶兽已斩 · 唤醒天机古宝 (.bag-cell 造化天机盘)
- *    - 步骤 3: 作弊器认主 · 执掌神物 (#btn-awakening-accept)
- *    - 步骤 4: 散修初探 · 首次引龙吐宝 (#btn-spin)
+ *    - 步骤 3: 修仙系统绑定 · 执掌造化 (#btn-awakening-accept)
+ *    - 步骤 4: 散修初探 · 首次系统推演 (#btn-spin)
  *    - 步骤 5: 首抽爆神兵 · 一键穿戴换装 (#btn-quick-equip)
  *    - 步骤 6: 散修探寻 · 蓄力推演 (#btn-spin)
  *    - 步骤 7: 叩问仙门 · 拜入万剑宗 (.btn-join-sect)
@@ -479,7 +479,7 @@
       // 弹窗最高优先级队列 (只要任意交互弹窗处于展现状态，聚光灯强制吸附并指引其核心操作按键)
       // ========================================================
 
-      // 1. 作弊器认主弹窗
+      // 1. 修仙系统绑定弹窗
       const modalAwakening = document.getElementById('modal-awakening');
       if (modalAwakening && !modalAwakening.classList.contains('hidden')) {
         const btnAwakeningAccept = document.getElementById('btn-awakening-accept');
@@ -487,7 +487,7 @@
           this.show({
             id: 'ftue-awakening-accept',
             target: btnAwakeningAccept,
-            text: '点击执掌神物 · 前往初测仙缘！',
+            text: '绑定修仙系统 · 前往初测仙缘！',
             direction: 'down'
           });
           return;
@@ -757,10 +757,10 @@
         }
       }
 
-      // (步骤 3 作弊器认主已在顶部最高优先级处理)
+      // (步骤 3 修仙系统绑定已在顶部最高优先级处理)
 
       // ========================================================
-      // 步骤 4: 散修初探 · 首次引龙吐宝 (prologueStep 3 && spins === 0)
+      // 步骤 4: 散修初探 · 首次系统推演 (prologueStep 3 && spins === 0)
       // ========================================================
       if (!gm.isPrologueComplete && gm.prologueStep === 3 && (gm.prologueSpins || 0) === 0 && !gm.hasCompletedFirstDragonSpoutFTUE) {
         if (currentTab !== 'slots') {
@@ -769,7 +769,7 @@
             this.show({
               id: 'ftue-nav-slots-spout',
               target: tabSlots,
-              text: '天机已启！点击进入神龙吐宝',
+              text: '天机已启！点击进入【修仙系统】',
               direction: 'down'
             });
             return;
@@ -780,7 +780,7 @@
             this.show({
               id: 'ftue-first-dragon-spin',
               target: btnSpin,
-              text: '点击引龙吐宝，爆天道机缘！',
+              text: '点击【系统推演】，爆天道机缘！',
               direction: 'down'
             });
             return;
@@ -806,7 +806,7 @@
             this.show({
               id: 'ftue-nav-slots-spout',
               target: tabSlots,
-              text: '天机已启！点击进入神龙吐宝',
+              text: '天机已启！点击进入【修仙系统】',
               direction: 'down'
             });
             return;
@@ -900,7 +900,7 @@
       }
 
       // ========================================================
-      // 步骤 6: 散修探寻中 · 引导切回神龙推演 (绝对单次引导：玩家点击或切回后永久锁死不再弹出)
+      // 步骤 6: 散修探寻中 · 引导切回系统推演 (绝对单次引导：玩家点击或切回后永久锁死不再弹出)
       // ========================================================
       if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE && !gm.hasCompletedSlotsReturnFTUE) {
         // 安全前置：若战力暴涨弹窗仍处于展现状态，必须等待动画与弹窗彻底关闭后再行引导
@@ -915,7 +915,7 @@
             this.show({
               id: 'ftue-nav-slots-continue',
               target: tabSlots,
-              text: '神兵已佩，实力大增！点击前往【神龙吐宝】继续推演',
+              text: '神兵已佩，实力大增！点击前往【修仙系统】继续推演',
               direction: 'down',
               onClick: () => {
                 gm.hasCompletedSlotsReturnFTUE = true;
@@ -941,7 +941,7 @@
             this.show({
               id: 'ftue-nav-slots-trial',
               target: tabSlots,
-              text: '仙门已立！点击前往神龙试炼',
+              text: '仙门已立！点击前往系统试炼',
               direction: 'down'
             });
             return;

@@ -60,7 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function switchTab(tabName, skipSound = false) {
     if (!gameManager.isPrologueComplete) {
       if (tabName === 'slots' && gameManager.prologueStep < 3) {
-        if (window.showFloatingNotice) window.showFloatingNotice('天机盘未觉醒，请先至角色面板采药除害！');
+        if (window.showFloatingNotice) window.showFloatingNotice('修仙系统尚未绑定，请先至角色面板采药除害！');
         return;
       }
       if (tabName === 'cave') {
@@ -138,7 +138,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const isPrologueComplete = !!gameManager.isPrologueComplete;
     const prologueStep = gameManager.prologueStep || 0;
 
-    // 1. 神龙吐宝 (天机盘推演)：未完成序章且未觉醒天机盘 (prologueStep < 3) 时锁定
+    // 1. 修仙系统 (天道系统推演)：未完成序章且未觉醒天机盘 (prologueStep < 3) 时锁定
     const isSlotsLocked = !isPrologueComplete && prologueStep < 3;
     if (tabSlots) {
       const imgSlots = tabSlots.querySelector('.nav-icon-img');

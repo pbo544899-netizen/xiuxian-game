@@ -594,7 +594,7 @@
       if (reliefDesc) {
         reliefDesc.innerHTML = `
           当前机缘不足以驱动阵盘！<br />
-          作弊器感应天地灵涌，可引渡游离灵气补充。<br />
+          修仙系统感应天地灵涌，可引渡游离灵气补充。<br />
           （今日剩余神念灌顶: <b id="relief-count" style="color:#ffd700;">${rem}</b> 次）
         `;
       }
@@ -615,7 +615,7 @@
       if (reliefDesc) {
         reliefDesc.innerHTML = `
           当前机缘不足以驱动阵盘！<br />
-          作弊器今日神念灌顶纳灵次数已用尽（0次）。<br />
+          修仙系统今日神念灌顶纳灵次数已用尽（0次）。<br />
           <span style="color:#ffd700;">道友可通过打坐吐纳、炼化背包真符（聚灵符/凝神符/破魔符）换取机缘，或明日再来！</span>
         `;
       }
@@ -1444,7 +1444,7 @@
       if (modalSamsaraConfirmPreview) {
         if (ticket) {
           if (samsaraPreviewTitle) samsaraPreviewTitle.innerText = `兵解转世 · 踏入【${ticket.sectName}】`;
-          if (samsaraPreviewSubtitle) samsaraPreviewSubtitle.innerText = '天机作弊器破壁引渡，神魂无损跨宗门重修！';
+          if (samsaraPreviewSubtitle) samsaraPreviewSubtitle.innerText = '修仙系统破壁引渡，神魂无损跨宗门重修！';
           if (samsaraPreviewSect) samsaraPreviewSect.innerText = `【${ticket.sectName}】(${ticket.badge})`;
 
           // 计算核心装备转化对照表
@@ -1578,20 +1578,20 @@
   window.SlotsRPG.EventBus.on('CHEAT_TICKET_ACQUIRED', (data) => {
     const ticket = data.ticket;
     showGameNotice(
-      `【作弊器破壁】截获${ticket.tokenName}`,
+      `【修仙系统】截获${ticket.tokenName}`,
       `<div style="text-align:center; margin-bottom:12px;">
         <span style="font-size:36px; display:inline-block;">🎫</span>
         <h3 style="color:#ffd700; margin:6px 0;">截获【${ticket.sectName} · 真传法牒】！</h3>
        </div>
        <p style="line-height:1.7; color:#e2e8f0;">
         ${data.quote}<br/><br/>
-        <b>【作弊器特权激活】：</b><br/>
+        <b>【修仙系统特权激活】：</b><br/>
         1. 角色面板已开放<b>【兵解转世 · 踏入${ticket.sectName}】</b>专享通道！<br/>
         2. 兵解后<b>保留上一世 20% 总属性</b>为永久【先天道基】！<br/>
         3. 穿戴的法宝<b>无损转职转化</b>为【${ticket.sectName}】专属神装！<br/>
         4. 新一世跳过新手引导，直接以【${ticket.sectName}真传】开修！
        </p>`,
-      '⚡ 作弊器骇入天道'
+      '⚡ 修仙系统解析天道'
     );
   });
 

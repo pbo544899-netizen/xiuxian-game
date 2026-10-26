@@ -43,18 +43,18 @@ class GameManager {
     // PRD 10.5 节: 作弊器嘴炮吐槽与同门震惊动态语料库
     this.CHATTER_QUOTES = {
       idle: [
-        '【天机作弊器】：“检测到宗门外门执事在打瞌睡，悄悄顺走他一袋灵石...”',
+        '【修仙系统】：“检测到宗门外门执事在打瞌睡，悄悄顺走他一袋灵石...”',
         '【天机盘低鸣】：“天地不仁，唯推演万道方能长生！”',
-        '【作弊器提示】：“今日灵气充沛，转动天机盘或有造化机缘降临。”'
+        '【系统提示】：“今日灵气充沛，启动系统推演或有造化机缘降临。”'
       ],
       win: [
         '【同门师妹】：“天呐！师兄这随手一拨，为何竟引来天地异象？！”',
         '【太上长老】：“此子悟性逆天，实乃我宗万载不遇之麒麟仙胚！”',
-        '【天机作弊器】：“检测到天道法则被篡改，机缘正在疯狂倾泻！”'
+        '【修仙系统】：“检测到天道法则被解析，机缘正在疯狂倾泻！”'
       ],
       boss: [
         '【后山妖王】：“吼！小小人族，竟敢擅闯本座领地受死！”',
-        '【作弊器报警】：“宿主战意激荡，建议速出暴击斩妖除害！”'
+        '【系统预警】：“宿主战意激荡，建议速出暴击斩妖除害！”'
       ],
       mortal: [
         '【采药童子】：“后山野兽凶悍，柴刀虽钝，亦可斩妖！”',
@@ -73,7 +73,7 @@ class GameManager {
     this.sectTrialStage = 1;       // 当前门派主动挑战关卡进度 (1~12 关为递增试炼，13 为终极守关大 Boss)
     this.trialBestDamagePct = 0;   // 当前试炼关卡历史最高削血百分比 (0~99%)
     this.lockedSectBossSnapshot = null; // 首次生成锁定的 1.1~1.2x 动态守关 Boss 属性快照
-    this.unlockedSectTicket = null;     // 作弊器截获的新宗门入场券 { sectId, sectName, tokenName, tokenIcon, desc }
+    this.unlockedSectTicket = null;     // 系统截获的新宗门入场券 { sectId, sectName, tokenName, tokenIcon, desc }
     this.bossTicketAttempts = 0;        // 守关妖王门票掉落尝试次数 (40% -> 75% -> 100% 保底)
     this.consecutiveEmptySpins = 0;     // 连续空转次数 (用于钦天监奇遇)
     this.wantongSpinCounter = 0;        // 万通金玉满堂推演计数器 (每10次返还100灵机)
@@ -737,7 +737,7 @@ class GameManager {
             this.waterTankProgress = 0;
             if (this.dragonCabinetManager) this.dragonCabinetManager.updateRage(0);
             if (this.renderer) {
-              this.renderer.addFloatingText('🐉【神龙顿悟 · 狂暴吐宝】天地合鸣！追加免费狂暴大爆！', '#ffd700');
+              this.renderer.addFloatingText('⚡【系统顿悟 · 狂暴推演】天道共鸣！追加免费狂暴大爆！', '#ffd700');
             }
             // 执行一次 0 消耗狂暴大爆！
             this.executeSpin({ isFreeOverride: true, isGrandOverride: true });
@@ -1170,9 +1170,9 @@ class GameManager {
           this.renderer.addFloatingText('🌟 六道圆满！快去降妖伏魔斩灭守关妖王，夺取下一宗门真传法牒！', '#ffd700');
         }
         window.SlotsRPG.EventBus.emit('CHEAT_DIALOG_TRIGGER', {
-          title: '【天机作弊器 · 提示】',
-          speaker: '天道作弊器',
-          text: '“六道法宝神装已淬炼大圆满！速去降妖伏魔斩灭当前宗门的守关妖王，本作弊器便可顺天应命截获下一宗门真传法牒！”'
+          title: '【修仙系统 · 提示】',
+          speaker: '修仙系统',
+          text: '“六道法宝神装已淬炼大圆满！速去降妖伏魔斩灭当前宗门的守关妖王，本系统便可顺天应命截获下一宗门真传法牒！”'
         });
       }
     }
@@ -2629,7 +2629,7 @@ class GameManager {
     window.SlotsRPG.EventBus.emit('CHEAT_TICKET_ACQUIRED', {
       ticket,
       previousSect: curSectId,
-      quote: `【天机作弊器】：“叮！妖王陨落，六道神装大圆满！天道壁垒碎裂，本作弊器成功截获一枚【${targetSect.name}】真传法牒！宿主可随时在角色面板兵解转生，入新门派重修！”`
+      quote: `【修仙系统】：“叮！妖王陨落，六道神装大圆满！天道壁垒碎裂，本系统成功截获一枚【${targetSect.name}】真传法牒！宿主可随时在角色面板兵解转生，入新门派重修！”`
     });
 
     return ticket;
@@ -2646,7 +2646,7 @@ class GameManager {
         window.SlotsRPG.EventBus.emit('CHEAT_DIALOG_TRIGGER', {
           title: '【天无绝人之路 · 万通商行】',
           speaker: '万通大掌柜',
-          text: '“哈哈！天无绝人之路！见道友仙资不凡却困于灵机，本作弊器破空引渡万通商会，特赠道友 200 灵机解燃眉之急！并赐予【万通·富甲诸天印】，往后推演常得天降金元！”'
+          text: '“哈哈！天无绝人之路！见道友仙资不凡却困于灵机，本系统破空引渡万通商会，特赠道友 200 灵机解燃眉之急！并赐予【万通·富甲诸天印】，往后推演常得天降金元！”'
         });
         if (this.renderer) {
           this.renderer.addFloatingText('绝境奇遇！万通商行破空救济 +200灵机！', '#ffd700');
@@ -2667,7 +2667,7 @@ class GameManager {
         window.SlotsRPG.EventBus.emit('CHEAT_DIALOG_TRIGGER', {
           title: '【天地逆乱 · 窥破星宿】',
           speaker: '钦天监正',
-          text: '“数次空转，非道友运数不济，实乃天机遮蔽！本作弊器借此逆乱因果助道友窥破钦天星象！赐予【钦天·观星逆命印】，往后大战若逢致命劫数，可引动星斗时光倒流免死一次！”'
+          text: '“数次空转，非道友运数不济，实乃天机遮蔽！本系统借此逆乱因果助道友窥破钦天星象！赐予【钦天·观星逆命印】，往后大战若逢致命劫数，可引动星斗时光倒流免死一次！”'
         });
         if (this.renderer) {
           this.renderer.addFloatingText('绝境奇遇！窥破天机获【钦天·观星逆命印】！', '#bb9af7');
@@ -2691,7 +2691,7 @@ class GameManager {
         window.SlotsRPG.EventBus.emit('CHEAT_DIALOG_TRIGGER', {
           title: '【绝地逆杀 · 魔门觉醒】',
           speaker: '九死血魔尊',
-          text: '“痛快！丝血搏命，反杀妖王！骨子里的嗜血杀意正是九幽血道最纯正的仙苗！本作弊器顺应天命引动血海狂潮，赐予【九死·万劫不灭印】，往后凡伤敌者，皆可化伤为血生生不息！”'
+          text: '“痛快！丝血搏命，反杀妖王！骨子里的嗜血杀意正是九幽血道最纯正的仙苗！本系统顺应天命引动血海狂潮，赐予【九死·万劫不灭印】，往后凡伤敌者，皆可化伤为血生生不息！”'
         });
         if (this.renderer) {
           this.renderer.addFloatingText('绝境奇遇！残血反杀获【九死·万劫不灭印】！', '#ff416c');
