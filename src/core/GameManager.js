@@ -14,6 +14,8 @@ class GameManager {
     this.potSubExp = 0;            // 天机盘升级经验
     this.freeReliefCount = 3;      // 每日免费机缘救济次数
     this.lastReliefDate = this._getTodayDateString(); // 上次救济重置日期 (YYYY-MM-DD)
+    this.dailyMeditateCount = 0;   // 每日静室打坐吐纳次数
+    this.lastMeditateDate = this._getTodayDateString(); // 上次打坐重置日期标记
     this.dailySecretRealmCount = 1; // 每日洞天探寻秘境次数 (每天1次)
     this.lastSecretRealmDate = this._getTodayDateString(); // 上次探寻秘境日期
     
@@ -530,13 +532,25 @@ class GameManager {
     if (!isFreeSpin && this.energy < cost) {
       this.stopAutoSpin();
       this.checkDailyReliefReset();
+      this.checkDailyMeditateReset();
       this.checkWantongSecretEgg();
-      if (this.renderer) {
-        this.renderer.addFloatingText(`灵机不足 ${cost}，无法推演！`, '#ef4444');
+
+      const trialInfo = this.getCurrentTrialStageInfo ? this.getCurrentTrialStageInfo() : null;
+      const canCrushTrial = trialInfo && this.player && (this.player.combatPower >= trialInfo.reqPower) && (this.sectTrialStage <= 12);
+
+      if (canCrushTrial && this.renderer) {
+        this.renderer.addFloatingText('灵机暂歇？速拔剑扫荡试炼，首通大捷立送 200+ 灵机！', '#34e89e');
+      } else if (this.getRemainingMeditateCount && this.getRemainingMeditateCount() > 0 && this.renderer) {
+        this.renderer.addFloatingText('灵机告急！可点击【打坐吐纳】引天地灵气归元！', '#ffd700');
+      } else if (this.renderer) {
+        this.renderer.addFloatingText(`灵机不足 ${cost}，可静候洞天灵脉产出！`, '#ef4444');
       }
+
       window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
         canRelief: this.freeReliefCount > 0,
-        remainingRelief: this.freeReliefCount
+        remainingRelief: this.freeReliefCount,
+        canMeditate: this.getRemainingMeditateCount ? this.getRemainingMeditateCount() > 0 : true,
+        remainingMeditate: this.getRemainingMeditateCount ? this.getRemainingMeditateCount() : 5
       });
       return false;
     }
@@ -1627,6 +1641,21 @@ class GameManager {
   /**
    * 跨自然日自动重置免费机缘救济与每日洞天秘境探寻配额
    */
+  checkDailyMeditateReset() {
+    const today = this._getTodayDateString ? this._getTodayDateString() : new Date().toDateString();
+    if (this.lastMeditateDate !== today) {
+      this.lastMeditateDate = today;
+      this.dailyMeditateCount = 0;
+    }
+  }
+
+  getRemainingMeditateCount() {
+    this.checkDailyMeditateReset();
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || {};
+    const maxLimit = typeof featCfg.meditateDailyLimit === 'number' ? featCfg.meditateDailyLimit : 5;
+    return Math.max(0, maxLimit - (this.dailyMeditateCount || 0));
+  }
+
   checkDailyReliefReset() {
     const today = this._getTodayDateString();
     let reset = false;
@@ -2650,7 +2679,10 @@ class GameManager {
         }
       }
     }
-    this.energy += 100; // 赠送启动灵机 100 点
+    const initEnergy = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig && typeof window.SlotsRPG.GameBalanceConfig.FeatureConfig.initialAwakeningEnergy === 'number')
+      ? window.SlotsRPG.GameBalanceConfig.FeatureConfig.initialAwakeningEnergy
+      : 200;
+    this.energy += initEnergy; // 赠送充沛启动灵机 (200 点)
     this.prologueStep = 3; // 开启山野散修初探教学 (前 5 抽小闭环，第 6 抽仙门递牒)
     this.prologueSpins = 0; // 重置已推演抽数
     this.waterTankProgress = 10; // 首次引龙吐宝专属体验：蓄满 10/10
@@ -2955,21 +2987,40 @@ class GameManager {
    * @param {boolean} instant - 是否瞬时完成
    */
   meditateForEnergy(onComplete, instant = false) {
-    if (!this.adService) {
-      this.energy += 30;
-      this.emitStateChange();
-      if (onComplete) onComplete({ success: true, energyRestored: 30 });
+    this.checkDailyMeditateReset();
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || {};
+    const maxLimit = typeof featCfg.meditateDailyLimit === 'number' ? featCfg.meditateDailyLimit : 5;
+    const gain = typeof featCfg.meditateEnergyGain === 'number' ? featCfg.meditateEnergyGain : 50;
+
+    if (this.dailyMeditateCount >= maxLimit) {
+      if (this.renderer) {
+        this.renderer.addFloatingText(`今日打坐已达极境 (${maxLimit}/${maxLimit})，静候洞天灵机或拔剑斩妖！`, '#ff6b6b');
+      }
+      if (onComplete) onComplete({ success: false, reason: '今日打坐已达上限' });
       return;
     }
 
-    this.adService.meditate(res => {
-      this.energy += 30;
+    const doFinish = () => {
+      this.dailyMeditateCount++;
+      this.energy += gain;
       this.emitStateChange();
+      const remaining = Math.max(0, maxLimit - this.dailyMeditateCount);
       if (this.renderer) {
-        this.renderer.addFloatingText('吐纳聚气完成，恢复 +30 机缘！', '#ffd700');
+        this.renderer.addFloatingText(`✨ 闭目吐纳圆满，纳气归元 +${gain} 灵机！(今日剩余 ${remaining}/${maxLimit})`, '#ffd700');
       }
-      if (onComplete) onComplete({ success: true, energyRestored: 30 });
-    }, instant);
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(this, true);
+      }
+      if (onComplete) onComplete({ success: true, energyRestored: gain, remaining });
+    };
+
+    if (instant) {
+      doFinish();
+    } else {
+      setTimeout(() => {
+        doFinish();
+      }, 800);
+    }
   }
 
   /**

@@ -63,6 +63,8 @@ class StorageService {
           defeatStreak: gameManager.defeatStreak,
           freeReliefCount: gameManager.freeReliefCount,
           lastReliefDate: gameManager.lastReliefDate,
+          dailyMeditateCount: gameManager.dailyMeditateCount || 0,
+          lastMeditateDate: gameManager.lastMeditateDate || '', 
           dailySecretRealmCount: gameManager.dailySecretRealmCount,
           lastSecretRealmDate: gameManager.lastSecretRealmDate,
           player: p ? p.serialize() : null,
@@ -135,6 +137,9 @@ class StorageService {
       if (typeof data.defeatStreak === 'number') gameManager.defeatStreak = data.defeatStreak;
       if (typeof data.freeReliefCount === 'number') gameManager.freeReliefCount = data.freeReliefCount;
       if (typeof data.lastReliefDate === 'string') gameManager.lastReliefDate = data.lastReliefDate;
+      if (typeof data.dailyMeditateCount === 'number') gameManager.dailyMeditateCount = data.dailyMeditateCount;
+      if (typeof data.lastMeditateDate === 'string') gameManager.lastMeditateDate = data.lastMeditateDate;
+      if (gameManager.checkDailyMeditateReset) gameManager.checkDailyMeditateReset();
       if (typeof data.dailySecretRealmCount === 'number') gameManager.dailySecretRealmCount = data.dailySecretRealmCount;
       if (typeof data.lastSecretRealmDate === 'string') gameManager.lastSecretRealmDate = data.lastSecretRealmDate;
       gameManager.checkDailyReliefReset();

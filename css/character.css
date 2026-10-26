@@ -1677,6 +1677,18 @@
   animation: pulseGoldGlow 1.8s infinite;
 }
 
+.btn-active-trial.crush-ready {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7) !important;
+  animation: pulseGreenCrush 1.4s infinite alternate !important;
+}
+
+@keyframes pulseGreenCrush {
+  0% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); transform: scale(1); }
+  100% { box-shadow: 0 0 16px rgba(52, 211, 153, 0.95); transform: scale(1.05); }
+}
+
 .btn-active-trial.disabled,
 .btn-boss-radar-challenge.disabled {
   opacity: 0.5;

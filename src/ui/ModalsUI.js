@@ -1291,6 +1291,11 @@
       // 7. 纯 IAA 变现广告与宗门大能英灵殿
   // 19. 激励视频广告与瞬发符通用触发器 (PRD 9.1 & 9.2 节)
   function openRewardedAdModal(type, title, onReward) {
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || {};
+    if (featCfg.enableAds === false) {
+      if (window.showFloatingNotice) window.showFloatingNotice('当前为纯净修仙模式，无需观摩天道演化');
+      return;
+    }
     const modalAd = document.getElementById('modal-rewarded-ad');
     const adSeconds = document.getElementById('ad-countdown-seconds');
     const adProgress = document.getElementById('ad-progress-fill');

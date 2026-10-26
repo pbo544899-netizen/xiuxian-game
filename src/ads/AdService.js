@@ -66,6 +66,12 @@ class AdService {
    * @param {string} type - 'revive'|'energy_relief'|'cave_double'|'equip_complete'|'reroll_sect'|'extra_heirloom'
    */
   canWatch(type) {
+    // 检查全局商业化广告总控开关 (无广告纯净模式直接返回 false)
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || null;
+    if (featCfg && featCfg.enableAds === false) {
+      return false;
+    }
+
     this.checkDailyReset();
     const quota = this.QUOTAS[type];
     if (!quota) return false;
@@ -99,6 +105,11 @@ class AdService {
    * 获取指定触点今日剩余次数
    */
   getRemainingQuota(type) {
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || null;
+    if (featCfg && featCfg.enableAds === false) {
+      return 0;
+    }
+
     this.checkDailyReset();
     const quota = this.QUOTAS[type];
     if (!quota) return 0;

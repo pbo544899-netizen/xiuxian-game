@@ -146,8 +146,11 @@ window.SlotsRPG = window.SlotsRPG || {};
         
         // 狂暴状态下第 10 抽必定爆神品装备，不出战斗打断
         const isFrenzyGuaranteed10th = isFrenzy && this.frenzySpinsLeft === 0;
+        const encounterRate = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig && typeof window.SlotsRPG.GameBalanceConfig.FeatureConfig.encounterRate === 'number')
+          ? window.SlotsRPG.GameBalanceConfig.FeatureConfig.encounterRate
+          : 0.015;
 
-        if (!isFrenzyGuaranteed10th && randEvent < 0.06 && hasJoinedSect) {
+        if (!isFrenzyGuaranteed10th && randEvent < encounterRate && hasJoinedSect) {
           // 龙息引煞：遭遇妖兽 (未掉落法宝，保底计数正常累加推进)
           this.pityPurplePulls++;
           this.pityGoldPulls++;

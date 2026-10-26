@@ -1222,11 +1222,12 @@
       const isReady = info.playerPower >= info.reqPower;
       if (trialPowerStatus) {
         trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
-        trialPowerStatus.innerText = isReady ? '可斩杀' : (info.playerPower >= info.reqPower * 0.85 ? '可试剑' : '凶险');
+        trialPowerStatus.innerText = isReady ? '战力碾压！斩妖立领灵机' : (info.playerPower >= info.reqPower * 0.85 ? '可试剑' : '凶险');
       }
       if (trialBtnText) trialBtnText.innerText = isReady ? '斩灭妖王' : '拔剑试剑';
       if (btnActiveTrialChallenge) {
-        btnActiveTrialChallenge.classList.toggle('pulse-gold', isReady);
+        btnActiveTrialChallenge.classList.toggle('pulse-gold', !isReady && info.playerPower >= info.reqPower * 0.85);
+        btnActiveTrialChallenge.classList.toggle('crush-ready', isReady);
       }
     } else {
       sectTrialBanner.classList.remove('boss-ready');
@@ -1246,11 +1247,12 @@
       const isReady = info.playerPower >= info.reqPower;
       if (trialPowerStatus) {
         trialPowerStatus.className = `trial-power-status ${isReady ? 'safe' : (info.playerPower >= info.reqPower * 0.85 ? 'hard' : 'danger')}`;
-        trialPowerStatus.innerText = isReady ? '可斩杀' : (info.playerPower >= info.reqPower * 0.85 ? '势均力敌' : '凶险');
+        trialPowerStatus.innerText = isReady ? '战力碾压！斩妖立领灵机' : (info.playerPower >= info.reqPower * 0.85 ? '势均力敌' : '凶险');
       }
       if (trialBtnText) trialBtnText.innerText = isReady ? '拔剑斩妖' : '拔剑试刀';
       if (btnActiveTrialChallenge) {
-        btnActiveTrialChallenge.classList.toggle('pulse-gold', isReady);
+        btnActiveTrialChallenge.classList.toggle('pulse-gold', !isReady && info.playerPower >= info.reqPower * 0.85);
+        btnActiveTrialChallenge.classList.toggle('crush-ready', isReady);
       }
     }
   }
@@ -1352,11 +1354,19 @@
       updateWaterTankUI();
       updateDestinyRadarUI();
       updateFTUESpotlight();
+      updateAdsUIElements();
+      updateCaveBubbleUI();
+      updateMeditateButtonUI();
+      updateSectTrialBanner();
     });
     window.SlotsRPG.EventBus.on('SPIN_STOP', (spinData) => {
       updateWaterTankUI();
       updateDestinyRadarUI();
       updateFTUESpotlight();
+      updateAdsUIElements();
+      updateCaveBubbleUI();
+      updateMeditateButtonUI();
+      updateSectTrialBanner();
 
       if (spinData && spinData.leftCabinet && spinData.leftCabinet.isDestinyHit) {
         const radarElement = document.getElementById('dragon-destiny-radar');
@@ -1377,10 +1387,62 @@
     });
   }
 
+  // 16.3 纯净无广告模式与全局 UI 状态自适应
+  function updateAdsUIElements() {
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || {};
+    const enableAds = featCfg.enableAds !== false;
+    const meritTicketBar = document.getElementById('merit-ticket-bar');
+    if (meritTicketBar) {
+      meritTicketBar.classList.toggle('hidden', !enableAds);
+    }
+  }
+
+  // 16.4 洞天灵脉浮泡动态感知
+  function updateCaveBubbleUI() {
+    const elCaveBubble = document.getElementById('cave-bubble-collector');
+    const bubbleText = document.getElementById('cave-bubble-text');
+    if (!elCaveBubble || !gameManager || !gameManager.caveManager) return;
+
+    gameManager.caveManager.tick();
+    const acc = Math.floor(gameManager.caveManager.accumulatedEnergy || 0);
+    if (acc >= 10) {
+      elCaveBubble.classList.remove('hidden');
+      if (bubbleText) bubbleText.innerText = `+${acc}`;
+    } else {
+      elCaveBubble.classList.add('hidden');
+    }
+  }
+
+  // 16.5 每日静室打坐吐纳 (无广告修真原生兜底)
+  function updateMeditateButtonUI() {
+    const btnMeditate = document.getElementById('btn-meditate');
+    if (!btnMeditate || !gameManager) return;
+
+    const remaining = gameManager.getRemainingMeditateCount ? gameManager.getRemainingMeditateCount() : 5;
+    const isEnergyLow = (gameManager.energy || 0) < 25;
+
+    if (isEnergyLow && remaining > 0) {
+      btnMeditate.classList.remove('hidden');
+      btnMeditate.innerText = `🧘 打坐吐纳 (${remaining}/5)`;
+    } else {
+      btnMeditate.classList.add('hidden');
+    }
+  }
+
+  // 挂载动态心跳定时器 (每 3 秒刷新一次洞天浮泡与打坐状态)
+  setInterval(() => {
+    updateCaveBubbleUI();
+    updateMeditateButtonUI();
+    updateAdsUIElements();
+  }, 3000);
+
   // 初始启动执行一次
   updateWaterTankUI();
   updateDestinyRadarUI();
   updateFTUESpotlight();
+  updateAdsUIElements();
+  updateCaveBubbleUI();
+  updateMeditateButtonUI();
 
   DragonSpoutUI.collectAllTemporarySlots = collectAllTemporarySlots;
   DragonSpoutUI.updateSectTrialBanner = updateSectTrialBanner;

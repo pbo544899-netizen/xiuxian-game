@@ -77,6 +77,17 @@ window.SlotsRPG.GameBalanceConfig = {
   },
 
   // ==========================================
+  // 2.5 全局商业化纯净无广告总控与数值节奏联动 (FeatureConfig)
+  // ==========================================
+  FeatureConfig: {
+    enableAds: false,              // 当前阶段无广告设为 false；后续接入微信广告时一键切 true
+    initialAwakeningEnergy: 200,   // 新手凡人觉醒赠送启动灵机 (由 100 提升至 200)
+    encounterRate: 0.015,          // 抽卡中随机遭遇妖兽概率 (由 0.06 降至 0.015，消除频繁打断)
+    meditateDailyLimit: 5,         // 每日打坐吐纳次数上限 (无广告修真福利)
+    meditateEnergyGain: 50         // 每次打坐回复灵机点数
+  },
+
+  // ==========================================
   // 3. 心流调控与防猝死保底阈值 (FlowController 引用)
   // ==========================================
   FlowPity: {

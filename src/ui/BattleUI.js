@@ -1438,7 +1438,9 @@
 
   function showDefeatModal(battleResult) {
     if (battleWatchdog) { clearTimeout(battleWatchdog); battleWatchdog = null; }
-    if (battleResult && battleResult.canRevive) {
+    const featCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.FeatureConfig) || {};
+    const enableAds = featCfg.enableAds !== false;
+    if (enableAds && battleResult && battleResult.canRevive) {
       const modalRevive = document.getElementById('modal-revive-prompt');
       const reviveCountText = document.getElementById('revive-remaining-count');
       const adService = window.SlotsRPG && window.SlotsRPG.AdService;
