@@ -31,6 +31,28 @@
     indicatorEl: null,
     targetClickListener: null,
     isInitialized: false,
+    pendingTimer: null,
+    lastGuideDismissTime: 0,
+    minStepInterval: 1200, // 引导步骤之间的缓冲时间 (毫秒)，给玩家充分的视觉留白和操作反馈时间
+
+    /**
+     * 调度下一次 FTUE 检查 (内置防抖与步进冷却缓冲)
+     * @param {number} delay 建议延迟 (毫秒)
+     */
+    scheduleCheck(delay = 1200) {
+      if (this.pendingTimer) {
+        clearTimeout(this.pendingTimer);
+        this.pendingTimer = null;
+      }
+      const timeSinceDismiss = Date.now() - this.lastGuideDismissTime;
+      const remainingCooldown = Math.max(0, this.minStepInterval - timeSinceDismiss);
+      const effectiveDelay = Math.max(delay, remainingCooldown);
+
+      this.pendingTimer = setTimeout(() => {
+        this.pendingTimer = null;
+        this.checkAndTriggerFTUE();
+      }, effectiveDelay);
+    },
 
     /**
      * 初始化引擎与 DOM 节点
@@ -101,29 +123,18 @@
         if (this.isActive()) this.reposition();
       }, { passive: true });
 
-      // 监听全局状态变更与核心驱动事件
+      // 监听全局状态变更与核心驱动事件 (统一采用调度器 scheduleCheck 缓冲防抖)
       if (window.SlotsRPG && window.SlotsRPG.EventBus) {
-        window.SlotsRPG.EventBus.on('STATE_CHANGE', () => this.checkAndTriggerFTUE());
-        window.SlotsRPG.EventBus.on('SPIN_STOP', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 400);
-        });
-        window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 500);
-        });
-        window.SlotsRPG.EventBus.on('TAB_CHANGED', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 180);
-        });
-        window.SlotsRPG.EventBus.on('PROLOGUE_COMPLETED', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 450);
-        });
-        window.SlotsRPG.EventBus.on('SECT_JOINED', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 550);
-        });
-        window.SlotsRPG.EventBus.on('SHOW_SECT_INDUCTION', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 300);
-        });
+        window.SlotsRPG.EventBus.on('STATE_CHANGE', () => this.scheduleCheck(1000));
+        window.SlotsRPG.EventBus.on('SPIN_STOP', () => this.scheduleCheck(1200));
+        window.SlotsRPG.EventBus.on('DRAGON_SPOUT_ALL_REVEALED', () => this.scheduleCheck(1200));
+        window.SlotsRPG.EventBus.on('TAB_CHANGED', () => this.scheduleCheck(1000));
+        window.SlotsRPG.EventBus.on('PROLOGUE_COMPLETED', () => this.scheduleCheck(1200));
+        window.SlotsRPG.EventBus.on('SECT_JOINED', () => this.scheduleCheck(1200));
+        window.SlotsRPG.EventBus.on('SHOW_SECT_INDUCTION', () => this.scheduleCheck(1000));
         window.SlotsRPG.EventBus.on('STORY_DIALOG_END', () => {
-          setTimeout(() => this.checkAndTriggerFTUE(), 150);
+          this.lastGuideDismissTime = Date.now();
+          this.scheduleCheck(1200);
         });
       }
     },
@@ -262,12 +273,11 @@
         if (typeof options.onClick === 'function') {
           options.onClick(e);
         }
+        this.lastGuideDismissTime = Date.now();
         this.hide();
-        // 战斗发起或推演启动时无需 450ms 盲查，由战斗结束或停轮事件 (DRAGON_SPOUT_ALL_REVEALED) 驱动
+        // 战斗发起或推演启动时无需调度，由战斗结束或停轮事件 (DRAGON_SPOUT_ALL_REVEALED) 驱动
         if (target.id !== 'btn-spin' && target.id !== 'btn-prologue-battle') {
-          setTimeout(() => {
-            this.checkAndTriggerFTUE();
-          }, 450);
+          this.scheduleCheck(1200);
         }
       };
       target.addEventListener('click', this.targetClickListener, { once: true });
@@ -409,7 +419,7 @@
      * 全局 FTUE 状态机智能判定并触发聚光灯
      * 按时序闭环严格判定当前玩家处于哪一个新手指引阶段
      */
-    checkAndTriggerFTUE() {
+    checkAndTriggerFTUE(forceImmediate = false) {
       const gm = window.SlotsRPG && window.SlotsRPG.GameManager;
       if (!gm) return;
 
@@ -433,6 +443,13 @@
                             (window.storyManager && (window.storyManager.isDialogActive || (window.storyManager.activeStory && window.storyManager.activeStory.isOpen)));
       if (isStoryActive) {
         this.hide();
+        return;
+      }
+
+      // 0.1 步进缓冲间隔检测：确保上一个操作完成到下一个引导展现之间有充足视觉留白 (>= minStepInterval)
+      const timeSinceDismiss = Date.now() - this.lastGuideDismissTime;
+      if (!forceImmediate && timeSinceDismiss < this.minStepInterval) {
+        this.scheduleCheck(this.minStepInterval - timeSinceDismiss);
         return;
       }
 
@@ -754,7 +771,7 @@
           if (window.SlotsRPG.StorageService) {
             window.SlotsRPG.StorageService.saveGame(gm, true);
           }
-          this.checkAndTriggerFTUE();
+          this.scheduleCheck(1200);
           return;
         }
 
@@ -776,7 +793,13 @@
               id: 'ftue-quick-equip',
               target: btnQuickEquip,
               text: '点击一键装备，战力立涨！',
-              direction: 'down'
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedEquipFTUE = true;
+                if (window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
             });
             return;
           }
@@ -784,9 +807,9 @@
       }
 
       // ========================================================
-      // 步骤 6: 散修探寻中 · 引导切回神龙推演 (仅在处于角色面板时单次引导回切，切回后自由推演，不再重复引导抽奖)
+      // 步骤 6: 散修探寻中 · 引导切回神龙推演 (绝对单次引导：玩家点击或切回后永久锁死不再弹出)
       // ========================================================
-      if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE) {
+      if (!gm.isPrologueComplete && gm.prologueStep === 3 && gm.prologueSpins >= 1 && gm.prologueSpins < 6 && gm.hasCompletedEquipFTUE && !gm.hasCompletedSlotsReturnFTUE) {
         if (currentTab !== 'slots') {
           const tabSlots = document.getElementById('tab-slots');
           if (tabSlots) {
@@ -794,7 +817,13 @@
               id: 'ftue-nav-slots-continue',
               target: tabSlots,
               text: '神兵已佩！点击前往神龙继续推演',
-              direction: 'down'
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedSlotsReturnFTUE = true;
+                if (window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
             });
             return;
           }

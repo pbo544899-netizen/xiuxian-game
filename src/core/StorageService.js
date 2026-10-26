@@ -50,6 +50,7 @@ class StorageService {
           waterTankProgress: gameManager.waterTankProgress || 0,
           hasCompletedFirstDragonSpoutFTUE: !!gameManager.hasCompletedFirstDragonSpoutFTUE,
           hasCompletedEquipFTUE: !!gameManager.hasCompletedEquipFTUE,
+          hasCompletedSlotsReturnFTUE: !!gameManager.hasCompletedSlotsReturnFTUE,
           hasCompletedTrialFTUE: !!gameManager.hasCompletedTrialFTUE,
           hasCompletedCaveFTUE: !!gameManager.hasCompletedCaveFTUE,
           defeatStreak: gameManager.defeatStreak,
@@ -159,6 +160,21 @@ class StorageService {
                               (data.prologueStep && data.prologueStep > 3) ||
                               (typeof data.energy === 'number' && data.energy > 100);
         gameManager.hasCompletedFirstDragonSpoutFTUE = !!hasSpunBefore;
+      }
+
+      if (typeof data.hasCompletedEquipFTUE === 'boolean') {
+        gameManager.hasCompletedEquipFTUE = data.hasCompletedEquipFTUE;
+      }
+      if (typeof data.hasCompletedSlotsReturnFTUE === 'boolean') {
+        gameManager.hasCompletedSlotsReturnFTUE = data.hasCompletedSlotsReturnFTUE;
+      } else if ((data.prologueSpins && data.prologueSpins > 1) || data.isPrologueComplete) {
+        gameManager.hasCompletedSlotsReturnFTUE = true;
+      }
+      if (typeof data.hasCompletedTrialFTUE === 'boolean') {
+        gameManager.hasCompletedTrialFTUE = data.hasCompletedTrialFTUE;
+      }
+      if (typeof data.hasCompletedCaveFTUE === 'boolean') {
+        gameManager.hasCompletedCaveFTUE = data.hasCompletedCaveFTUE;
       }
 
       if (typeof data.waterTankProgress === 'number') {

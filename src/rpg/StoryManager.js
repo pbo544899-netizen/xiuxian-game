@@ -653,9 +653,13 @@
       }
 
       if (global.SlotsRPG && global.SlotsRPG.SpotlightGuide) {
-        setTimeout(() => {
-          global.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
-        }, 120);
+        if (typeof global.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
+          global.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
+        } else {
+          setTimeout(() => {
+            global.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+          }, 1200);
+        }
       }
     }
 

@@ -90,6 +90,12 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(() => renderer.updateSize());
       }
       if (window.updateSectTrialBanner) window.updateSectTrialBanner();
+      if (gameManager && !gameManager.hasCompletedSlotsReturnFTUE && gameManager.hasCompletedEquipFTUE) {
+        gameManager.hasCompletedSlotsReturnFTUE = true;
+        if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+          window.SlotsRPG.StorageService.saveGame(gameManager, true);
+        }
+      }
     } else if (tabName === 'character') {
       if (tabCharacter) tabCharacter.classList.add('active');
       if (viewCharacter) viewCharacter.classList.add('active');
@@ -116,7 +122,11 @@ window.addEventListener('DOMContentLoaded', () => {
       window.SlotsRPG.EventBus.emit('TAB_CHANGED', { tab: tabName });
     }
     if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-      setTimeout(() => window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE(), 150);
+      if (typeof window.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
+        window.SlotsRPG.SpotlightGuide.scheduleCheck(1000);
+      } else {
+        setTimeout(() => window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE(), 1000);
+      }
     }
   }
 

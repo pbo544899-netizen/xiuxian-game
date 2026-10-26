@@ -1517,7 +1517,11 @@
       // 立即隐藏胜利弹窗并恢复背景仙乐
       if (modalBattleVictory) modalBattleVictory.classList.add('hidden');
       if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        if (typeof window.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
+          window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
+        } else {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
       }
       if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
         window.SlotsRPG.BGMPlayer.setDucking(false);
@@ -1560,9 +1564,13 @@
         gameManager.emitStateChange();
         // 斩猪胜利后回到角色面板，由新手引导手势稳定指向乾坤袋中的【造化天机盘】，严禁自动弹窗打断与抢跑
         if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-          setTimeout(() => {
-            window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
-          }, 300);
+          if (typeof window.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
+            window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
+          } else {
+            setTimeout(() => {
+              window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+            }, 1200);
+          }
         }
       }
     });

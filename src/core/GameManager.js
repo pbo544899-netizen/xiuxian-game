@@ -23,6 +23,7 @@ class GameManager {
     this.prologueSpins = 0;        // 散修阶段已推演抽数 (1~6 驱动 FTUESequence)
     this.hasCompletedFirstDragonSpoutFTUE = false; // 首次免费引龙吐宝引导完成标记
     this.hasCompletedEquipFTUE = false;            // 首次神兵穿戴引导完成标记
+    this.hasCompletedSlotsReturnFTUE = false;      // 首次穿戴神兵后引导切回神龙推演完成标记
     this.hasCompletedTrialFTUE = false;            // 首次妖王试炼引导完成标记
     this.hasCompletedCaveFTUE = false;             // 首次洞天引灵引导完成标记
     this.hasTriggeredSectInduction = false;        // 叩问仙门法牒序列单次防重标记
@@ -2510,6 +2511,7 @@ class GameManager {
     this.prologueSpins = 0; // 重置已推演抽数
     this.waterTankProgress = 10; // 首次引龙吐宝专属体验：蓄满 10/10
     this.hasCompletedFirstDragonSpoutFTUE = false; // 触发新手引龙吐宝专属体验
+    this.hasCompletedSlotsReturnFTUE = false;      // 重置神兵穿戴后切回神龙标记
     if (window.SlotsRPG.StorageService) {
       window.SlotsRPG.StorageService.saveGame(this, true);
     }
