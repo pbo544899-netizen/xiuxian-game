@@ -89,6 +89,20 @@ window.SlotsRPG.GameBalanceConfig = {
   },
 
   // ==========================================
+  // 3.1 神龙引宝天道动态保底与心流阶梯 (DragonLootEngine 引用)
+  // 长线非酋阶梯软保底，平滑极品出货方差，防长周期不出货挫败
+  // ==========================================
+  DragonPityConfig: {
+    purpleSoftPityThreshold: 15, // 连续 15 抽未出灵品(Q4+)开启软保底递增
+    purpleHardPityLimit: 20,     // 连续 20 抽必定硬保底降下灵品(Q4+)及以上法宝
+    purpleSoftStepRate: 0.18,    // 软保底每抽递增 18% 概率
+
+    goldSoftPityThreshold: 45,   // 连续 45 抽未出仙品(Q5+)开启软保底递增
+    goldHardPityLimit: 60,       // 连续 60 抽必定硬保底降下仙品(Q5+)及以上法宝
+    goldSoftStepRate: 0.065      // 软保底每抽递增 6.5% 概率
+  },
+
+  // ==========================================
   // 4. 天机盘等级装备品质掉落率矩阵 (GameManager 引用)
   // ==========================================
   EquipQualityMatrix: {

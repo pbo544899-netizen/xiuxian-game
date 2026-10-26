@@ -14,6 +14,10 @@ window.SlotsRPG = window.SlotsRPG || {};
       this.isFrenzyActive = false;
       this.frenzySpinsLeft = 0;
 
+      // 天道动态保底与心流阶梯计数 (长线非酋阶梯软保底)
+      this.pityPurplePulls = 0; // 连续未出灵品(Q4及以上)法宝计数
+      this.pityGoldPulls = 0;   // 连续未出仙品(Q5及以上)法宝计数
+
       // 统计与防空转计数
       this.consecutiveEquipmentSpins = 0;
       this.totalSpouts = 0;
@@ -144,7 +148,9 @@ window.SlotsRPG = window.SlotsRPG || {};
         const isFrenzyGuaranteed10th = isFrenzy && this.frenzySpinsLeft === 0;
 
         if (!isFrenzyGuaranteed10th && randEvent < 0.06 && hasJoinedSect) {
-          // 龙息引煞：遭遇妖兽
+          // 龙息引煞：遭遇妖兽 (未掉落法宝，保底计数正常累加推进)
+          this.pityPurplePulls++;
+          this.pityGoldPulls++;
           const isElite = Math.random() < 0.25;
           leftCabinet = {
             type: 'battle',
@@ -246,7 +252,11 @@ window.SlotsRPG = window.SlotsRPG || {};
         isFrenzyActive: this.isFrenzyActive,
         frenzySpinsLeft: this.frenzySpinsLeft,
         betMultiplier: multiplier,
-        ftueScript: ftueScript
+        ftueScript: ftueScript,
+        pityPurplePulls: this.pityPurplePulls,
+        pityGoldPulls: this.pityGoldPulls,
+        isPityTrigger: !!(leftCabinet && leftCabinet.isPityTrigger),
+        pityType: leftCabinet ? leftCabinet.pityType : null
       };
     }
 
@@ -281,12 +291,66 @@ window.SlotsRPG = window.SlotsRPG || {};
           : 'weapon';
       }
 
-      // 2. 品质矩阵计算
+      // 2. 品质矩阵计算与天道动态阶梯保底 (长线非酋阶梯软保底)
+      const pityCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.DragonPityConfig) || {
+        purpleSoftPityThreshold: 15,
+        purpleHardPityLimit: 20,
+        purpleSoftStepRate: 0.18,
+        goldSoftPityThreshold: 45,
+        goldHardPityLimit: 60,
+        goldSoftStepRate: 0.065
+      };
+
+      let isPityTrigger = false;
+      let pityType = null; // 'purple' | 'gold'
+      let triggerGoldPity = false;
+      let triggerPurplePity = false;
+
+      // 金品仙装保底判定 (45 抽进入鸿蒙蓄势软保底，60 抽必中硬保底)
+      if (this.pityGoldPulls >= pityCfg.goldHardPityLimit) {
+        triggerGoldPity = true;
+      } else if (this.pityGoldPulls >= pityCfg.goldSoftPityThreshold) {
+        const goldSoftRate = (this.pityGoldPulls - pityCfg.goldSoftPityThreshold + 1) * pityCfg.goldSoftStepRate;
+        if (Math.random() < goldSoftRate) {
+          triggerGoldPity = true;
+        }
+      }
+
+      // 紫品灵装保底判定 (15 抽进入天道眷顾软保底，20 抽必中硬保底)
+      if (!triggerGoldPity) {
+        if (this.pityPurplePulls >= pityCfg.purpleHardPityLimit) {
+          triggerPurplePity = true;
+        } else if (this.pityPurplePulls >= pityCfg.purpleSoftPityThreshold) {
+          const purpleSoftRate = (this.pityPurplePulls - pityCfg.purpleSoftPityThreshold + 1) * pityCfg.purpleSoftStepRate;
+          if (Math.random() < purpleSoftRate) {
+            triggerPurplePity = true;
+          }
+        }
+      }
+
       const matrix = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.EquipQualityMatrix) || null;
       let qualityCode = matrix ? matrix.pickQuality(potSubLevel, Math.random()) : 'Q1';
 
-      // 气运聚顶大爆发 / 龙皇吐宝：根据天命目标品质保底极品紫(Q4)或仙品金(Q5)！
-      if (isClimaxBurst || isGrandSpin || isFrenzyGuaranteed10th) {
+      if (triggerGoldPity) {
+        isPityTrigger = true;
+        pityType = 'gold';
+        if (potSubLevel < 3) {
+          qualityCode = 'Q4'; // 早期阶段平滑守护，保证当前最高阶
+        } else {
+          qualityCode = Math.random() < 0.20 ? 'Q6' : 'Q5';
+        }
+      } else if (triggerPurplePity) {
+        isPityTrigger = true;
+        pityType = 'purple';
+        if (potSubLevel === 1) {
+          qualityCode = 'Q2';
+        } else if (potSubLevel === 2) {
+          qualityCode = 'Q3';
+        } else {
+          qualityCode = Math.random() < 0.15 ? 'Q5' : 'Q4';
+        }
+      } else if (isClimaxBurst || isGrandSpin || isFrenzyGuaranteed10th) {
+        // 气运聚顶大爆发 / 龙皇吐宝：根据天命目标品质保底极品紫(Q4)或仙品金(Q5)！
         if (destiny && destiny.targetQuality && ['Q5', 'Q6'].includes(destiny.targetQuality)) {
           qualityCode = Math.random() < 0.65 ? 'Q5' : 'Q6';
         } else {
@@ -309,6 +373,24 @@ window.SlotsRPG = window.SlotsRPG || {};
           qualityCode = nextQ;
           isLuckyBurst = true;
         }
+      }
+
+      // 4. 更新保底计数器 (根据最终产出品质归零或递增)
+      const qRankMap = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
+      const finalRank = qRankMap[qualityCode] || 1;
+
+      if (finalRank >= 5) {
+        // 掉落仙品(Q5)及以上：金品保底与紫品保底双重归零重置！
+        this.pityGoldPulls = 0;
+        this.pityPurplePulls = 0;
+      } else if (finalRank >= 4) {
+        // 掉落灵品(Q4)：紫品保底归零重置，金品保底计数 +1
+        this.pityPurplePulls = 0;
+        this.pityGoldPulls++;
+      } else {
+        // 掉落凡铁/精铁/玄品(Q1~Q3)：双计数器 +1
+        this.pityPurplePulls++;
+        this.pityGoldPulls++;
       }
 
       // 4. 创建装备对象
@@ -347,7 +429,11 @@ window.SlotsRPG = window.SlotsRPG || {};
         destinyTarget: destiny,
         prevQualityCode: isLuckyBurst ? origQualityCode : null,
         prevQualityName: isLuckyBurst ? prevQualityName : null,
-        prevQualityColor: isLuckyBurst ? prevQualityColor : null
+        prevQualityColor: isLuckyBurst ? prevQualityColor : null,
+        isPityTrigger: isPityTrigger,
+        pityType: pityType,
+        pityPurplePulls: this.pityPurplePulls,
+        pityGoldPulls: this.pityGoldPulls
       };
     }
 

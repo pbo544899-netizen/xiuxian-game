@@ -1099,11 +1099,21 @@ class GameManager {
 
     // 双柜结果与即时决策同步 (奖励已在弹道着陆时依次揭晓入匣)
     if (this.dragonCabinetManager && (spinData.leftCabinet || spinData.rightCabinet)) {
+      if (spinData.leftCabinet && spinData.leftCabinet.isPityTrigger && this.renderer) {
+        if (spinData.leftCabinet.pityType === 'gold') {
+          this.renderer.addFloatingText('🌟 天道造化：阶梯保底现世，仙品出关！', '#ffd700');
+        } else if (spinData.leftCabinet.pityType === 'purple') {
+          this.renderer.addFloatingText('✨ 天道垂怜：阶梯心流保底，灵宝降世！', '#c084fc');
+        }
+      }
+
       window.SlotsRPG.EventBus.emit('DRAGON_LOOT_PRESENTED', {
         leftCabinet: spinData.leftCabinet,
         rightCabinet: spinData.rightCabinet,
         comparison: this.dragonCabinetManager.comparisonData,
-        dragonRage: this.dragonLootEngine ? this.dragonLootEngine.dragonRage : 0
+        dragonRage: this.dragonLootEngine ? this.dragonLootEngine.dragonRage : 0,
+        pityPurplePulls: this.dragonLootEngine ? this.dragonLootEngine.pityPurplePulls : 0,
+        pityGoldPulls: this.dragonLootEngine ? this.dragonLootEngine.pityGoldPulls : 0
       });
 
       // 挂机智能筛选自动化

@@ -55,6 +55,11 @@ class StorageService {
           hasCompletedTrialFTUE: !!gameManager.hasCompletedTrialFTUE,
           hasCompletedCaveFTUE: !!gameManager.hasCompletedCaveFTUE,
           hasUnlockedAutoSmelt: !!gameManager.hasUnlockedAutoSmelt,
+          dragonPity: {
+            pityPurplePulls: (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityPurplePulls) || 0,
+            pityGoldPulls: (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityGoldPulls) || 0,
+            dragonRage: (gameManager.dragonLootEngine && gameManager.dragonLootEngine.dragonRage) || 0
+          },
           defeatStreak: gameManager.defeatStreak,
           freeReliefCount: gameManager.freeReliefCount,
           lastReliefDate: gameManager.lastReliefDate,
@@ -199,6 +204,19 @@ class StorageService {
           gameManager.prologueStep === 3 &&
           (gameManager.prologueSpins || 0) === 0) {
         gameManager.waterTankProgress = 10;
+      }
+
+      // 1.05 还原天道动态保底与龙威蓄力
+      if (data.dragonPity && gameManager.dragonLootEngine) {
+        if (typeof data.dragonPity.pityPurplePulls === 'number') {
+          gameManager.dragonLootEngine.pityPurplePulls = data.dragonPity.pityPurplePulls;
+        }
+        if (typeof data.dragonPity.pityGoldPulls === 'number') {
+          gameManager.dragonLootEngine.pityGoldPulls = data.dragonPity.pityGoldPulls;
+        }
+        if (typeof data.dragonPity.dragonRage === 'number') {
+          gameManager.dragonLootEngine.dragonRage = data.dragonPity.dragonRage;
+        }
       }
 
       // 1.1 还原锁妖天关爬塔进度与称号

@@ -2448,3 +2448,32 @@ body:has(#view-cave.active) .drop-flyer,
   35% { transform: translateX(-50%) scale(1.08); filter: brightness(1.8); border-color: #38ef7d; box-shadow: 0 0 24px rgba(56, 239, 125, 0.9); }
   100% { transform: translateX(-50%) scale(1); filter: brightness(1); }
 }
+
+/* 天道动态保底与心流阶梯提示标签 (Pity Tag) */
+.dragon-destiny-radar .radar-pity-tag {
+  font-size: 10px;
+  color: #fff;
+  background: linear-gradient(90deg, #9333ea, #ec4899);
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.75);
+  animation: pityTagPulse 1.6s infinite alternate;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+@keyframes pityTagPulse {
+  0% { transform: scale(0.96); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.25); }
+}
+
+.dragon-destiny-radar.pity-purple-active {
+  border-color: rgba(168, 85, 247, 0.7);
+  box-shadow: 0 2px 12px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.dragon-destiny-radar.pity-gold-active {
+  border-color: rgba(255, 215, 0, 0.8);
+  box-shadow: 0 2px 14px rgba(255, 215, 0, 0.4), inset 0 0 12px rgba(255, 215, 0, 0.25);
+}
