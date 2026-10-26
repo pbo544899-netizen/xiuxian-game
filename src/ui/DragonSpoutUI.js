@@ -443,6 +443,12 @@
       if (modalRelief) modalRelief.classList.add('hidden');
     });
   }
+  const btnCloseReliefX = document.getElementById('btn-close-relief-x');
+  if (btnCloseReliefX) {
+    btnCloseReliefX.addEventListener('click', () => {
+      if (modalRelief) modalRelief.classList.add('hidden');
+    });
+  }
 
   // ==========================================
   // 16.1 神龙引宝 · 左右双宝匣与即时换装交互绑定

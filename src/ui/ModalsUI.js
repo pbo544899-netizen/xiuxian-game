@@ -490,6 +490,7 @@
       // 3. 锁妖天关 · 镇妖塔弹窗 (Demon Tower)
   // 13.6 锁妖天关 · 镇妖塔挑战弹窗 (Demon Tower UI)
   const modalDemonTower = document.getElementById('modal-demon-tower');
+  const demonTowerCard = document.getElementById('demon-tower-card');
   const btnEnterDemonTower = document.getElementById('btn-enter-demon-tower');
   const btnCloseTowerModal = document.getElementById('btn-close-tower-modal');
   const btnStartTowerBattle = document.getElementById('btn-start-tower-battle');
@@ -531,33 +532,51 @@
     }
   }
 
-  if (btnEnterDemonTower) {
-    btnEnterDemonTower.addEventListener('click', openDemonTowerModal);
+  function handleDirectTowerBattle(e) {
+    if (e) {
+      e.stopPropagation();
+    }
+    if (modalDemonTower) modalDemonTower.classList.add('hidden');
+    if (!gameManager.demonTowerManager) return;
+
+    const battleResult = gameManager.demonTowerManager.startChallenge();
+    if (battleResult && battleResult.success === false) {
+      showGameNotice('无法挑战', battleResult.reason || '挑战条件未达成', '⚠️ 镇妖天关');
+      return;
+    }
+    playBattleSequence(battleResult);
   }
 
+  // 优化操作步骤：点击【持剑闯关】按钮直接进入战斗
+  if (btnEnterDemonTower) {
+    btnEnterDemonTower.addEventListener('click', handleDirectTowerBattle);
+  }
+
+  // 优化操作步骤：点击卡片除按钮外的其它区域，显示【破关激战】详情弹窗
+  if (demonTowerCard) {
+    demonTowerCard.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('#btn-enter-demon-tower')) {
+        return;
+      }
+      openDemonTowerModal();
+    });
+  }
+
+  // 优化右上角关闭按钮逻辑
   if (btnCloseTowerModal) {
     btnCloseTowerModal.addEventListener('click', () => {
       if (modalDemonTower) {
-      modalDemonTower.classList.add('hidden');
-      if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-        window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        modalDemonTower.classList.add('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+        }
       }
-    }
     });
   }
 
+  // 弹窗内的【破关激战】按钮
   if (btnStartTowerBattle) {
-    btnStartTowerBattle.addEventListener('click', () => {
-      if (modalDemonTower) modalDemonTower.classList.add('hidden');
-      if (!gameManager.demonTowerManager) return;
-      
-      const battleResult = gameManager.demonTowerManager.startChallenge();
-      if (battleResult && battleResult.success === false) {
-        showGameNotice('无法挑战', battleResult.reason || '挑战条件未达成', '⚠️ 镇妖天关');
-        return;
-      }
-      playBattleSequence(battleResult);
-    });
+    btnStartTowerBattle.addEventListener('click', handleDirectTowerBattle);
   }
 
 
@@ -1225,8 +1244,14 @@
     modalPantheon.classList.remove('hidden');
 
     const btnClosePantheon = document.getElementById('btn-close-pantheon');
+    const btnClosePantheonX = document.getElementById('btn-close-pantheon-x');
     if (btnClosePantheon) {
       btnClosePantheon.onclick = () => {
+        modalPantheon.classList.add('hidden');
+      };
+    }
+    if (btnClosePantheonX) {
+      btnClosePantheonX.onclick = () => {
         modalPantheon.classList.add('hidden');
       };
     }
@@ -1246,6 +1271,12 @@
 
   if (btnCloseStele) {
     btnCloseStele.addEventListener('click', () => {
+      if (modalAscensionStele) modalAscensionStele.classList.add('hidden');
+    });
+  }
+  const btnCloseSteleX = document.getElementById('btn-close-stele-x');
+  if (btnCloseSteleX) {
+    btnCloseSteleX.addEventListener('click', () => {
       if (modalAscensionStele) modalAscensionStele.classList.add('hidden');
     });
   }

@@ -681,7 +681,7 @@
               <span class="tower-req-power" id="tower-req-power">推荐战力: 300</span>
             </div>
             <button id="btn-enter-demon-tower" class="btn-enter-demon-tower" title="主动前往镇妖塔挑战守关妖王">
-              <span>拔剑闯关</span> ➔
+              <span>持剑闯关</span> ➔
             </button>
           </div>
         </div>
@@ -726,9 +726,9 @@
         <!-- 弹窗: 修真道相 · 灵根心性 (1 级轻量弹窗，点击头像或道相呼出，无多级套娃) -->
     <div id="modal-hero-profile-detail" class="modal-overlay hidden">
       <div class="modal-card hero-profile-detail-modal-card">
+        <button id="btn-close-hero-detail" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
           <h2 class="modal-title">☯️ 修真道相 · 灵根心性</h2>
-          <button id="btn-close-hero-detail" class="btn-close-icon">✕</button>
         </div>
 
         <div class="hero-detail-summary-row">
@@ -846,9 +846,9 @@
     <!-- 弹窗: 天机智能过滤设置 -->
     <div id="modal-filter-settings" class="modal-overlay hidden">
       <div class="modal-card filter-settings-modal-card">
+        <button id="btn-close-filter-settings" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
           <h2 class="modal-title">⚙️ 天机熔炼 · 智能过滤</h2>
-          <button id="btn-close-filter-settings" class="btn-close-icon">✕</button>
         </div>
         <div class="filter-hint-banner">
           💡 开启后，推演获得的指定装备将自动熔炼折算为机缘，绝不占背包空间！
@@ -893,9 +893,9 @@
     <!-- 弹窗: 修仙尊号阁 -->
     <div id="modal-title-select" class="modal-overlay hidden">
       <div class="modal-card title-select-modal-card">
+        <button id="btn-close-title-modal" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
           <h2 class="modal-title">🎖️ 修仙尊号阁</h2>
-          <button id="btn-close-title-modal" class="btn-close-icon">✕</button>
         </div>
         <div class="title-modal-desc">
           已佩戴尊号将享有全属性战力加成，并彰显道门威名！
@@ -909,9 +909,9 @@
     <!-- 弹窗: 锁妖天关闯关面板 -->
     <div id="modal-demon-tower" class="modal-overlay hidden">
       <div class="modal-card demon-tower-modal-card">
+        <button id="btn-close-tower-modal" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
           <h2 class="modal-title">⚔️ 锁妖天关 · 降妖试炼</h2>
-          <button id="btn-close-tower-modal" class="btn-close-icon">✕</button>
         </div>
         <div class="tower-modal-content">
           <div class="tower-stage-banner" id="tower-modal-floor-title">第 1 层 · 迷雾妖卒</div>
@@ -1067,6 +1067,7 @@
     <!-- 弹窗4: 机缘枯竭救济弹窗 -->
     <div id="modal-relief" class="modal-overlay hidden">
       <div class="modal-card">
+        <button id="btn-close-relief-x" class="modal-close-x" aria-label="关闭">&times;</button>
         <h3 class="modal-title">灵机已竭</h3>
         <p class="modal-desc" id="relief-desc">
           当前机缘不足以驱动阵盘！<br />
@@ -1084,6 +1085,7 @@
     <!-- 弹窗4B: 游戏内仙道操作提示/结果弹窗 (彻底取缔外部系统 alert) -->
     <div id="modal-action-notice" class="modal-overlay hidden">
       <div class="modal-card action-notice-card">
+        <button id="btn-close-action-notice-x" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="action-notice-header">
           <span id="action-notice-badge" class="action-notice-badge">✨ 仙道显化</span>
           <h3 id="action-notice-title" class="action-notice-title">造化熔炉·3合1升阶成功</h3>
@@ -1776,6 +1778,7 @@
     <!-- 弹窗13: 升仙天碑 · 五卷归一解谜大弹窗 -->
     <div id="modal-ascension-stele" class="modal-overlay hidden">
       <div class="modal-card stele-modal-card">
+        <button id="btn-close-stele-x" class="modal-close-x" aria-label="关闭天碑">&times;</button>
         <div class="stele-header">
           <div class="stele-badge-tag">太上升仙天碑 · 混元五行</div>
           <h2 class="stele-title">白日飞升 · 天碑真卷</h2>
@@ -1829,6 +1832,7 @@
     <!-- 弹窗: 宗门大能法相殿 (英灵殿) -->
     <div id="modal-sect-pantheon" class="modal-overlay hidden">
       <div class="modal-card pantheon-modal-card">
+        <button id="btn-close-pantheon-x" class="modal-close-x" aria-label="关闭法相殿">&times;</button>
         <div class="pantheon-header">
           <div class="pantheon-element-badge" id="pantheon-element-badge">金</div>
           <h2 class="pantheon-title" id="pantheon-title">【万剑仙宗 · 金系真传法相】</h2>

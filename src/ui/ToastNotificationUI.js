@@ -169,9 +169,15 @@
 
     init() {
       const btnActionNoticeConfirm = document.getElementById('btn-action-notice-confirm');
+      const btnCloseActionNoticeX = document.getElementById('btn-close-action-notice-x');
       const modalActionNotice = document.getElementById('modal-action-notice');
       if (btnActionNoticeConfirm) {
         btnActionNoticeConfirm.addEventListener('click', () => {
+          if (modalActionNotice) modalActionNotice.classList.add('hidden');
+        });
+      }
+      if (btnCloseActionNoticeX) {
+        btnCloseActionNoticeX.addEventListener('click', () => {
           if (modalActionNotice) modalActionNotice.classList.add('hidden');
         });
       }
