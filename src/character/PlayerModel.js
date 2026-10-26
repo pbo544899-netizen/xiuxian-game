@@ -593,7 +593,19 @@ class PlayerModel {
       };
     }
 
-    // 1. 优先找尚未装备的空缺部位 (按优先级)
+    // 0. 作弊器当前阶位的最高目标品质与天花板 (严格锚定 potLevel)
+    const lvl = Math.max(1, Math.min(6, potLevel || 1));
+    const levelTargetMap = {
+      1: { code: 'Q2', name: '灵器', rank: 2 },
+      2: { code: 'Q3', name: '宝器', rank: 3 },
+      3: { code: 'Q4', name: '法器', rank: 4 },
+      4: { code: 'Q4', name: '法器', rank: 4 },
+      5: { code: 'Q4', name: '法器', rank: 4 },
+      6: { code: 'Q5', name: '道器', rank: 5 }
+    };
+    const curLevelTarget = levelTargetMap[lvl] || levelTargetMap[1];
+
+    // 1. 优先找尚未装备的空缺部位 (按优先级，目标品质不超过当前作弊器上限)
     const missingSlots = unlockedSlots.filter(s => !this.equipment[s.part]);
     if (missingSlots.length > 0) {
       const target = missingSlots[0];
@@ -601,8 +613,8 @@ class PlayerModel {
         part: target.part,
         slotName: target.name,
         currentQuality: null,
-        targetQuality: 'Q3',
-        targetQualityName: '宝器',
+        targetQuality: curLevelTarget.code,
+        targetQualityName: curLevelTarget.name,
         isMissing: true,
         isAllMax: false,
         desc: target.name + '空缺 · 虚位以待'
@@ -625,17 +637,19 @@ class PlayerModel {
       }
     });
 
-    // 若全部达到最高神品 Q6 及以上
-    if (minRank >= 6) {
+    // 若全部已达到当前作弊器最高天花板
+    if (minRank >= curLevelTarget.rank) {
       return {
         part: 'weapon',
         slotName: '六道',
-        currentQuality: 'Q6',
-        targetQuality: 'Q7',
-        targetQualityName: '混沌',
+        currentQuality: curLevelTarget.code,
+        targetQuality: lvl < 6 ? 'Q' + (curLevelTarget.rank + 1) : 'Q6',
+        targetQualityName: lvl < 6 ? '待晋升' : '神品',
         isMissing: false,
         isAllMax: true,
-        desc: '✨ 六道极境 · 天道大成'
+        desc: lvl < 6 
+          ? `✨ 当前阶位已臻圆满 · 待天机盘晋升`
+          : `✨ 六道极境 · 天道大成`
       };
     }
 
@@ -643,22 +657,12 @@ class PlayerModel {
     minCandidates.sort((a, b) => a.power - b.power);
     const chosen = minCandidates[0];
 
-    // 目标品质升级推算
-    let nextQ = 'Q4';
-    let nextQName = '极品';
-    if (chosen.rk < 3) {
-      nextQ = 'Q3';
-      nextQName = '宝器';
-    } else if (chosen.rk === 3) {
-      nextQ = 'Q4';
-      nextQName = '极品';
-    } else if (chosen.rk === 4) {
-      nextQ = 'Q5';
-      nextQName = '仙品';
-    } else if (chosen.rk === 5) {
-      nextQ = 'Q6';
-      nextQName = '神品';
-    }
+    // 目标品质升级推算 (不能超越当前作弊器最高天花板)
+    const targetRank = Math.min(curLevelTarget.rank, chosen.rk + 1);
+    const rankToQ = { 1: 'Q1', 2: 'Q2', 3: 'Q3', 4: 'Q4', 5: 'Q5', 6: 'Q6' };
+    const rankToName = { 1: '凡铁', 2: '灵器', 3: '宝器', 4: '法器', 5: '道器', 6: '神品' };
+    const nextQ = rankToQ[targetRank] || curLevelTarget.code;
+    const nextQName = rankToName[targetRank] || curLevelTarget.name;
 
     const curQName = chosen.eq.qualityName || '凡铁';
 

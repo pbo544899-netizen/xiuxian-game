@@ -204,29 +204,47 @@
     const max = gameManager.waterTankMax || 10;
     const isBurstReady = cur >= max;
 
-    const purplePulls = (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityPurplePulls) || 0;
+    const pityCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.DragonPityConfig) || null;
+    const levelCaps = pityCfg && pityCfg.levelCaps;
+    const curCap = (levelCaps && levelCaps[potSubLevel]) || { label: '灵器', pityQuality: 'Q2', title: '初窥门径', color: '#52c41a' };
+
+    const pulls = (gameManager.dragonLootEngine && (gameManager.dragonLootEngine.pityRegularPulls !== undefined ? gameManager.dragonLootEngine.pityRegularPulls : gameManager.dragonLootEngine.pityPurplePulls)) || 0;
     const goldPulls = (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityGoldPulls) || 0;
 
-    radarEl.classList.remove('pity-purple-active', 'pity-gold-active');
+    radarEl.classList.remove('pity-purple-active', 'pity-gold-active', 'pity-green-active', 'pity-blue-active');
 
-    // 阶梯软保底标签提示 (Gold 45+ 或 Purple 15+)
+    // 阶梯软保底标签提示 (Lv.6 鸿蒙感召 45+，或各阶位专属眷顾 15+)
     if (pityTagEl) {
-      if (goldPulls >= 45) {
+      if (potSubLevel >= 6 && goldPulls >= 45) {
         pityTagEl.classList.remove('hidden');
         pityTagEl.innerText = `🌟 鸿蒙感召(${goldPulls}/60)`;
         pityTagEl.style.background = 'linear-gradient(90deg, #ffd700, #ff8c00)';
         pityTagEl.style.color = '#111';
         radarEl.classList.add('pity-gold-active');
-      } else if (purplePulls >= 15) {
+      } else if (pulls >= 15) {
         pityTagEl.classList.remove('hidden');
-        pityTagEl.innerText = `✨ 天道眷顾(${purplePulls}/20)`;
-        pityTagEl.style.background = 'linear-gradient(90deg, #9333ea, #ec4899)';
-        pityTagEl.style.color = '#fff';
-        radarEl.classList.add('pity-purple-active');
+        pityTagEl.innerText = `✨ ${curCap.label}眷顾(${pulls}/20)`;
+        if (curCap.pityQuality === 'Q2') {
+          pityTagEl.style.background = 'linear-gradient(90deg, #52c41a, #73d13d)';
+          pityTagEl.style.color = '#fff';
+          radarEl.classList.add('pity-green-active');
+        } else if (curCap.pityQuality === 'Q3') {
+          pityTagEl.style.background = 'linear-gradient(90deg, #1890ff, #40a9ff)';
+          pityTagEl.style.color = '#fff';
+          radarEl.classList.add('pity-blue-active');
+        } else {
+          pityTagEl.style.background = 'linear-gradient(90deg, #9333ea, #ec4899)';
+          pityTagEl.style.color = '#fff';
+          radarEl.classList.add('pity-purple-active');
+        }
       } else {
         pityTagEl.classList.add('hidden');
       }
     }
+
+    const pityStatusStr = potSubLevel >= 6
+      ? `✨ 天道保底：法器 [${pulls}/20] | 仙品 [${goldPulls}/60]`
+      : `✨ 作弊器 Lv.${potSubLevel}【${curCap.title}】：${curCap.label}保底 [${pulls}/20]`;
 
     if (isBurstReady) {
       radarEl.classList.add('burst-ready');
@@ -234,15 +252,13 @@
         burstFlagEl.classList.remove('hidden');
         burstFlagEl.innerText = '⚡ 气运聚顶 (下发必中)';
       }
-      radarEl.title = `🔥 气运聚顶已激活！下一次推演将精准降下【${destiny.slotName}】极品法宝！
-✨ 天道保底阶梯：灵品 [${purplePulls}/20] | 仙品 [${goldPulls}/60]`;
+      radarEl.title = `🔥 气运聚顶已激活！下一次推演将精准降下【${destiny.slotName}】${curCap.label}！\n${pityStatusStr}`;
     } else {
       radarEl.classList.remove('burst-ready');
       if (burstFlagEl) {
         burstFlagEl.classList.add('hidden');
       }
-      radarEl.title = `🎯 天命缺口雷达 [气运 ${cur}/${max}]：当前短板为【${destiny.slotName}】
-✨ 天道保底阶梯：灵品 [${purplePulls}/20] | 仙品 [${goldPulls}/60]`;
+      radarEl.title = `🎯 天命缺口雷达 [气运 ${cur}/${max}]：当前短板为【${destiny.slotName}】\n${pityStatusStr}`;
     }
   }
 
@@ -256,15 +272,20 @@
       if (!destiny) return;
       const cur = gameManager ? (gameManager.waterTankProgress || 0) : 0;
       const max = gameManager ? (gameManager.waterTankMax || 10) : 10;
-      const purplePulls = (gameManager && gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityPurplePulls) || 0;
+      const pityCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.DragonPityConfig) || null;
+      const levelCaps = pityCfg && pityCfg.levelCaps;
+      const curCap = (levelCaps && levelCaps[potSubLevel]) || { label: '灵器', pityQuality: 'Q2', title: '初窥门径' };
+      const pulls = (gameManager && gameManager.dragonLootEngine && (gameManager.dragonLootEngine.pityRegularPulls !== undefined ? gameManager.dragonLootEngine.pityRegularPulls : gameManager.dragonLootEngine.pityPurplePulls)) || 0;
       const goldPulls = (gameManager && gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityGoldPulls) || 0;
 
+      const pityInfo = potSubLevel >= 6
+        ? `✨ 保底阶梯：法器[${pulls}/20] | 仙品[${goldPulls}/60]`
+        : `✨ 保底阶梯：作弊器Lv.${potSubLevel}【${curCap.title}】 ${curCap.label}保底[${pulls}/20]`;
+
       if (cur >= max) {
-        showFloatingNotice(`🔥【气运聚顶】下一次必降【${destiny.slotName}】极品！
-✨ 保底阶梯：灵品[${purplePulls}/20] | 仙品[${goldPulls}/60]`, '#ffd700');
+        showFloatingNotice(`🔥【气运聚顶】下一次必降【${destiny.slotName}】${curCap.label}！\n${pityInfo}`, '#ffd700');
       } else {
-        showFloatingNotice(`🎯【天命缺口雷达】短板:【${destiny.slotName}】(${destiny.desc})
-✨ 天道保底阶梯：灵品[${purplePulls}/20] | 仙品[${goldPulls}/60]`, '#00e5ff');
+        showFloatingNotice(`🎯【天命缺口雷达】短板:【${destiny.slotName}】(${destiny.desc})\n${pityInfo}`, '#00e5ff');
       }
     });
   }

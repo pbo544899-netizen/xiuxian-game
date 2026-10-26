@@ -14,9 +14,10 @@ window.SlotsRPG = window.SlotsRPG || {};
       this.isFrenzyActive = false;
       this.frenzySpinsLeft = 0;
 
-      // 天道动态保底与心流阶梯计数 (长线非酋阶梯软保底)
-      this.pityPurplePulls = 0; // 连续未出灵品(Q4及以上)法宝计数
-      this.pityGoldPulls = 0;   // 连续未出仙品(Q5及以上)法宝计数
+      // 天道动态保底与心流阶梯计数 (严格锚定作弊器等级上限)
+      this.pityRegularPulls = 0; // 连续未出当前作弊器上限品质法宝计数 (通用阶梯保底)
+      this.pityPurplePulls = 0;  // 兼容原有变量名
+      this.pityGoldPulls = 0;    // 终局连续未出仙品(Q5及以上)法宝计数 (仅在 Lv.6 鸿蒙道盘生效)
 
       // 统计与防空转计数
       this.consecutiveEquipmentSpins = 0;
@@ -164,8 +165,13 @@ window.SlotsRPG = window.SlotsRPG || {};
 
         if (!isFrenzyGuaranteed10th && randEvent < encounterRate && hasJoinedSect) {
           // 龙息引煞：遭遇妖兽 (未掉落法宝，保底计数正常累加推进)
-          this.pityPurplePulls++;
-          this.pityGoldPulls++;
+          this.pityRegularPulls = (this.pityRegularPulls || 0) + 1;
+          this.pityPurplePulls = this.pityRegularPulls;
+          if (potSubLevel >= 6) {
+            this.pityGoldPulls = (this.pityGoldPulls || 0) + 1;
+          } else {
+            this.pityGoldPulls = 0;
+          }
           const isElite = Math.random() < 0.25;
           singleReward = {
             type: 'battle',
@@ -180,7 +186,7 @@ window.SlotsRPG = window.SlotsRPG || {};
           cabinetSide = 'left';
         } else {
           // 检查天道保底与大爆发状态：保底期必出装备，确保心流反馈与阶梯极品出货
-          const isPityDue = this.pityPurplePulls >= 15 || this.pityGoldPulls >= 45;
+          const isPityDue = (this.pityRegularPulls || this.pityPurplePulls || 0) >= 15 || (potSubLevel >= 6 && this.pityGoldPulls >= 45);
           const isGrandBurst = isFrenzyGuaranteed10th || (options && (options.isGrandSpin || options.isGrandOverride || options.isClimaxBurst));
 
           // 核心开箱流：85% 产出各部位法宝装备，15% 产出修真资粮 (丹药/灵符/纯灵机)
@@ -199,8 +205,13 @@ window.SlotsRPG = window.SlotsRPG || {};
             cabinetSide = 'left';
           } else {
             // 未出装备产出资粮，推进天道保底阶梯
-            this.pityPurplePulls++;
-            this.pityGoldPulls++;
+            this.pityRegularPulls = (this.pityRegularPulls || 0) + 1;
+            this.pityPurplePulls = this.pityRegularPulls;
+            if (potSubLevel >= 6) {
+              this.pityGoldPulls = (this.pityGoldPulls || 0) + 1;
+            } else {
+              this.pityGoldPulls = 0;
+            }
             singleReward = this._generateMaterialLoot({
               multiplier,
               worldTier,
@@ -321,75 +332,86 @@ window.SlotsRPG = window.SlotsRPG || {};
           : 'weapon';
       }
 
-      // 2. 品质矩阵计算与天道动态阶梯保底 (长线非酋阶梯软保底)
-      const pityCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.DragonPityConfig) || {
-        purpleSoftPityThreshold: 15,
-        purpleHardPityLimit: 20,
-        purpleSoftStepRate: 0.18,
-        goldSoftPityThreshold: 45,
-        goldHardPityLimit: 60,
-        goldSoftStepRate: 0.065
+      // 2. 作弊器等级天花板与动态阶梯保底判定 (严格锚定 potSubLevel)
+      const lvl = Math.max(1, Math.min(6, potSubLevel || 1));
+      const pityCfg = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.DragonPityConfig) || null;
+      const levelCaps = (pityCfg && pityCfg.levelCaps) || {
+        1: { maxQuality: 'Q2', minQuality: 'Q1', pityQuality: 'Q2', label: '灵器' },
+        2: { maxQuality: 'Q3', minQuality: 'Q1', pityQuality: 'Q3', label: '宝器' },
+        3: { maxQuality: 'Q4', minQuality: 'Q1', pityQuality: 'Q4', label: '法器' },
+        4: { maxQuality: 'Q4', minQuality: 'Q2', pityQuality: 'Q4', label: '法器' },
+        5: { maxQuality: 'Q4', minQuality: 'Q2', pityQuality: 'Q4', label: '法器' },
+        6: { maxQuality: 'Q5', minQuality: 'Q3', pityQuality: 'Q5', label: '道器' }
       };
+      const curCap = levelCaps[lvl] || levelCaps[1];
+      const qRankMap = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
+      const maxRank = qRankMap[curCap.maxQuality] || 2;
+      const pityRank = qRankMap[curCap.pityQuality] || 2;
+
+      // 确立当前抽次的保底计数变量 (pityRegularPulls 兼容原有 pityPurplePulls)
+      if (this.pityRegularPulls === undefined) {
+        this.pityRegularPulls = this.pityPurplePulls || 0;
+      }
 
       let isPityTrigger = false;
-      let pityType = null; // 'purple' | 'gold'
+      let pityType = null; // 'gold' | 'regular' | 'purple'
       let triggerGoldPity = false;
-      let triggerPurplePity = false;
+      let triggerRegularPity = false;
 
-      // 金品仙装保底判定 (45 抽进入鸿蒙蓄势软保底，60 抽必中硬保底)
-      if (this.pityGoldPulls >= pityCfg.goldHardPityLimit) {
-        triggerGoldPity = true;
-      } else if (this.pityGoldPulls >= pityCfg.goldSoftPityThreshold) {
-        const goldSoftRate = (this.pityGoldPulls - pityCfg.goldSoftPityThreshold + 1) * pityCfg.goldSoftStepRate;
-        if (Math.random() < goldSoftRate) {
+      // 鸿蒙金装大保底判定：仅限 Lv.6 鸿蒙道盘激活！
+      if (lvl >= 6) {
+        const goldLimit = (pityCfg && pityCfg.goldHardPityLimit) || 60;
+        const goldSoft = (pityCfg && pityCfg.goldSoftPityThreshold) || 45;
+        const goldRate = (pityCfg && pityCfg.goldSoftStepRate) || 0.065;
+        if (this.pityGoldPulls >= goldLimit) {
           triggerGoldPity = true;
+        } else if (this.pityGoldPulls >= goldSoft) {
+          const rate = (this.pityGoldPulls - goldSoft + 1) * goldRate;
+          if (Math.random() < rate) triggerGoldPity = true;
         }
       }
 
-      // 紫品灵装保底判定 (15 抽进入天道眷顾软保底，20 抽必中硬保底)
+      // 阶段常规保底判定：各阶位保底当前上限品质 (Lv.1保底Q2, Lv.2保底Q3, Lv.3~5保底Q4, Lv.6保底Q4)
       if (!triggerGoldPity) {
-        if (this.pityPurplePulls >= pityCfg.purpleHardPityLimit) {
-          triggerPurplePity = true;
-        } else if (this.pityPurplePulls >= pityCfg.purpleSoftPityThreshold) {
-          const purpleSoftRate = (this.pityPurplePulls - pityCfg.purpleSoftPityThreshold + 1) * pityCfg.purpleSoftStepRate;
-          if (Math.random() < purpleSoftRate) {
-            triggerPurplePity = true;
-          }
+        const softThreshold = (pityCfg && pityCfg.softPityThreshold) || 15;
+        const hardLimit = (pityCfg && pityCfg.hardPityLimit) || 20;
+        const stepRate = (pityCfg && pityCfg.softStepRate) || 0.18;
+
+        if (this.pityRegularPulls >= hardLimit) {
+          triggerRegularPity = true;
+        } else if (this.pityRegularPulls >= softThreshold) {
+          const rate = (this.pityRegularPulls - softThreshold + 1) * stepRate;
+          if (Math.random() < rate) triggerRegularPity = true;
         }
       }
 
+      // 基础品质生成：严格使用当前作弊器等级对应的 EquipQualityMatrix
       const matrix = (window.SlotsRPG && window.SlotsRPG.GameBalanceConfig && window.SlotsRPG.GameBalanceConfig.EquipQualityMatrix) || null;
-      let qualityCode = matrix ? matrix.pickQuality(potSubLevel, Math.random()) : 'Q1';
+      let qualityCode = matrix ? matrix.pickQuality(lvl, Math.random()) : 'Q1';
 
       if (triggerGoldPity) {
         isPityTrigger = true;
         pityType = 'gold';
-        if (potSubLevel < 3) {
-          qualityCode = 'Q4'; // 早期阶段平滑守护，保证当前最高阶
-        } else {
-          qualityCode = Math.random() < 0.20 ? 'Q6' : 'Q5';
-        }
-      } else if (triggerPurplePity) {
+        qualityCode = 'Q5'; // Lv.6 终极大保底必出金装 Q5
+      } else if (triggerRegularPity) {
         isPityTrigger = true;
-        pityType = 'purple';
-        if (potSubLevel === 1) {
-          qualityCode = 'Q2';
-        } else if (potSubLevel === 2) {
-          qualityCode = 'Q3';
-        } else {
-          qualityCode = Math.random() < 0.15 ? 'Q5' : 'Q4';
-        }
+        pityType = (lvl >= 3) ? 'purple' : 'regular';
+        qualityCode = curCap.pityQuality; // 严格保底当前阶位最高品质 (Lv.1->Q2, Lv.2->Q3, Lv.3~5->Q4, Lv.6->Q4)
       } else if (isClimaxBurst || isGrandSpin || isFrenzyGuaranteed10th) {
-        // 气运聚顶大爆发 / 龙皇吐宝：根据天命目标品质保底极品紫(Q4)或仙品金(Q5)！
-        if (destiny && destiny.targetQuality && ['Q5', 'Q6'].includes(destiny.targetQuality)) {
-          qualityCode = Math.random() < 0.65 ? 'Q5' : 'Q6';
+        // 满水缸龙皇吐宝 / 气运聚顶：锁定当前阶位天花板品质！
+        if (lvl >= 6) {
+          qualityCode = Math.random() < 0.35 ? 'Q5' : 'Q4';
         } else {
-          qualityCode = Math.random() < 0.40 ? 'Q5' : 'Q4';
+          qualityCode = curCap.maxQuality; // 严格锚定当前上限！
         }
       } else if (this.isFrenzyActive) {
-        const qRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
-        if ((qRanks[qualityCode] || 1) < 4) {
-          qualityCode = Math.random() < 0.35 ? 'Q5' : 'Q4';
+        // 狂暴状态持续期间：大幅提振至当前阶位最高品质
+        if (lvl >= 6) {
+          qualityCode = Math.random() < 0.25 ? 'Q5' : 'Q4';
+        } else {
+          if ((qRankMap[qualityCode] || 1) < maxRank) {
+            qualityCode = curCap.maxQuality;
+          }
         }
       }
 
@@ -399,29 +421,44 @@ window.SlotsRPG = window.SlotsRPG || {};
       const burstChance = Math.min(0.50, 0.08 + (multiplier - 1) * 0.05);
       if (Math.random() < burstChance) {
         const nextQ = window.SlotsRPG.ItemModel.getNextQuality(qualityCode);
-        if (nextQ) {
+        // 关键铁律：跃阶后的品质，绝对不能超过当前作弊器的最高天花板！
+        if (nextQ && (qRankMap[nextQ] || 1) <= maxRank) {
           qualityCode = nextQ;
           isLuckyBurst = true;
         }
       }
 
-      // 4. 更新保底计数器 (根据最终产出品质归零或递增)
-      const qRankMap = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7, Q8: 8 };
-      const finalRank = qRankMap[qualityCode] || 1;
-
-      if (finalRank >= 5) {
-        // 掉落仙品(Q5)及以上：金品保底与紫品保底双重归零重置！
-        this.pityGoldPulls = 0;
-        this.pityPurplePulls = 0;
-      } else if (finalRank >= 4) {
-        // 掉落灵品(Q4)：紫品保底归零重置，金品保底计数 +1
-        this.pityPurplePulls = 0;
-        this.pityGoldPulls++;
-      } else {
-        // 掉落凡铁/精铁/玄品(Q1~Q3)：双计数器 +1
-        this.pityPurplePulls++;
-        this.pityGoldPulls++;
+      // 4. 强制绝对安全截断 (Hard Safety Clamp) - 确保任何意外都无法越阶产出
+      if ((qRankMap[qualityCode] || 1) > maxRank) {
+        qualityCode = curCap.maxQuality;
       }
+
+      // 5. 更新保底计数器 (严格根据是否达成当前阶位保底品质重置)
+      const finalRank = qRankMap[qualityCode] || 1;
+      if (lvl >= 6) {
+        if (finalRank >= 5) {
+          this.pityGoldPulls = 0;
+          this.pityRegularPulls = 0;
+        } else if (finalRank >= 4) {
+          this.pityRegularPulls = 0;
+          this.pityGoldPulls++;
+        } else {
+          this.pityRegularPulls++;
+          this.pityGoldPulls++;
+        }
+      } else {
+        // Lv 1 ~ 5：只要产出品质达到或超过当前阶位保底目标品质，阶段保底重置！
+        if (finalRank >= pityRank) {
+          this.pityRegularPulls = 0;
+        } else {
+          this.pityRegularPulls++;
+        }
+        // 低等级不累计金装大保底
+        this.pityGoldPulls = 0;
+      }
+
+      // 同步兼容原有变量名
+      this.pityPurplePulls = this.pityRegularPulls;
 
       // 4. 创建装备对象
       const newEquip = window.SlotsRPG.ItemModel.createEquipment(chosenSlot, qualityCode, worldTier);
@@ -462,6 +499,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         prevQualityColor: isLuckyBurst ? prevQualityColor : null,
         isPityTrigger: isPityTrigger,
         pityType: pityType,
+        pityRegularPulls: this.pityRegularPulls,
         pityPurplePulls: this.pityPurplePulls,
         pityGoldPulls: this.pityGoldPulls
       };

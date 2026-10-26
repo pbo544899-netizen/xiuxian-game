@@ -101,16 +101,33 @@ window.SlotsRPG.GameBalanceConfig = {
 
   // ==========================================
   // 3.1 神龙引宝天道动态保底与心流阶梯 (DragonLootEngine 引用)
-  // 长线非酋阶梯软保底，平滑极品出货方差，防长周期不出货挫败
+  // 严格锚定作弊器/天机盘等级上限 (potSubLevel)，平滑心流阶梯，杜绝低级作弊器越级出金装
   // ==========================================
   DragonPityConfig: {
-    purpleSoftPityThreshold: 15, // 连续 15 抽未出灵品(Q4+)开启软保底递增
-    purpleHardPityLimit: 20,     // 连续 20 抽必定硬保底降下灵品(Q4+)及以上法宝
-    purpleSoftStepRate: 0.18,    // 软保底每抽递增 18% 概率
+    // 阶段常规保底阈值 (各阶段通用：连续 20 抽未出当前阶位最高品质必定硬保底)
+    softPityThreshold: 15,
+    hardPityLimit: 20,
+    softStepRate: 0.18,
 
-    goldSoftPityThreshold: 45,   // 连续 45 抽未出仙品(Q5+)开启软保底递增
-    goldHardPityLimit: 60,       // 连续 60 抽必定硬保底降下仙品(Q5+)及以上法宝
-    goldSoftStepRate: 0.065      // 软保底每抽递增 6.5% 概率
+    // 终局鸿蒙天道大保底阈值 (仅在 Lv.6 鸿蒙道盘激活，60 抽必降金色道器 Q5)
+    goldSoftPityThreshold: 45,
+    goldHardPityLimit: 60,
+    goldSoftStepRate: 0.065,
+
+    // 作弊器各阶位品质天花板与保底锚定标准
+    levelCaps: {
+      1: { maxQuality: 'Q2', minQuality: 'Q1', pityQuality: 'Q2', title: '初窥门径', label: '灵器', color: '#52c41a' },
+      2: { maxQuality: 'Q3', minQuality: 'Q1', pityQuality: 'Q3', title: '凝神引灵', label: '宝器', color: '#1890ff' },
+      3: { maxQuality: 'Q4', minQuality: 'Q1', pityQuality: 'Q4', title: '百炼天机', label: '法器', color: '#722ed1' },
+      4: { maxQuality: 'Q4', minQuality: 'Q2', pityQuality: 'Q4', title: '通玄灵鼎', label: '法器', color: '#722ed1' },
+      5: { maxQuality: 'Q4', minQuality: 'Q2', pityQuality: 'Q4', title: '造化乾坤', label: '法器', color: '#722ed1' },
+      6: { maxQuality: 'Q5', minQuality: 'Q3', pityQuality: 'Q5', title: '鸿蒙道盘', label: '道器', color: '#ffd700' }
+    },
+
+    // 兼容旧属性名
+    purpleSoftPityThreshold: 15,
+    purpleHardPityLimit: 20,
+    purpleSoftStepRate: 0.18
   },
 
   // ==========================================

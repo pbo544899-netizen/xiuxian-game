@@ -2490,3 +2490,33 @@ body:has(#view-cave.active) .drop-flyer,
   border-color: rgba(255, 215, 0, 0.8);
   box-shadow: 0 2px 14px rgba(255, 215, 0, 0.4), inset 0 0 12px rgba(255, 215, 0, 0.25);
 }
+
+.dragon-destiny-radar.pity-green-active {
+  border-color: rgba(82, 196, 26, 0.7);
+  box-shadow: 0 2px 12px rgba(82, 196, 26, 0.3), inset 0 0 10px rgba(82, 196, 26, 0.2);
+}
+
+.dragon-destiny-radar.pity-blue-active {
+  border-color: rgba(24, 144, 255, 0.7);
+  box-shadow: 0 2px 12px rgba(24, 144, 255, 0.3), inset 0 0 10px rgba(24, 144, 255, 0.2);
+}
+
+.dragon-head-sprite.anticipation-green {
+  filter: drop-shadow(0 0 16px rgba(82, 196, 26, 0.9)) hue-rotate(60deg) saturate(1.4);
+}
+
+.dragon-head-sprite.anticipation-blue {
+  filter: drop-shadow(0 0 16px rgba(24, 144, 255, 0.9)) hue-rotate(160deg) saturate(1.5);
+}
+
+.dragon-omen-banner.banner-green {
+  background: linear-gradient(90deg, rgba(82, 196, 26, 0.9), rgba(115, 209, 61, 0.95), rgba(82, 196, 26, 0.9));
+  color: #fff;
+  box-shadow: 0 0 16px rgba(82, 196, 26, 0.7);
+}
+
+.dragon-omen-banner.banner-blue {
+  background: linear-gradient(90deg, rgba(24, 144, 255, 0.9), rgba(64, 169, 255, 0.95), rgba(24, 144, 255, 0.9));
+  color: #fff;
+  box-shadow: 0 0 16px rgba(24, 144, 255, 0.7);
+}

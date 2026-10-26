@@ -167,12 +167,16 @@ window.SlotsRPG = window.SlotsRPG || {};
         }
       }
 
-      // 1.5 检查是否触发天道动态阶梯保底 (非酋长线阶梯软硬保底)
+      // 1.5 检查是否触发天道动态阶梯保底 (严格锚定作弊器阶位)
       if (left && left.isPityTrigger) {
         if (left.pityType === 'gold' || (left.item && ['Q5', 'Q6', 'Q7'].includes(left.item.qualityCode))) {
           return { tier: 'GOLD', color: '#ffd700', title: '【天道造化 · 鸿蒙极品保底现世！】', dramaPause: 400 };
         } else if (left.pityType === 'purple' || (left.item && left.item.qualityCode === 'Q4')) {
-          return { tier: 'PURPLE', color: '#c084fc', title: '【天道垂怜 · 阶梯心流保底现世！】', dramaPause: 280 };
+          return { tier: 'PURPLE', color: '#c084fc', title: '【天道垂怜 · 极品法宝保底现世！】', dramaPause: 280 };
+        } else if (left.item && left.item.qualityCode === 'Q3') {
+          return { tier: 'BLUE', color: '#1890ff', title: '【天道垂怜 · 阶位宝器保底现世！】', dramaPause: 220 };
+        } else if (left.item && left.item.qualityCode === 'Q2') {
+          return { tier: 'GREEN', color: '#52c41a', title: '【天道垂怜 · 阶位灵器保底现世！】', dramaPause: 200 };
         }
       }
 
