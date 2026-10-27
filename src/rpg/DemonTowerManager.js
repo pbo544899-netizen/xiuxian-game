@@ -97,7 +97,8 @@
       const bossName = entry.name;
       const avatar = entry.avatar;
 
-      // 奖励计算：层数越高，机缘与丹药越丰厚
+      // 奖励计算：层数越高，经验、机缘与丹药越丰厚
+      const expReward = Math.floor(80 + f * 45 + (isBoss ? 450 : 0));
       const energyReward = 120 + f * 85 + (isBoss ? 800 : 0);
       const pillReward = 2 + Math.floor(f / 4) + (isBoss ? 3 : 0);
 
@@ -123,6 +124,7 @@
         atk: atk,
         def: def,
         rewards: {
+          exp: expReward,
           energy: energyReward,
           pills: pillReward,
           titleId: titleRewardId,
@@ -159,13 +161,39 @@
         monsters: [monsterUnit]
       };
 
-      // 挂载镇妖塔专属上下文标志
+      // 挂载镇妖塔专属上下文标志与完整实物战利品
+      const isFirstClear = !this.clearedFloors.has(cfg.floor);
+      const expReward = isFirstClear ? cfg.rewards.exp : Math.floor(cfg.rewards.exp * 0.25);
+      const energyReward = isFirstClear ? cfg.rewards.energy : Math.floor(cfg.rewards.energy * 0.25);
+      const pillCount = isFirstClear ? cfg.rewards.pills : 1;
+
+      const rewardItems = [];
+      if (window.SlotsRPG && window.SlotsRPG.ItemModel) {
+        const pill = window.SlotsRPG.ItemModel.createPill('exp', pillCount);
+        if (pill) rewardItems.push(pill);
+        if (cfg.isBoss || cfg.isMilestone) {
+          const quality = cfg.floor >= 30 ? 'Q4' : (cfg.floor >= 15 ? 'Q3' : 'Q2');
+          const eq = window.SlotsRPG.ItemModel.createEquipment('weapon', quality);
+          if (eq) rewardItems.push(eq);
+        }
+      }
+
+      const towerRewards = {
+        exp: expReward,
+        energy: energyReward,
+        pills: pillCount,
+        titleId: isFirstClear ? cfg.rewards.titleId : null,
+        titleName: isFirstClear ? cfg.rewards.titleName : null
+      };
+
       const battleResult = {
         encounter: encounter,
         boss: monsterUnit,
         isTowerBattle: true,
         towerFloor: cfg.floor,
         towerConfig: cfg,
+        rewards: towerRewards,
+        rewardItems: rewardItems,
         itemsUsed: [],
         timeline: []
       };

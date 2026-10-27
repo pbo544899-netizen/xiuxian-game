@@ -40,6 +40,7 @@ class StorageService {
           sectTrialStage: gameManager.sectTrialStage || 1,
           trialBestDamagePct: gameManager.trialBestDamagePct || 0,
           demonTowerFloor: (gameManager.demonTowerManager && gameManager.demonTowerManager.currentFloor) || 1,
+          demonTowerClearedFloors: (gameManager.demonTowerManager && Array.from(gameManager.demonTowerManager.clearedFloors)) || [],
           unlockedTitles: (gameManager.titleManager && gameManager.titleManager.unlockedTitles) || ['title_mortal'],
           equippedTitle: (gameManager.titleManager && gameManager.titleManager.equippedTitle) || 'title_mortal',
           lockedSectBossSnapshot: gameManager.lockedSectBossSnapshot ? Object.assign({}, gameManager.lockedSectBossSnapshot) : null,
@@ -233,9 +234,19 @@ class StorageService {
         }
       }
 
-      // 1.1 还原锁妖天关爬塔进度与称号
-      if (gameManager.demonTowerManager && typeof data.demonTowerFloor === 'number') {
-        gameManager.demonTowerManager.currentFloor = Math.max(1, Math.min(50, data.demonTowerFloor));
+      // 1.1 还原锁妖天关爬塔进度与已通关层数记录
+      if (gameManager.demonTowerManager) {
+        if (typeof data.demonTowerFloor === 'number') {
+          gameManager.demonTowerManager.currentFloor = Math.max(1, Math.min(50, data.demonTowerFloor));
+        }
+        if (Array.isArray(data.demonTowerClearedFloors)) {
+          gameManager.demonTowerManager.clearedFloors = new Set(data.demonTowerClearedFloors);
+        } else if (typeof data.demonTowerFloor === 'number' && data.demonTowerFloor > 1) {
+          // 向下兼容历史存档：自动标记低于当前层的所有层数为已通关
+          for (let f = 1; f < data.demonTowerFloor; f++) {
+            gameManager.demonTowerManager.clearedFloors.add(f);
+          }
+        }
       }
       if (gameManager.titleManager) {
         if (Array.isArray(data.unlockedTitles) && data.unlockedTitles.length > 0) {

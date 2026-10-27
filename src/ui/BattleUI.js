@@ -1501,59 +1501,69 @@
     renderDefeatProgress(battleResult);
   }
 
+  // 封装通用伏妖大捷纳宝收纳逻辑
+  function handleClaimBattleVictory() {
+    clearVictoryAutoCloseTimer();
+    if (!activeBattleResult) return null;
+    const curBattle = activeBattleResult;
+    activeBattleResult = null;
+
+    if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+      window.SlotsRPG.SoundEffects.play('CLAIM_REWARD');
+    }
+
+    // 1. 抓取弹窗中的战利品卡片位置，启动抛物线掉落动画直坠底部角色修真/乾坤袋
+    const cells = victoryItemsGrid ? victoryItemsGrid.querySelectorAll('.victory-item-cell') : [];
+    const dropItems = [];
+    if (curBattle.rewardItems && curBattle.rewardItems.length > 0) {
+      curBattle.rewardItems.forEach((it, idx) => {
+        dropItems.push({
+          icon: it.icon,
+          element: cells[idx] || modalBattleVictory
+        });
+      });
+    }
+
+    // 立即隐藏胜利弹窗并恢复背景仙乐
+    if (modalBattleVictory) modalBattleVictory.classList.add('hidden');
+    if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
+      window.SlotsRPG.BGMPlayer.setDucking(false);
+    }
+
+    // 2. 播放掉落飞入背包动画
+    if (window.SlotsRPG.DropAnimator && dropItems.length > 0) {
+      window.SlotsRPG.DropAnimator.playDropAnimationFromElements(
+        dropItems,
+        tabCharacter,
+        () => {
+          if (window.incrementNotificationBadge) window.incrementNotificationBadge(1);
+        }
+      );
+    }
+
+    // 3. 执行真正的纳宝入囊入库
+    const summary = gameManager.claimBattleRewards(curBattle);
+
+    // 镇妖塔战斗胜利额外结算
+    if (curBattle && curBattle.isTowerBattle && gameManager.demonTowerManager) {
+      gameManager.demonTowerManager.onVictory(curBattle.towerFloor);
+      updateCaveView();
+    }
+
+    return { curBattle, summary };
+  }
+
   if (btnVictoryClaim) {
     btnVictoryClaim.addEventListener('click', () => {
-      clearVictoryAutoCloseTimer();
-      if (!activeBattleResult) return;
-      const curBattle = activeBattleResult;
-      activeBattleResult = null;
+      const res = handleClaimBattleVictory();
+      if (!res) return;
+      const { curBattle, summary } = res;
 
-      // 1. 抓取弹窗中的战利品卡片位置，启动抛物线掉落动画直坠底部角色修真/乾坤袋
-      const cells = victoryItemsGrid ? victoryItemsGrid.querySelectorAll('.victory-item-cell') : [];
-      const dropItems = [];
-      if (curBattle.rewardItems && curBattle.rewardItems.length > 0) {
-        curBattle.rewardItems.forEach((it, idx) => {
-          dropItems.push({
-            icon: it.icon,
-            element: cells[idx] || modalBattleVictory
-          });
-        });
-      }
-
-      // 立即隐藏胜利弹窗并恢复背景仙乐
-      if (modalBattleVictory) modalBattleVictory.classList.add('hidden');
       if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-        if (typeof window.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
-          window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
-        } else {
-          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
-        }
-      }
-      if (window.SlotsRPG && window.SlotsRPG.BGMPlayer) {
-        window.SlotsRPG.BGMPlayer.setDucking(false);
+        window.SlotsRPG.SpotlightGuide.scheduleCheck(350);
       }
 
-      // 2. 播放掉落飞入背包动画
-      if (window.SlotsRPG.DropAnimator && dropItems.length > 0) {
-        window.SlotsRPG.DropAnimator.playDropAnimationFromElements(
-          dropItems,
-          tabCharacter,
-          () => {
-            if (window.incrementNotificationBadge) window.incrementNotificationBadge(1);
-          }
-        );
-      }
-
-      // 3. 执行真正的纳宝入囊入库
-      const summary = gameManager.claimBattleRewards(curBattle);
-
-      // 镇妖塔战斗胜利额外结算
-      if (curBattle && curBattle.isTowerBattle && gameManager.demonTowerManager) {
-        gameManager.demonTowerManager.onVictory(curBattle.towerFloor);
-        updateCaveView();
-      }
-
-      // 4. 若此前处于自动推演状态，战斗结束后无缝切回天机盘并继续维持旋转
+      // 若此前处于自动推演状态，战斗结束后无缝切回天机盘并继续维持旋转
       if (gameManager.wasAutoSpinningBeforeBattle) {
         switchTab('slots');
         gameManager.resumeAutoSpinAfterBattle();
@@ -1568,16 +1578,57 @@
           window.SlotsRPG.StorageService.saveGame(gameManager, true);
         }
         gameManager.emitStateChange();
-        // 斩猪胜利后回到角色面板，由新手引导手势稳定指向乾坤袋中的【造化天机盘】，严禁自动弹窗打断与抢跑
         if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-          if (typeof window.SlotsRPG.SpotlightGuide.scheduleCheck === 'function') {
-            window.SlotsRPG.SpotlightGuide.scheduleCheck(1200);
-          } else {
-            setTimeout(() => {
-              window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
-            }, 1200);
-          }
+          window.SlotsRPG.SpotlightGuide.scheduleCheck(350);
         }
+      }
+    });
+  }
+
+  // 伏妖大捷 · 继续挑战新关卡/下一层
+  const btnVictoryContinue = document.getElementById('btn-victory-continue');
+  if (btnVictoryContinue) {
+    btnVictoryContinue.addEventListener('click', () => {
+      const res = handleClaimBattleVictory();
+      if (!res) return;
+      const { curBattle } = res;
+
+      // 1. 镇妖天关：无缝挑战更高层
+      if (curBattle && curBattle.isTowerBattle && gameManager.demonTowerManager) {
+        const nextFloor = gameManager.demonTowerManager.currentFloor;
+        if (nextFloor <= gameManager.demonTowerManager.maxFloor) {
+          const nextChallenge = gameManager.demonTowerManager.startChallenge();
+          if (nextChallenge && nextChallenge.success !== false) {
+            playBattleSequence(nextChallenge);
+            return;
+          } else {
+            if (window.showFloatingNotice) window.showFloatingNotice((nextChallenge && nextChallenge.reason) || '无法发起下一层挑战');
+          }
+        } else {
+          if (window.showFloatingNotice) window.showFloatingNotice('已登顶镇妖天关最高层！功德无量！');
+        }
+        return;
+      }
+
+      // 2. 主线/门派妖王试炼：无缝挑战下一关
+      if (gameManager.player && gameManager.player.isMortal) {
+        if (window.showFloatingNotice) window.showFloatingNotice('凡人尚未入道，请先拜入仙宗门派！');
+        return;
+      }
+      if (gameManager.hasDefeatedSectBoss && gameManager.sectTrialStage > 12) {
+        if (window.showFloatingNotice) window.showFloatingNotice('当前门派试炼与守关妖王已全部荡平！');
+        return;
+      }
+      if (gameManager.isAllStorageFull && gameManager.isAllStorageFull()) {
+        gameManager.showStorageFullAlert('battle');
+        return;
+      }
+
+      const nextTrialResult = gameManager.startActiveTrialChallenge({ skipStoryEmit: false });
+      if (nextTrialResult && nextTrialResult.success !== false) {
+        playBattleSequence(nextTrialResult);
+      } else {
+        if (window.showFloatingNotice) window.showFloatingNotice((nextTrialResult && nextTrialResult.reason) || '无法继续发起挑战');
       }
     });
   }

@@ -1924,3 +1924,73 @@
   user-select: none;
 }
 
+
+/* 伏妖大捷操作按钮组：知悉收纳 + 继续挑战 */
+.victory-buttons-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: 2px !important;
+}
+
+.btn-victory-secondary {
+  flex: 1 !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border-radius: 21px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  background: rgba(30, 41, 59, 0.85) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 215, 0, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+}
+
+.btn-victory-secondary:hover {
+  background: rgba(51, 65, 85, 0.95) !important;
+  color: #ffffff !important;
+  border-color: #ffd700 !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-victory-secondary:active {
+  transform: translateY(1px) !important;
+}
+
+.btn-victory-primary {
+  flex: 1.25 !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  border-radius: 21px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  background: linear-gradient(135deg, #ffd700, #f59e0b) !important;
+  color: #1a1002 !important;
+  border: 1px solid rgba(255, 215, 0, 0.5) !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.45) !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+}
+
+.btn-victory-primary:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.6) !important;
+}
+
+.btn-victory-primary:active {
+  transform: translateY(1px) !important;
+  filter: brightness(0.92) !important;
+}

@@ -452,8 +452,8 @@
                   <span class="mini-badge-label">防</span>
                   <b id="stat-def" class="stat-col-val def-val">2</b>
                 </div>
-                <button id="btn-hero-profile-detail" class="btn-avatar-tap-hint" title="点击查看道相心性与流派详情">
-                  <span>道相 ➔</span>
+                <button id="btn-hero-profile-detail" class="btn-avatar-tap-hint" title="点击查看角色属性与流派详情">
+                  <span>属性 ➔</span>
                 </button>
               </div>
             </div>
@@ -739,17 +739,17 @@
       </div>
     </nav>
 
-        <!-- 弹窗: 修真道相 · 灵根心性 (1 级轻量弹窗，点击头像或道相呼出，无多级套娃) -->
+        <!-- 弹窗: 角色属性 (1 级轻量弹窗，点击头像或属性呼出，无多级套娃) -->
     <div id="modal-hero-profile-detail" class="modal-overlay hidden">
       <div class="modal-card hero-profile-detail-modal-card">
         <button id="btn-close-hero-detail" class="modal-close-x" aria-label="关闭">&times;</button>
         <div class="modal-header">
-          <h2 class="modal-title">☯️ 修真道相 · 灵根心性</h2>
+          <h2 class="modal-title">☯️ 属性</h2>
         </div>
 
         <div class="hero-detail-summary-row">
           <div class="hero-detail-avatar-wrap">
-            <img id="detail-modal-avatar" src="assets/character/hero_mortal.png" class="detail-avatar-img" alt="道相" />
+            <img id="detail-modal-avatar" src="assets/character/hero_mortal.png" class="detail-avatar-img" alt="角色" />
             <span id="detail-modal-stamp" class="hero-sect-stamp">散修</span>
           </div>
           <div class="hero-detail-meta">
@@ -764,62 +764,62 @@
           </div>
         </div>
 
-        <!-- 四大战斗流派专精属性 (暴击/连击/反震/吸血) -->
-        <div class="detail-section-title">四大战斗流派专精</div>
+        <!-- 战斗属性 (暴击/连击/反震/嗜血) -->
+        <div class="detail-section-title">战斗属性</div>
         <div class="char-archetypes-row detail-archetypes-grid">
-          <div class="archetype-badge-item crit" title="纯阳暴击率：造成 1.8 倍高额斩杀重创">
+          <div class="archetype-badge-item crit" title="暴击率：造成 1.8倍重创伤害">
             <div class="arch-header">
-              <span class="arch-label">🎯 纯阳暴击</span>
+              <span class="arch-label">🎯 暴击</span>
               <b id="arch-val-crit" class="arch-val">8%</b>
             </div>
-            <span class="arch-desc">造成 1.8 倍高额斩杀重创</span>
+            <span class="arch-desc">造成 1.8倍伤害</span>
           </div>
-          <div class="archetype-badge-item combo" title="迅影连击率：攻击后瞬身追加连击">
+          <div class="archetype-badge-item combo" title="连击率：攻击后追加连击">
             <div class="arch-header">
-              <span class="arch-label">⚡ 迅影连击</span>
+              <span class="arch-label">⚡ 连击</span>
               <b id="arch-val-combo" class="arch-val">5%</b>
             </div>
-            <span class="arch-desc">攻击后瞬身追加连环追击</span>
+            <span class="arch-desc">追加一次追击</span>
           </div>
-          <div class="archetype-badge-item counter" title="罡气反震率：受击时反弹 50% 伤害给敌方">
+          <div class="archetype-badge-item counter" title="反震率：受创时反弹 50% 伤害">
             <div class="arch-header">
-              <span class="arch-label">🛡️ 罡气反震</span>
+              <span class="arch-label">🛡️ 反震</span>
               <b id="arch-val-counter" class="arch-val">5%</b>
             </div>
-            <span class="arch-desc">受创时反弹 50% 罡气震伤</span>
+            <span class="arch-desc">受创反弹 50%伤害</span>
           </div>
-          <div class="archetype-badge-item lifesteal" title="幽冥嗜血率：攻击伤害转化为气血回复">
+          <div class="archetype-badge-item lifesteal" title="嗜血率：攻击伤害转化为气血回复">
             <div class="arch-header">
-              <span class="arch-label">🩸 幽冥嗜血</span>
+              <span class="arch-label">🩸 嗜血</span>
               <b id="arch-val-lifesteal" class="arch-val">0%</b>
             </div>
-            <span class="arch-desc">攻势入肉化为生机回涌气血</span>
+            <span class="arch-desc">伤害转化为气血</span>
           </div>
         </div>
 
-        <!-- 三维基础道基 -->
-        <div class="detail-section-title">三维基础道基</div>
+        <!-- 基础属性 -->
+        <div class="detail-section-title">基础属性</div>
         <div class="detail-base-stats-grid">
           <div class="detail-stat-item">
-            <span class="stat-name">💚 最大气血</span>
+            <span class="stat-name">💚 气血</span>
             <b id="detail-stat-hp" class="stat-val hp">100</b>
           </div>
           <div class="detail-stat-item">
-            <span class="stat-name">⚔️ 基础攻击</span>
+            <span class="stat-name">⚔️ 攻击</span>
             <b id="detail-stat-atk" class="stat-val atk">11</b>
           </div>
           <div class="detail-stat-item">
-            <span class="stat-name">🛡️ 护体防御</span>
+            <span class="stat-name">🛡️ 防御</span>
             <b id="detail-stat-def" class="stat-val def">2</b>
           </div>
           <div class="detail-stat-item">
-            <span class="stat-name">⚡ 综合战力</span>
+            <span class="stat-name">⚡ 战力</span>
             <b id="detail-stat-power" class="stat-val power">45</b>
           </div>
         </div>
 
         <div class="modal-actions">
-          <button id="btn-close-hero-detail-bottom" class="btn-primary">返回修真</button>
+          <button id="btn-close-hero-detail-bottom" class="btn-primary">返回</button>
         </div>
       </div>
     </div>
@@ -1376,7 +1376,10 @@
               <span id="victory-auto-close-countdown" class="auto-close-countdown hidden"></span>
             </label>
           </div>
-          <button id="btn-victory-claim" class="btn-primary btn-victory">知悉收纳</button>
+          <div class="victory-buttons-row">
+            <button id="btn-victory-claim" class="btn-secondary btn-victory-secondary">知悉收纳</button>
+            <button id="btn-victory-continue" class="btn-primary btn-victory-primary">⚔️ 继续挑战</button>
+          </div>
         </div>
       </div>
     </div>
