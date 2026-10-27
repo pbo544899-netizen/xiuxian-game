@@ -1,0 +1,23 @@
+# 临时调试与自动化测试脚本目录
+scratch/
+tmp_chrome/
+
+# Python 缓存与虚拟环境
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.venv/
+venv/
+env/
+
+# 编辑器与操作系统系统文件
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# 敏感与临时配置
+.env
+.env.local
