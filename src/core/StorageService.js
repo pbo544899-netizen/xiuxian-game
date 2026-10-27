@@ -71,6 +71,7 @@ class StorageService {
           inventory: {
             capacity: inv.capacity,
             autoSalvageEnabled: inv.autoSalvageEnabled,
+            autoSalvageQualities: inv.autoSalvageQualities || ['Q1'],
             discoveredItemKeys: Array.from(inv.discoveredItemKeys || []),
             slots: inv.slots.map(s => s ? Object.assign({}, s) : null)
           },
@@ -275,6 +276,11 @@ class StorageService {
         if (typeof data.inventory.capacity === 'number') inv.capacity = data.inventory.capacity;
         if (typeof data.inventory.autoSalvageEnabled === 'boolean') {
           inv.autoSalvageEnabled = data.inventory.autoSalvageEnabled;
+        }
+        if (Array.isArray(data.inventory.autoSalvageQualities)) {
+          inv.autoSalvageQualities = data.inventory.autoSalvageQualities;
+        } else {
+          inv.autoSalvageQualities = ['Q1'];
         }
         if (Array.isArray(data.inventory.discoveredItemKeys)) {
           inv.discoveredItemKeys = new Set(data.inventory.discoveredItemKeys);

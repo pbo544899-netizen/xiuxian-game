@@ -15,7 +15,7 @@ class InventoryManager {
 
     // 自动分解开关 (默认开启凡铁/灵器/宝器自动分解，保障连推心流)
     this.autoSalvageEnabled = false; 
-    this.autoSalvageQualities = ['Q1', 'Q2', 'Q3']; 
+    this.autoSalvageQualities = ['Q1'];
 
     // 历史已获得物品集合 (用于判断是否是首次获得的新物品图鉴)
     this.discoveredItemKeys = new Set();
@@ -170,13 +170,19 @@ class InventoryManager {
     const isFirstDiscovery = key ? !this.discoveredItemKeys.has(key) : false;
     if (key) this.discoveredItemKeys.add(key);
 
-    // 1. 自动分解判定 (仅针对凡铁/灵器装备)
+    // 1. 自动分解判定 (仅针对凡铁/设定品质装备)
     if (this.autoSalvageEnabled && item.type === 'equip') {
-      if (this.autoSalvageQualities.includes(item.qualityCode)) {
+      const autoQualities = (this.autoSalvageQualities && this.autoSalvageQualities.length > 0)
+        ? this.autoSalvageQualities
+        : ['Q1'];
+      if (autoQualities.includes(item.qualityCode)) {
+        const energy = (typeof item.salvageEnergy === 'number')
+          ? item.salvageEnergy
+          : (item.qualityCode === 'Q1' ? 2 : 5);
         return {
           success: true,
           salvaged: true,
-          energy: item.salvageEnergy || 5,
+          energy: energy,
           item: item
         };
       }
@@ -268,7 +274,45 @@ class InventoryManager {
     if (!item || item.type !== 'equip') return 0;
     
     this.removeItem(index);
-    return item.salvageEnergy || 5;
+    return (typeof item.salvageEnergy === 'number')
+      ? item.salvageEnergy
+      : (item.qualityCode === 'Q1' ? 2 : 5);
+  }
+
+  /**
+   * 按指定品质列表批量分解背包中的装备
+   * @param {Array<string>} qualities - 品质代码列表，默认 ['Q1']
+   * @returns {Object} { count, energyGain, salvagedItems }
+   */
+  salvageQualities(qualities = ['Q1']) {
+    let count = 0;
+    let energyGain = 0;
+    const salvagedItems = [];
+
+    for (let i = 0; i < this.capacity; i++) {
+      const item = this.slots[i];
+      if (item && item.type === 'equip' && !item.isLocked) {
+        if (qualities.includes(item.qualityCode)) {
+          const energy = (typeof item.salvageEnergy === 'number')
+            ? item.salvageEnergy
+            : (item.qualityCode === 'Q1' ? 2 : 5);
+          energyGain += energy;
+          salvagedItems.push(item);
+          this.slots[i] = null;
+          count++;
+        }
+      }
+    }
+
+    if (count > 0) {
+      this.flushOverflowBuffer();
+    }
+
+    return {
+      count,
+      energyGain,
+      salvagedItems
+    };
   }
 
   /**
@@ -402,7 +446,8 @@ class InventoryManager {
       capacity: this.capacity,
       slots: this.slots,
       overflowBuffer: this.overflowBuffer,
-      autoSalvageEnabled: this.autoSalvageEnabled
+      autoSalvageEnabled: this.autoSalvageEnabled,
+      autoSalvageQualities: this.autoSalvageQualities
     };
   }
 
@@ -420,6 +465,7 @@ class InventoryManager {
     }
     this.overflowBuffer = Array.isArray(data.overflowBuffer) ? data.overflowBuffer : [];
     this.autoSalvageEnabled = !!data.autoSalvageEnabled;
+    this.autoSalvageQualities = Array.isArray(data.autoSalvageQualities) ? data.autoSalvageQualities : ['Q1'];
   }
 }
 

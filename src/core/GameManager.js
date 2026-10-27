@@ -1289,7 +1289,9 @@ class GameManager {
       const qRanks = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Q5: 5, Q6: 6, Q7: 7 };
       const oldRank = qRanks[oldItem.qualityCode] || 1;
       if (oldRank === 1 || this.inventory.autoSalvageEnabled) {
-        const salvageEnergy = oldItem.salvageEnergy || 10;
+        const salvageEnergy = (typeof oldItem.salvageEnergy === 'number')
+          ? oldItem.salvageEnergy
+          : (oldRank === 1 ? 2 : 5);
         this.energy += salvageEnergy;
         this.inventory.setItem(inventorySlotIndex, null); // 净腾出空格
         if (this.renderer) {
@@ -1348,7 +1350,14 @@ class GameManager {
 
     const item = this.player.unequip(part);
     if (item) {
-      this.inventory.addItem(item);
+      const res = this.inventory.addItem(item);
+      if (res && res.salvaged) {
+        const energyGain = res.energy || (item.salvageEnergy || 2);
+        this.energy += energyGain;
+        if (this.renderer && this.renderer.addFloatingText) {
+          this.renderer.addFloatingText(`凡铁【${item.name}】卸下直接熔解 +${energyGain}机缘`, '#38ef7d');
+        }
+      }
     }
 
     this.emitStateChange();
@@ -1496,11 +1505,38 @@ class GameManager {
   }
 
   /**
-   * 设置自动分解
+   * 设置自动分解凡品
+   * 勾选后立即扫描并分解背包中所有现有凡品(Q1)，回收灵机并刷新界面
    */
   setAutoSalvage(enabled) {
-    this.inventory.autoSalvageEnabled = enabled;
+    this.inventory.autoSalvageEnabled = !!enabled;
+    if (enabled) {
+      const targetQualities = (this.inventory.autoSalvageQualities && this.inventory.autoSalvageQualities.length > 0)
+        ? this.inventory.autoSalvageQualities
+        : ['Q1'];
+      const res = this.inventory.salvageQualities(targetQualities);
+      if (res.count > 0) {
+        this.energy += res.energyGain;
+        if (this.renderer && this.renderer.addFloatingText) {
+          this.renderer.addFloatingText(`✨ 自动分解 ${res.count} 件凡品，获得 +${res.energyGain} 灵机`, '#38ef7d');
+        }
+        if (window.showFloatingNotice) {
+          window.showFloatingNotice(`✨ 自动分解了 ${res.count} 件凡品法宝，回收 +${res.energyGain} 灵机`, '#ffd700');
+        }
+        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('SALVAGE');
+        }
+      }
+    }
     this.emitStateChange();
+    if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+      window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
+    }
+    if (window.renderBagGrid) window.renderBagGrid(this.getState());
+    if (window.updateBagActionButtons) window.updateBagActionButtons();
+    if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+      window.SlotsRPG.StorageService.saveGame(this, true);
+    }
   }
 
   toggleAutoSpin(targetCount) {
@@ -2160,19 +2196,37 @@ class GameManager {
         if (item.type === 'equip') {
           const hasImp = this.player.hasEquipmentImprovement(item, this.level);
           item.isNew = hasImp;
+          const res = this.inventory.addItem(item);
+          if (res && res.salvaged) {
+            const energyGain = res.energy || (item.salvageEnergy || 2);
+            this.energy += energyGain;
+            if (this.renderer && this.renderer.addFloatingText) {
+              this.renderer.addFloatingText(`自动分解【${item.name}】 +${energyGain}机缘`, '#52c41a');
+            }
+          } else {
+            summary.itemsGiven.push(item);
+          }
         } else {
           item.isNew = true;
+          this.inventory.addItem(item);
+          summary.itemsGiven.push(item);
         }
-        this.inventory.addItem(item);
-        summary.itemsGiven.push(item);
       });
     } else {
       if (rewards.rewardEquip) {
         const eq = window.SlotsRPG.ItemModel.createEquipment(rewards.rewardEquip.part, rewards.rewardEquip.qualityCode);
         const hasImp = this.player.hasEquipmentImprovement(eq, this.level);
         eq.isNew = hasImp;
-        this.inventory.addItem(eq);
-        summary.itemsGiven.push(eq);
+        const res = this.inventory.addItem(eq);
+        if (res && res.salvaged) {
+          const energyGain = res.energy || (eq.salvageEnergy || 2);
+          this.energy += energyGain;
+          if (this.renderer && this.renderer.addFloatingText) {
+            this.renderer.addFloatingText(`自动分解【${eq.name}】 +${energyGain}机缘`, '#52c41a');
+          }
+        } else {
+          summary.itemsGiven.push(eq);
+        }
       }
       if (rewards.rewardPill) {
         const pill = window.SlotsRPG.ItemModel.createPill(rewards.rewardPill.subType, rewards.rewardPill.amount);

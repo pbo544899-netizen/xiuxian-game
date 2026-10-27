@@ -456,6 +456,19 @@ window.SlotsRPG = window.SlotsRPG || {};
           if (!res.success) {
             return false;
           }
+          if (res.salvaged) {
+            const energyGain = res.energy || (overflowItem.item.salvageEnergy || 2);
+            gm.energy += energyGain;
+            gm.emitStateChange();
+            if (gm.renderer && gm.renderer.addFloatingText) {
+              gm.renderer.addFloatingText(`✨ 凡品【${itemName}】已自动熔解为 +${energyGain} 灵机`, '#38ef7d');
+            }
+            if (window.showFloatingNotice) {
+              window.showFloatingNotice(`✨ 凡品【${itemName}】已自动分解回收 +${energyGain} 灵机`, '#ffd700');
+            }
+            window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('INVENTORY_CHANGE');
+            return true;
+          }
         }
       } else if (overflowItem.type === 'pill' || (overflowItem.item && overflowItem.item.type === 'pill')) {
         const item = overflowItem.item || (window.SlotsRPG && window.SlotsRPG.ItemModel && window.SlotsRPG.ItemModel.createPill(overflowItem.subType || 'exp', overflowItem.count || 1));

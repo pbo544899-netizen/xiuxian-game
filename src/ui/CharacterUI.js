@@ -270,7 +270,10 @@
     }
 
     if (chkAutoSalvage) {
-      chkAutoSalvage.checked = !!state.autoSalvageEnabled;
+      const isAuto = (state && typeof state.autoSalvageEnabled === 'boolean')
+        ? state.autoSalvageEnabled
+        : (gameManager && gameManager.inventory ? !!gameManager.inventory.autoSalvageEnabled : false);
+      chkAutoSalvage.checked = isAuto;
     }
 
     if (!bagGrid) return;

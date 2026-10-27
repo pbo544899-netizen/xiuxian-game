@@ -88,7 +88,9 @@ class EquipSynthesizer {
       const item = inventory.slots[i];
       if (item && item.type === 'equip' && !item.isLocked) {
         if (targetQualities.includes(item.qualityCode)) {
-          const energy = item.salvageEnergy || 5;
+          const energy = (typeof item.salvageEnergy === 'number')
+            ? item.salvageEnergy
+            : (item.qualityCode === 'Q1' ? 2 : 5);
           totalEnergy += energy;
           salvagedItems.push(item);
           inventory.slots[i] = null;
