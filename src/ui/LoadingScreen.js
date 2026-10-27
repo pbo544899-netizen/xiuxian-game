@@ -72,7 +72,7 @@
     startPreloadSequence() {
       // 关键静态资源预载
       const preloadImages = [
-        'assets/icon/game_icon.png',
+        'assets/icon/game_icon_golden.png?v=3.0',
         'assets/dragon/dragon_head.png',
         'assets/ui/tab_slots.png',
         'assets/ui/tab_character.png',

@@ -9,7 +9,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "assets/icon/game_icon.png",
+      "src": "assets/icon/game_icon_golden.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
