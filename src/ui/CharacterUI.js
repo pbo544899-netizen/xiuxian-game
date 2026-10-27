@@ -682,6 +682,12 @@
 
   function executeBagMerge() {
     if (!gameManager.canMergeEquipment()) return;
+    if (gameManager) {
+      gameManager.hasCompletedMergeFTUE = true;
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(gameManager, true);
+      }
+    }
     const res = gameManager.mergeEquipment();
     if (res.mergedGroupsCount > 0) {
       const names = res.upgradedItems.map(i => `<span style="color:${i.qualityColor || '#ffd700'};">${i.name}</span>`).join('、');

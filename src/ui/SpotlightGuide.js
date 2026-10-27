@@ -15,8 +15,10 @@
  *    - 步骤 5: 首抽爆神兵 · 一键穿戴换装 (#btn-quick-equip)
  *    - 步骤 6: 散修探寻 · 蓄力推演 (#btn-spin)
  *    - 步骤 7: 叩问仙门 · 拜入万剑宗 (.btn-join-sect)
- *    - 步骤 8: 仙门初立 · 首次妖王试炼 (#sect-trial-banner)
+ *    - 步骤 8: 宗门神装 · 首次一键升阶 (#btn-floating-merge)
  *    - 步骤 9: 洞天福地 · 首次一键引灵 (#btn-cave-collect)
+ *    - 步骤 10: 仙门初立 · 首次妖王试炼 (#sect-trial-banner)
+ *    - 步骤 11: 洞天灵泉 · 每日采撷秘境 (#btn-cave-secret-realm)
  */
 (function() {
   'use strict';
@@ -1129,28 +1131,35 @@
       // (步骤 7 叩问仙门已在顶部最高优先级处理)
 
       // ========================================================
-      // 步骤 8: 拜入仙门后 · 首次妖王试炼 (sectTrialStage === 1)
+      // 步骤 8: 拜入仙门后 · 宗门神装一键升阶 (仅当乾坤袋有可合成法宝时优先单线引导)
       // ========================================================
-      if (gm.isPrologueComplete && gm.sectTrialStage === 1 && !gm.hasCompletedTrialFTUE) {
-        if (currentTab !== 'slots') {
-          const tabSlots = document.getElementById('tab-slots');
-          if (tabSlots) {
+      const canMergeEquipment = gm.canMergeEquipment && gm.canMergeEquipment();
+      if (gm.isPrologueComplete && canMergeEquipment && !gm.hasCompletedMergeFTUE) {
+        if (currentTab !== 'character') {
+          const tabChar = document.getElementById('tab-character');
+          if (tabChar) {
             this.show({
-              id: 'ftue-nav-slots-trial',
-              target: tabSlots,
-              text: '仙门已立！点击前往系统试炼',
+              id: 'ftue-nav-char-merge',
+              target: tabChar,
+              text: '宗门神装可合成！前往角色修真',
               direction: 'down'
             });
             return;
           }
         } else {
-          const trialBanner = document.getElementById('sect-trial-banner');
-          if (trialBanner && !trialBanner.classList.contains('hidden') && trialBanner.offsetParent !== null) {
+          const btnFloatingMerge = document.getElementById('btn-floating-merge');
+          if (btnFloatingMerge && btnFloatingMerge.offsetParent !== null) {
             this.show({
-              id: 'ftue-sect-trial-banner',
-              target: trialBanner,
-              text: '点击妖王试炼，检验道法战力！',
-              direction: 'down'
+              id: 'ftue-floating-merge',
+              target: btnFloatingMerge,
+              text: '发现可合成法宝！点击一键升阶！',
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedMergeFTUE = true;
+                if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
             });
             return;
           }
@@ -1158,7 +1167,7 @@
       }
 
       // ========================================================
-      // 步骤 9: 洞天福地开启 · 首次一键引灵
+      // 步骤 9: 洞天福地开启 · 首次一键引灵 (升阶完成后或无合成时触发)
       // ========================================================
       const tabCave = document.getElementById('tab-cave');
       const isCaveUnlocked = tabCave && !tabCave.classList.contains('tab-locked');
@@ -1167,7 +1176,7 @@
           this.show({
             id: 'ftue-nav-cave-collect',
             target: tabCave,
-            text: '洞天灵脉充盈！点击前往引灵',
+            text: '洞天灵脉开启！点击前往引灵',
             direction: 'down'
           });
           return;
@@ -1178,7 +1187,13 @@
               id: 'ftue-cave-collect-btn',
               target: btnCaveCollect,
               text: '点击一键引灵，吸纳天地灵机！',
-              direction: 'down'
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedCaveFTUE = true;
+                if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
             });
             return;
           }
@@ -1186,45 +1201,57 @@
       }
 
       // ========================================================
-      // 步骤 11: 角色面板法宝可升阶 (绝对单次呈现：触发时即刻标记完成并持久化)
+      // 步骤 10: 宗门试炼开启 · 检验修仙战力 (引灵完成后触发)
       // ========================================================
-      if (currentTab === 'character' && !gm.hasCompletedMergeFTUE) {
-        const floatingMergeWrap = document.getElementById('floating-merge-wrap');
-        if (floatingMergeWrap && !floatingMergeWrap.classList.contains('hidden')) {
-          const btnFloatingMerge = document.getElementById('btn-floating-merge');
-          if (btnFloatingMerge && btnFloatingMerge.offsetParent !== null) {
-            // 立即标记为已完成并持久化，保证该手指头提示在整个游戏生命周期内绝对只出现一次！
-            gm.hasCompletedMergeFTUE = true;
-            if (window.SlotsRPG && window.SlotsRPG.StorageService) {
-              window.SlotsRPG.StorageService.saveGame(gm, true);
-            }
+      if (gm.isPrologueComplete && gm.sectTrialStage === 1 && !gm.hasCompletedTrialFTUE) {
+        if (currentTab !== 'slots') {
+          const tabSlots = document.getElementById('tab-slots');
+          if (tabSlots) {
             this.show({
-              id: 'ftue-floating-merge',
-              target: btnFloatingMerge,
-              text: '发现可合成法宝！点击一键升阶！',
+              id: 'ftue-nav-slots-trial',
+              target: tabSlots,
+              text: '灵机备齐！点击前往天机试炼',
               direction: 'down'
+            });
+            return;
+          }
+        } else {
+          const trialBanner = document.getElementById('sect-trial-banner');
+          if (trialBanner && !trialBanner.classList.contains('hidden') && trialBanner.offsetParent !== null) {
+            this.show({
+              id: 'ftue-sect-trial-banner',
+              target: trialBanner,
+              text: '出鞘迎战，挑战第 1 关妖兽试炼！',
+              direction: 'down',
+              onClick: () => {
+                gm.hasCompletedTrialFTUE = true;
+                if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+                  window.SlotsRPG.StorageService.saveGame(gm, true);
+                }
+              }
             });
             return;
           }
         }
       }
 
-
       // ========================================================
-      // 步骤 13: 每日灵泉秘境可采撷
+      // 步骤 11: 每日灵泉秘境可采撷
       // ========================================================
       if (currentTab === 'cave' && !gm.hasCompletedSecretRealmFTUE) {
         const btnSecretRealm = document.getElementById('btn-cave-secret-realm');
         if (btnSecretRealm && btnSecretRealm.classList.contains('ready') && !btnSecretRealm.classList.contains('exhausted') && btnSecretRealm.offsetParent !== null) {
-          gm.hasCompletedSecretRealmFTUE = true;
-          if (window.SlotsRPG && window.SlotsRPG.StorageService) {
-            window.SlotsRPG.StorageService.saveGame(gm, true);
-          }
           this.show({
             id: 'ftue-cave-secret-realm',
             target: btnSecretRealm,
             text: '每日造化已备！点击采撷洞天灵泉！',
-            direction: 'down'
+            direction: 'down',
+            onClick: () => {
+              gm.hasCompletedSecretRealmFTUE = true;
+              if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+                window.SlotsRPG.StorageService.saveGame(gm, true);
+              }
+            }
           });
           return;
         }

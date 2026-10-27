@@ -54,6 +54,8 @@ class StorageService {
           hasCompletedSlotsReturnFTUE: !!gameManager.hasCompletedSlotsReturnFTUE,
           hasCompletedTrialFTUE: !!gameManager.hasCompletedTrialFTUE,
           hasCompletedCaveFTUE: !!gameManager.hasCompletedCaveFTUE,
+          hasCompletedMergeFTUE: !!gameManager.hasCompletedMergeFTUE,
+          hasCompletedSecretRealmFTUE: !!gameManager.hasCompletedSecretRealmFTUE,
           hasUnlockedAutoSmelt: !!gameManager.hasUnlockedAutoSmelt,
           dragonPity: {
             pityPurplePulls: (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityPurplePulls) || 0,
@@ -193,6 +195,12 @@ class StorageService {
       }
       if (typeof data.hasCompletedCaveFTUE === 'boolean') {
         gameManager.hasCompletedCaveFTUE = data.hasCompletedCaveFTUE;
+      }
+      if (typeof data.hasCompletedMergeFTUE === 'boolean') {
+        gameManager.hasCompletedMergeFTUE = data.hasCompletedMergeFTUE;
+      }
+      if (typeof data.hasCompletedSecretRealmFTUE === 'boolean') {
+        gameManager.hasCompletedSecretRealmFTUE = data.hasCompletedSecretRealmFTUE;
       }
       if (typeof data.hasUnlockedAutoSmelt === 'boolean') {
         gameManager.hasUnlockedAutoSmelt = data.hasUnlockedAutoSmelt;
