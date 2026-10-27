@@ -925,52 +925,146 @@
   font-weight: bold;
 }
 
-/* 底部操作区响应式布局 */
+/* 底部操作区响应式布局与仙侠拟物按键规范 */
 .modal-item-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
+  width: 100%;
+}
+
+.modal-item-actions button.hidden,
+.modal-item-actions button[style*="display: none"],
+.modal-item-actions button[style*="display:none"] {
+  display: none !important;
 }
 
 .modal-item-actions button {
   flex: 1 1 calc(50% - 4px);
-  min-width: 120px;
-  min-height: 40px;
-  height: auto;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: bold;
-  line-height: 1.35;
-  border-radius: 20px;
-  display: flex;
+  min-width: 0;
+  min-height: 38px !important;
+  height: 38px !important;
+  padding: 0 10px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1 !important;
+  border-radius: 8px !important;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-sizing: border-box;
-  white-space: normal;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: inherit;
+}
+
+/* 主操作按钮 (穿戴 / 炼化 / 服用) - 翡翠仙玉绿渐变，参照一键装备与打坐按键规范 */
+.modal-item-actions #btn-item-primary {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  border: 1px solid rgba(52, 211, 153, 0.7) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-item-actions #btn-item-primary:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+.modal-item-actions #btn-item-primary:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.modal-item-actions #btn-item-primary:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.8) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* 卸下按钮状态 - 曜石深灰渐变，温和安全 */
+.modal-item-actions #btn-item-primary.btn-item-unequip {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 次级/批量操作按钮 (全部炼化 / 全部服用 / 分解) - 纯阳琥珀金渐变，参照升阶与宗门按键 */
+.modal-item-actions #btn-item-salvage {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border: 1px solid rgba(251, 191, 36, 0.65) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.35) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-item-actions #btn-item-salvage:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+.modal-item-actions #btn-item-salvage:active {
+  transform: scale(0.97);
+}
+
+/* 关闭按钮 - 深邃曜石琉璃灰，参照关闭与次要取消按键 */
+.modal-item-actions #btn-item-close {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #cbd5e1 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.modal-item-actions #btn-item-close:hover {
+  background: rgba(51, 65, 85, 0.95) !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+  color: #f8fafc !important;
+  transform: translateY(-1px);
+}
+
+.modal-item-actions #btn-item-close:active {
+  transform: scale(0.97);
 }
 
 /* 当存在 3 个按钮时 (主操作 + 全部/分解 + 关闭)，关闭按钮独占一整行，两操作按钮并排 */
 .modal-item-actions.has-three-buttons #btn-item-close {
-  flex: 1 1 100%;
-  min-height: 36px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #8fa0b5;
-  margin-top: 2px;
+  flex: 1 1 100% !important;
+  min-height: 34px !important;
+  height: 34px !important;
+  font-size: 13px !important;
+  margin-top: 2px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #94a3b8 !important;
 }
 
 .modal-item-actions.has-three-buttons #btn-item-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
 }
 
-/* 针对极窄屏幕 (如 <340px) 全部单列堆叠自适应 */
+/* 针对极窄屏幕 (如 <340px) 按钮字号与间距自适应微调 */
 @media (max-width: 340px) {
-  .modal-item-actions button {
-    flex: 1 1 100% !important;
-    min-height: 38px;
+  .modal-item-actions button.hidden,
+.modal-item-actions button[style*="display: none"],
+.modal-item-actions button[style*="display:none"] {
+  display: none !important;
+}
+
+.modal-item-actions button {
+    font-size: 12px !important;
+    padding: 0 6px !important;
   }
 }
 
@@ -2084,9 +2178,9 @@
 }
 
 .quick-equip-gain-content {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
   white-space: nowrap !important;
   word-break: keep-all !important;
@@ -2154,9 +2248,9 @@
   white-space: nowrap !important;
   word-break: keep-all !important;
   flex-shrink: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1.2;
 }
 
@@ -3225,7 +3319,7 @@
 
 .hero-main-row {
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
   gap: 12px !important;
   min-height: 80px !important;
 }
@@ -3241,8 +3335,8 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
   position: relative !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex-shrink: 0 !important;
 }
@@ -3290,7 +3384,7 @@
 
 .hero-status-title {
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
   justify-content: space-between !important;
   width: 100% !important;
 }
@@ -3330,15 +3424,15 @@
 /* 攻防徽章与道相按键行：横向舒展排布，杜绝换行 */
 .hero-combat-badges-row {
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
   justify-content: space-between !important;
   width: 100% !important;
   gap: 6px !important;
 }
 
 .mini-combat-badge {
-  display: inline-flex !important;
-  align-items: center !important;
+  display: inline-flex;
+  align-items: center;
   gap: 4px !important;
   padding: 2.5px 8px !important;
   border-radius: 6px !important;
@@ -3379,8 +3473,8 @@
   cursor: pointer !important;
   white-space: nowrap !important;
   height: 28px !important;
-  display: inline-flex !important;
-  align-items: center !important;
+  display: inline-flex;
+  align-items: center;
   transition: all 0.2s ease !important;
 }
 
@@ -3403,7 +3497,7 @@
   border-radius: 8px !important;
   height: 34px !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
   gap: 4px !important;
 }
 
@@ -3440,7 +3534,7 @@
 
 .bag-header {
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
   justify-content: space-between !important;
   margin-bottom: 8px !important;
 }
@@ -3454,7 +3548,7 @@
   font-size: 12px !important;
   gap: 6px !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: center;
 }
 
 .auto-salvage-label input[type="checkbox"] {

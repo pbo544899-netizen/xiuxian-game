@@ -168,8 +168,9 @@
         }
         modalItemCompare.innerHTML = diffHtml;
 
+        btnItemPrimary.classList.remove('btn-item-unequip');
         btnItemPrimary.style.display = 'block';
-        btnItemPrimary.innerText = currentEquipped ? '替换穿戴' : '穿戴法宝';
+        btnItemPrimary.innerText = currentEquipped ? '替换穿戴' : '穿戴';
         btnItemPrimary.disabled = false;
 
         btnItemSalvage.style.display = 'block';
@@ -184,6 +185,7 @@
         } else {
           modalItemCompare.innerHTML = `<span style="color:#34e89e;">● 正在佩戴中，属性已计入角色属性与总战力</span>`;
         }
+        btnItemPrimary.classList.add('btn-item-unequip');
         btnItemPrimary.style.display = 'block';
         btnItemPrimary.innerText = '卸下入包';
 
@@ -218,13 +220,14 @@
         `;
         modalItemCompare.innerHTML = `<span style="color:#ffd700;">● 经验灵丹：点击下方按钮即可炼化药力提升修为！</span>`;
 
+        btnItemPrimary.classList.remove('btn-item-unequip');
         btnItemPrimary.style.display = 'block';
-        btnItemPrimary.innerText = item.amount > 1 ? '服用 1 颗 (+100经验)' : '服用灵丹 (+100经验)';
+        btnItemPrimary.innerText = item.amount > 1 ? '服用单颗 (+100)' : '服用 (+100经验)';
         btnItemPrimary.disabled = false;
 
         if (item.amount > 1) {
           btnItemSalvage.style.display = 'block';
-          btnItemSalvage.innerText = `全部服用 (+${item.amount * 100}经验)`;
+          btnItemSalvage.innerText = `全部服用 (+${item.amount * 100})`;
         } else {
           btnItemSalvage.style.display = 'none';
         }
@@ -241,6 +244,7 @@
         `;
         modalItemCompare.innerHTML = `<span style="color:#34e89e;">● 战备应急灵丹：挑战妖王/Boss 时在战斗面板底部快捷点击使用。</span>`;
 
+        btnItemPrimary.classList.remove('btn-item-unequip');
         btnItemPrimary.style.display = 'block';
         btnItemPrimary.innerText = '知悉存纳';
         btnItemPrimary.disabled = false;
@@ -271,13 +275,16 @@
             : '天地造化信物：点击下方按钮即可炼化为滚轮推演机缘！'
         }</span>`;
 
+        btnItemPrimary.classList.remove('btn-item-unequip');
         btnItemPrimary.style.display = 'block';
-        btnItemPrimary.innerText = `炼化 1 张 (+${energyGainedSingle}机缘)`;
+        btnItemPrimary.innerText = item.amount > 1 
+          ? `炼化单张 (+${energyGainedSingle})` 
+          : `炼化 (+${energyGainedSingle}机缘)`;
         btnItemPrimary.disabled = false;
 
         if (item.amount > 1) {
           btnItemSalvage.style.display = 'block';
-          btnItemSalvage.innerText = `全部炼化 (+${item.amount * energyGainedSingle}机缘)`;
+          btnItemSalvage.innerText = `全部炼化 (+${item.amount * energyGainedSingle})`;
         } else {
           btnItemSalvage.style.display = 'none';
         }

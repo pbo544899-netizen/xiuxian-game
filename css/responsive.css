@@ -1199,8 +1199,7 @@
   /* ========================================================
      移动端弹窗与全场景高触控按键规范 (Modal High Touch Targets)
      ======================================================== */
-  .modal-actions button,
-  .modal-item-actions button,
+  .modal-actions:not(.modal-item-actions) button,
   .victory-actions button,
   .defeat-actions button,
   .btn-victory,
@@ -1211,6 +1210,16 @@
     font-weight: bold !important;
     border-radius: 10px !important;
     letter-spacing: 1px !important;
+  }
+
+  .modal-item-actions button {
+    min-height: 38px !important;
+    height: 38px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
   }
 
   .btn-boss-radar-challenge {
