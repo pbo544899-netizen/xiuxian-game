@@ -1371,12 +1371,32 @@
       }
     }
 
-    // 序章新手首战（斩黑鬣猪）尚未拜入宗门，不开放“继续挑战”，直接由“知悉收纳”推进序章唤醒
+    // 首次战斗（如序章恶兽斩黑鬣猪或未入道阶段）后续内容未解锁，绝不出现“继续挑战”，以“知悉收纳”唯一金色主按钮推进
+    const isFirstBattle = !gameManager.hasCompletedBattleVictoryFTUE ||
+                          (battleResult && battleResult.isPrologueBattle) ||
+                          !gameManager.isPrologueComplete ||
+                          (gameManager.player && gameManager.player.isMortal);
+
+    // 检查是否已经通关当前系统所有内容（试炼全通关或镇妖塔登顶）
+    const isContentExhausted = (battleResult && battleResult.isTowerBattle && gameManager.demonTowerManager && gameManager.demonTowerManager.currentFloor >= gameManager.demonTowerManager.maxFloor) ||
+                               (!battleResult.isTowerBattle && gameManager.hasDefeatedSectBoss && gameManager.sectTrialStage > 12);
+
+    const canContinue = !isFirstBattle && !isContentExhausted;
+
     if (btnVictoryContinue) {
-      if (battleResult && battleResult.isPrologueBattle) {
-        btnVictoryContinue.style.display = 'none';
-      } else {
+      if (canContinue) {
+        btnVictoryContinue.classList.remove('hidden');
         btnVictoryContinue.style.display = '';
+      } else {
+        btnVictoryContinue.classList.add('hidden');
+        btnVictoryContinue.style.setProperty('display', 'none', 'important');
+      }
+    }
+    if (btnVictoryClaim) {
+      if (canContinue) {
+        btnVictoryClaim.classList.remove('btn-victory-sole-primary');
+      } else {
+        btnVictoryClaim.classList.add('btn-victory-sole-primary');
       }
     }
 
