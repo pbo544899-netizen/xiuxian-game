@@ -818,3 +818,15 @@
 .cave-info-popover.hidden {
   display: none !important;
 }
+
+/* 洞天福地专属精简顶栏：仅保留境界、阶位与战斗力，其余信息完全隐藏 */
+body.tab-cave .top-hud .hud-right-group {
+  display: none !important;
+}
+
+body.tab-cave .top-hud .hud-left-group {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}

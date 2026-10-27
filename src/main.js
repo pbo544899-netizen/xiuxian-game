@@ -72,6 +72,11 @@ window.addEventListener('DOMContentLoaded', () => {
     [tabSlots, tabCharacter, tabCave].forEach(t => t && t.classList.remove('active'));
     [viewSlots, viewCharacter, viewCave].forEach(v => v && v.classList.remove('active'));
 
+    document.body.classList.toggle('tab-cave', tabName === 'cave');
+    document.body.classList.toggle('tab-slots', tabName === 'slots');
+    document.body.classList.toggle('tab-character', tabName === 'character');
+    document.body.dataset.activeTab = tabName;
+
     // 切换 Tab 时清理飞行动画节点
     document.querySelectorAll('.dragon-spout-flyer, .drop-flyer').forEach(el => el.remove());
 
@@ -191,6 +196,13 @@ window.addEventListener('DOMContentLoaded', () => {
   if (tabCave) tabCave.addEventListener('click', () => switchTab('cave'));
 
   window.switchTab = switchTab;
+
+  // 初始化当前激活 Tab 样式标记
+  const curActiveTab = (tabCave && tabCave.classList.contains('active')) ? 'cave' : ((tabSlots && tabSlots.classList.contains('active')) ? 'slots' : 'character');
+  document.body.classList.toggle('tab-cave', curActiveTab === 'cave');
+  document.body.classList.toggle('tab-slots', curActiveTab === 'slots');
+  document.body.classList.toggle('tab-character', curActiveTab === 'character');
+  document.body.dataset.activeTab = curActiveTab;
 
   // 初始化导航锁状态
   updateTabLockStates();
