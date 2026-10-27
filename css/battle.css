@@ -169,6 +169,10 @@
   position: relative;
   overflow: hidden;
   transition: filter 0.25s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 /* 动态战场景观大图背景层 (支持视差抖动、暗场聚焦与天劫照亮) */
@@ -584,6 +588,10 @@
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.25));
   transition: transform 0.2s ease, filter 0.25s ease;
   animation: heroBreathing 2.2s ease-in-out infinite alternate;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 @keyframes heroBreathing {

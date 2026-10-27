@@ -98,8 +98,8 @@
       // ==========================================
       const isCrit = options.isCrit || false;
 
-      // 1. 顿帧卡肉判定
-      const hitStopMs = isCrit ? Math.floor(timeline.hitStop * 1.35) : timeline.hitStop;
+      // 1. 顿帧卡肉判定 (微帧定格，清脆打击感，绝不拖泥带水)
+      const hitStopMs = isCrit ? Math.min(35, Math.floor(timeline.hitStop * 1.2)) : Math.min(20, timeline.hitStop);
 
       // 2. 目标受创反馈 (灵动受击后挫与震颤，无任何胶皮弹跳缩放)
       if (targetEl) {

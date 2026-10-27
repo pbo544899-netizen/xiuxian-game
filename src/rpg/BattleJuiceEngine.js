@@ -532,27 +532,36 @@
      * @param {number} duration - 持续毫秒 (100~300ms)
      * @param {HTMLElement} targetEl - 震动容器，默认当前战场
      */
-    shakeScreen(intensity = 6, duration = 180, targetEl = null) {
+    shakeScreen(intensity = 5, duration = 140, targetEl = null) {
       const el = targetEl || this.container;
       if (!el) return;
 
+      const safeIntensity = Math.min(8, intensity);
+      const safeDuration = Math.min(180, duration);
+
+      if (this._shakeAnimId) {
+        cancelAnimationFrame(this._shakeAnimId);
+        this._shakeAnimId = null;
+      }
+
       const startTime = performance.now();
-      const originTransform = el.style.transform || '';
+      const originTransform = '';
 
       const shake = (now) => {
         const elapsed = now - startTime;
-        if (elapsed < duration) {
-          const decay = 1.0 - (elapsed / duration);
-          const offsetX = (Math.random() * 2 - 1) * intensity * decay;
-          const offsetY = (Math.random() * 2 - 1) * intensity * decay;
-          const rotate = (Math.random() * 2 - 1) * 0.8 * decay;
+        if (elapsed < safeDuration) {
+          const decay = 1.0 - (elapsed / safeDuration);
+          const offsetX = (Math.random() * 2 - 1) * safeIntensity * decay;
+          const offsetY = (Math.random() * 2 - 1) * safeIntensity * decay;
+          const rotate = (Math.random() * 2 - 1) * 0.5 * decay;
           el.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotate}deg)`;
-          requestAnimationFrame(shake);
+          this._shakeAnimId = requestAnimationFrame(shake);
         } else {
           el.style.transform = originTransform;
+          this._shakeAnimId = null;
         }
       };
-      requestAnimationFrame(shake);
+      this._shakeAnimId = requestAnimationFrame(shake);
     }
 
     /**
@@ -604,23 +613,26 @@
     triggerMonsterHurtFeedback(avatarEl, isCrit = false) {
       if (!avatarEl || avatarEl.classList.contains('monster-dying')) return;
 
-      // 清除先前动作状态，重启受创动画
+      // 清除先前动作状态，重启受创动画 (优先使用 Web Animations API 取消，杜绝强制回流)
       avatarEl.classList.remove('monster-windup', 'monster-lunge', 'monster-boss-roar', 'monster-hit', 'monster-hit-crit');
-      void avatarEl.offsetWidth; // 触发回流重绘
+      if (typeof avatarEl.getAnimations === 'function') {
+        const anims = avatarEl.getAnimations();
+        for (let i = 0; i < anims.length; i++) anims[i].cancel();
+      }
       avatarEl.classList.add(isCrit ? 'monster-hit-crit' : 'monster-hit');
 
       // 画布激发出受创妖煞与血芒粒子
       const anchor = this.getAnchorCoords(avatarEl);
       this.triggerSparks(anchor.x, anchor.y, {
-        count: isCrit ? 22 : 12,
+        count: isCrit ? 18 : 10,
         colors: isCrit ? ['#ef4444', '#ffd700', '#ffffff'] : ['#ef4444', '#f87171', '#fbbf24'],
         speedMin: 1.5,
-        speedMax: isCrit ? 4.8 : 3.0,
+        speedMax: isCrit ? 4.5 : 2.8,
         gravity: 0.28
       });
 
       // 动画完成后自然重返待机呼吸姿态
-      const duration = isCrit ? 440 : 360;
+      const duration = isCrit ? 260 : 200;
       setTimeout(() => {
         if (avatarEl && !avatarEl.classList.contains('monster-dying')) {
           avatarEl.classList.remove('monster-hit', 'monster-hit-crit');

@@ -740,7 +740,7 @@
         if (nextEv.round !== targetRound && (nextEv.turn === 'player' || nextEv.actionType === 'attack')) {
           break; // 在下一回合主角出招点平稳挂起，等待玩家指令
         }
-        const stepDelay = isBattleFastMode ? 140 : 260;
+        const stepDelay = isBattleFastMode ? 40 : 80;
         await new Promise(r => setTimeout(r, stepDelay));
       }
     }
@@ -1127,8 +1127,8 @@
           if (stepIndex >= timeline.length) {
             // 所有回合与死亡反馈全部演播完毕，立即调度终局结算 (无论是自动还是手动)
             const finishDelay = (ev && ev.type === 'monster_defeated')
-              ? (isBattleFastMode ? 250 : 450)
-              : (isBattleFastMode ? 180 : 350);
+              ? (isBattleFastMode ? 140 : 240)
+              : (isBattleFastMode ? 90 : 160);
             battleStepTimer = setTimeout(executeNextStep, finishDelay);
           } else if (isBattleAuto) {
             const nextEv = timeline[stepIndex];
@@ -1136,16 +1136,16 @@
 
             let delay;
             if (isRoundTransition) {
-              delay = isBattleFastMode ? 260 : 500;
+              delay = isBattleFastMode ? 110 : 200;
               if (battleRoundBadge) {
                 battleRoundBadge.classList.remove('pulse');
-                void battleRoundBadge.offsetWidth;
+                if (typeof battleRoundBadge.getAnimations === 'function') { const anims = battleRoundBadge.getAnimations(); for (let i = 0; i < anims.length; i++) anims[i].cancel(); }
                 battleRoundBadge.classList.add('pulse');
               }
             } else if (ev && ev.type === 'monster_defeated') {
-              delay = isBattleFastMode ? 180 : 320;
+              delay = isBattleFastMode ? 100 : 180;
             } else {
-              delay = isPrologue ? (isBattleFastMode ? 260 : 420) : (isBattleFastMode ? 140 : 280);
+              delay = isPrologue ? (isBattleFastMode ? 90 : 150) : (isBattleFastMode ? 50 : 100);
             }
 
             battleStepTimer = setTimeout(executeNextStep, delay);
@@ -1162,7 +1162,7 @@
         window.SlotsRPG.BattleJuiceEngine.resize();
       }
       // 需求2: 界面关闭之后，战斗延迟0.5秒开始
-      const startDelay = isBattleFastMode ? 250 : 500;
+      const startDelay = isBattleFastMode ? 140 : 250;
       battleStepTimer = setTimeout(executeNextStep, startDelay);
     });
   }
