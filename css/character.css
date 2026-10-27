@@ -2005,12 +2005,15 @@
   position: absolute;
   pointer-events: none;
   font-weight: 900;
-  font-size: 20px;
-  line-height: 1.2;
+  font-size: 15px;
+  line-height: 1.35;
+  text-align: center;
+  max-width: 88vw;
+  white-space: pre-line;
+  word-break: break-word;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
   z-index: 250;
-  white-space: nowrap;
-  animation: floatAttrBurstAnim 1.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+  animation: floatAttrBurstAnim 1.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
 }
 
 .floating-attr-burst.inc {

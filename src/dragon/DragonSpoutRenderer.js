@@ -1051,11 +1051,13 @@ window.SlotsRPG = window.SlotsRPG || {};
       if ((!this.width || this.width === 0) && this.updateSize) {
         this.updateSize();
       }
-      const ROW_SPACING = 32;
+      // 根据文本行数自适应位移高度，彻底防止多行文字重叠
+      const lineCount = (String(text).match(/\n/g) || []).length + 1;
+      const shiftY = Math.max(34, lineCount * 22 + 14);
 
       // 1. 若当前已有飘字，将其向上平移留出充足垂直间距，彻底消除文字重叠
       for (const ft of this.floatingTexts) {
-        ft.y -= ROW_SPACING;
+        ft.y -= shiftY;
         if (ft.life > 0.65) {
           ft.life = 0.65;
         }
@@ -1066,17 +1068,17 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.floatingTexts.shift();
       }
 
-      // 3. 压入最新飘字
-      const baseY = (this.height || 400) * 0.46;
+      // 3. 压入最新飘字（居于神龙口鼻前部，与下方雷达与聚顶条保持充足安全间隙）
+      const baseY = Math.min((this.height || 400) * 0.30, 118);
       this.floatingTexts.push({
         text,
         color,
         x: (this.width || 360) * 0.5,
         y: baseY,
         opacity: 1.0,
-        vy: -0.65,
+        vy: -0.5,
         life: 1.0,
-        decay: 0.012
+        decay: 0.010
       });
     }
 
@@ -1200,31 +1202,69 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.ctx.restore();
       }
 
-      // 3. 绘制居中高光浮字（带防遮挡半透胶囊底板与仙韵边框，彻底杜绝混叠）
+      // 3. 绘制居中高光浮字（自适应多行换行与显式 \n 折行，带暗金半透胶囊底板与仙韵边框）
+      const maxCanvasTextWidth = Math.max(180, (this.width || 360) - 44);
+      const fontStr = 'bold 13.5px "STKaiti", "KaiTi", "Songti SC", serif';
+      const lineHeight = 19;
+      const padX = 14;
+      const padY = 7;
+
       for (const ft of this.floatingTexts) {
         this.ctx.save();
         this.ctx.globalAlpha = Math.max(0, Math.min(1, ft.opacity));
-        this.ctx.font = 'bold 15px "STKaiti", "KaiTi", "Songti SC", serif';
+        this.ctx.font = fontStr;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
 
-        const metrics = this.ctx.measureText(ft.text);
-        const textW = metrics.width;
-        const padX = 14;
-        const boxW = Math.max(76, textW + padX * 2);
-        const boxH = 26;
+        // 1. 按显式换行符 \n 分行，并对单行过长文本执行自动换行折行
+        const rawLines = String(ft.text || '').split('\n');
+        const formattedLines = [];
+
+        for (const rawLine of rawLines) {
+          if (!rawLine) continue;
+          let currentLine = '';
+          for (let i = 0; i < rawLine.length; i++) {
+            const char = rawLine[i];
+            const testLine = currentLine + char;
+            const testW = this.ctx.measureText(testLine).width;
+            if (testW > maxCanvasTextWidth && currentLine.length > 0) {
+              formattedLines.push(currentLine);
+              currentLine = char;
+            } else {
+              currentLine = testLine;
+            }
+          }
+          if (currentLine.length > 0) {
+            formattedLines.push(currentLine);
+          }
+        }
+
+        if (formattedLines.length === 0) {
+          this.ctx.restore();
+          continue;
+        }
+
+        // 2. 计算多行文本最大宽度与胶囊底板尺寸
+        let maxLineWidth = 0;
+        for (const line of formattedLines) {
+          const w = this.ctx.measureText(line).width;
+          if (w > maxLineWidth) maxLineWidth = w;
+        }
+
+        const boxW = Math.min((this.width || 360) - 20, Math.max(64, maxLineWidth + padX * 2));
+        const boxH = padY * 2 + formattedLines.length * lineHeight;
         const boxX = ft.x - boxW / 2;
         const boxY = ft.y - boxH / 2;
-        const radius = 13;
+        const radius = Math.min(13, boxH / 2);
 
-        // 绘制暗色玄金半透胶囊底板
+        // 3. 绘制暗色玄金半透胶囊底板
         this.ctx.beginPath();
         if (this.ctx.roundRect) {
           this.ctx.roundRect(boxX, boxY, boxW, boxH, radius);
         } else {
           this.ctx.rect(boxX, boxY, boxW, boxH);
         }
-        this.ctx.fillStyle = 'rgba(8, 14, 24, 0.86)';
+        this.ctx.fillStyle = 'rgba(8, 14, 24, 0.90)';
         this.ctx.shadowColor = ft.color;
         this.ctx.shadowBlur = 10;
         this.ctx.fill();
@@ -1234,10 +1274,14 @@ window.SlotsRPG = window.SlotsRPG || {};
         this.ctx.lineWidth = 1.2;
         this.ctx.stroke();
 
-        // 绘制高亮文字
+        // 4. 逐行绘制居中文本
         this.ctx.fillStyle = ft.color;
         this.ctx.shadowBlur = 4;
-        this.ctx.fillText(ft.text, ft.x, ft.y);
+        const startY = boxY + padY + lineHeight / 2;
+        for (let li = 0; li < formattedLines.length; li++) {
+          const lineY = startY + li * lineHeight;
+          this.ctx.fillText(formattedLines[li], ft.x, lineY);
+        }
         this.ctx.restore();
       }
     }

@@ -500,22 +500,55 @@ class CanvasRenderer {
       });
     }
 
-    // 6. 飘字渲染（带防重叠半透胶囊底板与仙韵边框）
+    // 6. 飘字渲染（自适应多行换行与显式 \n 折行，带暗金半透胶囊底板与仙韵边框）
+    const maxCanvasTextWidth = Math.max(180, (this.logicalWidth || 360) - 44);
+    const fontStr = 'bold 13.5px "STKaiti", "KaiTi", "Songti SC", serif';
+    const lineHeight = 19;
+    const padX = 14;
+    const padY = 7;
+
     this.floatingTexts.forEach(ft => {
       ctx.save();
       ctx.globalAlpha = Math.max(0, Math.min(1, ft.alpha));
-      ctx.font = 'bold 15px "STKaiti", "KaiTi", "Songti SC", serif';
+      ctx.font = fontStr;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const metrics = ctx.measureText(ft.text);
-      const textW = metrics.width;
-      const padX = 14;
-      const boxW = Math.max(76, textW + padX * 2);
-      const boxH = 26;
+      const rawLines = String(ft.text || '').split('\n');
+      const formattedLines = [];
+
+      for (const rawLine of rawLines) {
+        if (!rawLine) continue;
+        let cur = '';
+        for (let i = 0; i < rawLine.length; i++) {
+          const ch = rawLine[i];
+          const test = cur + ch;
+          if (ctx.measureText(test).width > maxCanvasTextWidth && cur.length > 0) {
+            formattedLines.push(cur);
+            cur = ch;
+          } else {
+            cur = test;
+          }
+        }
+        if (cur.length > 0) formattedLines.push(cur);
+      }
+
+      if (formattedLines.length === 0) {
+        ctx.restore();
+        return;
+      }
+
+      let maxLineWidth = 0;
+      for (const line of formattedLines) {
+        const w = ctx.measureText(line).width;
+        if (w > maxLineWidth) maxLineWidth = w;
+      }
+
+      const boxW = Math.min((this.logicalWidth || 360) - 20, Math.max(64, maxLineWidth + padX * 2));
+      const boxH = padY * 2 + formattedLines.length * lineHeight;
       const boxX = ft.x - boxW / 2;
       const boxY = ft.y - boxH / 2;
-      const radius = 13;
+      const radius = Math.min(13, boxH / 2);
 
       ctx.beginPath();
       if (ctx.roundRect) {
@@ -523,7 +556,7 @@ class CanvasRenderer {
       } else {
         ctx.rect(boxX, boxY, boxW, boxH);
       }
-      ctx.fillStyle = 'rgba(8, 14, 24, 0.86)';
+      ctx.fillStyle = 'rgba(8, 14, 24, 0.90)';
       ctx.shadowColor = ft.color || '#ffd700';
       ctx.shadowBlur = 10;
       ctx.fill();
@@ -534,7 +567,10 @@ class CanvasRenderer {
 
       ctx.fillStyle = ft.color || '#ffd700';
       ctx.shadowBlur = 4;
-      ctx.fillText(ft.text, ft.x, ft.y);
+      const startY = boxY + padY + lineHeight / 2;
+      for (let li = 0; li < formattedLines.length; li++) {
+        ctx.fillText(formattedLines[li], ft.x, startY + li * lineHeight);
+      }
       ctx.restore();
     });
 
@@ -1161,9 +1197,10 @@ class CanvasRenderer {
   }
 
   addFloatingText(text, color = '#ffd700') {
-    const ROW_SPACING = 32;
+    const lineCount = (String(text).match(/\n/g) || []).length + 1;
+    const shiftY = Math.max(34, lineCount * 22 + 14);
     for (const ft of this.floatingTexts) {
-      ft.y -= ROW_SPACING;
+      ft.y -= shiftY;
       if (ft.alpha > 0.65) ft.alpha = 0.65;
     }
     while (this.floatingTexts.length >= 2) {
