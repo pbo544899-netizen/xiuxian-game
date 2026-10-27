@@ -162,9 +162,10 @@
     },
 
     getAutoBtnTitleText(count) {
-      if (count === 1) return '单抽推演';
-      if (count === 10) return '周天十连';
-      return '自动推演';
+      if (count === 10) return '推演十次';
+      if (count === 1) return '推演一次';
+      if (count === Infinity) return '无限推演';
+      return '推演一次';
     },
 
     init() {

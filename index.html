@@ -298,6 +298,10 @@
               <b id="current-lingji-val" class="current-lingji-val">0</b>
               <span id="lingji-cost-float" class="lingji-cost-float hidden">-25</span>
             </div>
+
+            <!-- 灵机不足时打坐吐纳按钮：放置在单次推演上方空位，不再横向挤压推演按钮 -->
+            <button id="btn-meditate" class="btn-meditate hidden" title="灵机不足时打坐吐纳回复 50 灵机">🧘 打坐吐纳 (5/5)</button>
+
             <!-- 固定单抽消耗标识 (删除旧倍率调节) -->
             <div class="spin-cost-fixed-badge" id="spin-cost-fixed-badge" title="每次推演消耗 25 灵机">
               <span class="cost-badge-label">💧</span>
@@ -331,27 +335,24 @@
               </button>
             </div>
             <div class="auto-spin-group" id="auto-spin-group" style="position: relative;">
-              <button id="btn-auto" class="btn-auto" title="开启单抽推演">
-                <span class="auto-btn-title" id="auto-btn-title">单抽推演</span>
+              <button id="btn-auto" class="btn-auto" title="开启推演">
+                <span class="auto-btn-title" id="auto-btn-title">推演一次</span>
                 <span class="auto-btn-progress hidden" id="auto-btn-progress">0/1</span>
               </button>
-              <button id="btn-auto-count-toggle" class="btn-auto-count-toggle" title="选择推演次数 (单推/连抽)">
+              <button id="btn-auto-count-toggle" class="btn-auto-count-toggle" title="选择推演次数 (推演一次/推演十次)">
                 <span id="auto-count-label">1次</span><span class="caret">▾</span>
               </button>
             </div>
             <!-- 自动推演次数选择浮层 -->
             <div id="auto-count-popover" class="auto-count-popover hidden">
-              <div class="count-popover-title">选择推演连抽次数</div>
+              <div class="count-popover-title">选择推演次数</div>
               <div class="count-popover-options">
-                <button class="count-opt-btn active" data-count="1">单次推演</button>
-                <button class="count-opt-btn" data-count="10">10 连抽</button>
-                <button class="count-opt-btn" data-count="50">50 连抽</button>
-                <button class="count-opt-btn" data-count="100">100 连抽</button>
+                <button class="count-opt-btn active" data-count="1">推演一次</button>
+                <button class="count-opt-btn" data-count="10">推演十次</button>
                 <button class="count-opt-btn" data-count="Infinity">无限推演</button>
               </div>
             </div>
             <button id="btn-auto-filter" class="btn-auto-filter" title="挂机筛选规则">⚙️</button>
-            <button id="btn-meditate" class="btn-meditate hidden" title="灵机枯竭时打坐吐纳回复 30 机缘">🧘 打坐吐纳</button>
           </div>
 
           <!-- 挂机自动筛选浮层 -->

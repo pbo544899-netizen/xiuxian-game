@@ -2560,3 +2560,55 @@ body:has(#view-cave.active) .drop-flyer,
   color: #fff;
   box-shadow: 0 0 16px rgba(24, 144, 255, 0.7);
 }
+
+/* 灵机不足时打坐吐纳按钮 (位于 bet-info-bar 中间，单次推演上方空位) */
+.btn-meditate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.92) 0%, rgba(5, 150, 105, 0.98) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.7);
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  height: 26px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  animation: pulse-meditate-glow 2s infinite ease-in-out;
+  transition: transform 0.15s, filter 0.15s;
+  z-index: 10;
+}
+
+.btn-meditate:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.btn-meditate:active {
+  transform: scale(0.96);
+}
+
+.btn-meditate.hidden {
+  display: none !important;
+}
+
+@keyframes pulse-meditate-glow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.35);
+    border-color: rgba(52, 211, 153, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.75);
+    border-color: #6ee7b7;
+  }
+}
+
+.auto-btn-title {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}

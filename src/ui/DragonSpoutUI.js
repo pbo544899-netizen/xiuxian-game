@@ -440,15 +440,18 @@
     }
   }
 
-  // 默认选中 1 次单抽 (若本地已保存有效配置则沿用，否则默认单抽1次，避免灵机过度消耗)
+  // 默认选中 1 次单抽 (严格限为 1、10、Infinity，废弃50、100避免灵机过度消耗)
   const savedCount = localStorage.getItem('slots_rpg_auto_count');
-  applyAutoCount(savedCount ? savedCount : '1');
+  const validCounts = ['1', '10', 'Infinity'];
+  const initialCount = validCounts.includes(savedCount) ? savedCount : '1';
+  applyAutoCount(initialCount);
 
   // 玩家激活天机盘 (ARTIFACT_AWAKENED) 时：保持默认 1 次单抽
   if (EventBus) {
     EventBus.on('ARTIFACT_AWAKENED', () => {
       const currentSaved = localStorage.getItem('slots_rpg_auto_count');
-      applyAutoCount(currentSaved ? currentSaved : '1');
+      const valid = ['1', '10', 'Infinity'].includes(currentSaved) ? currentSaved : '1';
+      applyAutoCount(valid);
     });
   }
 
@@ -503,7 +506,7 @@
       // 单次推演：防连点拦截与灵机硬校验
       if (gameManager.renderer && gameManager.renderer.isSpinning) return;
       if (gameManager.energy < 25) {
-        showFloatingNotice('灵机不足 (单次推演需 25 灵机)！', '#ef4444');
+        showFloatingNotice('灵机不足 (推演一次需 25 灵机)！', '#ef4444');
         gameManager.checkDailyReliefReset();
         gameManager.checkWantongSecretEgg();
         window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
@@ -514,10 +517,10 @@
       }
       gameManager.executeSpin();
     } else if (currentAutoCount === 10) {
-      // 方案 A：周天十连（瞬时批量聚爆展示）
+      // 推演十次（瞬时批量聚爆展示）
       if (gameManager.renderer && gameManager.renderer.isSpinning) return;
       if (gameManager.energy < 250) {
-        showFloatingNotice('灵机不足 (周天十连需 250 灵机)！', '#ef4444');
+        showFloatingNotice('灵机不足 (推演十次需 250 灵机)！', '#ef4444');
         gameManager.checkDailyReliefReset();
         gameManager.checkWantongSecretEgg();
         window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
@@ -528,9 +531,9 @@
       }
       gameManager.executeTenPull();
     } else {
-      // 50 / 100 / 无限：长线连抽自动挂机推演
+      // 无限推演：长线连抽自动挂机推演
       if (gameManager.energy < 25) {
-        showFloatingNotice('灵机不足，无法开启连抽！', '#ef4444');
+        showFloatingNotice('灵机不足，无法开启无限推演！', '#ef4444');
         gameManager.checkDailyReliefReset();
         gameManager.checkWantongSecretEgg();
         window.SlotsRPG.EventBus && window.SlotsRPG.EventBus.emit('ENERGY_DEPLETED', {
@@ -1246,10 +1249,23 @@
     updateFTUESpotlight();
 
     const autoBtnTitle = document.getElementById('auto-btn-title');
+    const autoBtnProgress = document.getElementById('auto-btn-progress');
     if (btnAutoSpin) {
       btnAutoSpin.classList.remove('ftue-highlight');
-      if (autoBtnTitle && !gameManager.isAutoSpinning && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
-        autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+      if (gameManager.isAutoSpinning) {
+        btnAutoSpin.classList.add('active');
+        if (autoBtnTitle) autoBtnTitle.innerText = '停止';
+        if (autoBtnProgress) {
+          autoBtnProgress.classList.remove('hidden');
+          const target = gameManager.autoSpinTargetCount === Infinity ? '∞' : gameManager.autoSpinTargetCount;
+          autoBtnProgress.innerText = `${gameManager.autoSpinCompletedCount || 0}/${target}`;
+        }
+      } else {
+        btnAutoSpin.classList.remove('active');
+        if (autoBtnProgress) autoBtnProgress.classList.add('hidden');
+        if (autoBtnTitle && (!gameManager.renderer || !gameManager.renderer.isSpinning)) {
+          autoBtnTitle.innerText = getAutoBtnTitleText(currentAutoCount);
+        }
       }
     }
 
