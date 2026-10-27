@@ -1175,6 +1175,15 @@ class GameManager {
     if (isSectInduction) {
       this.hasTriggeredSectInduction = true;
       this.stopAutoSpin();
+      if (!this.unlockedSectTicket) {
+        this.unlockedSectTicket = {
+          sectId: 'wanjian',
+          sectName: '万剑仙宗',
+          tokenName: '宗门引荐法牒',
+          tokenIcon: '🎫',
+          desc: '初测仙缘所获真传引荐法牒，可凭此拜入正统与旁门各大仙宗！'
+        };
+      }
       // 解析中奖法牒/门票格子坐标: l.coords 为每列命中行索引数组 [rowCol0, rowCol1, ...]
       let ticketCoords = [];
       if (evaluation.winningLines && evaluation.winningLines.length > 0) {

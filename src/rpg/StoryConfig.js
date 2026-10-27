@@ -204,6 +204,51 @@
         ]
       },
 
+      prologue_sect_ticket_awarded: {
+        id: 'prologue_sect_ticket_awarded',
+        title: '仙缘 · 宗门法牒现世',
+        speaker: '系统',
+        speakerTitle: '修仙系统 · 灵识显化',
+        speakerAvatar: 'assets/character/cheat_system_spirit.png',
+        dialogue: [
+          {
+            sender: 'system',
+            name: '系统',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“叮！天机推演截获无上仙缘！恭喜宿主获得【宗门引荐法牒】！”',
+            itemShowcase: {
+              icon: '🎫',
+              name: '宗门引荐法牒',
+              badge: '仙门信物',
+              desc: '各大仙宗通行的真传法牒。持此法牒可正式叩问仙门，选择宗派拜入修行！'
+            }
+          },
+          {
+            sender: 'system',
+            name: '系统',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“这是一个通往各大修仙宗门的接引凭证！持此法牒，正统万剑仙宗与旁门万通商行皆为你大开山门，可凭此正式拜入宗派、洗去凡胎！”'
+          },
+          {
+            sender: 'player',
+            name: '宿主 (林凡)',
+            avatar: 'assets/character/hero_cultivator.png',
+            text: '“【宗门引荐法牒】？！有了这个，我终于能拜入真正的修仙门派，不再当一介山野散修了！”'
+          },
+          {
+            sender: 'system',
+            name: '系统',
+            avatar: 'assets/character/cheat_system_spirit.png',
+            text: '“各大宗门的接引法旨已降临法坛！宿主速速执令叩问仙门，选择心仪门派拜入修行吧！”'
+          }
+        ],
+        lines: [
+          '“叮！天机推演截获无上仙缘！恭喜宿主获得【宗门引荐法牒】！”',
+          '“这是一个通往各大修仙宗门的接引凭证！持此法牒可正式拜入宗派、洗去凡胎！”',
+          '“速速执令叩问仙门，选择心仪门派拜入修行！”'
+        ]
+      },
+
       pot_promoted_ticket: {
         id: 'pot_promoted_ticket',
         title: '主线 · 窃夺天机',

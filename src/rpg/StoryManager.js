@@ -547,7 +547,24 @@
             this.dom.systemBubbleSpeakerTag.innerText = `⚡ ${senderName}`;
           }
           if (this.dom.systemBubbleText) {
-            this.dom.systemBubbleText.innerText = msg.text;
+            if (msg.itemShowcase) {
+              const item = msg.itemShowcase;
+              this.dom.systemBubbleText.innerHTML = `
+                <div class="bubble-text-msg">${msg.text}</div>
+                <div class="story-bubble-item-showcase">
+                  <div class="story-item-token-icon">${item.icon || '🎫'}</div>
+                  <div class="story-item-token-info">
+                    <div class="story-item-token-head">
+                      <span class="story-item-token-name">${item.name}</span>
+                      <span class="story-item-token-tag">${item.badge || '仙门信物'}</span>
+                    </div>
+                    <div class="story-item-token-desc">${item.desc}</div>
+                  </div>
+                </div>
+              `;
+            } else {
+              this.dom.systemBubbleText.innerText = msg.text;
+            }
           }
         } else {
           this.dom.actorPlayer.classList.add('active-speaker');
@@ -560,7 +577,24 @@
             this.dom.playerBubbleSpeakerTag.innerText = `${icon}${senderName}`;
           }
           if (this.dom.playerBubbleText) {
-            this.dom.playerBubbleText.innerText = msg.text;
+            if (msg.itemShowcase) {
+              const item = msg.itemShowcase;
+              this.dom.playerBubbleText.innerHTML = `
+                <div class="bubble-text-msg">${msg.text}</div>
+                <div class="story-bubble-item-showcase">
+                  <div class="story-item-token-icon">${item.icon || '🎫'}</div>
+                  <div class="story-item-token-info">
+                    <div class="story-item-token-head">
+                      <span class="story-item-token-name">${item.name}</span>
+                      <span class="story-item-token-tag">${item.badge || '仙门信物'}</span>
+                    </div>
+                    <div class="story-item-token-desc">${item.desc}</div>
+                  </div>
+                </div>
+              `;
+            } else {
+              this.dom.playerBubbleText.innerText = msg.text;
+            }
           }
         }
       }

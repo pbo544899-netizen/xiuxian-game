@@ -743,10 +743,16 @@
           renderer.stopSectTicketShowcase();
         }
 
-        // Phase 4: 等待其它奖励弹窗（如突破升级、剧情等）关闭后，正式展示加入门派弹窗
+        // Phase 4: 等待其它奖励弹窗关闭后，先用“修仙系统”对白向玩家展示获得的【宗门引荐法牒】，交代清楚后再弹出选择宗门弹窗
         waitOtherModalsClosedThen(() => {
           isSectInductionSequenceRunning = false;
-          window.SlotsRPG.EventBus.emit('SHOW_SECT_INDUCTION', { options });
+          if (storyManager && typeof storyManager.triggerChapter === 'function') {
+            storyManager.triggerChapter('prologue_sect_ticket_awarded', () => {
+              window.SlotsRPG.EventBus.emit('SHOW_SECT_INDUCTION', { options });
+            });
+          } else {
+            window.SlotsRPG.EventBus.emit('SHOW_SECT_INDUCTION', { options });
+          }
         });
       }, 2000);
     }, 1200);
