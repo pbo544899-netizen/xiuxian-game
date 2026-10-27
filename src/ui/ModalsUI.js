@@ -1847,7 +1847,12 @@
       const btnCloseWorldSynopsisX = document.getElementById('btn-close-world-synopsis-x');
 
       function openWorldSynopsis() {
-        if (modalWorldSynopsis) modalWorldSynopsis.classList.remove('hidden');
+        if (typeof openPaytableRulesModal === 'function') {
+          openPaytableRulesModal();
+          switchPaytableTab('history');
+        } else if (modalWorldSynopsis) {
+          modalWorldSynopsis.classList.remove('hidden');
+        }
         if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
           window.SlotsRPG.SoundEffects.play('MODAL_OPEN');
         }

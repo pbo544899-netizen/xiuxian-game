@@ -37,15 +37,7 @@
         <div class="merit-ticket-bar" id="merit-ticket-bar" title="瞬发符">
           <span class="ticket-tag">🎫 <b id="ticket-count-text" style="color:#34e89e;">1</b></span>
         </div>
-        <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙系统：点击获取系统指引与天道推演机缘">
-          <div class="cheat-system-avatar-mini">
-            <img src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
-          </div>
-          <span class="cheat-system-label">系统</span>
-          <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
-        </button>
-        <button id="btn-open-world-synopsis" class="btn-world-synopsis-hud" title="凡人流修仙世界大纲与剧情前传">📜 大纲</button>
-        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">🏺</button>
+        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门秘卷 · 修真法则与世界历史">📜 秘卷</button>
         <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
           <span class="bubble-icon">✨</span>
           <span class="bubble-text" id="cave-bubble-text">+0</span>
@@ -61,6 +53,14 @@
 
         <!-- 核心视觉区：天工神龙法相与12格天机宝萃阵 (6x2品阶自动归序) -->
         <div class="dragon-spout-stage" id="dragon-spout-stage">
+          <!-- 穹顶神龙法相右上角常驻修仙系统交互入口 (精简顶栏视线负担) -->
+          <button id="btn-cheat-system-ai" class="btn-cheat-system-ai" title="修仙系统：点击获取系统指引与天道推演机缘">
+            <div class="cheat-system-avatar-mini">
+              <img src="assets/character/cheat_system_spirit.png" alt="修仙系统" />
+            </div>
+            <span class="cheat-system-label">系统</span>
+            <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
+          </button>
           <!-- 穹顶神龙法相 (青铜古玉天工神机 · 巨大威武视觉冲击) -->
           <div class="dragon-head-box" id="dragon-head-box">
             <!-- 天道前摇悬念异象浮标 -->
@@ -1145,11 +1145,11 @@
     <!-- 战斗切入修仙过场动画 (VS 对决画卷) -->
     <div id="modal-battle-transition" class="battle-transition-overlay hidden">
       <div class="battle-trans-bg">
+        <div class="battle-trans-hell-bg"></div>
+        <div class="battle-trans-hell-vignette"></div>
         <div class="battle-trans-speed-lines"></div>
         <div class="battle-trans-rays"></div>
         <div class="battle-trans-vortex"></div>
-        <div class="battle-trans-taiji">☯</div>
-        <div class="battle-trans-shockwave"></div>
         <div class="battle-trans-flash-slash"></div>
       </div>
 
@@ -1158,7 +1158,7 @@
         <div class="trans-loader-seal-wrap">
           <div class="trans-loader-outer-ring"></div>
           <div class="trans-loader-radar-sweep"></div>
-          <div class="trans-loader-bagua">☯</div>
+          <div class="trans-loader-bagua">⚔️</div>
           <div class="trans-loader-pulse-glow"></div>
         </div>
         <div class="trans-loader-info">
@@ -1539,15 +1539,16 @@
         <button class="modal-close-x btn-close-paytable" id="btn-close-paytable" aria-label="关闭">&times;</button>
         <div class="paytable-header">
           <div class="paytable-badge">📜 周天奇门秘卷</div>
-          <h2 class="paytable-title">奇门阵图 · 阵纹共鸣真解</h2>
-          <p class="paytable-subtitle">参悟造化玄机 · 窥探阴阳万法</p>
+          <h2 class="paytable-title">奇门阵图 · 诸天通鉴秘卷</h2>
+          <p class="paytable-subtitle">参悟造化玄机 · 窥探大道万法与诸界史实</p>
         </div>
 
         <!-- 秘卷标签导航 -->
         <div class="paytable-tabs">
-          <button class="paytable-tab-btn active" data-tab="paytable">阵纹共鸣谱</button>
+          <button class="paytable-tab-btn active" data-tab="paytable">阵纹共鸣</button>
+          <button class="paytable-tab-btn" data-tab="rules">修真法则</button>
           <button class="paytable-tab-btn" data-tab="odds">天道概率</button>
-          <button class="paytable-tab-btn" data-tab="rules">推演法则</button>
+          <button class="paytable-tab-btn" data-tab="history">世界历史</button>
         </div>
 
         <!-- 秘卷内容区 -->
@@ -1691,6 +1692,15 @@
                     <td class="extra-effect">必爆衣服箱</td>
                   </tr>
                   <tr>
+                    <td><span class="sym-badge sym-helmet" style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background:rgba(168,85,247,0.25); border:1px solid rgba(168,85,247,0.5);">👑</span></td>
+                    <td class="sym-name-col">紫霞冠</td>
+                    <td>帽子</td>
+                    <td class="mult">×1</td>
+                    <td class="mult">×3</td>
+                    <td class="mult highlight">×10</td>
+                    <td class="extra-effect">必爆帽子箱</td>
+                  </tr>
+                  <tr>
                     <td><span class="sym-badge sym-ring">💍</span></td>
                     <td class="sym-name-col">紫金戒</td>
                     <td>戒指</td>
@@ -1785,35 +1795,98 @@
             </div>
           </div>
 
-          <!-- 标签页 3: 修真法则 -->
+          <!-- 标签页 2: 修真法则 -->
           <div class="paytable-pane" id="pane-rules">
             <div class="rule-card">
-              <h4>1. 核心修真循环</h4>
-              <p>推演天机积累机缘 ➔ 吞服修为丹突破境界 ➔ 穿戴并合成 6 槽法宝提升总战力 ➔ 挑战守关妖王引动天地异象 ➔ 拜入更强宗门修习绝世心法 ➔ 白日飞升九转轮回！</p>
+              <h4>1. 核心修真循环 (因果闭环)</h4>
+              <p>推演天机摸宝 ➔ 炼化符箓丹药 ➔ 穿戴并一键升阶 6 大神装 ➔ 拜入宗门修习专属心法绝学 ➔ 挑战妖王试炼与镇妖锁仙塔 ➔ 白日飞升五行英灵殿！</p>
             </div>
             <div class="rule-card">
-              <h4>2. 法宝佩戴与一键合成</h4>
-              <p>角色拥有 6 处法宝槽位（武器、衣服、戒指、帽子、鞋子、腰带）。乾坤袋拥有 3 件同部位同品质装备时，可一键合成熔炼为下一阶极品法宝；点击“一键装备”即可自动换装为当前最高战力组合。</p>
+              <h4>2. 法宝佩戴与一键合成 (神炉熔炼)</h4>
+              <p>角色拥有 6 处法宝槽位（武器、衣服、戒指、帽子、鞋子、腰带）。乾坤袋中同部位同品质拥有 3 件法宝时，可点击“一键升阶”神炉熔炼为下一阶极品法宝；点击“一键装备”可秒级自动穿戴全身最高战力神装！</p>
             </div>
             <div class="rule-card">
-              <h4>3. 门派万道与传承心法</h4>
-              <p>各大宗门独具天地造化：<br/>
-              • <b>万剑宗</b>：极道剑诀，暴击伤害 +25%，起手万剑归宗；<br/>
-              • <b>太乙门</b>：生生不息，气血上限 +30%，战次回血翻倍；<br/>
-              • <b>御兽宗</b>：通灵万兽，开局召唤灵宠协同作战；<br/>
-              • <b>天机阁</b>：神算无遗，阵盘机缘产出与符箓收益提升 40%；<br/>
-              • <b>焚天谷</b>：南明离火，攻击附带烈焰灼烧真伤。</p>
+              <h4>3. 门派万道与心法绝学 (五行相生)</h4>
+              <p>五大正统宗门传承至高心法：<br/>
+              • <b>万剑仙宗（金）</b>：极道剑诀，暴击伤害 +25%，起手万剑归宗贯穿敌阵；<br/>
+              • <b>太乙丹霞宗（木）</b>：生生不息，气血上限 +30%，战次回血翻倍；<br/>
+              • <b>御兽玄机门（水）</b>：通灵万兽，开局召唤灵宠随行协同作战；<br/>
+              • <b>天机神阵门（土）</b>：神算无遗，阵盘机缘产出与符箓收益大幅提升；<br/>
+              • <b>焚天九幽道（火）</b>：南明离火，攻击附带烈焰灼烧真实伤害。</p>
             </div>
             <div class="rule-card">
-              <h4>4. 洞天灵脉与白日飞升</h4>
-              <p>拜入宗门后开启洞天灵脉，聚灵阵每时每刻为你凝聚天地灵机与气血丹药，支持离线累积！击败各界妖王圆满后，可开启白日飞升飞升灵界，转生永久继承先天道基与极品神装！</p>
+              <h4>4. 洞天灵脉与镇妖除魔 (放置与爬塔)</h4>
+              <p>拜入宗门后开启洞天灵脉，聚灵仙鼎每时每刻为你凝聚天地灵机与修为仙丹，支持离线静修累积；更有镇妖锁仙塔与各界关卡妖王试炼，检验道法实力！</p>
             </div>
             <div class="rule-card">
-              <h4>5. 天道动态保底与心流阶梯</h4>
-              <p>天道至公，不负苦修。系统内置双层长线非酋动态阶梯保底：<br/>
-              • <b>灵品（紫装）保底</b>：连续 15 抽未得灵品即入【天道眷顾】，掉率成倍递增；至多 <b>20 抽必降灵品及以上法宝</b>！<br/>
-              • <b>仙品（金装）保底</b>：连续 45 抽未得仙品即入【鸿蒙蓄势】；至多 <b>60 抽必降仙品及以上法宝</b>！<br/>
-              • 获得对应品质法宝后，保底计数立即归零重置，平滑极品出货方差，守护修仙心流体验。</p>
+              <h4>5. 白日飞升与英灵殿轮回 (Meta-Progression)</h4>
+              <p>五大正统宗门通关神装全归位后，即可叩开升仙天门飞升灵界，转生永久继承先天道基与天碑英灵殿加成！</p>
+            </div>
+            <div class="rule-card">
+              <h4>6. 天道动态防黑保底心流 (平滑方差)</h4>
+              <p>天道至公，不负苦修。连续 15 抽未得紫装即入【天道眷顾】，至多 <b>20 抽必降灵品及以上法宝</b>！连续 45 抽未得金装即入【鸿蒙蓄势】，至多 <b>60 抽必降仙品及以上法宝</b>！4/8 连败动态触发高额回血大奖，守护修仙心流体验。</p>
+            </div>
+          </div>
+
+          <!-- 标签页 4: 世界历史 (融汇凡人修真大纲史诗) -->
+          <div class="paytable-pane" id="pane-history">
+            <div class="history-hero-intro">
+              <div class="history-badge">📜 凡人修真大千通鉴</div>
+              <h3 class="history-title">《我有一个修仙系统》· 世界历史</h3>
+              <div class="history-subtitle">凡骨逆命 · 执掌天机 · 诸天仙魔皆为下品</div>
+            </div>
+
+            <div class="history-card">
+              <div class="history-card-header">🌌 【九天十地 · 仙凡如堑】</div>
+              <div class="history-card-body">
+                修仙大界浩瀚无垠，仙魔大能一念搬山填海、寿齐日月；然而天地无情，世间九成九众生生来皆为无灵根之废骨，命如草芥任人践踏，仙门高高在上，视凡俗为微尘蝼蚁。
+              </div>
+            </div>
+
+            <div class="history-card">
+              <div class="history-card-header">🗡️ 【青阳微末 · 少年逆旅】</div>
+              <div class="history-card-body">
+                主角<b>林凡</b>，苍梧界青阳镇下一介采药少年，天生杂废凡脉，受尽冷眼与欺凌。至亲重疾濒危、米缸见底，为争一线生机，他手握一把卷刃破旧柴刀，毅然孤身深入险恶后山采摘灵草，与狂暴恶兽喋血死斗！
+              </div>
+            </div>
+
+            <div class="history-card">
+              <div class="history-card-header">⚡ 【万古天机 · 系统认主】</div>
+              <div class="history-card-body">
+                喋血斩灭黑鬣凶兽，林凡意外剖出并唤醒沉眠千万载的天道修仙系统！古老天机盘认主，打破修仙界铁律——无视灵根体质，直接将诸天因果与大道造化具象化为指尖推演！别人闭关百载苦求一刀一剑，林凡指尖推演神兵如雨；别人倾家荡产求一件灵器，林凡造化熔炉一键升阶！以抽养抽，向天夺命！
+              </div>
+            </div>
+
+            <div class="history-card">
+              <div class="history-card-header">🏛️ 【诸天道统 · 五行正宗】</div>
+              <div class="history-card-body">
+                天道分五行，当林凡手持真传令牒叩开山门，修真界五大巨擘道统齐聚：<br/>
+                • <b>万剑仙宗（金）</b>：一剑开天门，独步剑道至高锋芒；<br/>
+                • <b>太乙丹霞宗（木）</b>：融万药真灵，金丹涅槃生生不息；<br/>
+                • <b>御兽玄机门（水）</b>：驭上古灵兽，神兽并肩共战天地；<br/>
+                • <b>天机神阵门（土）</b>：借山川厚土，八卦演化神机万象；<br/>
+                • <b>焚天九幽道（火）</b>：向死而生，以南明离火焚灭虚妄！
+              </div>
+            </div>
+
+            <div class="history-card">
+              <div class="history-card-header">🏆 【凡人登仙 · 逆命五重阶】</div>
+              <div class="history-card-body">
+                <ul class="history-ladder">
+                  <li><b>一重·凡躯破界</b>：后山斩凶，系统绑定，废脉凡骨逆天强开道基！</li>
+                  <li><b>二重·仙门名震</b>：持真传令叩问仙门，横扫试炼妖兽，震惊同门巨擘！</li>
+                  <li><b>三重·洞天坐忘</b>：荡平禁地妖王，坐拥无尽洞天灵髓，灵机挂机源源不绝！</li>
+                  <li><b>四重·锁仙破塔</b>：勇闯九十九层镇妖锁仙塔，夺造化逆天改命！</li>
+                  <li><b>五重·白日飞升</b>：五行神装归位，手撕九霄天劫，踏入浩渺灵界主宰诸天！</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="history-card history-highlight-card">
+              <div class="history-card-header">🔥 【修道本心】</div>
+              <div class="history-card-body">
+                不圣母、不憋屈、苟道机敏、杀伐果断！任你万年天骄、神族血脉、背景通天，在老子的天道推演外挂面前，统统给老子跪下！
+              </div>
             </div>
           </div>
         </div>
