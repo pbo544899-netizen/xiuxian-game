@@ -823,6 +823,14 @@
       const btnJoin = card.querySelector('.btn-join-sect');
       if (btnJoin) {
         btnJoin.addEventListener('click', () => {
+          if (btnJoin.disabled || card.dataset.joining === 'true') return;
+          card.dataset.joining = 'true';
+          // 彻底阻断快速连点/双击导致的重复执行与状态竞争
+          document.querySelectorAll('.btn-join-sect').forEach(b => {
+            b.disabled = true;
+            b.classList.add('disabled');
+          });
+
           if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
             window.SlotsRPG.SoundEffects.play('JOIN_SECT');
           }
@@ -837,9 +845,15 @@
               换下山野散修麻衣，赐下道门法袍与法器灵宝，洗去凡胎，晋升为<b>【练气一层】</b>正式修仙者！<br/>
               宗门心法<b>【${skill1Name}】</b>已铭刻神魂，天地广阔，任道友翱翔！
             </p>`,
-            '☯ 仙门初入'
+            '☯ 仙门初入',
+            () => {
+              // 玩家确认拜入通告后，才平滑切入角色修真面板开启后续单线引导
+              switchTab('character');
+              if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+                window.SlotsRPG.SpotlightGuide.scheduleCheck(200);
+              }
+            }
           );
-          switchTab('character');
         });
       }
 

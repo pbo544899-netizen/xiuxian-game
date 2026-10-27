@@ -390,7 +390,8 @@
       if (canMerge) {
         floatingMergeWrap.classList.remove('hidden');
         if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-          window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
+          // 防抖延迟检测，避免与背包高频渲染及弹窗过渡竞争
+          window.SlotsRPG.SpotlightGuide.scheduleCheck(300);
         }
       } else {
         floatingMergeWrap.classList.add('hidden');
@@ -694,7 +695,12 @@
       showGameNotice(
         '造化熔炉·一键升阶成功',
         `共融合 <b>${res.mergedGroupsCount}</b> 组同阶法宝，释放 <b>${res.freedSlots}</b> 个背包空格！<br><br><b>凝练获得全新仙家法宝：</b><br>${names}`,
-        '✨ 熔炉神铸'
+        '✨ 熔炉神铸',
+        () => {
+          if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+            window.SlotsRPG.SpotlightGuide.scheduleCheck(200);
+          }
+        }
       );
       if (renderer && renderer.addFloatingText) {
         renderer.addFloatingText(`一键升阶成功 +${res.mergedGroupsCount}组!`, '#ffd700');

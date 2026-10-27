@@ -67,6 +67,15 @@ window.addEventListener('DOMContentLoaded', () => {
         if (window.showFloatingNotice) window.showFloatingNotice('尚未拜入仙门，洞府仙脉暂未开启！');
         return;
       }
+    } else {
+      // 拜入宗门后：若乾坤袋中有可合成法宝且尚未完成升阶引导，洞天福地暂缓进入
+      if (tabName === 'cave') {
+        const canMerge = gameManager.canMergeEquipment && gameManager.canMergeEquipment();
+        if (!gameManager.hasCompletedMergeFTUE && canMerge) {
+          if (window.showFloatingNotice) window.showFloatingNotice('宗门法宝尚未融合升阶，请先前往角色修真炼宝！');
+          return;
+        }
+      }
     }
 
     [tabSlots, tabCharacter, tabCave].forEach(t => t && t.classList.remove('active'));
@@ -165,8 +174,9 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 2. 洞天灵脉：未完成序章（未拜入仙门）时锁定
-    const isCaveLocked = !isPrologueComplete;
+    // 2. 洞天灵脉：未完成序章（未拜入仙门）或宗门法宝待合成时锁定
+    const isMergePending = isPrologueComplete && !gameManager.hasCompletedMergeFTUE && (gameManager.canMergeEquipment && gameManager.canMergeEquipment());
+    const isCaveLocked = !isPrologueComplete || isMergePending;
     if (tabCave) {
       const imgCave = tabCave.querySelector('.nav-icon-img');
       const lockTag = tabCave.querySelector('.nav-lock-tag');

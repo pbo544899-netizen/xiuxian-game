@@ -9,8 +9,10 @@
   let pendingNotificationCount = 0;
 
   const ToastNotificationUI = {
+    _currentNoticeOnConfirm: null,
+
     // 仙道操作通告弹窗统一展示函数 (取缔浏览器系统弹窗)
-    showGameNotice(title, htmlContent, badge = '✨ 仙道显化') {
+    showGameNotice(title, htmlContent, badge = '✨ 仙道显化', onConfirm = null) {
       const actionNoticeBadge = document.getElementById('action-notice-badge');
       const actionNoticeTitle = document.getElementById('action-notice-title');
       const actionNoticeContent = document.getElementById('action-notice-content');
@@ -19,6 +21,9 @@
       if (actionNoticeBadge) actionNoticeBadge.innerText = badge;
       if (actionNoticeTitle) actionNoticeTitle.innerText = title;
       if (actionNoticeContent) actionNoticeContent.innerHTML = htmlContent;
+
+      ToastNotificationUI._currentNoticeOnConfirm = (typeof onConfirm === 'function') ? onConfirm : null;
+
       if (modalActionNotice) modalActionNotice.classList.remove('hidden');
     },
 
@@ -177,15 +182,27 @@
       const btnActionNoticeConfirm = document.getElementById('btn-action-notice-confirm');
       const btnCloseActionNoticeX = document.getElementById('btn-close-action-notice-x');
       const modalActionNotice = document.getElementById('modal-action-notice');
+      const actionNoticeTitle = document.getElementById('action-notice-title');
+
+      const handleClose = () => {
+        if (modalActionNotice) modalActionNotice.classList.add('hidden');
+        const cb = ToastNotificationUI._currentNoticeOnConfirm;
+        ToastNotificationUI._currentNoticeOnConfirm = null;
+        if (typeof cb === 'function') {
+          try { cb(); } catch (err) { console.error('[ToastNotificationUI] notice callback error:', err); }
+        }
+        if (window.SlotsRPG && window.SlotsRPG.EventBus) {
+          window.SlotsRPG.EventBus.emit('ACTION_NOTICE_CLOSED', {
+            title: actionNoticeTitle ? actionNoticeTitle.innerText : ''
+          });
+        }
+      };
+
       if (btnActionNoticeConfirm) {
-        btnActionNoticeConfirm.addEventListener('click', () => {
-          if (modalActionNotice) modalActionNotice.classList.add('hidden');
-        });
+        btnActionNoticeConfirm.addEventListener('click', handleClose);
       }
       if (btnCloseActionNoticeX) {
-        btnCloseActionNoticeX.addEventListener('click', () => {
-          if (modalActionNotice) modalActionNotice.classList.add('hidden');
-        });
+        btnCloseActionNoticeX.addEventListener('click', handleClose);
       }
     }
   };
