@@ -6,9 +6,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0a0e17" />
-  <link rel="icon" href="assets/symbols/sym_03.png" type="image/png" />
+  <link rel="icon" href="assets/icon/game_icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/icon/game_icon.png" />
+  <link rel="manifest" href="manifest.json" />
   <title>我有一个修仙系统</title>
   <!-- 模块化样式套件 (Modular CSS Suite) -->
+  <link rel="stylesheet" href="css/splash.css?v=2.7" />
   <link rel="stylesheet" href="css/base.css?v=2.7" />
   <link rel="stylesheet" href="css/character.css?v=2.7" />
   <link rel="stylesheet" href="css/battle.css?v=2.7" />
@@ -20,6 +23,55 @@
 </head>
 <body>
   <div id="app-container">
+    <!-- 启动游戏加载与健康游戏公告全屏封面 (Launch Loading Splash) -->
+    <div id="startup-loading-screen" class="startup-splash-overlay" aria-label="游戏启动加载封面">
+      <div class="startup-splash-bg"></div>
+
+      <!-- 游戏 Logo 与神龙图腾 -->
+      <div class="startup-logo-container">
+        <div class="startup-emblem-wrap">
+          <img class="startup-emblem-icon" src="assets/icon/game_icon.png" alt="游戏龙头图标" />
+          <div class="startup-emblem-glow"></div>
+        </div>
+        <h1 class="startup-game-title">我有一个修仙系统</h1>
+        <div class="startup-game-subtitle">
+          <span class="sub-flourish">✦</span>
+          <span>凡骨逆命 · 执掌天机</span>
+          <span class="sub-flourish">✦</span>
+        </div>
+      </div>
+
+      <!-- 底部加载进度条与规范健康游戏公告 -->
+      <div class="startup-bottom-panel">
+        <div id="startup-enter-prompt" class="startup-enter-prompt hidden">
+          ✨ 点击任意处踏入仙途 ✨
+        </div>
+
+        <div class="startup-progress-section">
+          <div class="startup-status-row">
+            <span id="startup-status-text" class="startup-status-text">汲取天地灵气，构筑造化天机...</span>
+            <span id="startup-percent-text" class="startup-percent-text">0%</span>
+          </div>
+          <div class="startup-progress-bar-track">
+            <div id="startup-progress-bar-fill" class="startup-progress-bar-fill">
+              <div class="startup-progress-light"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 规范健康游戏公告 -->
+        <div class="startup-health-notice">
+          <div class="health-notice-badge">【健康游戏忠告】</div>
+          <div class="health-notice-grid">
+            <p>抵制不良游戏，拒绝盗版游戏。</p>
+            <p>注意自我保护，谨防受骗上当。</p>
+            <p>适度游戏益脑，沉迷游戏伤身。</p>
+            <p>合理安排时间，享受健康生活。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 统一全景常驻顶栏 (角色境界、战力、作弊系统、阵盘图谱与功德瞬发符一站式集成) -->
     <header class="top-hud">
       <div class="hud-left-group">
@@ -2367,6 +2419,7 @@
   <script src="src/ui/CaveUI.js"></script>
   <script src="src/ui/DragonSpoutUI.js"></script>
   <script src="src/ui/ModalsUI.js"></script>
+  <script src="src/ui/LoadingScreen.js"></script>
   <script src="src/ui/SpotlightGuide.js?v=2.7"></script>
   <script src="src/main.js"></script>
 </body>

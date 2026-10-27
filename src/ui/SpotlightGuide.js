@@ -614,6 +614,12 @@
         this.hide();
         return;
       }
+      const splashScreen = document.getElementById('startup-loading-screen');
+      if (splashScreen && !splashScreen.classList.contains('splash-dismissed') && splashScreen.style.display !== 'none') {
+        this.hide();
+        return;
+      }
+
       const arenaModal = document.getElementById('modal-battle-arena');
       if (arenaModal && !arenaModal.classList.contains('hidden')) {
         this.hide();

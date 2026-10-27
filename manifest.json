@@ -1,0 +1,18 @@
+{
+  "name": "我有一个修仙系统",
+  "short_name": "修仙系统",
+  "description": "凡骨逆命 · 执掌天机 · 诸天仙魔皆为下品",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#ffd700",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icon/game_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

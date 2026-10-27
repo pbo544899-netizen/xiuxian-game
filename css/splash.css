@@ -1,0 +1,319 @@
+/* ==========================================================================
+   启动加载封面与健康游戏公告 (Startup Splash & Health Notice)
+   ========================================================================== */
+
+.startup-splash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  background-color: #060911;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  transition: opacity 0.65s cubic-bezier(0.25, 1, 0.5, 1), transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.65s;
+}
+
+.startup-splash-overlay.splash-dismissed {
+  opacity: 0;
+  transform: scale(1.035);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* 沉浸式暗黑仙侠宏伟背景 */
+.startup-splash-bg {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(180deg, 
+      rgba(6, 9, 17, 0.5) 0%, 
+      rgba(6, 9, 17, 0.15) 30%, 
+      rgba(6, 9, 17, 0.45) 65%, 
+      rgba(6, 9, 17, 0.94) 88%, 
+      rgba(6, 9, 17, 0.98) 100%
+    ),
+    url('../assets/ui/splash_bg.jpg');
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 1;
+  animation: splashBgBreathe 18s ease-in-out infinite alternate;
+}
+
+@keyframes splashBgBreathe {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* 顶部与中部 Logo 视效群 */
+.startup-logo-container {
+  position: relative;
+  z-index: 2;
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 16px;
+  animation: logoFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.startup-emblem-wrap {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin-bottom: 14px;
+}
+
+.startup-emblem-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 215, 0, 0.7);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(255, 215, 0, 0.4),
+    inset 0 0 12px rgba(255, 215, 0, 0.3);
+  animation: emblemFloat 3.6s ease-in-out infinite;
+}
+
+.startup-emblem-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 28px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.35) 0%, rgba(20, 184, 166, 0.2) 50%, transparent 75%);
+  filter: blur(8px);
+  z-index: -1;
+  animation: emblemGlowPulse 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes emblemFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes emblemGlowPulse {
+  0% { opacity: 0.6; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1.08); }
+}
+
+.startup-game-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1.25;
+  background: linear-gradient(180deg, #ffffff 0%, #fff0a0 30%, #ffd700 65%, #f59e0b 95%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.6));
+}
+
+.startup-game-subtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 4px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 215, 0, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #f1f5f9;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.startup-game-subtitle .sub-flourish {
+  color: #ffd700;
+  font-size: 11px;
+}
+
+/* 底部面板：进度条与健康游戏公告 */
+.startup-bottom-panel {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  padding: 0 20px 24px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* 进度条区块 */
+.startup-progress-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.startup-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 2px;
+}
+
+.startup-status-text {
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  transition: all 0.2s ease;
+}
+
+.startup-percent-text {
+  color: #ffd700;
+  font-weight: 700;
+  font-family: monospace, sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.startup-progress-bar-track {
+  width: 100%;
+  height: 9px;
+  border-radius: 5px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.85), 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+
+.startup-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 45%, #ffd700 85%, #f59e0b 100%);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+  transition: width 0.12s linear;
+  position: relative;
+  overflow: hidden;
+}
+
+.startup-progress-light {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 25px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  animation: progressLightGleam 1.2s infinite;
+}
+
+@keyframes progressLightGleam {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 加载完毕入关提示 */
+.startup-enter-prompt {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  animation: enterPromptPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes enterPromptPulse {
+  0% { transform: scale(0.97); opacity: 0.85; filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5)); }
+  100% { transform: scale(1.03); opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)); }
+}
+
+/* 规范健康游戏公告卡片 */
+.startup-health-notice {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(10, 15, 26, 0.72);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.health-notice-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #facc15;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.health-notice-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.health-notice-grid p {
+  margin: 0;
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.5;
+  letter-spacing: 0.8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* 极小屏幕适配 (例如 375px 以下) */
+@media (max-height: 680px) {
+  .startup-logo-container {
+    margin-top: 32px;
+  }
+  .startup-emblem-wrap {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 10px;
+  }
+  .startup-game-title {
+    font-size: 26px;
+  }
+  .startup-bottom-panel {
+    padding-bottom: 16px;
+    gap: 10px;
+  }
+  .health-notice-grid p {
+    font-size: 9.5px;
+    line-height: 1.4;
+  }
+}
