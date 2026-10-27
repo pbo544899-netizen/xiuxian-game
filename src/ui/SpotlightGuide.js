@@ -648,6 +648,17 @@
             });
             return;
           }
+        } else if (activeModal.id === 'modal-overflow-alert') {
+          const btn = document.getElementById('btn-overflow-merge');
+          if (btn && btn.offsetParent !== null) {
+            this.show({
+              id: 'ftue-overflow-merge',
+              target: btn,
+              text: '背包爆满！点击一键升阶腾出空格！',
+              direction: 'down'
+            });
+            return;
+          }
         }
         // 其它任何弹窗存在时，聚光灯必须完全隐蔽，严禁悬挂于弹窗上方！
         this.hide();

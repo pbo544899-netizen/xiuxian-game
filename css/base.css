@@ -1026,3 +1026,26 @@ body {
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 
+
+/* 空间已满爆仓弹窗按键排版规范：3行独立垂直排列，杜绝文字折行 */
+#modal-overflow-alert .modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+#modal-overflow-alert .modal-actions button {
+  width: 100%;
+  min-height: 44px;
+  height: 44px;
+  font-size: 15px;
+  font-weight: bold;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  letter-spacing: 1px;
+}

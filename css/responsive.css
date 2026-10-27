@@ -1230,6 +1230,31 @@
     min-height: 36px !important;
   }
 
+  /* 空间已满爆仓弹窗按键排版规范：3行独立垂直排列，宽裕舒展杜绝文字折行 */
+  #modal-overflow-alert .modal-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 16px !important;
+  }
+
+  #modal-overflow-alert .modal-actions button {
+    width: 100% !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    letter-spacing: 1px !important;
+    margin: 0 !important;
+  }
+
+
 }
 
 /* ========================================================
