@@ -1838,6 +1838,35 @@
       window.switchPaytableTab = switchPaytableTab;
       window.openRewardedAdModal = openRewardedAdModal;
       window.updateReliefModalUI = updateReliefModalUI;
+
+      // 凡人流世界大纲弹窗交互
+      const modalWorldSynopsis = document.getElementById('modal-world-synopsis');
+      const btnOpenWorldSynopsis = document.getElementById('btn-open-world-synopsis');
+      const btnStoryWorldSynopsis = document.getElementById('btn-story-world-synopsis');
+      const btnCloseWorldSynopsis = document.getElementById('btn-close-world-synopsis');
+      const btnCloseWorldSynopsisX = document.getElementById('btn-close-world-synopsis-x');
+
+      function openWorldSynopsis() {
+        if (modalWorldSynopsis) modalWorldSynopsis.classList.remove('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('MODAL_OPEN');
+        }
+      }
+
+      function closeWorldSynopsis() {
+        if (modalWorldSynopsis) modalWorldSynopsis.classList.add('hidden');
+        if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+          window.SlotsRPG.SoundEffects.play('MODAL_CLOSE');
+        }
+      }
+
+      if (btnOpenWorldSynopsis) btnOpenWorldSynopsis.addEventListener('click', openWorldSynopsis);
+      if (btnStoryWorldSynopsis) btnStoryWorldSynopsis.addEventListener('click', openWorldSynopsis);
+      if (btnCloseWorldSynopsis) btnCloseWorldSynopsis.addEventListener('click', closeWorldSynopsis);
+      if (btnCloseWorldSynopsisX) btnCloseWorldSynopsisX.addEventListener('click', closeWorldSynopsis);
+      window.openWorldSynopsisModal = openWorldSynopsis;
+      ModalsUI.openWorldSynopsisModal = openWorldSynopsis;
+
     }
   };
 

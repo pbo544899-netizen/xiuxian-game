@@ -44,7 +44,8 @@
           <span class="cheat-system-label">系统</span>
           <span class="cheat-system-unread-dot hidden" id="cheat-system-unread-dot">!</span>
         </button>
-        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">📜</button>
+        <button id="btn-open-world-synopsis" class="btn-world-synopsis-hud" title="凡人流修仙世界大纲与剧情前传">📜 大纲</button>
+        <button id="btn-paytable-rules" class="btn-paytable-rules" title="周天奇门阵盘 · 阵纹共鸣真解">🏺</button>
         <div class="cave-bubble-collector hidden" id="cave-bubble-collector" title="点击一键吸纳洞天蕴积灵机">
           <span class="bubble-icon">✨</span>
           <span class="bubble-text" id="cave-bubble-text">+0</span>
@@ -2071,6 +2072,49 @@
       </div>
     </div>
 
+        <!-- 弹窗: 凡人流世界大纲与剧情全貌纪要 -->
+    <div id="modal-world-synopsis" class="modal-overlay hidden">
+      <div class="modal-card world-synopsis-modal-card">
+        <button id="btn-close-world-synopsis-x" class="modal-close-x" aria-label="关闭">&times;</button>
+        <div class="world-synopsis-header">
+          <div class="synopsis-badge">📜 凡人流修仙史诗</div>
+          <h2 class="synopsis-title">《我有一个修仙系统》· 世界大纲</h2>
+          <div class="synopsis-subtitle">凡骨逆天 · 系统在手 · 诸天仙魔皆为下品</div>
+        </div>
+        <div class="world-synopsis-body">
+          <div class="synopsis-section">
+            <h4 class="synopsis-section-title">🌌 【九天十地 · 仙凡如堑】</h4>
+            <p>修仙界浩瀚无垠，仙魔大能搬山填海、寿齐天地；然而世间九成九众生生来无灵根，命如草芥任人践踏，仙门高高在上，视凡人如微尘蝼蚁。</p>
+          </div>
+          <div class="synopsis-section">
+            <h4 class="synopsis-section-title">🗡️ 【主角身世 · 青阳微末】</h4>
+            <p>主角<b>林凡</b>，青阳镇下一介采药少年，天生五行杂废凡骨，受尽世间白眼与欺凌。家中米缸见底、至亲病骨支离，为博一线生机，孤身握一把卷刃破柴刀深入蛮荒后山搏命采药！</p>
+          </div>
+          <div class="synopsis-section">
+            <h4 class="synopsis-section-title">⚡ 【逆天金手指 · 天道修仙系统】</h4>
+            <p>绝境搏杀狂暴妖兽，剖腹意外唤醒沉眠千万载的天道修仙作弊系统！系统以“天机造化盘”为引，无视一切凡骨废脉，直接将诸天因果与大道造化具象化为推演机缘！别人闭关苦修百年，林凡指尖推演神兵如雨；别人求一件灵器倾家荡产，林凡一键升阶神兵熔炼！以抽养抽，向天争命！</p>
+          </div>
+          <div class="synopsis-section">
+            <h4 class="synopsis-section-title">🏆 【大道主线 · 凡人登仙五重梯】</h4>
+            <ul class="synopsis-ladder-list">
+              <li><b>1. 凡躯入道</b>：后山喋血斩凶，觉醒修仙系统，凡骨强开灵脉！</li>
+              <li><b>2. 叩问仙门</b>：持真传法牒大开山门，横扫十二重伏妖天梯，同门长老震惊！</li>
+              <li><b>3. 洞天锁妖</b>：登临绝巅斩灭禁地妖王，坐拥无尽洞天灵髓！</li>
+              <li><b>4. 兵解轮回</b>：五派古经融会贯通，九转神魂不灭，携前世道基转战隐世大宗！</li>
+              <li><b>5. 白日飞升</b>：手撕九霄天劫，轰碎登仙天门，踏入浩渺灵界主宰诸天！</li>
+            </ul>
+          </div>
+          <div class="synopsis-section synopsis-highlight">
+            <h4 class="synopsis-section-title">🔥 【网文爽点核心】</h4>
+            <p>不圣母、不憋屈、苟道机敏、杀伐果断！任你绝世天骄、背景通天，在老子的天道推演外挂面前，统统给老子跪下！</p>
+          </div>
+        </div>
+        <div class="modal-actions modal-item-actions" style="margin-top: 14px;">
+          <button id="btn-close-world-synopsis" class="btn-primary" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important; color: #fff !important; border-radius: 8px !important;">合上天道实录</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 弹窗18: 仙侠RPG沉浸式剧情对白舞台 (角色形象头顶聊天泡泡对白模式，告别呆板弹窗) -->
     <div id="modal-story-dialog" class="modal-overlay story-dialog-overlay hidden">
       <div class="story-overhead-theatre" id="story-overhead-theatre">
@@ -2086,6 +2130,7 @@
               <span id="story-dialog-speaker" class="story-theatre-speaker-tag">【系统】 · 灵识显化</span>
             </div>
           </div>
+          <button id="btn-story-world-synopsis" class="story-synopsis-link-btn" title="查看凡人流世界大纲">📜 世界大纲</button>
           <button id="btn-story-skip" class="story-skip-btn" title="跳过剧情">⏩ 跳过</button>
         </div>
 

@@ -27,15 +27,23 @@
       this.bgmGainNode = null;
       this.bgmVolume = 0.28;
 
+      // 仙道低频氛围宿命底噪 (D Minor Drone: D2 73.4Hz + F2 87.3Hz + A2 110Hz)
       this.droneOsc1 = null;
       this.droneOsc2 = null;
+      this.droneOsc3 = null;
       this.droneFilter = null;
       this.droneLfo = null;
       this.droneGain = null;
 
-      this.pluckTimer = null;
-      this.fluteTimer = null;
-      this.bellTimer = null;
+      // 凡人心跳与微弱经脉挣扎律动 (Heartbeat Pulse ~55BPM)
+      this.pulseTimer = null;
+      this.pulseStep = 0;
+
+      // 旋律层定时器
+      this.guqinTimer = null;   // 沉郁抗争的古琴按音与滑音
+      this.guzhengTimer = null; // 九天飘逸的古筝流水琶音
+      this.xiaoTimer = null;    // 空灵悲悯的洞箫孤鸣
+      this.bellTimer = null;    // 太虚神钟与青铜引磬
     }
 
     _ensureBgmNode() {
@@ -59,18 +67,29 @@
       this._ensureBgmNode();
       this.isPlaying = true;
 
+      // 启动底噪和音
       this._startDrone();
-      this._playPluck(); // 开启时立即拨奏一声古筝五音，给玩家即时声音反馈
-      this._scheduleNextPluck();
-      this._scheduleNextFlute();
+
+      // 启动心跳抗争脉动
+      this._startHeartbeatLoop();
+
+      // 开启时立即拨奏一声古琴滑音，给予灵识共鸣
+      this._playGuqinMotif();
+
+      // 调度交响层次循环
+      this._scheduleNextGuqin();
+      this._scheduleNextGuzheng();
+      this._scheduleNextXiao();
       this._scheduleNextBell();
     }
 
     stop() {
       this.isPlaying = false;
       this._stopDrone();
-      if (this.pluckTimer) { clearTimeout(this.pluckTimer); this.pluckTimer = null; }
-      if (this.fluteTimer) { clearTimeout(this.fluteTimer); this.fluteTimer = null; }
+      if (this.pulseTimer) { clearInterval(this.pulseTimer); this.pulseTimer = null; }
+      if (this.guqinTimer) { clearTimeout(this.guqinTimer); this.guqinTimer = null; }
+      if (this.guzhengTimer) { clearTimeout(this.guzhengTimer); this.guzhengTimer = null; }
+      if (this.xiaoTimer) { clearTimeout(this.xiaoTimer); this.xiaoTimer = null; }
       if (this.bellTimer) { clearTimeout(this.bellTimer); this.bellTimer = null; }
     }
 
@@ -78,7 +97,7 @@
       if (!this.bgmGainNode || !this.engine.ctx) return;
       this.isDucked = !!isDucked;
       const t = this.engine.ctx.currentTime;
-      const target = isDucked ? this.bgmVolume * 0.35 : this.bgmVolume;
+      const target = isDucked ? this.bgmVolume * 0.3 : this.bgmVolume;
       this.bgmGainNode.gain.cancelScheduledValues(t);
       this.bgmGainNode.gain.linearRampToValueAtTime(target, t + (isDucked ? 0.3 : 0.8));
     }
@@ -87,11 +106,14 @@
       this.bgmVolume = Math.max(0, Math.min(1, vol));
       if (this.bgmGainNode && this.engine.ctx && !this.engine.isMuted) {
         const t = this.engine.ctx.currentTime;
-        const target = this.isDucked ? this.bgmVolume * 0.35 : this.bgmVolume;
+        const target = this.isDucked ? this.bgmVolume * 0.3 : this.bgmVolume;
         this.bgmGainNode.gain.setValueAtTime(target, t);
       }
     }
 
+    // ------------------------------------------------------------------------
+    // 1. D小调宿命底噪 (D Minor Drone: 沉重、肃穆、天威如海)
+    // ------------------------------------------------------------------------
     _startDrone() {
       const ctx = this.engine.ctx;
       if (!ctx || !this._ensureBgmNode()) return;
@@ -100,152 +122,300 @@
 
       this.droneOsc1 = ctx.createOscillator();
       this.droneOsc2 = ctx.createOscillator();
+      this.droneOsc3 = ctx.createOscillator();
       this.droneFilter = ctx.createBiquadFilter();
       this.droneLfo = ctx.createOscillator();
       const lfoGain = ctx.createGain();
       this.droneGain = ctx.createGain();
 
+      // D2 (73.4Hz) 根音 + F2 (87.3Hz) 小三度宿命挣扎悲怆感 + A2 (110Hz) 五度支撑
       this.droneOsc1.type = 'sine';
-      this.droneOsc1.frequency.setValueAtTime(73.42, t); // D2
+      this.droneOsc1.frequency.setValueAtTime(73.42, t);
 
       this.droneOsc2.type = 'sine';
-      this.droneOsc2.frequency.setValueAtTime(110.00, t); // A2 纯五度自然和音
+      this.droneOsc2.frequency.setValueAtTime(87.31, t); // F2 (微弱小三度，注入挣扎灵魂)
+
+      this.droneOsc3.type = 'triangle';
+      this.droneOsc3.frequency.setValueAtTime(110.00, t); // A2
 
       this.droneFilter.type = 'lowpass';
-      this.droneFilter.frequency.setValueAtTime(180, t);
-      this.droneFilter.Q.setValueAtTime(1.5, t);
+      this.droneFilter.frequency.setValueAtTime(160, t);
+      this.droneFilter.Q.setValueAtTime(1.8, t);
 
-      // 0.08Hz 超慢速宇宙呼吸 LFO 律动
+      // 0.05Hz 极其缓慢的天地呼吸潮汐调制
       this.droneLfo.type = 'sine';
-      this.droneLfo.frequency.setValueAtTime(0.08, t);
+      this.droneLfo.frequency.setValueAtTime(0.05, t);
       lfoGain.gain.setValueAtTime(45, t);
       this.droneLfo.connect(lfoGain);
       lfoGain.connect(this.droneFilter.frequency);
 
       this.droneGain.gain.setValueAtTime(0.02, t);
-      this.droneGain.gain.linearRampToValueAtTime(0.12, t + 1.5);
+      this.droneGain.gain.linearRampToValueAtTime(0.11, t + 2.0);
 
       this.droneOsc1.connect(this.droneFilter);
       this.droneOsc2.connect(this.droneFilter);
+      this.droneOsc3.connect(this.droneFilter);
       this.droneFilter.connect(this.droneGain);
       this.droneGain.connect(this.bgmGainNode);
 
       this.droneLfo.start(t);
       this.droneOsc1.start(t);
       this.droneOsc2.start(t);
+      this.droneOsc3.start(t);
     }
 
     _stopDrone() {
       try {
         if (this.droneOsc1) { this.droneOsc1.stop(); this.droneOsc1.disconnect(); this.droneOsc1 = null; }
         if (this.droneOsc2) { this.droneOsc2.stop(); this.droneOsc2.disconnect(); this.droneOsc2 = null; }
+        if (this.droneOsc3) { this.droneOsc3.stop(); this.droneOsc3.disconnect(); this.droneOsc3 = null; }
         if (this.droneLfo) { this.droneLfo.stop(); this.droneLfo.disconnect(); this.droneLfo = null; }
         if (this.droneGain) { this.droneGain.disconnect(); this.droneGain = null; }
       } catch (e) {}
     }
 
-    _scheduleNextPluck() {
-      if (!this.isPlaying) return;
-      const delay = 2600 + Math.random() * 2000;
-      this.pluckTimer = setTimeout(() => {
-        if (this.isPlaying) {
-          this._playPluck();
-          this._scheduleNextPluck();
-        }
-      }, delay);
+    // ------------------------------------------------------------------------
+    // 2. 凡人灵脉奔涌心跳律动 (Heartbeat Pulse: 顽强、抗争、逆天求生)
+    // ------------------------------------------------------------------------
+    _startHeartbeatLoop() {
+      if (this.pulseTimer) clearInterval(this.pulseTimer);
+      // 约 55 BPM，每 1.09 秒一次脉搏
+      this.pulseTimer = setInterval(() => {
+        if (!this.isPlaying || this.engine.isMuted) return;
+        this._playHeartbeatPulse();
+      }, 1090);
     }
 
-    _playPluck() {
+    _playHeartbeatPulse() {
       const ctx = this.engine.ctx;
-      if (!ctx || !this._ensureBgmNode() || this.engine.isMuted) return;
+      if (!ctx || !this._ensureBgmNode() || this.isDucked) return;
       const t = ctx.currentTime;
-      // D调五声音阶 (宫商角徵羽: D3, E3, F#3, A3, B3, D4, E4, F#4, A4, B4, D5)
-      const scale = [146.83, 164.81, 185.00, 220.00, 246.94, 293.66, 329.63, 369.99, 440.00, 493.88, 587.33];
-      const freq = scale[Math.floor(Math.random() * scale.length)];
+      this.pulseStep = (this.pulseStep + 1) % 4;
 
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const filter = ctx.createBiquadFilter();
+      // 4拍循环：微弱-沉重-微弱-抗争升调 (D -> D -> F -> E)
+      const rootFreqs = [55.0, 55.0, 65.4, 61.7]; // A1 / C2 / B1 级进微变
+      const freq = rootFreqs[this.pulseStep];
+
+      const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
 
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(freq, t);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.7, t + 0.35);
 
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(freq * 2, t);
-
-      filter.type = 'peaking';
-      filter.frequency.setValueAtTime(480, t);
-      filter.gain.setValueAtTime(4.0, t);
-      filter.Q.setValueAtTime(2.0, t);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(110, t);
 
       gain.gain.setValueAtTime(0.01, t);
-      gain.gain.linearRampToValueAtTime(0.14, t + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 2.4);
+      gain.gain.linearRampToValueAtTime(this.pulseStep === 1 ? 0.09 : 0.06, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
 
-      osc1.connect(filter);
-      osc2.connect(filter);
+      osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.bgmGainNode);
 
-      osc1.start(t);
-      osc2.start(t);
-      osc1.stop(t + 2.5);
-      osc2.stop(t + 2.5);
+      osc.start(t);
+      osc.stop(t + 0.48);
     }
 
-    _scheduleNextFlute() {
+    // ------------------------------------------------------------------------
+    // 3. 沉郁抗争古琴按音与滑音 (Guqin Motifs: 逆天改命之志)
+    // ------------------------------------------------------------------------
+    _scheduleNextGuqin() {
       if (!this.isPlaying) return;
-      const delay = 9000 + Math.random() * 6000;
-      this.fluteTimer = setTimeout(() => {
+      const delay = 3200 + Math.random() * 2400;
+      this.guqinTimer = setTimeout(() => {
         if (this.isPlaying) {
-          this._playFlutePhrase();
-          this._scheduleNextFlute();
+          this._playGuqinMotif();
+          this._scheduleNextGuqin();
         }
       }, delay);
     }
 
-    _playFlutePhrase() {
+    _playGuqinMotif() {
       const ctx = this.engine.ctx;
       if (!ctx || !this._ensureBgmNode() || this.engine.isMuted) return;
       const t = ctx.currentTime;
-      const fluteNotes = [369.99, 440.00, 493.88, 587.33];
-      const n1 = fluteNotes[Math.floor(Math.random() * fluteNotes.length)];
-      const n2 = fluteNotes[Math.floor(Math.random() * fluteNotes.length)];
 
-      [ { f: n1, st: 0 }, { f: n2, st: 0.8 } ].forEach(item => {
+      // 古琴三段经典挣扎抗争乐句 (D羽调式带滑音)
+      // Phrase 1: D3 (146.8) -> F3 (174.6滑至196.0) -> D3
+      // Phrase 2: F3 (174.6) -> A3 (220.0) -> Bb3 (233.1微颤) -> A3 -> D3
+      // Phrase 3: A2 (110.0) -> C3 (130.8) -> D3 (146.8) -> F3
+      const phrases = [
+        [ { f: 146.83, bend: 146.83, dur: 0.8, st: 0 }, { f: 174.61, bend: 196.00, dur: 1.4, st: 0.7 }, { f: 146.83, bend: 146.83, dur: 1.8, st: 1.9 } ],
+        [ { f: 174.61, bend: 174.61, dur: 0.6, st: 0 }, { f: 220.00, bend: 233.08, dur: 1.2, st: 0.5 }, { f: 174.61, bend: 174.61, dur: 0.9, st: 1.6 }, { f: 146.83, bend: 146.83, dur: 2.0, st: 2.3 } ],
+        [ { f: 110.00, bend: 110.00, dur: 0.7, st: 0 }, { f: 130.81, bend: 146.83, dur: 1.1, st: 0.6 }, { f: 174.61, bend: 174.61, dur: 1.9, st: 1.5 } ]
+      ];
+      const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+      phrase.forEach(note => {
+        const nt = t + note.st;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(note.f, nt);
+        if (note.bend !== note.f) {
+          osc1.frequency.exponentialRampToValueAtTime(note.bend, nt + note.dur * 0.7);
+        }
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(note.f * 2, nt);
+        if (note.bend !== note.f) {
+          osc2.frequency.exponentialRampToValueAtTime(note.bend * 2, nt + note.dur * 0.7);
+        }
+
+        // 丝弦木质共鸣滤波
+        filter.type = 'peaking';
+        filter.frequency.setValueAtTime(420, nt);
+        filter.gain.setValueAtTime(5.0, nt);
+        filter.Q.setValueAtTime(2.2, nt);
+
+        gain.gain.setValueAtTime(0.01, nt);
+        gain.gain.linearRampToValueAtTime(0.13, nt + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + note.dur);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.bgmGainNode);
+
+        osc1.start(nt);
+        osc2.start(nt);
+        osc1.stop(nt + note.dur + 0.05);
+        osc2.stop(nt + note.dur + 0.05);
+      });
+    }
+
+    // ------------------------------------------------------------------------
+    // 4. 九天飘逸古筝流水游云琶音 (Guzheng Cascade: 仙家高渺飘逸)
+    // ------------------------------------------------------------------------
+    _scheduleNextGuzheng() {
+      if (!this.isPlaying) return;
+      const delay = 6500 + Math.random() * 4500;
+      this.guzhengTimer = setTimeout(() => {
+        if (this.isPlaying) {
+          this._playGuzhengCascade();
+          this._scheduleNextGuzheng();
+        }
+      }, delay);
+    }
+
+    _playGuzhengCascade() {
+      const ctx = this.engine.ctx;
+      if (!ctx || !this._ensureBgmNode() || this.engine.isMuted) return;
+      const t = ctx.currentTime;
+
+      // 仙家高渺五声音阶流水琶音 (D4, F4, G4, A4, C5, D5, F5, A5)
+      const scale = [293.66, 349.23, 392.00, 440.00, 523.25, 587.33, 698.46, 880.00];
+      const startIdx = Math.floor(Math.random() * 3);
+      const notes = scale.slice(startIdx, startIdx + 5);
+
+      notes.forEach((freq, idx) => {
+        const nt = t + idx * 0.08;
+        const osc = ctx.createOscillator();
+        const oscHarmonic = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, nt);
+
+        oscHarmonic.type = 'triangle';
+        oscHarmonic.frequency.setValueAtTime(freq * 2, nt);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1400, nt);
+        filter.Q.setValueAtTime(1.5, nt);
+
+        gain.gain.setValueAtTime(0.01, nt);
+        gain.gain.linearRampToValueAtTime(0.09, nt + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + 1.6);
+
+        osc.connect(gain);
+        oscHarmonic.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.bgmGainNode);
+
+        osc.start(nt);
+        oscHarmonic.start(nt);
+        osc.stop(nt + 1.7);
+        oscHarmonic.stop(nt + 1.7);
+      });
+    }
+
+    // ------------------------------------------------------------------------
+    // 5. 空灵悲悯洞箫独奏 (Xiao Flute: 孤高飘逸，如泣如诉)
+    // ------------------------------------------------------------------------
+    _scheduleNextXiao() {
+      if (!this.isPlaying) return;
+      const delay = 13000 + Math.random() * 8000;
+      this.xiaoTimer = setTimeout(() => {
+        if (this.isPlaying) {
+          this._playXiaoMelody();
+          this._scheduleNextXiao();
+        }
+      }, delay);
+    }
+
+    _playXiaoMelody() {
+      const ctx = this.engine.ctx;
+      if (!ctx || !this._ensureBgmNode() || this.engine.isMuted) return;
+      const t = ctx.currentTime;
+
+      // 孤箫夜吟空灵二音至三音长鸣
+      const melodies = [
+        [ { f: 349.23, dur: 1.6, st: 0 }, { f: 440.00, dur: 2.2, st: 1.4 } ], // F4 -> A4
+        [ { f: 523.25, dur: 1.3, st: 0 }, { f: 440.00, dur: 1.4, st: 1.1 }, { f: 392.00, dur: 2.4, st: 2.3 } ], // C5 -> A4 -> G4
+        [ { f: 293.66, dur: 1.5, st: 0 }, { f: 349.23, dur: 2.5, st: 1.3 } ]  // D4 -> F4
+      ];
+      const melody = melodies[Math.floor(Math.random() * melodies.length)];
+
+      melody.forEach(item => {
         const nt = t + item.st;
         const osc = ctx.createOscillator();
         const vib = ctx.createOscillator();
         const vibGain = ctx.createGain();
+        const breathFilter = ctx.createBiquadFilter();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
         osc.frequency.setValueAtTime(item.f, nt);
 
+        // 5.2Hz 真实气息微颤
         vib.type = 'sine';
         vib.frequency.setValueAtTime(5.2, nt);
-        vibGain.gain.setValueAtTime(4.5, nt);
+        vibGain.gain.setValueAtTime(4.8, nt);
         vib.connect(vibGain);
         vibGain.connect(osc.frequency);
 
-        gain.gain.setValueAtTime(0.01, nt);
-        gain.gain.linearRampToValueAtTime(0.08, nt + 0.22);
-        gain.gain.exponentialRampToValueAtTime(0.001, nt + 1.2);
+        breathFilter.type = 'lowpass';
+        breathFilter.frequency.setValueAtTime(900, nt);
 
-        osc.connect(gain);
+        gain.gain.setValueAtTime(0.01, nt);
+        gain.gain.linearRampToValueAtTime(0.08, nt + 0.28);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + item.dur);
+
+        osc.connect(breathFilter);
+        breathFilter.connect(gain);
         gain.connect(this.bgmGainNode);
 
         vib.start(nt);
         osc.start(nt);
-        vib.stop(nt + 1.3);
-        osc.stop(nt + 1.3);
+        vib.stop(nt + item.dur + 0.1);
+        osc.stop(nt + item.dur + 0.1);
       });
     }
 
+    // ------------------------------------------------------------------------
+    // 6. 太虚神钟与青铜引磬 (Ancient Temple Bell & Singing Bowl)
+    // ------------------------------------------------------------------------
     _scheduleNextBell() {
       if (!this.isPlaying) return;
-      const delay = 22000 + Math.random() * 10000;
+      const delay = 24000 + Math.random() * 12000;
       this.bellTimer = setTimeout(() => {
         if (this.isPlaying) {
           this._playBell();
@@ -258,28 +428,25 @@
       const ctx = this.engine.ctx;
       if (!ctx || !this._ensureBgmNode() || this.engine.isMuted) return;
       const t = ctx.currentTime;
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
 
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(293.66, t); // D4
+      // 仙家引磬非齐次泛音结构 (Inharmonic Overtones: 1.0x, 1.48x, 2.76x)
+      const baseFreq = 349.23; // F4 梵钟定音
+      [1.0, 1.48, 2.76].forEach((mult, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * mult, t);
 
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(810.0, t);
+        gain.gain.setValueAtTime(0.01, t);
+        gain.gain.linearRampToValueAtTime(0.08 / (idx + 1), t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 4.8);
 
-      gain.gain.setValueAtTime(0.01, t);
-      gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 4.5);
+        osc.connect(gain);
+        gain.connect(this.bgmGainNode);
 
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.bgmGainNode);
-
-      osc1.start(t);
-      osc2.start(t);
-      osc1.stop(t + 4.6);
-      osc2.stop(t + 4.6);
+        osc.start(t);
+        osc.stop(t + 5.0);
+      });
     }
   }
 
@@ -1297,41 +1464,59 @@
       this.triggerHaptic('medium');
     }
 
-    /** 装备升级 / 一键合成 (Upgrade / Merge) */
+    /** 装备升级 / 一键合成 / 神兵淬火出炉 (Upgrade / Merge / Divine Forge) */
     playEquipUpgrade() {
       if (!this._ensureActive()) return;
       const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(1400, t);
-      osc.frequency.exponentialRampToValueAtTime(350, t + 0.12);
+      
+      // 1. 神铁交击金鸣清脆瞬态 (High metallic anvil strike: 1760Hz + 3520Hz)
+      [1760, 3520].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.6, t + 0.35);
+        gain.gain.setValueAtTime(0.28 / (idx + 1), t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+        osc.connect(gain);
+        gain.connect(this.masterGainNode);
+        osc.start(t);
+        osc.stop(t + 0.42);
+      });
 
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(1600, t);
-      filter.Q.setValueAtTime(3.0, t);
+      // 2. 灵炉地火呼啸 (Furnace flame whoosh)
+      if (this.noiseBuffer) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(600, t);
+        filter.frequency.exponentialRampToValueAtTime(1400, t + 0.15);
+        filter.Q.setValueAtTime(2.5, t);
+        const nGain = this.ctx.createGain();
+        nGain.gain.setValueAtTime(0.2, t);
+        nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(this.masterGainNode);
+        noise.start(t);
+        noise.stop(t + 0.38);
+      }
 
-      gain.gain.setValueAtTime(0.35, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+      // 3. 宝光绽放金芒 (Golden burst harmonic bloom: 440 -> 880Hz)
+      const bloom = this.ctx.createOscillator();
+      const bGain = this.ctx.createGain();
+      bloom.type = 'sine';
+      bloom.frequency.setValueAtTime(440, t + 0.08);
+      bloom.frequency.exponentialRampToValueAtTime(880, t + 0.35);
+      bGain.gain.setValueAtTime(0.01, t + 0.08);
+      bGain.gain.linearRampToValueAtTime(0.25, t + 0.12);
+      bGain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+      bloom.connect(bGain);
+      bGain.connect(this.masterGainNode);
+      bloom.start(t + 0.08);
+      bloom.stop(t + 0.6);
 
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.masterGainNode);
-
-      const sub = this.ctx.createOscillator();
-      const subGain = this.ctx.createGain();
-      sub.type = 'sine';
-      sub.frequency.setValueAtTime(130, t);
-      subGain.gain.setValueAtTime(0.3, t);
-      subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-      sub.connect(subGain);
-      subGain.connect(this.masterGainNode);
-
-      osc.start(t);
-      sub.start(t);
-      osc.stop(t + 0.3);
-      sub.stop(t + 0.28);
       this.triggerHaptic('heavy');
     }
 
@@ -1375,39 +1560,130 @@
       });
     }
 
-    /** 丹药服用 (Consume Pill) */
+    /** 丹药服用 / 灵液入体温润经脉 (Consume Pill) */
     playPillConsume() {
       if (!this._ensureActive()) return;
       const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(260, t);
-      osc.frequency.exponentialRampToValueAtTime(540, t + 0.22);
-      gain.gain.setValueAtTime(0.01, t);
-      gain.gain.linearRampToValueAtTime(0.3, t + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-      osc.connect(gain);
-      gain.connect(this.masterGainNode);
-      osc.start(t);
-      osc.stop(t + 0.38);
+      // 气血/药力温养化津: 上滑甘霖共鸣 + 灵泉滴答
+      [280, 420].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.8, t + 0.28);
+        gain.gain.setValueAtTime(0.01, t);
+        gain.gain.linearRampToValueAtTime(0.24 / (idx + 1), t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+        osc.connect(gain);
+        gain.connect(this.masterGainNode);
+        osc.start(t);
+        osc.stop(t + 0.42);
+      });
+      this.triggerHaptic('light');
     }
 
-    /** 符箓使用 (Rune Use) */
+    /** 符箓点燃 / 纯阳雷火破煞 (Rune Use) */
     playRuneUse() {
       if (!this._ensureActive()) return;
       const t = this.ctx.currentTime;
+      // 1. 符纸燃引爆裂 (Crackling burst)
+      if (this.noiseBuffer) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(1200, t);
+        const nGain = this.ctx.createGain();
+        nGain.gain.setValueAtTime(0.25, t);
+        nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(this.masterGainNode);
+        noise.start(t);
+        noise.stop(t + 0.2);
+      }
+
+      // 2. 金光灵火激射 (Soaring holy zap)
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, t);
-      osc.frequency.exponentialRampToValueAtTime(1600, t + 0.15);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(650, t);
+      osc.frequency.exponentialRampToValueAtTime(2200, t + 0.16);
       gain.gain.setValueAtTime(0.2, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
       osc.connect(gain);
       gain.connect(this.masterGainNode);
       osc.start(t);
-      osc.stop(t + 0.24);
+      osc.stop(t + 0.3);
+      this.triggerHaptic('medium');
+    }
+
+    /** 角色晋升 / 灵光灌顶 (Character Level Up, 550ms 华彩) */
+    playLevelUp() {
+      if (!this._ensureActive()) return;
+      const t = this.ctx.currentTime;
+      // 纯正升华五音步进: D5, F5, A5, C6, D6
+      const notes = [587.33, 698.46, 880.00, 1046.50, 1174.66];
+      notes.forEach((freq, idx) => {
+        const nt = t + idx * 0.07;
+        const osc = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, nt);
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, nt);
+        gain.gain.setValueAtTime(0.01, nt);
+        gain.gain.linearRampToValueAtTime(0.26, nt + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + 0.45);
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.masterGainNode);
+        osc.start(nt);
+        osc2.start(nt);
+        osc.stop(nt + 0.48);
+        osc2.stop(nt + 0.48);
+      });
+      this.triggerHaptic('medium');
+    }
+
+    /** 动画加载 / 聚灵气旋起伏 (Animation Loading / Spiritual Gathering) */
+    playAnimationLoading() {
+      if (!this._ensureActive()) return;
+      const t = this.ctx.currentTime;
+      // 气流回旋聚灵呼啸
+      if (this.noiseBuffer) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320, t);
+        filter.frequency.exponentialRampToValueAtTime(1400, t + 0.35);
+        filter.Q.setValueAtTime(3.2, t);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.01, t);
+        gain.gain.linearRampToValueAtTime(0.18, t + 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGainNode);
+        noise.start(t);
+        noise.stop(t + 0.48);
+      }
+
+      // 和声聚灵微鸣
+      const osc = this.ctx.createOscillator();
+      const oGain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, t);
+      osc.frequency.exponentialRampToValueAtTime(587.33, t + 0.35);
+      oGain.gain.setValueAtTime(0.01, t);
+      oGain.gain.linearRampToValueAtTime(0.14, t + 0.12);
+      oGain.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+      osc.connect(oGain);
+      oGain.connect(this.masterGainNode);
+      osc.start(t);
+      osc.stop(t + 0.45);
     }
 
     /** 境界突破 / 聚宝盆升阶 (Breakthrough / Pot Level Up) */
@@ -1617,8 +1893,13 @@
         case 'PILL_CONSUME': return soundEngine.playPillConsume();
         case 'RUNE':
         case 'RUNE_USE': return soundEngine.playRuneUse();
-        case 'BREAKTHROUGH':
-        case 'LEVELUP': return soundEngine.playBreakthrough();
+        case 'LEVEL_UP':
+        case 'LEVELUP': return soundEngine.playLevelUp();
+        case 'BREAKTHROUGH': return soundEngine.playBreakthrough();
+        case 'ANIMATION_LOADING':
+        case 'LOADING':
+        case 'SPIN_LOAD':
+        case 'CHARGE': return soundEngine.playAnimationLoading();
         case 'TAB':
         case 'TAB_SWITCH': return soundEngine.playTabSwitch();
         case 'BET':

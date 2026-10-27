@@ -81,6 +81,7 @@ window.SlotsRPG = window.SlotsRPG || {};
       this.spoutProjectiles = [];
 
       if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('ANIMATION_LOADING');
         window.SlotsRPG.SoundEffects.play('REEL_SPIN');
       }
 
@@ -765,6 +766,7 @@ window.SlotsRPG = window.SlotsRPG || {};
         headEl.classList.add(hasEpic ? 'epic-charging' : 'charging');
       }
       if (window.SlotsRPG && window.SlotsRPG.SoundEffects) {
+        window.SlotsRPG.SoundEffects.play('ANIMATION_LOADING');
         window.SlotsRPG.SoundEffects.play(hasEpic ? 'REEL_SPIN' : 'CLICK');
       }
 
