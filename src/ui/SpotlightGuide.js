@@ -157,6 +157,13 @@
           if (e.target === target || target.contains(e.target) || (indicator && indicator.contains(e.target))) {
             return;
           }
+          // 若属于首次战斗胜利引导，放行“继续挑战”按键，确保玩家点击任一按钮均能顺利触发
+          if (this.currentStepId === 'ftue-battle-victory-claim') {
+            const btnContinue = document.getElementById('btn-victory-continue');
+            if (btnContinue && (e.target === btnContinue || btnContinue.contains(e.target))) {
+              return;
+            }
+          }
           // 其它任何视口区域的点击/触摸全部就地强行截断，防止误触导致弹窗提前关闭或状态脱节
           e.preventDefault();
           e.stopPropagation();
@@ -686,8 +693,8 @@
             }
           }
         }
-        // 3. 伏妖大捷胜利结算弹窗
-        else if (activeModal.id === 'modal-battle-victory') {
+        // 3. 伏妖大捷胜利结算弹窗（仅首次战斗胜利时进行新手指引，后续不再出现以供玩家自主选择）
+        else if (activeModal.id === 'modal-battle-victory' && !gm.hasCompletedBattleVictoryFTUE) {
           const btnVictoryClaim = document.getElementById('btn-victory-claim');
           if (btnVictoryClaim && btnVictoryClaim.offsetParent !== null) {
             this.show({

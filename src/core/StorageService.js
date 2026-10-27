@@ -57,6 +57,7 @@ class StorageService {
           hasCompletedCaveFTUE: !!gameManager.hasCompletedCaveFTUE,
           hasCompletedMergeFTUE: !!gameManager.hasCompletedMergeFTUE,
           hasCompletedSecretRealmFTUE: !!gameManager.hasCompletedSecretRealmFTUE,
+          hasCompletedBattleVictoryFTUE: !!gameManager.hasCompletedBattleVictoryFTUE,
           hasUnlockedAutoSmelt: !!gameManager.hasUnlockedAutoSmelt,
           dragonPity: {
             pityPurplePulls: (gameManager.dragonLootEngine && gameManager.dragonLootEngine.pityPurplePulls) || 0,
@@ -202,6 +203,17 @@ class StorageService {
       }
       if (typeof data.hasCompletedSecretRealmFTUE === 'boolean') {
         gameManager.hasCompletedSecretRealmFTUE = data.hasCompletedSecretRealmFTUE;
+      }
+      if (typeof data.hasCompletedBattleVictoryFTUE === 'boolean') {
+        gameManager.hasCompletedBattleVictoryFTUE = data.hasCompletedBattleVictoryFTUE;
+      } else {
+        const hasWonBattleBefore = !!(
+          data.isPrologueComplete ||
+          (data.prologueStep && data.prologueStep > 1) ||
+          (data.sectTrialStage && data.sectTrialStage > 1) ||
+          (data.demonTowerClearedFloors && data.demonTowerClearedFloors.length > 0)
+        );
+        gameManager.hasCompletedBattleVictoryFTUE = hasWonBattleBefore;
       }
       if (typeof data.hasUnlockedAutoSmelt === 'boolean') {
         gameManager.hasUnlockedAutoSmelt = data.hasUnlockedAutoSmelt;

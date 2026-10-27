@@ -1371,6 +1371,15 @@
       }
     }
 
+    // 序章新手首战（斩黑鬣猪）尚未拜入宗门，不开放“继续挑战”，直接由“知悉收纳”推进序章唤醒
+    if (btnVictoryContinue) {
+      if (battleResult && battleResult.isPrologueBattle) {
+        btnVictoryContinue.style.display = 'none';
+      } else {
+        btnVictoryContinue.style.display = '';
+      }
+    }
+
     modalBattleVictory.classList.remove('hidden');
     if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
       window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
@@ -1539,6 +1548,17 @@
           if (window.incrementNotificationBadge) window.incrementNotificationBadge(1);
         }
       );
+    }
+
+    // 首次战斗胜利引导标记置为已完成，后续大捷弹窗交由玩家自由抉择知悉收纳或继续挑战
+    if (gameManager) {
+      gameManager.hasCompletedBattleVictoryFTUE = true;
+      if (window.SlotsRPG && window.SlotsRPG.StorageService) {
+        window.SlotsRPG.StorageService.saveGame(gameManager, true);
+      }
+    }
+    if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
+      window.SlotsRPG.SpotlightGuide.hide();
     }
 
     // 3. 执行真正的纳宝入囊入库

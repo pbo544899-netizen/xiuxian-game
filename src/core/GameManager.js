@@ -31,6 +31,7 @@ class GameManager {
     this.hasCompletedCaveFTUE = false;             // 首次洞天引灵引导完成标记
     this.hasCompletedMergeFTUE = false;            // 首次法宝一键升阶引导完成标记
     this.hasCompletedSecretRealmFTUE = false;      // 首次灵泉秘境引导完成标记
+    this.hasCompletedBattleVictoryFTUE = false;    // 首次战斗胜利引导完成标记（大捷弹窗仅首次引导纳宝，后续由玩家自主选择）
     this.hasUnlockedAutoSmelt = false;             // 全身6件全紫(Q4+)后解锁天道造化熔炉以抽养抽
     this.hasTriggeredSectInduction = false;        // 叩问仙门法牒序列单次防重标记
 
