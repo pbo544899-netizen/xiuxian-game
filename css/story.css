@@ -7,8 +7,19 @@
    全新范式：告别即时通讯软件，回归纯正仙侠手游RPG剧情气泡舞台
    ========================================================================= */
 .story-dialog-overlay {
-  background: radial-gradient(circle at 50% 60%, rgba(10, 18, 35, 0.78) 0%, rgba(4, 7, 16, 0.92) 100%) !important;
-  backdrop-filter: blur(8px) !important;
+  background-image: 
+    linear-gradient(180deg, 
+      rgba(6, 12, 24, 0.65) 0%, 
+      rgba(6, 12, 24, 0.25) 35%, 
+      rgba(6, 12, 24, 0.6) 70%, 
+      rgba(4, 8, 18, 0.95) 100%
+    ),
+    url('../assets/ui/story_bg.jpg') !important;
+  background-position: center top !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,15 +54,7 @@
 }
 
 .story-halo-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 280px;
-  color: rgba(212, 175, 55, 0.03);
-  pointer-events: none;
-  animation: spinSlow 40s linear infinite;
-  z-index: 1;
+  display: none !important;
 }
 
 /* 顶部轻量浮动章节挂件 (仙侠卷轴风) */

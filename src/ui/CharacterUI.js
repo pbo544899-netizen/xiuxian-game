@@ -768,8 +768,35 @@
 
 
       // 3. 突破与九重雷劫仪式
-  // 10. 突破与九重雷劫破境仪式
+  // 10. 突破与九重雷劫破境仪式 (彻底杜绝 undefined)
   function playTribulationCeremony(data, onComplete) {
+    let oldRealm = '炼气期';
+    let newRealm = '筑基期';
+    let powerDiff = 0;
+
+    const p = gameManager && gameManager.player;
+    const currentRealm = (p && p.realm) || '练气一层';
+
+    if (Array.isArray(data) && data.length > 0) {
+      const first = data[0];
+      const latest = data[data.length - 1];
+      oldRealm = first.oldRealm || first.fromRealm || currentRealm;
+      newRealm = latest.newRealm || latest.toRealm || currentRealm;
+      const oldPower = first.oldPower !== undefined ? first.oldPower : 0;
+      const newPower = latest.newPower !== undefined ? latest.newPower : (p ? p.combatPower : 0);
+      powerDiff = Math.max(0, newPower - oldPower);
+    } else if (data && typeof data === 'object') {
+      oldRealm = data.oldRealm || data.fromRealm || currentRealm;
+      newRealm = data.newRealm || data.toRealm || currentRealm;
+      if (data.powerDiff !== undefined) {
+        powerDiff = data.powerDiff;
+      } else if (data.newPower !== undefined && data.oldPower !== undefined) {
+        powerDiff = Math.max(0, data.newPower - data.oldPower);
+      } else if (data.powerIncrease !== undefined) {
+        powerDiff = data.powerIncrease;
+      }
+    }
+
     const overlay = document.createElement('div');
     overlay.className = 'tribulation-overlay';
     overlay.innerHTML = `
@@ -779,13 +806,13 @@
       <div class="tribulation-title-wrap">
         <div class="tribulation-stage-hint">⚡ 九重雷劫 · 破境登天 ⚡</div>
         <div class="tribulation-realm-transition">
-          <span class="realm-old">${data.oldRealm}</span>
+          <span class="realm-old">${oldRealm}</span>
           <span class="realm-arrow">➔</span>
-          <span class="realm-new">${data.newRealm}</span>
+          <span class="realm-new">${newRealm}</span>
         </div>
       </div>
       <div class="tribulation-seal" id="trib-seal">破境功成</div>
-      <div class="tribulation-power-badge" id="trib-power">⚡ 战力飙升 +${data.powerDiff} ⬆</div>
+      <div class="tribulation-power-badge" id="trib-power">⚡ 战力飙升 +${powerDiff} ⬆</div>
       <div class="tribulation-skip-hint">点击屏幕任意位置跳过</div>
     `;
 
@@ -934,29 +961,6 @@
 
       // 4. 事件监听
       if (EventBus) {
-        EventBus.on('PLAYER_LEVEL_UP', (levelUps) => {
-          playTribulationCeremony(levelUps, () => {
-            const levelUpSummary = document.getElementById('level-up-summary');
-            if (modalLevelUp && levelUpSummary && levelUps && levelUps.length > 0) {
-              const last = levelUps[levelUps.length - 1];
-              levelUpSummary.innerHTML = `
-                <div class="level-up-badge">破境登天</div>
-                <div class="level-up-title">${last.oldRealm || ''} ➔ ${last.newRealm || ''}</div>
-                <div class="level-up-stats">
-                  <div>⚡ 战力跃升: +${(last.newPower || 0) - (last.oldPower || 0)}</div>
-                  <div>💚 气血上限: +${(last.newHp || 0) - (last.oldHp || 0)}</div>
-                  <div>⚔️ 攻击威能: +${(last.newAtk || 0) - (last.oldAtk || 0)}</div>
-                  <div>🛡️ 护体防御: +${(last.newDef || 0) - (last.oldDef || 0)}</div>
-                </div>
-              `;
-              modalLevelUp.classList.remove('hidden');
-              if (window.SlotsRPG && window.SlotsRPG.SpotlightGuide) {
-                window.SlotsRPG.SpotlightGuide.checkAndTriggerFTUE();
-              }
-            }
-          });
-        });
-
         EventBus.on('REWARDS_DROPPED', (data) => {
           if (data && data.items && data.items.length > 0) {
             const inventory = gameManager ? gameManager.inventory : null;
