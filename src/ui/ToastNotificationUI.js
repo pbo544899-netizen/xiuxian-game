@@ -82,15 +82,20 @@
       });
 
       // 2. 悬浮战力暴涨特效胶囊 (无弹窗，居中暴击跃升)
+      // 若已有旧的战力提示正在播放，立即移除，防止多重重叠
+      const existing = container.querySelector('.quick-equip-power-gain');
+      if (existing) existing.remove();
+
       const burst = document.createElement('div');
       burst.className = 'quick-equip-power-gain';
       const textGain = powerGain > 0 ? `+${powerGain}` : `+0`;
+      const numClass = powerGain >= 1000 ? 'quick-equip-gain-num large' : 'quick-equip-gain-num';
       const countTag = count > 1 ? `<span class="quick-equip-count-tag">换装 ${count} 件</span>` : '';
       burst.innerHTML = `
         <div class="quick-equip-gain-content">
           <span class="quick-equip-gain-icon">⚡</span>
           <span class="quick-equip-gain-label">战力</span>
-          <span class="quick-equip-gain-num">${textGain}</span>
+          <span class="${numClass}">${textGain}</span>
           ${countTag}
         </div>
       `;

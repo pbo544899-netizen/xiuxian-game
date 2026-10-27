@@ -2045,12 +2045,16 @@
   }
 }
 
-/* 一键装备战力直接显示浮动动效 (取缔阻断弹窗，直接动效呈现暴涨战力) */
+/* 一键装备战力直接显示浮动动效 (取缔阻断弹窗，全屏自适应胶囊，杜绝任何文字竖排或折行) */
 .quick-equip-power-gain {
   position: absolute;
-  top: 190px;
+  top: 175px;
   left: 50%;
   transform: translate(-50%, 0);
+  width: max-content !important;
+  max-width: 92vw !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
   z-index: 999;
   pointer-events: none;
   animation: quickEquipPowerFly 2.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
@@ -2059,72 +2063,101 @@
 @keyframes quickEquipPowerFly {
   0% {
     opacity: 0;
-    transform: translate(-50%, 18px) scale(0.65);
+    transform: translate(-50%, 14px) scale(0.78);
   }
   15% {
     opacity: 1;
-    transform: translate(-50%, -12px) scale(1.15);
+    transform: translate(-50%, 0) scale(1.06);
   }
   30% {
-    transform: translate(-50%, -6px) scale(1.0);
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1.0);
   }
   75% {
     opacity: 1;
-    transform: translate(-50%, -35px) scale(1.0);
+    transform: translate(-50%, -20px) scale(1.0);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -65px) scale(0.9);
+    transform: translate(-50%, -42px) scale(0.92);
   }
 }
 
 .quick-equip-gain-content {
-  display: inline-flex;
-  align-items: center;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 8px;
-  background: linear-gradient(135deg, rgba(16, 28, 22, 0.96), rgba(8, 14, 18, 0.96));
-  border: 1.5px solid #38ef7d;
-  box-shadow: 0 0 25px rgba(56, 239, 125, 0.65), 0 6px 20px rgba(0, 0, 0, 0.85);
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  background: linear-gradient(135deg, rgba(8, 26, 18, 0.96) 0%, rgba(6, 15, 22, 0.96) 100%);
+  border: 1.5px solid #10b981;
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.55), 0 8px 25px rgba(0, 0, 0, 0.85);
   border-radius: 28px;
-  padding: 8px 22px;
+  padding: 6px 18px;
   backdrop-filter: blur(8px);
+  box-sizing: border-box;
 }
 
 .quick-equip-gain-icon {
-  font-size: 22px;
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0 !important;
   filter: drop-shadow(0 0 8px #ffd700);
   animation: quickEquipIconSpin 1s ease-in-out infinite alternate;
 }
 
 @keyframes quickEquipIconSpin {
   0% { transform: scale(1) rotate(-6deg); }
-  100% { transform: scale(1.22) rotate(6deg); }
+  100% { transform: scale(1.18) rotate(6deg); }
 }
 
 .quick-equip-gain-label {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #a7f3d0;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  flex-shrink: 0 !important;
+  line-height: 1;
 }
 
 .quick-equip-gain-num {
-  font-size: 26px;
+  font-size: clamp(20px, 5.5vw, 25px);
   font-weight: 900;
-  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-family: 'Cinzel', 'Noto Serif SC', -apple-system, sans-serif;
   color: #38ef7d;
-  text-shadow: 0 0 15px rgba(56, 239, 125, 0.9), 0 2px 4px #000;
-  letter-spacing: 1px;
+  text-shadow: 0 0 14px rgba(56, 239, 125, 0.9), 0 2px 4px #000;
+  letter-spacing: 0.5px;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  flex-shrink: 0 !important;
+  line-height: 1;
+}
+
+.quick-equip-gain-num.large {
+  font-size: clamp(17px, 4.5vw, 21px);
 }
 
 .quick-equip-count-tag {
   font-size: 11px;
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.4);
-  padding: 2px 7px;
+  font-weight: 700;
+  color: #fde047;
+  background: rgba(234, 179, 8, 0.16);
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  padding: 2px 8px;
   border-radius: 10px;
-  margin-left: 4px;
+  margin-left: 2px;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2;
 }
 
 /* 战力数字暴击跳动光效 */
