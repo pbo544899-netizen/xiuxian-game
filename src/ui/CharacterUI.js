@@ -991,14 +991,14 @@
             bossRadarFill.classList.add('ready');
           }
           if (bossRadarProgressText) {
-            bossRadarProgressText.innerText = '战力达成度: 100% (已通关)';
+            bossRadarProgressText.innerText = '';
           }
 
           if (bossRadarStatus) {
             bossRadarStatus.className = 'boss-radar-status ready';
-            bossRadarStatus.innerText = '登峰造极 (试炼圆满)';
+            bossRadarStatus.innerText = '登峰造极';
             bossRadarPanel.classList.add('ready');
-            if (bossRadarHint) bossRadarHint.innerText = '🎉 恭喜！当前门派所有试炼妖兽与守关妖王已被尽数伏诛！';
+            if (bossRadarHint) bossRadarHint.innerText = '';
           }
 
           if (btnBossRadarChallenge) {
@@ -1019,37 +1019,37 @@
             bossRadarFill.classList.toggle('ready', isReady);
           }
           if (bossRadarProgressText) {
-            bossRadarProgressText.innerText = `达成度: ${pct}% (${curPower}/${reqPower})`;
+            bossRadarProgressText.innerText = '';
           }
 
           if (bossRadarStatus) {
             bossRadarStatus.className = 'boss-radar-status';
             if (isReady) {
               bossRadarStatus.classList.add('ready');
-              bossRadarStatus.innerText = '道基大成 (可斩妖王)';
+              bossRadarStatus.innerText = '道基大成';
               bossRadarPanel.classList.add('ready');
-              if (bossRadarHint) bossRadarHint.innerText = '✨ 战力已达斩妖标尺！拔剑决战即可荡平妖王破关晋阶！';
+              if (bossRadarHint) bossRadarHint.innerText = '';
             } else if (isHard) {
               bossRadarStatus.classList.add('warning');
-              bossRadarStatus.innerText = `势均力敌 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarStatus.innerText = '势均力敌';
               bossRadarPanel.classList.remove('ready');
-              if (bossRadarHint) bossRadarHint.innerText = '⚔️ 战力接近斩妖门槛，建议再合成1~2件法宝确保稳操胜券！';
+              if (bossRadarHint) bossRadarHint.innerText = '';
             } else {
               bossRadarStatus.classList.add('danger');
-              bossRadarStatus.innerText = `凶险异常 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarStatus.innerText = '凶险异常';
               bossRadarPanel.classList.remove('ready');
-              if (bossRadarHint) bossRadarHint.innerText = '💡 打造6槽全紫法宝或提升修为突破，战力达标后再来荡平妖王！';
+              if (bossRadarHint) bossRadarHint.innerText = '';
             }
           }
 
           if (btnBossRadarChallenge) {
             btnBossRadarChallenge.disabled = false;
             btnBossRadarChallenge.classList.remove('disabled');
-            btnBossRadarChallenge.innerText = isReady ? '⚔️ 斩灭妖王' : '⚔️ 决战妖王';
+            btnBossRadarChallenge.innerText = isReady ? '⚔️ 斩妖' : '⚔️ 决战';
             btnBossRadarChallenge.classList.toggle('pulse-gold', isReady);
           }
         } else {
-          // 前 1~12 关递增试炼 (与天机盘横幅严格统一评估目标与数据)
+          // 前 1~12 关递增试炼 (精简文字：胜券在握 / 斩妖，移除关卡赘述与重复达成度/提示)
           if (bossRadarIcon) bossRadarIcon.innerText = info.tier === 'elite' ? '👹' : '🐾';
           if (bossRadarLabel) bossRadarLabel.innerText = `试炼第${info.stageIndex}关:`;
           if (bossRadarName) bossRadarName.innerText = info.title;
@@ -1060,33 +1060,33 @@
             bossRadarFill.classList.toggle('ready', isReady);
           }
           if (bossRadarProgressText) {
-            bossRadarProgressText.innerText = `达成度: ${pct}% (${curPower}/${reqPower})`;
+            bossRadarProgressText.innerText = '';
           }
 
           if (bossRadarStatus) {
             bossRadarStatus.className = 'boss-radar-status';
             if (isReady) {
               bossRadarStatus.classList.add('ready');
-              bossRadarStatus.innerText = '胜券在握 (可斩杀)';
+              bossRadarStatus.innerText = '胜券在握';
               bossRadarPanel.classList.add('ready');
-              if (bossRadarHint) bossRadarHint.innerText = `✨ 战力已达标！出鞘迎击可轻松通关第 ${info.stageIndex} 关试炼！`;
+              if (bossRadarHint) bossRadarHint.innerText = '';
             } else if (isHard) {
               bossRadarStatus.classList.add('warning');
-              bossRadarStatus.innerText = `势均力敌 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarStatus.innerText = '势均力敌';
               bossRadarPanel.classList.remove('ready');
-              if (bossRadarHint) bossRadarHint.innerText = '⚔️ 战力接近本关门槛，精炼法宝或祭出破魔符可一决高下！';
+              if (bossRadarHint) bossRadarHint.innerText = '';
             } else {
               bossRadarStatus.classList.add('danger');
-              bossRadarStatus.innerText = `凶险异常 (还差 ${Math.abs(diff)} 战力)`;
+              bossRadarStatus.innerText = '凶险异常';
               bossRadarPanel.classList.remove('ready');
-              if (bossRadarHint) bossRadarHint.innerText = '💡 敌方灵压高于自身战力！建议回【乾坤袋】一键升阶装备后再战！';
+              if (bossRadarHint) bossRadarHint.innerText = '';
             }
           }
 
           if (btnBossRadarChallenge) {
             btnBossRadarChallenge.disabled = false;
             btnBossRadarChallenge.classList.remove('disabled');
-            btnBossRadarChallenge.innerText = isReady ? `⚔️ 斩妖 (${info.stageIndex}关)` : `⚔️ 试剑 (${info.stageIndex}关)`;
+            btnBossRadarChallenge.innerText = isReady ? '⚔️ 斩妖' : '⚔️ 试炼';
             btnBossRadarChallenge.classList.toggle('pulse-gold', isReady);
           }
         }
